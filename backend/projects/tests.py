@@ -37,6 +37,7 @@ class ProjectManagementTests(APITestCase):
 
         # Map memberships
         ProjectMember.objects.create(project=self.project_a1, user=self.analyst_a, role="PROJECT_MANAGER")
+        ProjectMember.objects.create(project=self.project_a1, user=self.dev_a, role="CONTRIBUTOR")
 
     def test_project_listing_rules(self):
         """Verify project query list isolation rules."""
@@ -47,8 +48,8 @@ class ProjectManagementTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["data"]), 2)
 
-        # 2. Analyst A (non-admin) should see only projects they belong to (Alpha)
-        self.client.force_authenticate(user=self.analyst_a)
+        # 2. Developer A (non-admin/non-manager) should see only projects they belong to (Alpha)
+        self.client.force_authenticate(user=self.dev_a)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["data"]), 1)
