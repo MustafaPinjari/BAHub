@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "stakeholders",
     "requirements",
     "stories",
+    "documents",
 ]
 
 MIDDLEWARE = [

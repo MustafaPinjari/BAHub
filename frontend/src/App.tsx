@@ -15,6 +15,7 @@ import { ProjectsPage } from "./features/projects/ProjectsPage";
 import { StakeholdersPage } from "./features/stakeholders/StakeholdersPage";
 import { RequirementsPage } from "./features/requirements/RequirementsPage";
 import { UserStoriesPage } from "./features/stories/UserStoriesPage";
+import { DocumentGeneratorPage } from "./features/documents/DocumentGeneratorPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -102,6 +103,10 @@ const MainAppContent: React.FC = () => {
         return <RequirementsPage />;
       case "stories":
         return <UserStoriesPage />;
+      case "brd":
+        return <DocumentGeneratorPage docType="BRD" />;
+      case "frd":
+        return <DocumentGeneratorPage docType="FRD" />;
       default:
         // Elegant placeholder for subsequent sequential modules
         return (

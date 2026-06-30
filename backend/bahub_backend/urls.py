@@ -35,4 +35,7 @@ urlpatterns = [
     
     # User Story endpoints
     path("api/v1/stories/", include("stories.urls")),
+    
+    # Document endpoints
+    path("api/v1/documents/", include("documents.urls")),
 ]
