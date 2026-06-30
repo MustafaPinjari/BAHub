@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "stories",
     "documents",
     "meetings",
+    "risks",
 ]
 
 MIDDLEWARE = [

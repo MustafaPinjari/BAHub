@@ -222,3 +222,37 @@ WARNING 2026-06-30 21:30:00,938 log 14540 5320 Bad Request: /api/v1/teams/
 WARNING 2026-06-30 21:30:00,941 exceptions 14540 5320 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
 WARNING 2026-06-30 21:30:00,941 log 14540 5320 Bad Request: /api/v1/teams/
 WARNING 2026-06-30 21:30:05,095 log 14540 5320 Forbidden: /api/v1/teams/
+WARNING 2026-06-30 21:31:34,583 log 16124 13888 Not Found: /api/v1/users/
+WARNING 2026-06-30 21:31:34,584 basehttp 16124 13888 "GET /api/v1/users/ HTTP/1.1" 404 4367
+WARNING 2026-06-30 21:31:34,592 log 16124 21420 Not Found: /api/v1/users/
+WARNING 2026-06-30 21:31:34,593 basehttp 16124 21420 "GET /api/v1/users/ HTTP/1.1" 404 4367
+WARNING 2026-06-30 21:33:51,258 log 16124 13888 Not Found: /api/v1/users/
+WARNING 2026-06-30 21:33:51,262 basehttp 16124 13888 "GET /api/v1/users/ HTTP/1.1" 404 4367
+WARNING 2026-06-30 21:33:51,280 log 16124 4908 Not Found: /api/v1/users/
+WARNING 2026-06-30 21:33:51,290 basehttp 16124 4908 "GET /api/v1/users/ HTTP/1.1" 404 4367
+WARNING 2026-06-30 21:40:53,465 log 8148 4788 Bad Request: /api/v1/documents/generate/
+WARNING 2026-06-30 21:40:53,510 log 8148 4788 Bad Request: /api/v1/documents/b80edda5-17ee-46cf-bb36-ff31a413ced8/sign-off/
+WARNING 2026-06-30 21:40:54,963 exceptions 8148 4788 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-06-30 21:40:54,964 log 8148 4788 Bad Request: /api/v1/meetings/
+WARNING 2026-06-30 21:40:54,994 exceptions 8148 4788 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-06-30 21:40:54,995 log 8148 4788 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-06-30 21:41:05,970 exceptions 8148 4788 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-06-30 21:41:05,970 log 8148 4788 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-06-30 21:41:09,266 exceptions 8148 4788 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-06-30 21:41:09,267 log 8148 4788 Bad Request: /api/v1/requirements/
+WARNING 2026-06-30 21:41:09,272 exceptions 8148 4788 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-06-30 21:41:09,272 log 8148 4788 Bad Request: /api/v1/requirements/
+WARNING 2026-06-30 21:41:10,817 log 8148 4788 Bad Request: /api/v1/risks/change-requests/33a9dc4d-f663-4726-a08c-440c9b2202ac/review/
+WARNING 2026-06-30 21:41:12,488 exceptions 8148 4788 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-06-30 21:41:12,488 log 8148 4788 Bad Request: /api/v1/risks/
+WARNING 2026-06-30 21:41:13,513 exceptions 8148 4788 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-06-30 21:41:13,514 log 8148 4788 Bad Request: /api/v1/stakeholders/
+WARNING 2026-06-30 21:41:13,517 exceptions 8148 4788 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-06-30 21:41:13,517 log 8148 4788 Bad Request: /api/v1/stakeholders/
+WARNING 2026-06-30 21:41:16,807 exceptions 8148 4788 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-06-30 21:41:16,808 log 8148 4788 Bad Request: /api/v1/stories/
+WARNING 2026-06-30 21:41:18,847 exceptions 8148 4788 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-06-30 21:41:18,847 log 8148 4788 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 21:41:18,851 exceptions 8148 4788 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-06-30 21:41:18,851 log 8148 4788 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 21:41:23,127 log 8148 4788 Forbidden: /api/v1/teams/

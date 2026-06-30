@@ -41,4 +41,7 @@ urlpatterns = [
     
     # Meeting endpoints
     path("api/v1/meetings/", include("meetings.urls")),
+    
+    # Risk endpoints
+    path("api/v1/risks/", include("risks.urls")),
 ]
