@@ -84,7 +84,7 @@ export const ProjectsPage: React.FC = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const isAdmin = user?.role === "ADMIN";
+  const canManageProjects = user ? ["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER"].includes(user.role) : false;
 
   const {
     register,
@@ -358,7 +358,7 @@ export const ProjectsPage: React.FC = () => {
               <Users className="w-3.5 h-3.5" />
             </Button>
 
-            {isAdmin && (
+            {canManageProjects && (
               <>
                 <Button
                   variant="ghost"
@@ -396,7 +396,7 @@ export const ProjectsPage: React.FC = () => {
             Switch between project contexts to filter specifications, BAs, and stakeholder feedback lists.
           </p>
         </div>
-        {isAdmin && (
+        {canManageProjects && (
           <Button
             variant="primary"
             size="sm"
@@ -427,7 +427,7 @@ export const ProjectsPage: React.FC = () => {
               Projects aggregate your requirement catalogs, change requests, and stakeholder matrix maps. Create your first project to start.
             </p>
           </div>
-          {isAdmin && (
+          {canManageProjects && (
             <Button variant="primary" size="sm" onClick={openCreateModal} className="text-xs font-bold mt-2">
               Create Project Profile
             </Button>
@@ -553,7 +553,7 @@ export const ProjectsPage: React.FC = () => {
             {formError && <Alert variant="destructive">{formError}</Alert>}
 
             {/* Add member form */}
-            {isAdmin && (
+            {canManageProjects && (
               <form onSubmit={handleAddMember} className="flex flex-col sm:flex-row gap-3 items-end border-b border-border pb-5 mt-1">
                 <div className="flex-1 min-w-0">
                   <Select
@@ -620,7 +620,7 @@ export const ProjectsPage: React.FC = () => {
                         <Badge variant="default" className="text-[9px] font-bold uppercase tracking-wider">
                           {pm.role.replace("_", " ")}
                         </Badge>
-                        {isAdmin && (
+                        {canManageProjects && (
                           <button
                             type="button"
                             onClick={() => handleRemoveMember(pm.id)}

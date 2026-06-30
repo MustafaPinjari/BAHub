@@ -19,7 +19,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated or not user.organization_id:
             return Project.objects.none()
 
-        if user.role == "ADMIN":
+        if user.role in ["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER"]:
             return Project.objects.filter(organization_id=user.organization_id)
 
         # Standard users get projects where they are listed as members
