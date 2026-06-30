@@ -32,15 +32,15 @@ const THEME_OPTIONS = [
 ];
 
 const ACCENT_OPTIONS = [
-  { value: "indigo", label: "Indigo Accent" },
-  { value: "violet", label: "Violet Accent" },
-  { value: "blue", label: "Blue Accent" },
-  { value: "emerald", label: "Emerald Accent" },
-  { value: "amber", label: "Amber Accent" },
+  { value: "indigo", label: "Indigo" },
+  { value: "violet", label: "Violet" },
+  { value: "blue", label: "Blue" },
+  { value: "emerald", label: "Emerald" },
+  { value: "amber", label: "Amber" },
 ];
 
 const LANG_OPTIONS = [
-  { value: "en", label: "English" },
+  { value: "en", label: "English (US)" },
   { value: "es", label: "Español" },
   { value: "fr", label: "Français" },
 ];
@@ -63,7 +63,6 @@ export const ProfilePage: React.FC = () => {
     resolver: zodResolver(profileSchema),
   });
 
-  // Populate form defaults when user loads
   useEffect(() => {
     if (user) {
       reset({
@@ -83,14 +82,13 @@ export const ProfilePage: React.FC = () => {
     }
   }, [user, reset]);
 
-  // Fetch active sessions
   const fetchSessions = async () => {
     setSessionsLoading(true);
     try {
       const response = await api.get<any, { data: UserSession[] }>("/auth/sessions/");
       setSessions(response.data);
     } catch (e: any) {
-      console.error("Failed to load user sessions:", e);
+      console.error(e);
     } finally {
       setSessionsLoading(false);
     }
@@ -108,7 +106,7 @@ export const ProfilePage: React.FC = () => {
     setSaving(true);
     try {
       await updateProfile(data);
-      setSuccessMsg("Your profile and preferences were updated successfully!");
+      setSuccessMsg("Settings updated successfully.");
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || "Failed to update profile settings.");
@@ -122,7 +120,7 @@ export const ProfilePage: React.FC = () => {
     setErrorMsg(null);
     try {
       await api.post("/auth/sessions/logout-all/");
-      setSuccessMsg("Logged out from all other devices successfully.");
+      setSuccessMsg("Logged out from other browser sessions.");
       fetchSessions();
     } catch (err: any) {
       setErrorMsg("Failed to revoke active login sessions.");
@@ -130,21 +128,21 @@ export const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Account & Workspace Settings</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Manage your personal account profile, UI preferences, and browser sessions.
+    <div className="max-w-4xl mx-auto flex flex-col gap-5 select-none">
+      <div className="border-b border-border pb-4">
+        <h1 className="text-xl font-bold tracking-tight text-foreground">Account Settings</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Configure user identity options, visual configurations, and session management.
         </p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-border select-none">
+      {/* Underline Tabs */}
+      <div className="flex border-b border-border text-xs font-semibold gap-1 select-none">
         <button
           onClick={() => setActiveTab("profile")}
-          className={`px-5 py-2.5 font-semibold text-sm border-b-2 transition-all cursor-pointer ${
+          className={`px-4 py-2 border-b-2 transition-all cursor-pointer ${
             activeTab === "profile"
-              ? "border-primary text-primary"
+              ? "border-primary text-primary font-bold"
               : "border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -152,9 +150,9 @@ export const ProfilePage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab("preferences")}
-          className={`px-5 py-2.5 font-semibold text-sm border-b-2 transition-all cursor-pointer ${
+          className={`px-4 py-2 border-b-2 transition-all cursor-pointer ${
             activeTab === "preferences"
-              ? "border-primary text-primary"
+              ? "border-primary text-primary font-bold"
               : "border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -162,43 +160,34 @@ export const ProfilePage: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab("sessions")}
-          className={`px-5 py-2.5 font-semibold text-sm border-b-2 transition-all cursor-pointer ${
+          className={`px-4 py-2 border-b-2 transition-all cursor-pointer ${
             activeTab === "sessions"
-              ? "border-primary text-primary"
+              ? "border-primary text-primary font-bold"
               : "border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
-          Security & Sessions
+          Active Sessions
         </button>
       </div>
 
-      {successMsg && (
-        <Alert variant="success" title="Success">
-          {successMsg}
-        </Alert>
-      )}
+      {successMsg && <Alert variant="success">{successMsg}</Alert>}
+      {errorMsg && <Alert variant="destructive">{errorMsg}</Alert>}
 
-      {errorMsg && (
-        <Alert variant="destructive" title="Error">
-          {errorMsg}
-        </Alert>
-      )}
-
-      {/* Profile Details Tab */}
+      {/* Tab content cards */}
       {activeTab === "profile" && (
-        <Card className="flex flex-col gap-6">
-          <div className="flex items-center gap-4 border-b border-border pb-4">
-            <div className="w-16 h-16 rounded-full bg-primary/15 border border-primary/20 text-primary flex items-center justify-center text-xl font-bold">
+        <Card className="flex flex-col gap-5 p-5">
+          <div className="flex items-center gap-3 border-b border-border pb-4">
+            <div className="w-10 h-10 rounded-full bg-secondary border border-border text-muted-foreground flex items-center justify-center text-xs font-bold uppercase">
               {user?.first_name?.charAt(0)}
               {user?.last_name?.charAt(0)}
             </div>
-            <div>
-              <h2 className="text-lg font-bold text-foreground">
+            <div className="flex flex-col">
+              <h2 className="text-xs font-bold text-foreground uppercase tracking-wider">
                 {user?.first_name} {user?.last_name}
               </h2>
-              <p className="text-xs text-muted-foreground">
+              <span className="text-[10px] text-muted-foreground font-bold uppercase mt-0.5">
                 Username: @{user?.username} | Role: {user?.role?.replace("_", " ")}
-              </p>
+              </span>
             </div>
           </div>
 
@@ -220,7 +209,7 @@ export const ProfilePage: React.FC = () => {
                 label="Workspace Email Address"
                 value={user?.email || ""}
                 disabled
-                helperText="Email address cannot be changed."
+                helperText="Workspace emails are managed by workspace admins."
               />
               <Input
                 label="Phone Number"
@@ -231,33 +220,25 @@ export const ProfilePage: React.FC = () => {
             </div>
 
             <Textarea
-              label="Biography"
-              placeholder="Tell us about your professional background as a Business Analyst..."
+              label="Bio / Notes"
+              placeholder="Conducting business analysis tasks..."
               error={errors.bio?.message}
               {...register("bio")}
             />
 
-            <Button type="submit" variant="primary" className="self-end" isLoading={saving}>
+            <Button type="submit" variant="primary" className="self-end font-bold" isLoading={saving}>
               Save Profile
             </Button>
           </form>
         </Card>
       )}
 
-      {/* Theme & Display Tab */}
       {activeTab === "preferences" && (
-        <Card>
-          <form onSubmit={handleSubmit(handleProfileSave)} className="flex flex-col gap-6">
-            <div className="border-b border-border pb-4">
-              <h2 className="text-lg font-bold text-foreground">Interface Customization</h2>
-              <p className="text-xs text-muted-foreground">
-                Tailor themes, accent shades, languages, and time layouts.
-              </p>
-            </div>
-
+        <Card className="p-5">
+          <form onSubmit={handleSubmit(handleProfileSave)} className="flex flex-col gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select
-                label="Visual Theme"
+                label="Theme Mode"
                 options={THEME_OPTIONS}
                 error={errors.preferences?.theme?.message}
                 {...register("preferences.theme")}
@@ -269,25 +250,25 @@ export const ProfilePage: React.FC = () => {
                 {...register("preferences.accent_color")}
               />
               <Select
-                label="Preferred Language"
+                label="Language"
                 options={LANG_OPTIONS}
                 error={errors.preferences?.language?.message}
                 {...register("preferences.language")}
               />
               <Input
-                label="Display Date Format"
+                label="Date Format"
                 placeholder="YYYY-MM-DD"
                 error={errors.preferences?.date_format?.message}
                 {...register("preferences.date_format")}
               />
               <Input
-                label="Workspace Timezone"
+                label="Timezone"
                 placeholder="UTC"
                 error={errors.preferences?.timezone?.message}
                 {...register("preferences.timezone")}
               />
               <Select
-                label="Time Layout"
+                label="Time Format"
                 options={[
                   { value: "12h", label: "12 Hour (AM/PM)" },
                   { value: "24h", label: "24 Hour" },
@@ -297,58 +278,64 @@ export const ProfilePage: React.FC = () => {
               />
             </div>
 
-            <Button type="submit" variant="primary" className="self-end" isLoading={saving}>
-              Apply Layout Preferences
+            <Button type="submit" variant="primary" className="self-end font-bold" isLoading={saving}>
+              Apply Settings
             </Button>
           </form>
         </Card>
       )}
 
-      {/* Security & Sessions Tab */}
       {activeTab === "sessions" && (
-        <Card className="flex flex-col gap-6">
-          <div className="flex justify-between items-center border-b border-border pb-4">
+        <Card className="flex flex-col gap-4 p-5">
+          <div className="flex justify-between items-center border-b border-border pb-3">
             <div>
-              <h2 className="text-lg font-bold text-foreground">Active Browser Sessions</h2>
-              <p className="text-xs text-muted-foreground">
-                You are currently logged into these browsers. Revoke sessions to sign out of other devices.
+              <h2 className="text-xs font-bold text-foreground uppercase tracking-wider">
+                Logged Sessions
+              </h2>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Active browsers currently linked to this user credentials.
               </p>
             </div>
-            <Button variant="destructive" size="sm" onClick={handleRevokeSessions}>
-              Revoke All Other Sessions
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleRevokeSessions}
+              className="text-xs font-bold px-3 py-1"
+            >
+              Sign out other devices
             </Button>
           </div>
 
           {sessionsLoading ? (
-            <div className="text-center py-6 text-sm text-muted-foreground">Loading active sessions...</div>
+            <div className="text-center py-6 text-xs text-muted-foreground">Loading sessions...</div>
           ) : sessions.length === 0 ? (
-            <div className="text-center py-6 text-sm text-muted-foreground">No active sessions found.</div>
+            <div className="text-center py-6 text-xs text-muted-foreground">No active sessions found.</div>
           ) : (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5">
               {sessions.map((sess) => (
                 <div
                   key={sess.id}
-                  className="flex items-center justify-between p-4 rounded-xl border border-border bg-card/50 hover:bg-card transition-colors"
+                  className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-secondary/30 hover:bg-secondary/60 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                      <Monitor className="w-5 h-5" />
+                    <div className="w-8 h-8 rounded-lg bg-background border border-border flex items-center justify-center text-muted-foreground shrink-0">
+                      <Monitor className="w-4 h-4" />
                     </div>
-                    <div>
-                      <p className="font-semibold text-sm text-foreground">
-                        {sess.browser || "Unknown Browser"} on {sess.device || "Desktop"}
+                    <div className="flex flex-col text-left">
+                      <p className="font-semibold text-xs text-foreground leading-tight">
+                        {sess.browser || "Browser"} on {sess.device || "Desktop"}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        IP: {sess.ip_address || "Localhost"} | Last active:{" "}
+                      <p className="text-[10px] text-muted-foreground mt-0.5 leading-none">
+                        IP: {sess.ip_address || "Localhost"} | Active:{" "}
                         {new Date(sess.last_activity).toLocaleString()}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="shrink-0">
                     {sess.is_active ? (
-                      <Badge variant="success">Current</Badge>
+                      <Badge variant="success" className="text-[9px] font-bold">Current</Badge>
                     ) : (
-                      <Badge variant="secondary">Expired</Badge>
+                      <Badge variant="secondary" className="text-[9px] font-bold">Inactive</Badge>
                     )}
                   </div>
                 </div>

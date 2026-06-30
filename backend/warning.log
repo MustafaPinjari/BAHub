@@ -1,0 +1,20 @@
+WARNING 2026-06-30 13:43:16,250 exceptions 4276 21468 API Error (400): {'organization': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-06-30 13:43:16,252 log 4276 21468 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:43:19,298 log 4276 21468 Forbidden: /api/v1/teams/
+WARNING 2026-06-30 13:43:19,300 exceptions 4276 21468 API Error (400): {'organization': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-06-30 13:43:19,300 log 4276 21468 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:43:58,298 exceptions 12020 8284 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-06-30 13:43:58,300 log 12020 8284 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:43:58,302 exceptions 12020 8284 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-06-30 13:43:58,303 log 12020 8284 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:44:01,317 log 12020 8284 Forbidden: /api/v1/teams/
+WARNING 2026-06-30 13:44:31,174 exceptions 19240 13944 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-06-30 13:44:31,176 log 19240 13944 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:44:31,179 exceptions 19240 13944 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-06-30 13:44:31,179 log 19240 13944 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:44:34,177 log 19240 13944 Forbidden: /api/v1/teams/
+WARNING 2026-06-30 13:45:30,486 exceptions 11152 20972 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-06-30 13:45:30,487 log 11152 20972 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:45:30,489 exceptions 11152 20972 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-06-30 13:45:30,489 log 11152 20972 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:45:33,496 log 11152 20972 Forbidden: /api/v1/teams/

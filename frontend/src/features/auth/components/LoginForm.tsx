@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "../AuthContext";
 import { Input, Button, Alert } from "../../../components/common/UIComponents";
-import { Shield, Lock, User as UserIcon } from "lucide-react";
+import { Building, Lock, User as UserIcon } from "lucide-react";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -46,36 +46,36 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToReg
   };
 
   return (
-    <div className="w-full max-w-md p-8 glass rounded-2xl shadow-xl border border-white/10 flex flex-col gap-6">
+    <div className="w-full max-w-[320px] flex flex-col gap-5 select-none bg-background">
       {/* Brand Header */}
       <div className="flex flex-col items-center gap-2 text-center">
-        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20">
-          <Shield className="w-6 h-6" />
+        <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20 shrink-0 mb-1">
+          <Building className="w-4 h-4" />
         </div>
-        <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
-        <p className="text-sm text-muted-foreground">
-          Enter credentials to access the BAHub workspace.
+        <h1 className="text-xl font-bold text-foreground tracking-tight">Sign in to BAHub</h1>
+        <p className="text-xs text-muted-foreground">
+          Enter credentials to access your organization workspace.
         </p>
       </div>
 
       {formError && (
-        <Alert variant="destructive" title="Login Failed">
+        <Alert variant="destructive">
           {formError}
         </Alert>
       )}
 
       {/* Form Fields */}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3.5">
         <div className="relative">
           <Input
             label="Username"
             type="text"
-            placeholder="username"
+            placeholder="e.g. analyst"
             error={errors.username?.message}
-            className="pl-9"
+            className="pl-8.5"
             {...register("username")}
           />
-          <UserIcon className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-[34px]" />
+          <UserIcon className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
         <div className="relative">
@@ -84,25 +84,25 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToReg
             type="password"
             placeholder="••••••••"
             error={errors.password?.message}
-            className="pl-9"
+            className="pl-8.5"
             {...register("password")}
           />
-          <Lock className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-[34px]" />
+          <Lock className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
-        <Button type="submit" variant="primary" className="w-full mt-2" isLoading={loading}>
+        <Button type="submit" variant="primary" className="w-full mt-1.5 font-bold" isLoading={loading}>
           Sign In
         </Button>
       </form>
 
       {/* Footer Nav */}
-      <div className="text-center text-sm text-muted-foreground">
+      <div className="text-center text-xs text-muted-foreground">
         Don&apos;t have an account?{" "}
         <button
           onClick={onNavigateToRegister}
           className="text-primary hover:underline font-semibold cursor-pointer"
         >
-          Create organization workspace
+          Register workspace
         </button>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 // BUTTON COMPONENT
 // ==========================================
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "destructive" | "ghost" | "glass";
+  variant?: "primary" | "secondary" | "destructive" | "ghost" | "minimal" | "outline";
   size?: "sm" | "md" | "lg" | "icon";
   isLoading?: boolean;
 }
@@ -18,20 +18,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={cn(
-          "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100",
+          "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100 select-none",
           {
             // Variants
-            "bg-primary text-primary-foreground hover:bg-opacity-90 hover:shadow-md hover:shadow-primary/10": variant === "primary",
-            "bg-secondary text-secondary-foreground hover:bg-opacity-90": variant === "secondary",
-            "border border-border bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground": variant === "outline",
-            "bg-destructive text-destructive-foreground hover:bg-opacity-90": variant === "destructive",
-            "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground": variant === "ghost",
-            "glass-interactive text-foreground font-semibold hover:border-primary/50": variant === "glass",
+            "bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-sm border border-transparent": variant === "primary",
+            "bg-card border border-border text-foreground hover:bg-secondary": variant === "secondary" || variant === "outline",
+            "bg-[#DC2626] hover:bg-[#B91C1C] text-white shadow-sm border border-transparent": variant === "destructive",
+            "bg-transparent text-foreground hover:bg-secondary hover:text-foreground": variant === "ghost",
+            "bg-background border border-border text-foreground hover:bg-secondary": variant === "minimal",
             
             // Sizes
-            "px-3 py-1.5 text-xs": size === "sm",
-            "px-4 py-2 text-sm": size === "md",
-            "px-6 py-3 text-base": size === "lg",
+            "px-2.5 py-1.5 text-xs": size === "sm",
+            "px-3.5 py-2 text-sm": size === "md",
+            "px-5 py-2.5 text-base": size === "lg",
             "p-2": size === "icon",
           },
           className
@@ -60,7 +59,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full flex flex-col gap-1.5">
         {label && (
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground select-none">
             {label}
           </label>
         )}
@@ -68,16 +67,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           type={type}
           className={cn(
-            "w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-muted-foreground",
+            "w-full px-3 py-2 text-sm rounded-lg bg-card border border-border text-foreground focus:border-[#2563EB] focus:ring-2 focus:ring-primary/10 transition-all outline-none placeholder:text-muted-foreground/60 shadow-sm",
             {
-              "border-destructive focus:border-destructive focus:ring-destructive/20": !!error,
+              "border-[#DC2626] focus:border-[#DC2626] focus:ring-[#DC2626]/10": !!error,
             },
             className
           )}
           {...props}
         />
-        {error && <span className="text-xs text-destructive font-medium">{error}</span>}
-        {!error && helperText && <span className="text-xs text-muted-foreground">{helperText}</span>}
+        {error && <span className="text-xs text-[#DC2626] font-medium mt-0.5">{error}</span>}
+        {!error && helperText && <span className="text-xs text-muted-foreground mt-0.5">{helperText}</span>}
       </div>
     );
   }
@@ -98,23 +97,23 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="w-full flex flex-col gap-1.5">
         {label && (
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground select-none">
             {label}
           </label>
         )}
         <textarea
           ref={ref}
           className={cn(
-            "w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none placeholder:text-muted-foreground min-h-[100px]",
+            "w-full px-3 py-2 text-sm rounded-lg bg-card border border-border text-foreground focus:border-[#2563EB] focus:ring-2 focus:ring-primary/10 transition-all outline-none placeholder:text-muted-foreground/60 shadow-sm min-h-[100px]",
             {
-              "border-destructive focus:border-destructive focus:ring-destructive/20": !!error,
+              "border-[#DC2626] focus:border-[#DC2626] focus:ring-[#DC2626]/10": !!error,
             },
             className
           )}
           {...props}
         />
-        {error && <span className="text-xs text-destructive font-medium">{error}</span>}
-        {!error && helperText && <span className="text-xs text-muted-foreground">{helperText}</span>}
+        {error && <span className="text-xs text-[#DC2626] font-medium mt-0.5">{error}</span>}
+        {!error && helperText && <span className="text-xs text-muted-foreground mt-0.5">{helperText}</span>}
       </div>
     );
   }
@@ -135,7 +134,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full flex flex-col gap-1.5">
         {label && (
-          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground select-none">
             {label}
           </label>
         )}
@@ -143,9 +142,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <select
             ref={ref}
             className={cn(
-              "w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none cursor-pointer text-foreground",
+              "w-full px-3 py-2 text-sm rounded-lg bg-card border border-border text-foreground focus:border-[#2563EB] focus:ring-2 focus:ring-primary/10 transition-all outline-none appearance-none cursor-pointer shadow-sm",
               {
-                "border-destructive focus:border-destructive focus:ring-destructive/20": !!error,
+                "border-[#DC2626] focus:border-[#DC2626] focus:ring-[#DC2626]/10": !!error,
               },
               className
             )}
@@ -157,13 +156,13 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             ))}
           </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-foreground">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-muted-foreground/60">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
         </div>
-        {error && <span className="text-xs text-destructive font-medium">{error}</span>}
+        {error && <span className="text-xs text-[#DC2626] font-medium mt-0.5">{error}</span>}
       </div>
     );
   }
@@ -174,22 +173,21 @@ Select.displayName = "Select";
 // BADGE COMPONENT
 // ==========================================
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "secondary" | "success" | "warning" | "destructive" | "outline" | "indigo";
+  variant?: "default" | "secondary" | "success" | "warning" | "destructive" | "outline";
 }
 
 export const Badge: React.FC<BadgeProps> = ({ className, variant = "default", children, ...props }) => {
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium tracking-wide",
+        "inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold tracking-wide select-none",
         {
-          "bg-primary/10 text-primary": variant === "default",
-          "bg-secondary text-secondary-foreground": variant === "secondary",
-          "bg-emerald-500/10 text-emerald-500": variant === "success",
-          "bg-amber-500/10 text-amber-500": variant === "warning",
-          "bg-red-500/10 text-red-500": variant === "destructive",
-          "border border-border text-foreground": variant === "outline",
-          "bg-indigo-500/10 text-indigo-400": variant === "indigo",
+          "bg-[#DBEAFE] text-[#1D4ED8]": variant === "default",
+          "bg-secondary text-[#334155] border border-border": variant === "secondary",
+          "bg-[#DCFCE7] text-[#166534]": variant === "success",
+          "bg-[#FEF3C7] text-[#92400E]": variant === "warning",
+          "bg-[#FEE2E2] text-[#991B1B]": variant === "destructive",
+          "border border-border text-muted-foreground bg-transparent": variant === "outline",
         },
         className
       )}
@@ -212,19 +210,19 @@ export const Alert: React.FC<AlertProps> = ({ className, variant = "info", title
   return (
     <div
       className={cn(
-        "p-4 rounded-lg border flex flex-col gap-1 text-sm shadow-sm",
+        "p-4 rounded-xl border flex flex-col gap-1 text-sm shadow-sm",
         {
-          "bg-blue-500/5 border-blue-500/20 text-blue-500": variant === "info",
-          "bg-emerald-500/5 border-emerald-500/20 text-emerald-500": variant === "success",
-          "bg-amber-500/5 border-amber-500/20 text-amber-500": variant === "warning",
-          "bg-red-500/5 border-red-500/20 text-red-500": variant === "destructive",
+          "bg-[#DBEAFE] border-[#2563EB]/10 text-[#1D4ED8]": variant === "info",
+          "bg-[#DCFCE7] border-[#16A34A]/10 text-[#166534]": variant === "success",
+          "bg-[#FEF3C7] border-[#F59E0B]/10 text-[#92400E]": variant === "warning",
+          "bg-[#FEE2E2] border-[#DC2626]/10 text-[#991B1B]": variant === "destructive",
         },
         className
       )}
       {...props}
     >
-      {title && <span className="font-semibold text-base leading-none">{title}</span>}
-      <div className="leading-relaxed opacity-90">{children}</div>
+      {title && <span className="font-bold text-sm tracking-tight leading-none mb-0.5">{title}</span>}
+      <div className="leading-relaxed opacity-90 text-xs font-medium">{children}</div>
     </div>
   );
 };
@@ -234,7 +232,7 @@ export const Alert: React.FC<AlertProps> = ({ className, variant = "info", title
 // ==========================================
 export const Card: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, children, ...props }) => {
   return (
-    <div className={cn("glass-card p-6 shadow-md hover:shadow-lg transition-shadow duration-200", className)} {...props}>
+    <div className={cn("bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-all duration-150 text-card-foreground", className)} {...props}>
       {children}
     </div>
   );

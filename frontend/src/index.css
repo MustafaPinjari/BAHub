@@ -6,66 +6,65 @@
 
 @layer base {
   :root {
-    /* Theme color variables as raw R,G,B for tailwind opacity modifiers */
-    --background: 250, 251, 253;      /* light cool grey */
-    --foreground: 15, 23, 42;         /* slate-900 */
+    --background: 248, 250, 252;       /* F8FAFC Application background */
+    --foreground: 51, 65, 85;          /* 334155 Body text */
+    --heading: 15, 23, 42;             /* 0F172A Heading text */
+    --muted-foreground: 100, 116, 139;  /* 64748B Muted text */
+    --disabled: 148, 163, 184;         /* 94A3B8 Disabled text */
     
-    --card: 255, 255, 255;
-    --card-foreground: 15, 23, 42;
+    --card: 255, 255, 255;             /* FFFFFF Card background */
+    --card-foreground: 51, 65, 85;
     
     --popover: 255, 255, 255;
-    --popover-foreground: 15, 23, 42;
+    --popover-foreground: 51, 65, 85;
     
-    --primary: 99, 102, 241;          /* indigo-500 */
+    --primary: 37, 99, 235;            /* 2563EB Primary Action (Blue) */
     --primary-foreground: 255, 255, 255;
     
-    --secondary: 241, 245, 249;       /* slate-100 */
+    --secondary: 241, 245, 249;        /* F1F5F9 Secondary Surface */
     --secondary-foreground: 15, 23, 42;
     
-    --muted: 241, 245, 249;
-    --muted-foreground: 100, 116, 139;  /* slate-500 */
+    --accent: 219, 234, 254;           /* DBEAFE Primary Light */
+    --accent-foreground: 37, 99, 235;  /* 2563EB Primary Text */
     
-    --accent: 243, 244, 246;          /* grey-100 */
-    --accent-foreground: 17, 24, 39;
-    
-    --destructive: 239, 68, 68;       /* red-500 */
+    --destructive: 220, 38, 38;        /* DC2626 Danger */
     --destructive-foreground: 255, 255, 255;
     
-    --border: 226, 232, 240;          /* slate-200 */
+    --border: 226, 232, 240;           /* E2E8F0 Standard Border */
+    --divider: 203, 213, 225;          /* CBD5E1 Divider */
     --input: 226, 232, 240;
-    --ring: 99, 102, 241;
-    
-    --radius: 0.75rem;
+    --ring: 37, 99, 235;
   }
 
   .dark {
-    --background: 10, 15, 30;         /* deep dark slate */
-    --foreground: 248, 250, 252;      /* slate-50 */
+    --background: 15, 23, 42;          /* Slate-900 Application background */
+    --foreground: 226, 232, 240;       /* Slate-200 Body */
+    --heading: 248, 250, 252;          /* Slate-50 Heading */
+    --muted-foreground: 148, 163, 184;  /* Slate-400 Muted */
+    --disabled: 100, 116, 139;
     
-    --card: 15, 23, 42;               /* slate-900 */
-    --card-foreground: 248, 250, 252;
+    --card: 9, 13, 24;                 /* Slate-950 Card Background */
+    --card-foreground: 226, 232, 240;
     
-    --popover: 15, 23, 42;
-    --popover-foreground: 248, 250, 252;
+    --popover: 9, 13, 24;
+    --popover-foreground: 226, 232, 240;
     
-    --primary: 129, 140, 248;         /* indigo-400 */
-    --primary-foreground: 10, 15, 30;
+    --primary: 96, 165, 250;           /* Blue-400 Primary */
+    --primary-foreground: 15, 23, 42;
     
-    --secondary: 30, 41, 59;          /* slate-800 */
+    --secondary: 30, 41, 59;           /* Slate-800 Secondary Surface */
     --secondary-foreground: 248, 250, 252;
     
-    --muted: 30, 41, 59;
-    --muted-foreground: 148, 163, 184; /* slate-400 */
+    --accent: 30, 41, 59;
+    --accent-foreground: 96, 165, 250;
     
-    --accent: 31, 41, 55;             /* grey-800 */
-    --accent-foreground: 243, 244, 246;
-    
-    --destructive: 248, 113, 113;     /* red-400 */
+    --destructive: 248, 113, 113;
     --destructive-foreground: 255, 255, 255;
     
-    --border: 51, 65, 85;             /* slate-700 */
-    --input: 51, 65, 85;
-    --ring: 129, 140, 248;
+    --border: 30, 41, 59;              /* Slate-800 Border */
+    --divider: 51, 65, 85;             /* Slate-700 Divider */
+    --input: 30, 41, 59;
+    --ring: 96, 165, 250;
   }
 }
 
@@ -74,60 +73,28 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/20 transition-colors duration-200;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/10 tracking-tight transition-colors duration-150;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    color: rgb(var(--heading));
   }
 }
 
-/* Glassmorphism custom classes */
-.glass {
-  background: rgba(var(--card), 0.6) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(var(--border), 0.4) !important;
+/* Custom premium scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.dark .glass {
-  background: rgba(15, 23, 42, 0.45) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.glass-card {
-  @apply rounded-xl shadow-lg border;
-  background: rgba(var(--card), 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-color: rgba(var(--border), 0.4);
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.15);
+  border-radius: 3px;
 }
 
-.dark .glass-card {
-  background: rgba(15, 23, 42, 0.4);
-  border-color: rgba(255, 255, 255, 0.06);
-}
-
-.glass-interactive {
-  @apply rounded-xl border transition-all duration-300;
-  background: rgba(var(--card), 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-color: rgba(var(--border), 0.3);
-}
-
-.dark .glass-interactive {
-  background: rgba(15, 23, 42, 0.3);
-  border-color: rgba(255, 255, 255, 0.05);
-}
-
-.glass-interactive:hover {
-  background: rgba(var(--card), 0.65);
-  border-color: rgba(var(--primary), 0.4);
-  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.08), 
-              0 8px 10px -6px rgba(99, 102, 241, 0.08);
-  transform: translateY(-2px);
-}
-
-.dark .glass-interactive:hover {
-  background: rgba(15, 23, 42, 0.55);
-  border-color: rgba(129, 140, 248, 0.3);
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.35);
 }

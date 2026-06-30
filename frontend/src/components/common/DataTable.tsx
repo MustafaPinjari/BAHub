@@ -152,11 +152,11 @@ export function DataTable<T extends { id?: string | number }>({
   }, [data, selectedIds]);
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-3.5 w-full">
       {/* Table Controls (Search, Column Visibility, Bulk Actions) */}
       <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
           <input
             type="text"
             placeholder={searchPlaceholder}
@@ -165,29 +165,30 @@ export function DataTable<T extends { id?: string | number }>({
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+            className="w-full pl-9 pr-4 py-1.5 text-sm rounded-lg bg-card border border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none placeholder:text-muted-foreground/60"
           />
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           {/* Column Visibility Selector */}
           <div className="relative">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowColVisibilityMenu(!showColVisibilityMenu)}
+              className="text-xs font-semibold"
             >
               Columns
             </Button>
             {showColVisibilityMenu && (
-              <div className="absolute right-0 mt-2 w-48 glass shadow-lg rounded-lg border p-2 z-20 flex flex-col gap-1">
-                <span className="text-xs font-semibold text-muted-foreground px-2 py-1 uppercase tracking-wider">
-                  Show/Hide Columns
+              <div className="absolute right-0 mt-1.5 w-48 bg-card shadow-lg rounded-xl border border-border p-2.5 z-20 flex flex-col gap-1 select-none text-foreground">
+                <span className="text-[10px] font-bold text-muted-foreground px-2 py-1 uppercase tracking-wider">
+                  Toggle Columns
                 </span>
                 {columns.map((col) => (
                   <label
                     key={col.key}
-                    className="flex items-center gap-2 px-2 py-1 rounded hover:bg-accent text-sm cursor-pointer"
+                    className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-secondary text-xs font-medium cursor-pointer text-foreground"
                   >
                     <input
                       type="checkbox"
@@ -197,16 +198,15 @@ export function DataTable<T extends { id?: string | number }>({
                         if (e.target.checked) {
                           newCols.add(col.key);
                         } else {
-                          // Keep at least one column visible
                           if (newCols.size > 1) {
                             newCols.delete(col.key);
                           }
                         }
                         setVisibleColumns(newCols);
                       }}
-                      className="rounded border-border text-primary focus:ring-primary/30"
+                      className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
                     />
-                    <span className="text-foreground">{col.label}</span>
+                    <span>{col.label}</span>
                   </label>
                 ))}
               </div>
@@ -217,25 +217,31 @@ export function DataTable<T extends { id?: string | number }>({
 
       {/* Bulk Actions Panel */}
       {selectedIds.size > 0 && bulkActions.length > 0 && (
-        <div className="flex items-center justify-between px-4 py-3 bg-primary/5 border border-primary/20 rounded-lg text-sm">
-          <span className="font-medium text-foreground">
+        <div className="flex items-center justify-between px-4 py-2.5 bg-secondary border border-border rounded-lg text-xs">
+          <span className="font-semibold text-foreground">
             {selectedIds.size} row{selectedIds.size > 1 ? "s" : ""} selected
           </span>
           <div className="flex items-center gap-2">
             {bulkActions.map((act) => (
               <Button
                 key={act.label}
-                variant={act.variant || "secondary"}
+                variant={act.variant || "outline"}
                 size="sm"
                 onClick={() => {
                   act.action(selectedObjects);
                   setSelectedIds(new Set());
                 }}
+                className="text-xs font-bold py-1 px-2.5"
               >
                 {act.label}
               </Button>
             ))}
-            <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedIds(new Set())}
+              className="text-xs font-semibold py-1 px-2"
+            >
               Clear
             </Button>
           </div>
@@ -243,18 +249,17 @@ export function DataTable<T extends { id?: string | number }>({
       )}
 
       {/* Data Table */}
-      <div className="w-full overflow-x-auto rounded-lg border border-border bg-card">
-        <table className="w-full text-left border-collapse">
+      <div className="w-full overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+        <table className="w-full text-left border-collapse table-fixed">
           <thead>
-            <tr className="border-b border-border bg-muted/40 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {/* Checkbox column if bulkActions are present */}
+            <tr className="border-b border-border bg-secondary/50 text-[10px] font-bold uppercase tracking-wider text-muted-foreground select-none">
               {bulkActions.length > 0 && (
                 <th className="p-4 w-12 text-center">
                   <input
                     type="checkbox"
                     checked={allPageSelected}
                     onChange={(e) => handleSelectAll(e, paginatedRows)}
-                    className="rounded border-border text-primary focus:ring-primary/30 cursor-pointer"
+                    className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
                   />
                 </th>
               )}
@@ -265,16 +270,16 @@ export function DataTable<T extends { id?: string | number }>({
                     key={col.key}
                     onClick={() => handleSort(col.key, col.sortable)}
                     className={cn(
-                      "p-4 select-none",
-                      col.sortable ? "cursor-pointer hover:bg-muted/60" : ""
+                      "p-3.5 select-none text-[11px]",
+                      col.sortable ? "cursor-pointer hover:bg-secondary" : ""
                     )}
                   >
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5 font-bold">
                       {col.label}
                       {col.sortable && (
-                        <span>
+                        <span className="opacity-60">
                           {sortKey !== col.key ? (
-                            <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground/60" />
+                            <ChevronsUpDown className="w-3 h-3" />
                           ) : sortDir === "asc" ? (
                             <ChevronUp className="w-3.5 h-3.5 text-primary" />
                           ) : (
@@ -287,14 +292,14 @@ export function DataTable<T extends { id?: string | number }>({
                 ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border text-sm text-foreground">
+          <tbody className="divide-y divide-border text-xs text-foreground font-medium">
             {paginatedRows.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.filter((c) => visibleColumns.has(c.key)).length + (bulkActions.length > 0 ? 1 : 0)}
                   className="p-8 text-center text-muted-foreground font-medium"
                 >
-                  No items found matching the filters.
+                  No items found matching search terms.
                 </td>
               </tr>
             ) : (
@@ -305,26 +310,25 @@ export function DataTable<T extends { id?: string | number }>({
                     key={row.id || idx}
                     onClick={() => onRowClick?.(row)}
                     className={cn(
-                      "hover:bg-muted/30 transition-colors duration-150",
+                      "hover:bg-secondary/30 transition-colors duration-100",
                       onRowClick ? "cursor-pointer" : "",
-                      isSelected ? "bg-primary/5 hover:bg-primary/10" : ""
+                      isSelected ? "bg-primary/10 hover:bg-primary/15 text-primary" : ""
                     )}
                   >
-                    {/* Checkbox cell */}
                     {bulkActions.length > 0 && (
-                      <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
+                      <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={(e) => row.id !== undefined && handleSelectRow(e, row.id)}
-                          className="rounded border-border text-primary focus:ring-primary/30 cursor-pointer"
+                          className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
                         />
                       </td>
                     )}
                     {columns
                       .filter((col) => visibleColumns.has(col.key))
                       .map((col) => (
-                        <td key={col.key} className="p-4 align-middle">
+                        <td key={col.key} className="p-3.5 align-middle truncate">
                           {col.render ? col.render(row) : (row as any)[col.key]}
                         </td>
                       ))}
@@ -338,8 +342,8 @@ export function DataTable<T extends { id?: string | number }>({
 
       {/* Pagination Controls */}
       {sortedRows.length > 0 && (
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between py-2 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between py-1.5 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5 select-none font-medium">
             <span>Show</span>
             <select
               value={pageSize}
@@ -347,38 +351,38 @@ export function DataTable<T extends { id?: string | number }>({
                 setPageSize(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              className="bg-background border border-border rounded px-2 py-1 outline-none text-foreground"
+              className="bg-card border border-border rounded-md px-1.5 py-0.5 outline-none text-foreground cursor-pointer font-bold"
             >
               {[5, 10, 20, 50].map((size) => (
                 <option key={size} value={size}>
-                  {size} items
+                  {size}
                 </option>
               ))}
             </select>
             <span>of {sortedRows.length} items</span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 select-none">
             <Button
               variant="outline"
               size="sm"
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(currentPage - 1)}
-              className="p-1.5"
+              className="p-1 px-1.5 rounded-md"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-3.5 h-3.5" />
             </Button>
-            <span className="px-3 font-medium text-foreground">
-              Page {currentPage} of {totalPages}
+            <span className="px-2 font-bold text-foreground">
+              {currentPage} of {totalPages}
             </span>
             <Button
               variant="outline"
               size="sm"
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(currentPage + 1)}
-              className="p-1.5"
+              className="p-1 px-1.5 rounded-md"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </Button>
           </div>
         </div>

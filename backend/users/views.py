@@ -186,3 +186,19 @@ class LogoutAllView(APIView):
         return api_success(
             message="Logged out from all sessions successfully."
         )
+
+
+class WorkspaceMembersView(APIView):
+    """
+    List all active users inside the current requesting user's organization.
+    Useful for selecting team leads, project members, or stakeholders.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if not user.organization_id:
+            return api_success(data=[], message="User does not belong to an organization.")
+        members = User.objects.filter(organization_id=user.organization_id, is_active=True)
+        serializer = UserSerializer(members, many=True)
+        return api_success(data=serializer.data, message="Workspace members retrieved successfully.")

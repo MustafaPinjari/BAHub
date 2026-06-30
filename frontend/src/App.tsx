@@ -7,6 +7,9 @@ import { DashboardOverview } from "./features/dashboard/DashboardOverview";
 import { ProfilePage } from "./features/auth/ProfilePage";
 import { Card } from "./components/common/UIComponents";
 import { ShieldAlert, Bot } from "lucide-react";
+import logo from "./assets/logo.png";
+import banner from "./assets/banner.png";
+import { TeamsPage } from "./features/teams/TeamsPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -16,32 +19,61 @@ const MainAppContent: React.FC = () => {
   // Show a premium loading screen while restoring token sessions
   if (loading) {
     return (
-      <div className="w-screen h-screen flex flex-col items-center justify-center bg-[#0a0f1e] text-white">
-        <div className="relative w-16 h-16">
-          <div className="absolute inset-0 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin"></div>
+      <div className="w-screen h-screen flex flex-col items-center justify-center bg-[#F8FAFC] text-[#0F172A]">
+        <div className="relative w-12 h-12 mb-4">
+          <div className="absolute inset-0 rounded-full border-4 border-slate-200 border-t-[#2563EB] animate-spin"></div>
         </div>
-        <p className="mt-4 text-sm font-semibold text-indigo-200 tracking-widest uppercase animate-pulse">
+        <p className="text-xs font-bold text-slate-500 tracking-widest uppercase animate-pulse">
           Hydrating BAHub Workspace...
         </p>
       </div>
     );
   }
 
-  // Auth pages logic
+  // Auth pages in Split-Screen layout (Form Left, Banner Showcase Right)
   if (!isAuthenticated) {
     return (
-      <div className="w-screen min-h-screen flex items-center justify-center p-4 bg-[#0a0f1e] overflow-y-auto">
-        {authView === "login" ? (
-          <LoginForm
-            onSuccess={() => setActiveTab("dashboard")}
-            onNavigateToRegister={() => setAuthView("register")}
+      <div className="w-screen h-screen flex bg-background text-foreground overflow-hidden">
+        {/* Left Side: Form Container */}
+        <div className="w-full md:w-[50%] h-full flex items-center justify-center p-8 overflow-y-auto bg-background">
+          {authView === "login" ? (
+            <LoginForm
+              onSuccess={() => setActiveTab("dashboard")}
+              onNavigateToRegister={() => setAuthView("register")}
+            />
+          ) : (
+            <RegisterForm
+              onSuccess={() => setAuthView("login")}
+              onNavigateToLogin={() => setAuthView("login")}
+            />
+          )}
+        </div>
+        
+        {/* Right Side: Showcase Panel (Hidden on mobile devices) */}
+        <div className="hidden md:flex md:w-[50%] h-full relative bg-[#0F172A] items-center justify-center p-12 overflow-hidden select-none">
+          <img
+            src={banner}
+            alt="BAHub Workspace Banner"
+            className="absolute inset-0 w-full h-full object-cover opacity-45 mix-blend-overlay"
           />
-        ) : (
-          <RegisterForm
-            onSuccess={() => setAuthView("login")}
-            onNavigateToLogin={() => setAuthView("login")}
-          />
-        )}
+          {/* Subtle vignette/gradient overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/95 via-[#0F172A]/50 to-transparent"></div>
+          
+          <div className="relative z-10 flex flex-col gap-4 text-white max-w-md mt-auto text-left">
+            <div className="flex items-center gap-2">
+              <img src={logo} alt="BAHub Logo" className="w-6 h-6 object-contain" />
+              <span className="font-bold text-[10px] tracking-widest uppercase text-white/80">
+                BAHub Enterprise
+              </span>
+            </div>
+            <h2 className="text-2xl font-bold tracking-tight text-white leading-tight">
+              The AI-Powered Business Analyst Workspace
+            </h2>
+            <p className="text-xs text-white/80 leading-relaxed font-semibold">
+              A comprehensive system designed to gather requirements, generate functional specification documents, manage stakeholders, register risks, and run AI-assisted analyses.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -53,18 +85,20 @@ const MainAppContent: React.FC = () => {
         return <DashboardOverview />;
       case "profile":
         return <ProfilePage />;
+      case "teams":
+        return <TeamsPage />;
       default:
         // Elegant placeholder for subsequent sequential modules
         return (
           <div className="flex flex-col items-center justify-center min-h-[50vh]">
             <Card className="max-w-md text-center flex flex-col items-center gap-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20">
-                {activeTab === "ai" ? <Bot className="w-6 h-6" /> : <ShieldAlert className="w-6 h-6" />}
+              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20 shrink-0">
+                {activeTab === "ai" ? <Bot className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
               </div>
-              <h2 className="text-xl font-bold text-foreground">
+              <h2 className="text-base font-bold text-foreground uppercase tracking-wider">
                 {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Module
               </h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 This feature is part of the next sequential roadmap phase. All core databases, API versioning paths, and UI shells are already configured to support this module.
               </p>
             </Card>

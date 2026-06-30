@@ -15,7 +15,7 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, "Must contain at least one uppercase letter")
     .regex(/[a-z]/, "Must contain at least one lowercase letter")
     .regex(/[0-9]/, "Must contain at least one digit")
-    .regex(/[!@#$%^&*(),.?":{}|<>[\]\\_\-+=~`/;']/, "Must contain at least one special character"),
+    .regex(/[!@#$%^&*(),.?\":{}|<>[\]\\_\-+=~`/;']/, "Must contain at least one special character"),
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   role: z.enum(["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER", "DEVELOPER", "QA_TESTER", "STAKEHOLDER"] as const),
@@ -63,7 +63,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
     } catch (err: any) {
       console.error(err);
       if (err.errors) {
-        // Concatenate validation errors
         const key = Object.keys(err.errors)[0];
         const val = err.errors[key];
         setFormError(`${key}: ${Array.isArray(val) ? val.join(" ") : val}`);
@@ -76,37 +75,36 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
   };
 
   return (
-    <div className="w-full max-w-lg p-8 glass rounded-2xl shadow-xl border border-white/10 flex flex-col gap-6">
+    <div className="w-full max-w-[380px] flex flex-col gap-5 select-none bg-background">
       {/* Header */}
       <div className="flex flex-col items-center gap-2 text-center">
-        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20">
-          <Building className="w-6 h-6" />
+        <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20 shrink-0 mb-1">
+          <Building className="w-4 h-4" />
         </div>
-        <h1 className="text-2xl font-bold text-foreground">Create Workspace</h1>
-        <p className="text-sm text-muted-foreground">
-          Register your user profile and workspace organization.
+        <h1 className="text-xl font-bold text-foreground tracking-tight">Create BAHub Workspace</h1>
+        <p className="text-xs text-muted-foreground">
+          Register your profile and workspace organization workspace.
         </p>
       </div>
 
       {formError && (
-        <Alert variant="destructive" title="Registration Failed">
+        <Alert variant="destructive">
           {formError}
         </Alert>
       )}
 
       {/* Form fields */}
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="relative md:col-span-2">
+      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div className="relative sm:col-span-2">
           <Input
-            label="Organization Workspace Name"
+            label="Organization Name"
             type="text"
-            placeholder="e.g. Acme Corp"
-            helperText="We will group your projects under this organization."
+            placeholder="e.g. Apex Analytics"
             error={errors.organization_name?.message}
-            className="pl-9"
+            className="pl-8.5"
             {...register("organization_name")}
           />
-          <Building className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-[34px]" />
+          <Building className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
         <div className="relative">
@@ -115,10 +113,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
             type="text"
             placeholder="John"
             error={errors.first_name?.message}
-            className="pl-9"
+            className="pl-8.5"
             {...register("first_name")}
           />
-          <UserIcon className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-[34px]" />
+          <UserIcon className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
         <div className="relative">
@@ -127,10 +125,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
             type="text"
             placeholder="Doe"
             error={errors.last_name?.message}
-            className="pl-9"
+            className="pl-8.5"
             {...register("last_name")}
           />
-          <UserIcon className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-[34px]" />
+          <UserIcon className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
         <div className="relative">
@@ -139,55 +137,55 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
             type="text"
             placeholder="johndoe"
             error={errors.username?.message}
-            className="pl-9"
+            className="pl-8.5"
             {...register("username")}
           />
-          <UserIcon className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-[34px]" />
+          <UserIcon className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
         <div className="relative">
           <Input
-            label="Email"
+            label="Email Address"
             type="email"
             placeholder="john@example.com"
             error={errors.email?.message}
-            className="pl-9"
+            className="pl-8.5"
             {...register("email")}
           />
-          <Mail className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-[34px]" />
+          <Mail className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
-        <div className="relative md:col-span-2">
+        <div className="relative sm:col-span-2">
           <Select
-            label="Your Professional Role"
+            label="Professional Role"
             options={ROLE_OPTIONS}
             error={errors.role?.message}
-            className="pl-9"
+            className="pl-8.5"
             {...register("role")}
           />
-          <Briefcase className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-[34px]" />
+          <Briefcase className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
-        <div className="relative md:col-span-2">
+        <div className="relative sm:col-span-2">
           <Input
             label="Password"
             type="password"
             placeholder="••••••••"
-            helperText="Min 8 chars, 1 uppercase, 1 lowercase, 1 digit, 1 special character."
+            helperText="At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special."
             error={errors.password?.message}
-            className="pl-9"
+            className="pl-8.5"
             {...register("password")}
           />
-          <Key className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-[34px]" />
+          <Key className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
-        <Button type="submit" variant="primary" className="md:col-span-2 w-full mt-2" isLoading={loading}>
-          Create Organization Workspace
+        <Button type="submit" variant="primary" className="sm:col-span-2 w-full mt-1.5 font-bold" isLoading={loading}>
+          Create Workspace
         </Button>
       </form>
 
       {/* Nav Back */}
-      <div className="text-center text-sm text-muted-foreground">
+      <div className="text-center text-xs text-muted-foreground">
         Already have an account?{" "}
         <button
           onClick={onNavigateToLogin}

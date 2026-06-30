@@ -17,4 +17,7 @@ urlpatterns = [
     
     # Organization endpoints
     path("api/v1/organizations/", include("organizations.urls")),
+    
+    # Team endpoints
+    path("api/v1/teams/", include("teams.urls")),
 ]

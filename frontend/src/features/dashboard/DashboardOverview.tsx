@@ -1,222 +1,246 @@
 import React from "react";
-import { Card, Badge, Button } from "../../components/common/UIComponents";
-import { useAuth } from "../auth/AuthContext";
+import { Card, Badge } from "../../components/common/UIComponents";
+import { DataTable } from "../../components/common/DataTable";
+import type { Column } from "../../components/common/DataTable";
+import { DocumentEditor } from "./components/DocumentEditor";
 import {
-  FileSpreadsheet,
-  AlertTriangle,
-  Calendar,
-  FolderGit,
   Clock,
-  ArrowRight
+  FolderGit,
+  ChevronsUpDown,
+  Paperclip
 } from "lucide-react";
 
-export const DashboardOverview: React.FC = () => {
-  const { user } = useAuth();
+interface RequirementBacklog {
+  id: string;
+  title: string;
+  category: string;
+  priority: "High" | "Medium" | "Low";
+  status: "Draft" | "Review" | "Approved";
+}
 
-  // Mock workspace statistics
-  const kpis = [
+export const DashboardOverview: React.FC = () => {
+
+  // Mock data for the spreadsheet requirement backlog table
+  const backlogData: RequirementBacklog[] = [
     {
-      title: "Active Projects",
-      value: "4",
-      change: "+1 this month",
-      icon: FolderGit,
-      color: "text-indigo-500 bg-indigo-500/10",
+      id: "REQ-101",
+      title: "PCI-DSS compliance token storage rules",
+      category: "Security",
+      priority: "High",
+      status: "Approved",
     },
     {
-      title: "Total Requirements",
-      value: "84",
-      change: "12 pending review",
-      icon: FileSpreadsheet,
-      color: "text-emerald-500 bg-emerald-500/10",
+      id: "REQ-102",
+      title: "Support checkout fallback routing",
+      category: "Functional",
+      priority: "Medium",
+      status: "Review",
     },
     {
-      title: "Open Risks",
-      value: "3",
-      change: "1 high probability",
-      icon: AlertTriangle,
-      color: "text-amber-500 bg-amber-500/10",
+      id: "REQ-103",
+      title: "Real-time webhook notification dispatcher",
+      category: "Integration",
+      priority: "High",
+      status: "Draft",
     },
     {
-      title: "Meetings Scheduled",
-      value: "2",
-      change: "Next at 3:00 PM",
-      icon: Calendar,
-      color: "text-blue-500 bg-blue-500/10",
+      id: "REQ-104",
+      title: "Store user transaction metadata index",
+      category: "Database",
+      priority: "Low",
+      status: "Approved",
+    },
+  ];
+
+  const columns: Column<RequirementBacklog>[] = [
+    {
+      key: "id",
+      label: "ID",
+      sortable: true,
+      render: (row) => <span className="font-bold text-primary">{row.id}</span>,
+    },
+    {
+      key: "title",
+      label: "Requirement Title",
+      sortable: true,
+      render: (row) => <span className="font-semibold text-foreground">{row.title}</span>,
+    },
+    {
+      key: "category",
+      label: "Category",
+      sortable: true,
+    },
+    {
+      key: "priority",
+      label: "Priority",
+      sortable: true,
+      render: (row) => {
+        const variant = row.priority === "High" ? "destructive" : row.priority === "Medium" ? "warning" : "secondary";
+        return <Badge variant={variant}>{row.priority}</Badge>;
+      },
+    },
+    {
+      key: "status",
+      label: "Status",
+      sortable: true,
+      render: (row) => {
+        const variant = row.status === "Approved" ? "success" : row.status === "Review" ? "warning" : "default";
+        return <Badge variant={variant}>{row.status}</Badge>;
+      },
     },
   ];
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Welcome Banner */}
-      <div className="p-6 rounded-2xl glass border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
-            Hello, {user?.first_name || "Analyst"}!
-          </h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Welcome to your **{user?.organization_name || "BAHub"}** business workspace. Here is a snapshot of your projects.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider border border-primary/20 self-start md:self-auto">
-          <Clock className="w-4 h-4 animate-pulse" />
-          Active Sprint: SP-03
-        </div>
-      </div>
-
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpis.map((kpi) => {
-          const Icon = kpi.icon;
-          return (
-            <Card key={kpi.title} className="flex items-center justify-between gap-4">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  {kpi.title}
-                </span>
-                <span className="text-2xl font-extrabold text-foreground">{kpi.value}</span>
-                <span className="text-xs text-muted-foreground">{kpi.change}</span>
-              </div>
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center border border-border ${kpi.color}`}>
-                <Icon className="w-6 h-6" />
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Main Aggregations */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Pending Approvals */}
-        <Card className="lg:col-span-2 flex flex-col gap-4">
-          <div className="flex justify-between items-center pb-2 border-b border-border">
-            <h2 className="text-base font-bold text-foreground">Pending Approvals</h2>
-            <Button variant="ghost" size="sm" className="text-xs">
-              View All <ArrowRight className="w-3.5 h-3.5 ml-1" />
-            </Button>
+    <div className="max-w-7xl mx-auto flex flex-col gap-6 select-none text-foreground">
+      {/* ==========================================
+          TOP LAYER: CURRENT CONTEXT BAR
+          ========================================== */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-3 px-4 bg-card rounded-xl border border-border gap-4 select-none">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 border border-primary/20">
+            <FolderGit className="w-4 h-4" />
           </div>
-          <div className="flex flex-col gap-3">
-            {[
-              {
-                id: "REQ-203",
-                title: "Business Requirements Document (BRD) - Version 1.2",
-                proj: "Payment Gateway Integration",
-                status: "Pending PO Sign-off",
-                date: "Today",
-              },
-              {
-                id: "REQ-209",
-                title: "User Authentication Flow Specification",
-                proj: "SaaS Identity Redesign",
-                status: "Pending Admin Approval",
-                date: "Yesterday",
-              },
-            ].map((item) => (
-              <div
-                key={item.id}
-                className="p-3 border border-border rounded-xl hover:bg-muted/30 transition-colors flex items-center justify-between gap-4"
-              >
-                <div className="flex flex-col gap-1 overflow-hidden">
-                  <span className="font-semibold text-sm text-foreground truncate">
-                    {item.title}
-                  </span>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="font-bold text-primary">{item.id}</span>
-                    <span>•</span>
-                    <span className="truncate">{item.proj}</span>
+          <div className="flex flex-col text-left">
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-bold text-foreground">Apex Payment Gateway Integration</span>
+              <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground/60 cursor-pointer" />
+            </div>
+            <span className="text-[10px] text-muted-foreground font-semibold">
+              Current Context • Requirements Workspace
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 self-end md:self-auto text-xs font-semibold">
+          <div className="flex items-center gap-1 bg-secondary border border-border px-2.5 py-1 rounded-lg">
+            <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+            <span>Sprint 3</span>
+          </div>
+          <span className="text-muted-foreground/40">|</span>
+          <span className="text-muted-foreground">
+            Author: <span className="text-foreground font-bold">David Miller</span>
+          </span>
+        </div>
+      </div>
+
+      {/* ==========================================
+          THREE-COLUMN/LAYER GRID SYSTEM
+          ========================================== */}
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        
+        {/* Left Side: Primary Work Area (75% width) */}
+        <div className="w-full lg:w-[75%] flex flex-col gap-6">
+          
+          {/* Notion-Style Split View Workspace */}
+          <div className="flex flex-col gap-2">
+            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              Document Workspace
+            </h2>
+            <DocumentEditor />
+          </div>
+
+          {/* Spreadsheet-Style Backlog Table */}
+          <div className="flex flex-col gap-2.5">
+            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              Requirements Backlog Spreadsheet
+            </h2>
+            <DataTable
+              columns={columns}
+              data={backlogData}
+              searchPlaceholder="Filter requirements..."
+              searchKeys={["id", "title", "category"]}
+            />
+          </div>
+        </div>
+
+        {/* Right Side: Context Panel (25% width) */}
+        <div className="w-full lg:w-[25%] lg:sticky lg:top-5 flex flex-col gap-5 select-none">
+          
+          {/* Context Layer 1: Approval Actions */}
+          <Card className="flex flex-col gap-4 p-4.5">
+            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5">
+              Approvals Pipeline
+            </h3>
+            <div className="flex flex-col gap-3">
+              {[
+                {
+                  id: "BRD-102",
+                  title: "Gateway Specifications",
+                  status: "Pending Sign-off",
+                },
+                {
+                  id: "FRD-201",
+                  title: "Checkout Flow Schema",
+                  status: "Pending Review",
+                },
+              ].map((item) => (
+                <div key={item.id} className="flex flex-col gap-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-foreground truncate">{item.title}</span>
+                    <Badge variant="warning" className="text-[9px] font-bold shrink-0">{item.status}</Badge>
+                  </div>
+                  <span className="text-[10px] font-bold text-primary uppercase">{item.id}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Context Layer 2: Attachments / References */}
+          <Card className="flex flex-col gap-4 p-4.5">
+            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5">
+              Related Documents
+            </h3>
+            <div className="flex flex-col gap-2.5 text-xs font-semibold">
+              {[
+                { name: "Checkout_Mockups_v2.pdf", size: "4.2 MB" },
+                { name: "Payment_API_Specs.docx", size: "1.8 MB" },
+              ].map((file) => (
+                <div key={file.name} className="flex items-center justify-between p-1.5 rounded-lg hover:bg-secondary/60 cursor-pointer">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <Paperclip className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <span className="text-foreground truncate">{file.name}</span>
+                  </div>
+                  <span className="text-[9px] text-muted-foreground shrink-0">{file.size}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Context Layer 3: Activity Log & History */}
+          <Card className="flex flex-col gap-4 p-4.5">
+            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5">
+              Workspace Activity
+            </h3>
+            <div className="flex flex-col gap-3.5">
+              {[
+                {
+                  user: "David Miller",
+                  action: "modified requirement REQ-102",
+                  time: "3m ago",
+                },
+                {
+                  user: "Admin",
+                  action: "uploaded Payment_API_Specs.docx",
+                  time: "15m ago",
+                },
+              ].map((act, idx) => (
+                <div key={idx} className="flex items-start gap-2.5 text-[11px] leading-normal">
+                  <div className="w-5 h-5 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0 text-[9px] font-bold text-muted-foreground">
+                    {act.user.charAt(0)}
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <p className="text-foreground">
+                      <span className="font-bold">{act.user}</span> {act.action}
+                    </p>
+                    <span className="text-[9px] text-muted-foreground font-bold uppercase mt-0.5">{act.time}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Badge variant="warning">{item.status}</Badge>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Action Items / Tasks */}
-        <Card className="flex flex-col gap-4">
-          <div className="flex justify-between items-center pb-2 border-b border-border">
-            <h2 className="text-base font-bold text-foreground">Action Items</h2>
-            <Button variant="ghost" size="sm" className="text-xs">
-              Add Task
-            </Button>
-          </div>
-          <div className="flex flex-col gap-3">
-            {[
-              {
-                task: "Conduct stakeholder workshop",
-                due: "Jul 02",
-                done: false,
-              },
-              {
-                task: "Map non-functional requirements",
-                due: "Jul 05",
-                done: false,
-              },
-              {
-                task: "Review SWOT reports",
-                due: "Jul 08",
-                done: true,
-              },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center gap-3 justify-between p-2 rounded-lg hover:bg-muted/20">
-                <div className="flex items-center gap-2.5">
-                  <input
-                    type="checkbox"
-                    checked={item.done}
-                    readOnly
-                    className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
-                  />
-                  <span
-                    className={`text-sm text-foreground ${
-                      item.done ? "line-through text-muted-foreground opacity-60" : "font-medium"
-                    }`}
-                  >
-                    {item.task}
-                  </span>
-                </div>
-                <span className="text-xs text-muted-foreground font-semibold">{item.due}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-
-      {/* Bottom section: Recent Activity log */}
-      <Card className="flex flex-col gap-4">
-        <div className="flex justify-between items-center pb-2 border-b border-border">
-          <h2 className="text-base font-bold text-foreground">Recent Activity log</h2>
-        </div>
-        <div className="flex flex-col gap-4">
-          {[
-            {
-              user: "You",
-              action: "updated visual preferences",
-              target: "Account Dashboard",
-              time: "Just now",
-            },
-            {
-              user: "System",
-              action: "provisioned workspace",
-              target: user?.organization_name || "Organization",
-              time: "10 minutes ago",
-            },
-          ].map((act, idx) => (
-            <div key={idx} className="flex items-start gap-3 text-sm">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5 border border-primary/20 text-xs font-bold">
-                {act.user === "You" ? "U" : "S"}
-              </div>
-              <div className="flex flex-col">
-                <p className="text-foreground">
-                  <span className="font-semibold">{act.user}</span> {act.action}{" "}
-                  <span className="font-semibold text-primary">{act.target}</span>
-                </p>
-                <span className="text-xs text-muted-foreground mt-0.5">{act.time}</span>
-              </div>
+              ))}
             </div>
-          ))}
+          </Card>
         </div>
-      </Card>
+
+      </div>
     </div>
   );
 };
