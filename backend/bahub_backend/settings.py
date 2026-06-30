@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "users",
     "teams",
     "permissions",
+    "projects",
+    "stakeholders",
 ]
 
 MIDDLEWARE = [

@@ -11,6 +11,8 @@ import logo from "./assets/logo.png";
 import banner from "./assets/banner.png";
 import { TeamsPage } from "./features/teams/TeamsPage";
 import { WorkspaceSettingsPage } from "./features/auth/WorkspaceSettingsPage";
+import { ProjectsPage } from "./features/projects/ProjectsPage";
+import { StakeholdersPage } from "./features/stakeholders/StakeholdersPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -51,14 +53,14 @@ const MainAppContent: React.FC = () => {
         </div>
         
         {/* Right Side: Showcase Panel (Hidden on mobile devices) */}
-        <div className="hidden md:flex md:w-[50%] h-full relative bg-[#0F172A] items-center justify-center p-12 overflow-hidden select-none">
+        <div className="hidden md:flex md:w-[50%] h-full relative bg-slate-900 items-center justify-center p-12 overflow-hidden select-none">
           <img
             src={banner}
             alt="BAHub Workspace Banner"
-            className="absolute inset-0 w-full h-full object-cover opacity-45 mix-blend-overlay"
+            className="absolute inset-0 w-full h-full object-cover opacity-90"
           />
-          {/* Subtle vignette/gradient overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/95 via-[#0F172A]/50 to-transparent"></div>
+          {/* Soft bottom vignette for text contrast */}
+          <div className="absolute bottom-0 left-0 right-0 h-[40%] bg-gradient-to-t from-slate-950/80 to-transparent"></div>
           
           <div className="relative z-10 flex flex-col gap-4 text-white max-w-md mt-auto text-left">
             <div className="flex items-center gap-2">
@@ -88,6 +90,10 @@ const MainAppContent: React.FC = () => {
         return <ProfilePage />;
       case "teams":
         return <TeamsPage />;
+      case "projects":
+        return <ProjectsPage />;
+      case "stakeholders":
+        return <StakeholdersPage />;
       case "settings":
         return <WorkspaceSettingsPage />;
       default:

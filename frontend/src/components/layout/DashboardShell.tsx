@@ -75,6 +75,30 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
     }
   }, [user?.preferences?.sidebar_state]);
 
+  const [activeProject, setActiveProject] = useState<any>(() => {
+    try {
+      const stored = localStorage.getItem("active_project");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    const handleActiveProjectChange = () => {
+      try {
+        const stored = localStorage.getItem("active_project");
+        setActiveProject(stored ? JSON.parse(stored) : null);
+      } catch {
+        setActiveProject(null);
+      }
+    };
+    window.addEventListener("activeProjectChanged", handleActiveProjectChange);
+    return () => {
+      window.removeEventListener("activeProjectChanged", handleActiveProjectChange);
+    };
+  }, []);
+
   const toggleSidebar = async () => {
     const nextState = !sidebarExpanded;
     setSidebarExpanded(nextState);
@@ -230,23 +254,33 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Top Navbar */}
         <header className="h-14 border-b border-border bg-card flex items-center justify-between px-5 shrink-0 z-20">
-          {/* Left: Breadcrumbs */}
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-semibold select-none">
-            {breadcrumbs.map((bc, idx) => (
-              <React.Fragment key={idx}>
-                {idx > 0 && <span className="text-muted-foreground/30 font-normal">/</span>}
-                <span
-                  className={
-                    idx === breadcrumbs.length - 1
-                      ? "text-foreground font-bold"
-                      : "hover:text-foreground transition-colors cursor-pointer"
-                  }
-                  onClick={() => bc.path && onTabChange(bc.path)}
-                >
-                  {bc.label}
-                </span>
-              </React.Fragment>
-            ))}
+          {/* Left: Breadcrumbs & Project Context */}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground font-semibold select-none">
+            {activeProject && (
+              <div className="flex items-center gap-1 bg-primary/10 border border-primary/20 text-primary px-2.5 py-1 rounded text-[10px] uppercase font-bold tracking-wider shrink-0 select-none">
+                <FolderGit className="w-3 h-3" />
+                <span>{activeProject.name}</span>
+              </div>
+            )}
+            {activeProject && <span className="text-muted-foreground/35 font-normal select-none">|</span>}
+            
+            <div className="flex items-center gap-1.5">
+              {breadcrumbs.map((bc, idx) => (
+                <React.Fragment key={idx}>
+                  {idx > 0 && <span className="text-muted-foreground/30 font-normal">/</span>}
+                  <span
+                    className={
+                      idx === breadcrumbs.length - 1
+                        ? "text-foreground font-bold"
+                        : "hover:text-foreground transition-colors cursor-pointer"
+                    }
+                    onClick={() => bc.path && onTabChange(bc.path)}
+                  >
+                    {bc.label}
+                  </span>
+                </React.Fragment>
+              ))}
+            </div>
           </div>
 
           {/* Right: Actions */}

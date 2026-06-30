@@ -23,4 +23,10 @@ urlpatterns = [
     
     # Permission endpoints
     path("api/v1/permissions/", include("permissions.urls")),
+    
+    # Project endpoints
+    path("api/v1/projects/", include("projects.urls")),
+    
+    # Stakeholder endpoints
+    path("api/v1/stakeholders/", include("stakeholders.urls")),
 ]

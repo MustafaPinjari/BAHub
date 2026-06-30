@@ -23,3 +23,29 @@ WARNING 2026-06-30 13:52:28,064 log 18104 17988 Bad Request: /api/v1/teams/
 WARNING 2026-06-30 13:52:28,067 exceptions 18104 17988 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
 WARNING 2026-06-30 13:52:28,067 log 18104 17988 Bad Request: /api/v1/teams/
 WARNING 2026-06-30 13:52:31,174 log 18104 17988 Forbidden: /api/v1/teams/
+WARNING 2026-06-30 13:59:24,688 exceptions 14712 10012 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-06-30 13:59:24,690 log 14712 10012 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-06-30 13:59:27,808 exceptions 14712 10012 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-06-30 13:59:27,808 log 14712 10012 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:59:27,810 exceptions 14712 10012 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-06-30 13:59:27,810 log 14712 10012 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 13:59:30,797 log 14712 10012 Forbidden: /api/v1/teams/
+WARNING 2026-06-30 16:13:25,455 log 12032 14608 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-06-30 16:13:25,456 basehttp 12032 14608 "GET /api/v1/auth/profile/ HTTP/1.1" 401 200
+WARNING 2026-06-30 16:13:25,461 log 12032 14608 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-06-30 16:13:25,462 basehttp 12032 14608 "GET /api/v1/auth/profile/ HTTP/1.1" 401 200
+WARNING 2026-06-30 16:13:32,309 log 12032 14608 Unauthorized: /api/v1/auth/login/
+WARNING 2026-06-30 16:13:32,311 basehttp 12032 14608 "POST /api/v1/auth/login/ HTTP/1.1" 401 152
+WARNING 2026-06-30 16:13:34,404 log 12032 14608 Unauthorized: /api/v1/auth/login/
+WARNING 2026-06-30 16:13:34,405 basehttp 12032 14608 "POST /api/v1/auth/login/ HTTP/1.1" 401 152
+WARNING 2026-06-30 16:20:28,926 exceptions 3508 11460 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-06-30 16:20:28,930 log 3508 11460 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-06-30 16:20:32,082 exceptions 3508 11460 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-06-30 16:20:32,082 log 3508 11460 Bad Request: /api/v1/stakeholders/
+WARNING 2026-06-30 16:20:32,089 exceptions 3508 11460 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-06-30 16:20:32,090 log 3508 11460 Bad Request: /api/v1/stakeholders/
+WARNING 2026-06-30 16:20:36,331 exceptions 3508 11460 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-06-30 16:20:36,331 log 3508 11460 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 16:20:36,333 exceptions 3508 11460 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-06-30 16:20:36,334 log 3508 11460 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 16:20:40,433 log 3508 11460 Forbidden: /api/v1/teams/
