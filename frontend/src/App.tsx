@@ -13,6 +13,7 @@ import { TeamsPage } from "./features/teams/TeamsPage";
 import { WorkspaceSettingsPage } from "./features/auth/WorkspaceSettingsPage";
 import { ProjectsPage } from "./features/projects/ProjectsPage";
 import { StakeholdersPage } from "./features/stakeholders/StakeholdersPage";
+import { RequirementsPage } from "./features/requirements/RequirementsPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -96,6 +97,8 @@ const MainAppContent: React.FC = () => {
         return <StakeholdersPage />;
       case "settings":
         return <WorkspaceSettingsPage />;
+      case "requirements":
+        return <RequirementsPage />;
       default:
         // Elegant placeholder for subsequent sequential modules
         return (

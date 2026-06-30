@@ -29,4 +29,7 @@ urlpatterns = [
     
     # Stakeholder endpoints
     path("api/v1/stakeholders/", include("stakeholders.urls")),
+    
+    # Requirement endpoints
+    path("api/v1/requirements/", include("requirements.urls")),
 ]

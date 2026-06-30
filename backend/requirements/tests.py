@@ -1,0 +1,110 @@
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+from organizations.models import Organization
+from projects.models import Project
+from stakeholders.models import Stakeholder
+from requirements.models import Requirement
+
+User = get_user_model()
+
+class RequirementManagementTests(APITestCase):
+    def setUp(self):
+        # Create Organizations
+        self.org_a = Organization.objects.create(name="Org A")
+        self.org_b = Organization.objects.create(name="Org B")
+
+        # Create Users
+        self.analyst_a = User.objects.create_user(
+            username="analyst_a", password="Password123!", role=User.BUSINESS_ANALYST, organization=self.org_a
+        )
+
+        # Create Projects
+        self.project_a1 = Project.objects.create(
+            organization=self.org_a, name="Project Alpha", description="Org A Project 1"
+        )
+        self.project_a2 = Project.objects.create(
+            organization=self.org_a, name="Project Beta", description="Org A Project 2"
+        )
+        self.project_b = Project.objects.create(
+            organization=self.org_b, name="Project Gamma", description="Org B Project 1"
+        )
+
+        # Create Stakeholder
+        self.st_a = Stakeholder.objects.create(
+            organization=self.org_a,
+            project=self.project_a1,
+            name="John Doe",
+            title="Sponsor",
+        )
+        self.st_b = Stakeholder.objects.create(
+            organization=self.org_b,
+            project=self.project_b,
+            name="Jane Smith",
+            title="Sponsor",
+        )
+
+    def test_create_requirement_auto_id(self):
+        """Verify that requirement IDs auto-increment sequentially within the project context."""
+        self.client.force_authenticate(user=self.analyst_a)
+        url = reverse("requirement-list")
+        
+        # 1. Create first requirement
+        payload_1 = {
+            "project": str(self.project_a1.id),
+            "title": "Req One",
+            "description": "First functional requirement desc.",
+            "req_type": "FUNCTIONAL",
+            "priority": "HIGH",
+        }
+        response = self.client.post(url, payload_1, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["data"]["req_id"], "REQ-001")
+
+        # 2. Create second requirement in same project
+        payload_2 = {
+            "project": str(self.project_a1.id),
+            "title": "Req Two",
+            "description": "Second functional requirement desc.",
+            "req_type": "FUNCTIONAL",
+            "priority": "MEDIUM",
+        }
+        response = self.client.post(url, payload_2, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["data"]["req_id"], "REQ-002")
+
+        # 3. Create requirement in project_a2 (should start from REQ-001 again)
+        payload_3 = {
+            "project": str(self.project_a2.id),
+            "title": "Req Beta",
+            "description": "First req in Project Beta.",
+        }
+        response = self.client.post(url, payload_3, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["data"]["req_id"], "REQ-001")
+
+    def test_requirement_validations(self):
+        """Verify project and stakeholder matching boundaries."""
+        self.client.force_authenticate(user=self.analyst_a)
+        url = reverse("requirement-list")
+
+        # 1. Assigned project belongs to another organization (Gamma in Org B)
+        payload_invalid_project = {
+            "project": str(self.project_b.id),
+            "title": "Bad Req",
+            "description": "Project outside Org A.",
+        }
+        response = self.client.post(url, payload_invalid_project, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # 2. Assigned stakeholder belongs to another organization (Jane in Org B)
+        payload_invalid_stakeholder = {
+            "project": str(self.project_a1.id),
+            "title": "Bad Req Stakeholder",
+            "description": "Stakeholder Jane is in Org B.",
+            "source_stakeholder": str(self.st_b.id),
+        }
+        response = self.client.post(url, payload_invalid_stakeholder, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("source_stakeholder", response.data["errors"])
