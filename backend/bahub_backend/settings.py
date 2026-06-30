@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "requirements",
     "stories",
     "documents",
+    "meetings",
 ]
 
 MIDDLEWARE = [

@@ -38,4 +38,7 @@ urlpatterns = [
     
     # Document endpoints
     path("api/v1/documents/", include("documents.urls")),
+    
+    # Meeting endpoints
+    path("api/v1/meetings/", include("meetings.urls")),
 ]

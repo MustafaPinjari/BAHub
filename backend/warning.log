@@ -149,3 +149,76 @@ WARNING 2026-06-30 17:57:29,958 log 13200 16336 Bad Request: /api/v1/teams/
 WARNING 2026-06-30 17:57:29,961 exceptions 13200 16336 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
 WARNING 2026-06-30 17:57:29,962 log 13200 16336 Bad Request: /api/v1/teams/
 WARNING 2026-06-30 17:57:34,180 log 13200 16336 Forbidden: /api/v1/teams/
+WARNING 2026-06-30 21:25:00,197 log 18908 19832 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-06-30 21:25:00,199 basehttp 18908 19832 "GET /api/v1/auth/profile/ HTTP/1.1" 401 200
+WARNING 2026-06-30 21:25:00,236 log 18908 19832 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-06-30 21:25:00,237 basehttp 18908 19832 "GET /api/v1/auth/profile/ HTTP/1.1" 401 200
+WARNING 2026-06-30 21:28:33,190 log 14024 19244 Bad Request: /api/v1/documents/generate/
+WARNING 2026-06-30 21:28:33,218 log 14024 19244 Bad Request: /api/v1/documents/5d559ee4-b9f5-4dcf-861e-80ba6cbe936b/sign-off/
+ERROR 2026-06-30 21:28:34,702 exceptions 14024 19244 Unhandled Server Error: name 'Project' is not defined
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\meetings\serializers.py", line 93, in validate_attendees
+    project = Project.objects.get(id=project_id)
+              ^^^^^^^
+NameError: name 'Project' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\meetings\views.py", line 42, in create
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 456, in run_validation
+    value = self.to_internal_value(data)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 515, in to_internal_value
+    validated_value = validate_method(validated_value)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\meetings\serializers.py", line 94, in validate_attendees
+    except Project.DoesNotExist:
+           ^^^^^^^
+NameError: name 'Project' is not defined
+ERROR 2026-06-30 21:28:34,756 log 14024 19244 Internal Server Error: /api/v1/meetings/
+WARNING 2026-06-30 21:28:45,710 exceptions 14024 19244 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-06-30 21:28:45,710 log 14024 19244 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-06-30 21:28:48,963 exceptions 14024 19244 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-06-30 21:28:48,963 log 14024 19244 Bad Request: /api/v1/requirements/
+WARNING 2026-06-30 21:28:48,968 exceptions 14024 19244 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-06-30 21:28:48,968 log 14024 19244 Bad Request: /api/v1/requirements/
+WARNING 2026-06-30 21:28:50,087 exceptions 14024 19244 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-06-30 21:28:50,088 log 14024 19244 Bad Request: /api/v1/stakeholders/
+WARNING 2026-06-30 21:28:50,093 exceptions 14024 19244 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-06-30 21:28:50,093 log 14024 19244 Bad Request: /api/v1/stakeholders/
+WARNING 2026-06-30 21:28:53,286 exceptions 14024 19244 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-06-30 21:28:53,287 log 14024 19244 Bad Request: /api/v1/stories/
+WARNING 2026-06-30 21:28:55,408 exceptions 14024 19244 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-06-30 21:28:55,409 log 14024 19244 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 21:28:55,412 exceptions 14024 19244 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-06-30 21:28:55,412 log 14024 19244 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 21:28:59,679 log 14024 19244 Forbidden: /api/v1/teams/
+WARNING 2026-06-30 21:29:39,764 log 14540 5320 Bad Request: /api/v1/documents/generate/
+WARNING 2026-06-30 21:29:39,788 log 14540 5320 Bad Request: /api/v1/documents/331379be-641d-46cd-903b-c67f49b1eca5/sign-off/
+WARNING 2026-06-30 21:29:40,822 exceptions 14540 5320 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-06-30 21:29:40,822 log 14540 5320 Bad Request: /api/v1/meetings/
+WARNING 2026-06-30 21:29:40,838 exceptions 14540 5320 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-06-30 21:29:40,838 log 14540 5320 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-06-30 21:29:51,339 exceptions 14540 5320 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-06-30 21:29:51,340 log 14540 5320 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-06-30 21:29:54,496 exceptions 14540 5320 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-06-30 21:29:54,496 log 14540 5320 Bad Request: /api/v1/requirements/
+WARNING 2026-06-30 21:29:54,500 exceptions 14540 5320 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-06-30 21:29:54,500 log 14540 5320 Bad Request: /api/v1/requirements/
+WARNING 2026-06-30 21:29:55,582 exceptions 14540 5320 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-06-30 21:29:55,582 log 14540 5320 Bad Request: /api/v1/stakeholders/
+WARNING 2026-06-30 21:29:55,586 exceptions 14540 5320 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-06-30 21:29:55,587 log 14540 5320 Bad Request: /api/v1/stakeholders/
+WARNING 2026-06-30 21:29:58,865 exceptions 14540 5320 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-06-30 21:29:58,865 log 14540 5320 Bad Request: /api/v1/stories/
+WARNING 2026-06-30 21:30:00,938 exceptions 14540 5320 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-06-30 21:30:00,938 log 14540 5320 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 21:30:00,941 exceptions 14540 5320 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-06-30 21:30:00,941 log 14540 5320 Bad Request: /api/v1/teams/
+WARNING 2026-06-30 21:30:05,095 log 14540 5320 Forbidden: /api/v1/teams/
