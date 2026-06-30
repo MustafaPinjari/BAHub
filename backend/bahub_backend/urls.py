@@ -32,4 +32,7 @@ urlpatterns = [
     
     # Requirement endpoints
     path("api/v1/requirements/", include("requirements.urls")),
+    
+    # User Story endpoints
+    path("api/v1/stories/", include("stories.urls")),
 ]

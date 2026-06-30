@@ -14,6 +14,7 @@ import { WorkspaceSettingsPage } from "./features/auth/WorkspaceSettingsPage";
 import { ProjectsPage } from "./features/projects/ProjectsPage";
 import { StakeholdersPage } from "./features/stakeholders/StakeholdersPage";
 import { RequirementsPage } from "./features/requirements/RequirementsPage";
+import { UserStoriesPage } from "./features/stories/UserStoriesPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -99,6 +100,8 @@ const MainAppContent: React.FC = () => {
         return <WorkspaceSettingsPage />;
       case "requirements":
         return <RequirementsPage />;
+      case "stories":
+        return <UserStoriesPage />;
       default:
         // Elegant placeholder for subsequent sequential modules
         return (

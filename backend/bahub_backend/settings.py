@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "projects",
     "stakeholders",
     "requirements",
+    "stories",
 ]
 
 MIDDLEWARE = [
