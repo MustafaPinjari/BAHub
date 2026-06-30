@@ -80,6 +80,29 @@ def create_demo_data():
         else:
             print(f"User already exists: {username}")
 
+    # 4. Seed default permissions registry
+    from permissions.models import Permission
+    default_perms = [
+        ("Create Project", "create_project", "Ability to create new projects."),
+        ("Edit Project", "edit_project", "Ability to update project configurations."),
+        ("Delete Project", "delete_project", "Ability to soft delete projects."),
+        ("Create Team", "create_team", "Ability to build new teams."),
+        ("Edit Team", "edit_team", "Ability to edit team details and membership."),
+        ("Delete Team", "delete_team", "Ability to delete teams."),
+        ("Manage Permissions", "manage_permissions", "Ability to configure role-permission assignments."),
+        ("Create Requirement", "create_requirement", "Ability to add requirement records."),
+        ("Edit Requirement", "edit_requirement", "Ability to update requirements."),
+        ("Delete Requirement", "delete_requirement", "Ability to remove requirement entries."),
+        ("Approve BRD", "approve_brd", "Ability to authorize business requirements documents."),
+    ]
+    for name, codename, desc in default_perms:
+        perm, p_created = Permission.objects.get_or_create(
+            codename=codename,
+            defaults={"name": name, "description": desc}
+        )
+        if p_created:
+            print(f"Registered permission: {codename}")
+
     print("Demo workspace initialization completed successfully.")
 
 if __name__ == "__main__":

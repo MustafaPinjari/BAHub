@@ -10,6 +10,7 @@ import { ShieldAlert, Bot } from "lucide-react";
 import logo from "./assets/logo.png";
 import banner from "./assets/banner.png";
 import { TeamsPage } from "./features/teams/TeamsPage";
+import { WorkspaceSettingsPage } from "./features/auth/WorkspaceSettingsPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -87,6 +88,8 @@ const MainAppContent: React.FC = () => {
         return <ProfilePage />;
       case "teams":
         return <TeamsPage />;
+      case "settings":
+        return <WorkspaceSettingsPage />;
       default:
         // Elegant placeholder for subsequent sequential modules
         return (

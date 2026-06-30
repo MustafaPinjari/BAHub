@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "organizations",
     "users",
     "teams",
+    "permissions",
 ]
 
 MIDDLEWARE = [

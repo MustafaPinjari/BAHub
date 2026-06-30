@@ -20,4 +20,7 @@ urlpatterns = [
     
     # Team endpoints
     path("api/v1/teams/", include("teams.urls")),
+    
+    # Permission endpoints
+    path("api/v1/permissions/", include("permissions.urls")),
 ]
