@@ -52,10 +52,11 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   label?: string;
   error?: string;
   helperText?: string;
+  icon?: React.ReactNode;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, helperText, type = "text", ...props }, ref) => {
+  ({ className, label, error, helperText, type = "text", icon, ...props }, ref) => {
     return (
       <div className="w-full flex flex-col gap-1 text-left">
         {label && (
@@ -63,18 +64,26 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <input
-          ref={ref}
-          type={type}
-          className={cn(
-            "w-full px-3 py-1.5 text-xs font-semibold rounded-lg bg-card border border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none placeholder:text-muted-foreground/50 shadow-sm",
-            {
-              "border-destructive focus:border-destructive focus:ring-destructive/10": !!error,
-            },
-            className
+        <div className="relative w-full flex items-center">
+          {icon && (
+            <div className="absolute left-3 text-muted-foreground/60 flex items-center justify-center pointer-events-none z-10">
+              {icon}
+            </div>
           )}
-          {...props}
-        />
+          <input
+            ref={ref}
+            type={type}
+            className={cn(
+              "w-full px-3 py-1.5 text-xs font-semibold rounded-lg bg-card border border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none placeholder:text-muted-foreground/50 shadow-sm",
+              {
+                "pl-8.5": !!icon,
+                "border-destructive focus:border-destructive focus:ring-destructive/10": !!error,
+              },
+              className
+            )}
+            {...props}
+          />
+        </div>
         {error && <span className="text-[10px] text-destructive font-bold mt-0.5">{error}</span>}
         {!error && helperText && <span className="text-[10px] text-muted-foreground mt-0.5 font-bold">{helperText}</span>}
       </div>
@@ -127,10 +136,11 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
   label?: string;
   error?: string;
   options: Array<{ value: string; label: string }>;
+  icon?: React.ReactNode;
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, label, error, options, ...props }, ref) => {
+  ({ className, label, error, options, icon, ...props }, ref) => {
     return (
       <div className="w-full flex flex-col gap-1 text-left">
         {label && (
@@ -138,12 +148,18 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             {label}
           </label>
         )}
-        <div className="relative">
+        <div className="relative w-full flex items-center">
+          {icon && (
+            <div className="absolute left-3 text-muted-foreground/60 flex items-center justify-center pointer-events-none z-10">
+              {icon}
+            </div>
+          )}
           <select
             ref={ref}
             className={cn(
               "w-full px-3 py-1.5 text-xs font-semibold rounded-lg bg-card border border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none appearance-none cursor-pointer shadow-sm pr-8",
               {
+                "pl-8.5": !!icon,
                 "border-destructive focus:border-destructive focus:ring-destructive/10": !!error,
               },
               className

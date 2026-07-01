@@ -774,3 +774,37 @@ WARNING 2026-07-01 09:04:06,793 log 4692 5864 Not Found: /api/v1/
 WARNING 2026-07-01 09:04:06,794 runserver 4692 16472 [33mHTTP GET /api/v1/ 404 [0.02, 127.0.0.1:62800][0m
 WARNING 2026-07-01 09:04:06,868 log 4692 6532 Not Found: /favicon.ico
 WARNING 2026-07-01 09:04:06,869 runserver 4692 16472 [33mHTTP GET /favicon.ico 404 [0.01, 127.0.0.1:62800][0m
+WARNING 2026-07-01 14:19:17,448 log 5832 15704 Not Found: /api/v1/documents/dcaa32d6-872f-4567-8ee5-c9ea9b996ec5/export-pdf/
+WARNING 2026-07-01 14:19:19,358 log 5832 15704 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-01 14:19:19,409 log 5832 15704 Bad Request: /api/v1/documents/a6e61ff3-556b-4bec-9913-f4f8e8440e86/sign-off/
+WARNING 2026-07-01 14:19:20,972 log 5832 15704 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-01 14:19:21,014 log 5832 15704 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-01 14:19:22,547 log 5832 15704 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-01 14:19:24,099 log 5832 15704 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-01 14:19:25,358 exceptions 5832 15704 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 14:19:25,358 log 5832 15704 Bad Request: /api/v1/meetings/
+WARNING 2026-07-01 14:19:25,378 exceptions 5832 15704 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-01 14:19:25,378 log 5832 15704 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-01 14:19:37,080 exceptions 5832 15704 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-01 14:19:37,080 log 5832 15704 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-01 14:19:44,974 exceptions 5832 15704 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 14:19:44,975 log 5832 15704 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 14:19:44,979 exceptions 5832 15704 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 14:19:44,979 log 5832 15704 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 14:19:47,100 log 5832 15704 Bad Request: /api/v1/risks/change-requests/bb6745ab-fb80-4d6e-8a97-2d611278bb9f/review/
+WARNING 2026-07-01 14:19:48,559 exceptions 5832 15704 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 14:19:48,559 log 5832 15704 Bad Request: /api/v1/risks/
+WARNING 2026-07-01 14:19:49,762 exceptions 5832 15704 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-01 14:19:49,762 log 5832 15704 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 14:19:49,766 exceptions 5832 15704 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-01 14:19:49,767 log 5832 15704 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 14:19:52,629 exceptions 5832 15704 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-01 14:19:52,629 log 5832 15704 Bad Request: /api/v1/stories/
+WARNING 2026-07-01 14:19:57,126 exceptions 5832 15704 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 14:19:57,126 log 5832 15704 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-01 14:19:58,203 log 5832 15704 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-01 14:20:00,181 exceptions 5832 15704 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-01 14:20:00,182 log 5832 15704 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 14:20:00,185 exceptions 5832 15704 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-01 14:20:00,186 log 5832 15704 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 14:20:04,496 log 5832 15704 Forbidden: /api/v1/teams/
