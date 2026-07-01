@@ -1042,3 +1042,56 @@ WARNING 2026-07-01 15:55:01,553 exceptions 12404 18556 API Error (400): {'invite
 WARNING 2026-07-01 15:55:01,553 log 12404 18556 Bad Request: /api/v1/auth/register/
 WARNING 2026-07-01 15:55:01,556 exceptions 12404 18556 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
 WARNING 2026-07-01 15:55:01,557 log 12404 18556 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-01 16:11:38,474 log 17924 10324 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-01 16:11:38,511 log 17924 10324 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-01 16:11:39,636 log 17924 10324 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-01 16:11:41,857 log 17924 10324 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-01 16:12:15,526 log 22304 3696 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-01 16:12:15,559 log 22304 3696 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-01 16:12:16,665 log 22304 3696 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-01 16:12:18,906 log 22304 3696 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-01 16:12:44,461 log 7480 16840 Not Found: /api/v1/documents/15ee2a3c-c83b-445d-af01-67131989ed8c/export-pdf/
+WARNING 2026-07-01 16:12:45,610 log 7480 16840 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-01 16:12:45,626 log 7480 16840 Bad Request: /api/v1/documents/086a2762-e661-4449-8d3a-40c3d564a1ef/sign-off/
+WARNING 2026-07-01 16:12:46,770 log 7480 16840 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-01 16:12:46,804 log 7480 16840 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-01 16:12:47,944 log 7480 16840 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-01 16:12:50,298 log 7480 16840 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-01 16:12:51,073 exceptions 7480 16840 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 16:12:51,073 log 7480 16840 Bad Request: /api/v1/meetings/
+WARNING 2026-07-01 16:12:51,086 exceptions 7480 16840 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-01 16:12:51,086 log 7480 16840 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-01 16:12:58,831 exceptions 7480 16840 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-01 16:12:58,831 log 7480 16840 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-01 16:13:04,249 exceptions 7480 16840 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 16:13:04,249 log 7480 16840 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 16:13:04,252 exceptions 7480 16840 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 16:13:04,252 log 7480 16840 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 16:13:05,895 log 7480 16840 Bad Request: /api/v1/risks/change-requests/1086486d-33a8-4e2f-8ffa-001946b16448/review/
+WARNING 2026-07-01 16:13:07,067 exceptions 7480 16840 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 16:13:07,067 log 7480 16840 Bad Request: /api/v1/risks/
+WARNING 2026-07-01 16:13:07,900 exceptions 7480 16840 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-01 16:13:07,900 log 7480 16840 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 16:13:07,903 exceptions 7480 16840 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-01 16:13:07,903 log 7480 16840 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 16:13:10,318 exceptions 7480 16840 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-01 16:13:10,318 log 7480 16840 Bad Request: /api/v1/stories/
+WARNING 2026-07-01 16:13:14,966 exceptions 7480 16840 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 16:13:14,967 log 7480 16840 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-01 16:13:16,101 log 7480 16840 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-01 16:13:17,977 exceptions 7480 16840 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-01 16:13:17,977 log 7480 16840 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 16:13:17,980 exceptions 7480 16840 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-01 16:13:17,980 log 7480 16840 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 16:13:22,142 log 7480 16840 Forbidden: /api/v1/teams/
+WARNING 2026-07-01 16:13:24,698 log 7480 16840 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-01 16:13:25,153 exceptions 7480 16840 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-01 16:13:25,153 log 7480 16840 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-01 16:13:25,157 exceptions 7480 16840 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-01 16:13:25,158 log 7480 16840 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-01 16:13:25,160 exceptions 7480 16840 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-01 16:13:25,161 log 7480 16840 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-01 16:18:01,418 log 2396 15388 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-01 16:18:01,420 runserver 2396 15092 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.06, 127.0.0.1:57849][0m
+WARNING 2026-07-01 16:18:01,432 log 2396 15388 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-01 16:18:01,434 runserver 2396 15092 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:57849][0m

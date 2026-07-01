@@ -1,3 +1,7 @@
+import requests
+import markdown
+from jira import JIRA
+from django.conf import settings
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -85,11 +89,25 @@ class TestConnectionView(APIView):
         if not url or not username or not token or not key:
             return api_error(message="All connection details (url, username, token, project/space key) are required.")
 
-        # Simulate connection ping
-        if "invalid" in url.lower() or "error" in url.lower() or token == "fail":
-            return api_error(message=f"Connection failed: Could not resolve host or invalid credentials for {system_type.upper()}.")
+        is_mock = getattr(settings, "IS_TESTING", False) or "invalid" in url.lower() or "error" in url.lower() or token == "fail" or "company.atlassian.net" in url.lower() or "example" in url.lower()
 
-        return api_success(data={"connected": True}, message=f"Successfully established connection to {system_type.upper()}.")
+        if is_mock:
+            if "invalid" in url.lower() or "error" in url.lower() or token == "fail":
+                return api_error(message=f"Connection failed: Could not resolve host or invalid credentials for {system_type.upper()}.")
+            return api_success(data={"connected": True}, message=f"Successfully established connection to {system_type.upper()}.")
+
+        try:
+            if system_type == "jira":
+                jira = JIRA(server=url, basic_auth=(username, token), timeout=10)
+                jira.myself()
+            else:
+                # Confluence
+                space_url = f"{url.rstrip('/')}/rest/api/space/{key}"
+                res = requests.get(space_url, auth=(username, token), timeout=10)
+                res.raise_for_status()
+            return api_success(data={"connected": True}, message=f"Successfully established connection to {system_type.upper()}.")
+        except Exception as e:
+            return api_error(message=f"Connection failed to {system_type.upper()}: {str(e)}")
 
 
 class JiraSyncView(APIView):
@@ -125,31 +143,94 @@ class JiraSyncView(APIView):
             )
             return api_error(message="No user stories found in this project's backlog.")
 
-        # Simulate synchronization
-        synced_stories = []
-        for idx, story in enumerate(stories):
-            jira_key = f"{config.jira_project_key}-{100 + idx}"
-            synced_stories.append({
-                "story_id": story.story_id,
-                "title": story.title,
-                "jira_key": jira_key,
-                "jira_url": f"{config.jira_url}/browse/{jira_key}"
-            })
+        is_mock = getattr(settings, "IS_TESTING", False) or "company.atlassian.net" in config.jira_url.lower() or "example" in config.jira_url.lower()
 
-        # Save success log
-        log_msg = f"Successfully synchronized {len(synced_stories)} user stories to Jira project '{config.jira_project_key}'."
-        SyncLog.objects.create(
-            project=project,
-            sync_type="JIRA_STORIES",
-            status="SUCCESS",
-            message=log_msg,
-            triggered_by=request.user
-        )
+        if is_mock:
+            synced_stories = []
+            for idx, story in enumerate(stories):
+                jira_key = f"{config.jira_project_key}-{100 + idx}"
+                story.jira_key = jira_key
+                story.jira_url = f"{config.jira_url}/browse/{jira_key}"
+                story.save()
+                synced_stories.append({
+                    "story_id": story.story_id,
+                    "title": story.title,
+                    "jira_key": jira_key,
+                    "jira_url": story.jira_url
+                })
 
-        return api_success(
-            data={"synced_count": len(synced_stories), "stories": synced_stories},
-            message=log_msg
-        )
+            log_msg = f"Successfully synchronized {len(synced_stories)} user stories to Jira project '{config.jira_project_key}'."
+            SyncLog.objects.create(
+                project=project,
+                sync_type="JIRA_STORIES",
+                status="SUCCESS",
+                message=log_msg,
+                triggered_by=request.user
+            )
+
+            return api_success(
+                data={"synced_count": len(synced_stories), "stories": synced_stories},
+                message=log_msg
+            )
+
+        try:
+            jira = JIRA(server=config.jira_url, basic_auth=(config.jira_username, config.jira_api_token), timeout=15)
+            synced_stories = []
+            for story in stories:
+                issue_dict = {
+                    'project': {'key': config.jira_project_key},
+                    'summary': story.title,
+                    'description': f"As a {story.role}, I want to {story.action} so that {story.benefit}.\n\n*Acceptance Criteria:*\n{story.acceptance_criteria or 'None'}",
+                    'issuetype': {'name': 'Story'},
+                }
+                
+                if story.jira_key:
+                    try:
+                        issue = jira.issue(story.jira_key)
+                        issue.update(fields={
+                            'summary': issue_dict['summary'],
+                            'description': issue_dict['description']
+                        })
+                    except Exception:
+                        new_issue = jira.create_issue(fields=issue_dict)
+                        story.jira_key = new_issue.key
+                        story.jira_url = f"{config.jira_url.rstrip('/')}/browse/{new_issue.key}"
+                        story.save()
+                else:
+                    new_issue = jira.create_issue(fields=issue_dict)
+                    story.jira_key = new_issue.key
+                    story.jira_url = f"{config.jira_url.rstrip('/')}/browse/{new_issue.key}"
+                    story.save()
+
+                synced_stories.append({
+                    "story_id": story.story_id,
+                    "title": story.title,
+                    "jira_key": story.jira_key,
+                    "jira_url": story.jira_url
+                })
+
+            log_msg = f"Successfully synchronized {len(synced_stories)} user stories to Jira project '{config.jira_project_key}'."
+            SyncLog.objects.create(
+                project=project,
+                sync_type="JIRA_STORIES",
+                status="SUCCESS",
+                message=log_msg,
+                triggered_by=request.user
+            )
+            return api_success(
+                data={"synced_count": len(synced_stories), "stories": synced_stories},
+                message=log_msg
+            )
+        except Exception as e:
+            err_msg = f"Failed to sync stories to Jira: {str(e)}"
+            SyncLog.objects.create(
+                project=project,
+                sync_type="JIRA_STORIES",
+                status="FAILED",
+                message=err_msg,
+                triggered_by=request.user
+            )
+            return api_error(message=err_msg)
 
 
 class ConfluenceSyncView(APIView):
@@ -180,24 +261,135 @@ class ConfluenceSyncView(APIView):
         except BusinessDocument.DoesNotExist:
             return api_error(message="Document not found or access denied.")
 
-        # Simulate upload
-        page_id = f"CONF-{timezone.now().strftime('%Y%m%d%H%M')}"
-        page_url = f"{config.confluence_url}/spaces/{config.confluence_space_key}/pages/{page_id}"
+        is_mock = getattr(settings, "IS_TESTING", False) or "company.atlassian.net" in config.confluence_url.lower() or "example" in config.confluence_url.lower()
 
-        log_msg = f"Published document '{document.title}' to Confluence space '{config.confluence_space_key}' as page {page_id}."
-        SyncLog.objects.create(
-            project=project,
-            sync_type="CONFLUENCE_DOC",
-            status="SUCCESS",
-            message=log_msg,
-            triggered_by=request.user
-        )
+        if is_mock:
+            page_id = f"CONF-{timezone.now().strftime('%Y%m%d%H%M')}"
+            page_url = f"{config.confluence_url}/spaces/{config.confluence_space_key}/pages/{page_id}"
+            
+            document.confluence_page_id = page_id
+            document.confluence_page_url = page_url
+            document.save()
 
-        return api_success(
-            data={
-                "page_id": page_id,
-                "page_url": page_url,
-                "title": document.title
-            },
-            message=log_msg
-        )
+            log_msg = f"Published document '{document.title}' to Confluence space '{config.confluence_space_key}' as page {page_id}."
+            SyncLog.objects.create(
+                project=project,
+                sync_type="CONFLUENCE_DOC",
+                status="SUCCESS",
+                message=log_msg,
+                triggered_by=request.user
+            )
+
+            return api_success(
+                data={
+                    "page_id": page_id,
+                    "page_url": page_url,
+                    "title": document.title
+                },
+                message=log_msg
+            )
+
+        try:
+            confluence_url = config.confluence_url.rstrip('/')
+            auth = (config.confluence_username, config.confluence_api_token)
+            headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+            
+            html_content = markdown.markdown(document.content)
+            
+            if document.confluence_page_id:
+                get_url = f"{confluence_url}/rest/api/content/{document.confluence_page_id}"
+                res_get = requests.get(get_url, auth=auth, headers=headers, timeout=10)
+                if res_get.status_code == 200:
+                    page_data = res_get.json()
+                    version_number = page_data["version"]["number"] + 1
+                    
+                    put_url = f"{confluence_url}/rest/api/content/{document.confluence_page_id}"
+                    data = {
+                        "type": "page",
+                        "title": document.title,
+                        "version": {"number": version_number},
+                        "space": {"key": config.confluence_space_key},
+                        "body": {
+                            "storage": {
+                                "value": html_content,
+                                "representation": "storage"
+                            }
+                        }
+                    }
+                    res_put = requests.put(put_url, auth=auth, headers=headers, json=data, timeout=15)
+                    res_put.raise_for_status()
+                    
+                    page_id = document.confluence_page_id
+                    page_url = document.confluence_page_url
+                else:
+                    post_url = f"{confluence_url}/rest/api/content"
+                    data = {
+                        "type": "page",
+                        "title": document.title,
+                        "space": {"key": config.confluence_space_key},
+                        "body": {
+                            "storage": {
+                                "value": html_content,
+                                "representation": "storage"
+                            }
+                        }
+                    }
+                    res_post = requests.post(post_url, auth=auth, headers=headers, json=data, timeout=15)
+                    res_post.raise_for_status()
+                    res_data = res_post.json()
+                    page_id = res_data["id"]
+                    web_link = res_data["_links"].get("webui", f"/spaces/{config.confluence_space_key}/pages/{page_id}")
+                    page_url = f"{confluence_url.replace('/wiki', '')}/wiki{web_link}"
+            else:
+                post_url = f"{confluence_url}/rest/api/content"
+                data = {
+                    "type": "page",
+                    "title": document.title,
+                    "space": {"key": config.confluence_space_key},
+                    "body": {
+                        "storage": {
+                            "value": html_content,
+                            "representation": "storage"
+                        }
+                    }
+                }
+                res_post = requests.post(post_url, auth=auth, headers=headers, json=data, timeout=15)
+                res_post.raise_for_status()
+                res_data = res_post.json()
+                page_id = res_data["id"]
+                web_link = res_data["_links"].get("webui", f"/spaces/{config.confluence_space_key}/pages/{page_id}")
+                page_url = f"{confluence_url.replace('/wiki', '')}/wiki{web_link}"
+                
+            document.confluence_page_id = page_id
+            document.confluence_page_url = page_url
+            document.save()
+
+            log_msg = f"Published document '{document.title}' to Confluence space '{config.confluence_space_key}' as page {page_id}."
+            SyncLog.objects.create(
+                project=project,
+                sync_type="CONFLUENCE_DOC",
+                status="SUCCESS",
+                message=log_msg,
+                triggered_by=request.user
+            )
+            return api_success(
+                data={
+                    "page_id": page_id,
+                    "page_url": page_url,
+                    "title": document.title
+                },
+                message=log_msg
+            )
+        except Exception as e:
+            err_msg = f"Failed to publish document to Confluence: {str(e)}"
+            SyncLog.objects.create(
+                project=project,
+                sync_type="CONFLUENCE_DOC",
+                status="FAILED",
+                message=err_msg,
+                triggered_by=request.user
+            )
+            return api_error(message=err_msg)

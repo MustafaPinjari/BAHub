@@ -34,6 +34,8 @@ class UserStory(BaseModel):
     action = models.TextField()                    # I want to...
     benefit = models.TextField()                   # So that...
     acceptance_criteria = models.TextField(blank=True)
+    jira_key = models.CharField(max_length=100, blank=True, null=True)
+    jira_url = models.URLField(max_length=512, blank=True, null=True)
     status = models.CharField(
         max_length=50,
         choices=STATUS_CHOICES,

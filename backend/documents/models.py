@@ -38,6 +38,8 @@ class BusinessDocument(BaseModel):
         default="DRAFT"
     )
     content = models.TextField()
+    confluence_page_id = models.CharField(max_length=100, blank=True, null=True)
+    confluence_page_url = models.URLField(max_length=512, blank=True, null=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

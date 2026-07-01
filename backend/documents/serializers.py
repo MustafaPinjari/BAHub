@@ -17,6 +17,8 @@ class BusinessDocumentSerializer(serializers.ModelSerializer):
             "version",
             "status",
             "content",
+            "confluence_page_id",
+            "confluence_page_url",
             "created_by",
             "created_by_username",
             "signed_off_by",

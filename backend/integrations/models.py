@@ -1,6 +1,53 @@
 from django.db import models
+from django.conf import settings
 from core.models import BaseModel
 from projects.models import Project
+from cryptography.fernet import Fernet
+import base64
+import hashlib
+
+class EncryptedCharField(models.CharField):
+    description = "An encrypted character field that stores values encrypted in the DB"
+
+    def get_fernet(self):
+        # Derive a 32-byte url-safe base64 key from Django's SECRET_KEY
+        key_bytes = settings.SECRET_KEY.encode('utf-8')
+        h = hashlib.sha256(key_bytes).digest()
+        return Fernet(base64.urlsafe_b64encode(h))
+
+    def get_prep_value(self, value):
+        value = super().get_prep_value(value)
+        if value is None:
+            return value
+        # Encrypt
+        f = self.get_fernet()
+        try:
+            return f.encrypt(value.encode('utf-8')).decode('utf-8')
+        except Exception:
+            return value
+
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return value
+        # Decrypt
+        f = self.get_fernet()
+        try:
+            return f.decrypt(value.encode('utf-8')).decode('utf-8')
+        except Exception:
+            # Fallback if decryption fails (e.g. data was stored plaintext before encryption)
+            return value
+
+    def to_python(self, value):
+        if value is None or not isinstance(value, str):
+            return value
+        if value.startswith('gAAAAA'):
+            f = self.get_fernet()
+            try:
+                return f.decrypt(value.encode('utf-8')).decode('utf-8')
+            except Exception:
+                pass
+        return value
+
 
 class IntegrationConfig(BaseModel):
     project = models.OneToOneField(
@@ -12,13 +59,13 @@ class IntegrationConfig(BaseModel):
     # Jira Connection Details
     jira_url = models.URLField(max_length=255, blank=True, null=True)
     jira_username = models.CharField(max_length=255, blank=True, null=True)
-    jira_api_token = models.CharField(max_length=255, blank=True, null=True)
+    jira_api_token = EncryptedCharField(max_length=1024, blank=True, null=True)
     jira_project_key = models.CharField(max_length=50, blank=True, null=True)
     
     # Confluence Connection Details
     confluence_url = models.URLField(max_length=255, blank=True, null=True)
     confluence_username = models.CharField(max_length=255, blank=True, null=True)
-    confluence_api_token = models.CharField(max_length=255, blank=True, null=True)
+    confluence_api_token = EncryptedCharField(max_length=1024, blank=True, null=True)
     confluence_space_key = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:

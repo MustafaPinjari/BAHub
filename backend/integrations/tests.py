@@ -159,3 +159,43 @@ class IntegrationServicesTests(APITestCase):
         self.client.force_authenticate(user=self.analyst_b)
         res_sync_b = self.client.post(url_sync_stories, {"project_id": str(self.project_a.id)}, format="json")
         self.assertEqual(res_sync_b.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_credentials_encryption_storage(self):
+        """Verify that saved Atlassian credentials tokens are encrypted in the database but decrypted when read."""
+        self.client.force_authenticate(user=self.analyst_a)
+        url_save = reverse("integrationconfig-save-config")
+        payload = {
+            "project": str(self.project_a.id),
+            "jira_url": "https://company.atlassian.net",
+            "jira_username": "admin@company.com",
+            "jira_api_token": "secret_token_12345",
+            "jira_project_key": "PROJ",
+            "confluence_url": "https://company.atlassian.net/wiki",
+            "confluence_username": "admin@company.com",
+            "confluence_api_token": "secret_conf_9876",
+            "confluence_space_key": "SPACE"
+        }
+        res_save = self.client.post(url_save, payload, format="json")
+        self.assertEqual(res_save.status_code, status.HTTP_200_OK)
+
+        # Retrieve the config direct from DB to check raw db values
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT jira_api_token, confluence_api_token FROM integration_configs WHERE project_id = %s", [self.project_a.id.hex])
+            row = cursor.fetchone()
+            
+        raw_jira_token = row[0]
+        raw_conf_token = row[1]
+        
+        # Verify they are encrypted (not plain text)
+        self.assertNotEqual(raw_jira_token, "secret_token_12345")
+        self.assertNotEqual(raw_conf_token, "secret_conf_9876")
+        
+        # Verify they start with Fernet token header (usually gAAAAA)
+        self.assertTrue(raw_jira_token.startswith("gAAAAA"))
+        self.assertTrue(raw_conf_token.startswith("gAAAAA"))
+        
+        # Verify retrieving model instance decrypts it
+        config = IntegrationConfig.objects.get(project=self.project_a)
+        self.assertEqual(config.jira_api_token, "secret_token_12345")
+        self.assertEqual(config.confluence_api_token, "secret_conf_9876")

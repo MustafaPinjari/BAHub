@@ -17,6 +17,8 @@ class UserStorySerializer(serializers.ModelSerializer):
             "action",
             "benefit",
             "acceptance_criteria",
+            "jira_key",
+            "jira_url",
             "status",
             "points",
             "created_at",
