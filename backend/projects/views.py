@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.permissions import IsAuthenticated
-from .models import Project, ProjectMember
-from .serializers import ProjectSerializer, ProjectMemberSerializer
+from .models import Project, ProjectMember, ProjectAttachment, ActivityLog
+from .serializers import ProjectSerializer, ProjectMemberSerializer, ProjectAttachmentSerializer, ActivityLogSerializer
 from core.responses import api_success
 from core.exceptions import ValidationError
 from rest_framework.decorators import action
@@ -23,7 +23,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if user.role in ["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER"]:
             return Project.objects.filter(organization_id=user.organization_id)
 
-        # Standard users get projects where they are listed as members
         return Project.objects.filter(
             organization_id=user.organization_id,
             project_members__user=user
@@ -34,7 +33,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if not user.organization:
             raise ValidationError("You must belong to an organization to create a project.")
         
-        # Save project and automatically register creator as a project manager!
         project = serializer.save(organization=user.organization)
         ProjectMember.objects.get_or_create(
             project=project,
@@ -187,5 +185,106 @@ class ProjectMemberViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        instance.delete()  # Hard-delete mapping junction is fine
+        instance.delete()
         return api_success(message="Member removed from project successfully.")
+
+
+class ProjectAttachmentViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet managing Project-associated specifications attachments.
+    """
+    serializer_class = ProjectAttachmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated or not user.organization_id:
+            return ProjectAttachment.objects.none()
+        
+        queryset = ProjectAttachment.objects.filter(project__organization_id=user.organization_id)
+        
+        project_id = self.request.query_params.get("project")
+        if project_id:
+            queryset = queryset.filter(project_id=project_id)
+            
+        return queryset
+
+    def perform_create(self, serializer):
+        project = serializer.validated_data["project"]
+        if project.organization_id != self.request.user.organization_id:
+            raise ValidationError("You do not have access to this project.")
+            
+        uploaded_file = self.request.FILES.get("file")
+        size_str = "0 KB"
+        if uploaded_file:
+            size_bytes = uploaded_file.size
+            if size_bytes >= 1024 * 1024:
+                size_str = f"{size_bytes / (1024 * 1024):.1f} MB"
+            else:
+                size_str = f"{size_bytes / 1024:.1f} KB"
+                
+        serializer.save(
+            uploaded_by=self.request.user,
+            size_str=size_str
+        )
+        from .models import log_activity
+        log_activity(
+            project,
+            self.request.user,
+            f"uploaded {serializer.instance.name}"
+        )
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return api_success(data=serializer.data, message="Project attachments retrieved successfully.")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return api_success(
+            data=serializer.data,
+            message="Attachment uploaded successfully.",
+            status_code=status.HTTP_201_CREATED
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        project = instance.project
+        name = instance.name
+        if instance.file:
+            instance.file.delete(save=False)
+        instance.delete()
+        from .models import log_activity
+        log_activity(
+            project,
+            self.request.user,
+            f"deleted file {name}"
+        )
+        return api_success(message="Attachment deleted successfully.")
+
+class ActivityLogViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet listing ActivityLog audit logs scoped by project and organization.
+    """
+    serializer_class = ActivityLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated or not user.organization_id:
+            return ActivityLog.objects.none()
+
+        queryset = ActivityLog.objects.filter(project__organization_id=user.organization_id)
+
+        project_id = self.request.query_params.get("project")
+        if project_id:
+            queryset = queryset.filter(project_id=project_id)
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return api_success(data=serializer.data, message="Activity logs retrieved successfully.")

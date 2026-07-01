@@ -8,7 +8,7 @@ echo.
 
 :: Start Django Backend in the background of the same console
 echo Starting Django Backend on http://127.0.0.1:8000/ ...
-start /B cmd /c "cd backend && .\venv\Scripts\python manage.py runserver"
+start /B cmd /c "cd backend && call venv\Scripts\activate && python manage.py runserver"
 
 :: Wait a brief moment for Django to initialize
 timeout /t 2 >nul

@@ -95,3 +95,29 @@ class ProjectManagementTests(APITestCase):
         self.assertIn("stories", response.data["data"])
         self.assertIn("risks", response.data["data"])
         self.assertIn("meetings", response.data["data"])
+
+    def test_project_attachments(self):
+        """Verify project attachments CRUD operations and tenant isolation."""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        self.client.force_authenticate(user=self.analyst_a)
+        url_attach = reverse("project-attachment-list")
+
+        test_file = SimpleUploadedFile("spec.pdf", b"pdf content here", content_type="application/pdf")
+        payload = {
+            "project": str(self.project_a1.id),
+            "name": "Spec PDF",
+            "file": test_file
+        }
+        res_upload = self.client.post(url_attach, payload, format="multipart")
+        self.assertEqual(res_upload.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res_upload.data["data"]["size_str"], "0.0 KB")
+        self.assertEqual(res_upload.data["data"]["uploaded_by_username"], "analyst_a")
+        attach_id = res_upload.data["data"]["id"]
+
+        res_list = self.client.get(f"{url_attach}?project={self.project_a1.id}")
+        self.assertEqual(res_list.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res_list.data["data"]), 1)
+
+        self.client.force_authenticate(user=self.dev_b)
+        res_list_deny = self.client.get(f"{url_attach}?project={self.project_a1.id}")
+        self.assertEqual(len(res_list_deny.data["data"]), 0)

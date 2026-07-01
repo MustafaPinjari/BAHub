@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,65 +6,65 @@
 
 @layer base {
   :root {
-    --background: 248, 250, 252;       /* F8FAFC Application background */
-    --foreground: 51, 65, 85;          /* 334155 Body text */
-    --heading: 15, 23, 42;             /* 0F172A Heading text */
-    --muted-foreground: 100, 116, 139;  /* 64748B Muted text */
-    --disabled: 148, 163, 184;         /* 94A3B8 Disabled text */
+    --background: 249, 250, 251;       /* Gray-50 clean backdrop */
+    --foreground: 75, 85, 99;          /* Gray-600 body */
+    --heading: 17, 24, 39;             /* Gray-900 heading */
+    --muted-foreground: 156, 163, 175;  /* Gray-400 muted text */
+    --disabled: 209, 213, 219;         /* Gray-300 disabled text */
     
-    --card: 255, 255, 255;             /* FFFFFF Card background */
-    --card-foreground: 51, 65, 85;
+    --card: 255, 255, 255;             /* Pure White Card */
+    --card-foreground: 75, 85, 99;
     
     --popover: 255, 255, 255;
-    --popover-foreground: 51, 65, 85;
+    --popover-foreground: 75, 85, 99;
     
-    --primary: 37, 99, 235;            /* 2563EB Primary Action (Blue) */
+    --primary: 79, 70, 229;            /* Indigo-600 premium accent */
     --primary-foreground: 255, 255, 255;
     
-    --secondary: 241, 245, 249;        /* F1F5F9 Secondary Surface */
-    --secondary-foreground: 15, 23, 42;
+    --secondary: 243, 244, 246;        /* Gray-100 secondary buttons */
+    --secondary-foreground: 17, 24, 39;
     
-    --accent: 219, 234, 254;           /* DBEAFE Primary Light */
-    --accent-foreground: 37, 99, 235;  /* 2563EB Primary Text */
+    --accent: 238, 242, 255;           /* Light Indigo backdrop */
+    --accent-foreground: 79, 70, 229;  
     
-    --destructive: 220, 38, 38;        /* DC2626 Danger */
+    --destructive: 239, 68, 68;        /* Red-500 danger */
     --destructive-foreground: 255, 255, 255;
     
-    --border: 226, 232, 240;           /* E2E8F0 Standard Border */
-    --divider: 203, 213, 225;          /* CBD5E1 Divider */
-    --input: 226, 232, 240;
-    --ring: 37, 99, 235;
+    --border: 235, 238, 243;           /* Clean layout border */
+    --divider: 229, 231, 235;          
+    --input: 235, 238, 243;
+    --ring: 79, 70, 229;
   }
 
   .dark {
-    --background: 15, 23, 42;          /* Slate-900 Application background */
-    --foreground: 226, 232, 240;       /* Slate-200 Body */
-    --heading: 248, 250, 252;          /* Slate-50 Heading */
-    --muted-foreground: 148, 163, 184;  /* Slate-400 Muted */
-    --disabled: 100, 116, 139;
+    --background: 10, 10, 12;          /* Slate/Zinc-950 dark luxury mode */
+    --foreground: 161, 161, 170;       /* Zinc-400 body */
+    --heading: 244, 244, 245;          /* Zinc-100 heading */
+    --muted-foreground: 113, 113, 122;  /* Zinc-500 muted text */
+    --disabled: 63, 63, 70;            /* Zinc-800 disabled */
     
-    --card: 9, 13, 24;                 /* Slate-950 Card Background */
-    --card-foreground: 226, 232, 240;
+    --card: 18, 18, 22;                 /* Zinc-900 custom dark card */
+    --card-foreground: 161, 161, 170;
     
-    --popover: 9, 13, 24;
-    --popover-foreground: 226, 232, 240;
+    --popover: 18, 18, 22;
+    --popover-foreground: 161, 161, 170;
     
-    --primary: 96, 165, 250;           /* Blue-400 Primary */
-    --primary-foreground: 15, 23, 42;
+    --primary: 99, 102, 241;           /* Indigo-400 premium accent */
+    --primary-foreground: 255, 255, 255;
     
-    --secondary: 30, 41, 59;           /* Slate-800 Secondary Surface */
-    --secondary-foreground: 248, 250, 252;
+    --secondary: 28, 28, 35;           /* Zinc-800 secondary surfaces */
+    --secondary-foreground: 244, 244, 245;
     
-    --accent: 30, 41, 59;
-    --accent-foreground: 96, 165, 250;
+    --accent: 30, 30, 42;
+    --accent-foreground: 99, 102, 241;
     
-    --destructive: 248, 113, 113;
+    --destructive: 248, 113, 113;      /* Red-400 danger dark */
     --destructive-foreground: 255, 255, 255;
     
-    --border: 30, 41, 59;              /* Slate-800 Border */
-    --divider: 51, 65, 85;             /* Slate-700 Divider */
-    --input: 30, 41, 59;
-    --ring: 96, 165, 250;
+    --border: 34, 34, 44;              /* Subtle dark card outline */
+    --divider: 44, 44, 55;             
+    --input: 34, 34, 44;
+    --ring: 99, 102, 241;
   }
 }
 
@@ -73,17 +73,18 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/10 tracking-tight transition-colors duration-150;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/10 tracking-tight transition-colors duration-200;
   }
   h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     color: rgb(var(--heading));
   }
 }
 
 /* Custom premium scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -91,10 +92,29 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.15);
-  border-radius: 3px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.35);
+  background: rgba(99, 102, 241, 0.25);
+}
+
+/* Dynamic premium card hover effects */
+.hover-card-premium {
+  @apply transition-all duration-200 hover:shadow-md hover:border-primary/30 hover:translate-y-[-1px];
+}
+
+/* Micro-animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(99, 102, 241, 0.2);
+  }
+}
+
+.premium-pulse-glow {
+  animation: pulseGlow 2.5s infinite ease-in-out;
 }

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, ProjectMember
+from .models import Project, ProjectMember, ProjectAttachment, ActivityLog
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -58,3 +58,61 @@ class ProjectSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("An organization must be specified for the project.")
 
         return attrs
+
+class ProjectAttachmentSerializer(serializers.ModelSerializer):
+    uploaded_by_username = serializers.CharField(source="uploaded_by.username", read_only=True)
+    file_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProjectAttachment
+        fields = [
+            "id",
+            "project",
+            "name",
+            "file",
+            "file_url",
+            "size_str",
+            "uploaded_by",
+            "uploaded_by_username",
+            "created_at"
+        ]
+        read_only_fields = ["id", "uploaded_by", "size_str", "created_at"]
+
+    def get_file_url(self, obj):
+        request = self.context.get("request")
+        if obj.file and request:
+            return request.build_absolute_uri(obj.file.url)
+        elif obj.file:
+            return obj.file.url
+        return None
+
+class ActivityLogSerializer(serializers.ModelSerializer):
+    user_detail = UserSimpleSerializer(source="user", read_only=True)
+    created_at_human = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ActivityLog
+        fields = [
+            "id",
+            "project",
+            "user",
+            "user_detail",
+            "action",
+            "created_at",
+            "created_at_human"
+        ]
+        read_only_fields = ["id", "user", "created_at"]
+
+    def get_created_at_human(self, obj):
+        from django.utils.timezone import now
+        diff = now() - obj.created_at
+        if diff.days > 0:
+            return f"{diff.days}d ago"
+        seconds = diff.seconds
+        hours = seconds // 3600
+        if hours > 0:
+            return f"{hours}h ago"
+        minutes = seconds // 60
+        if minutes > 0:
+            return f"{minutes}m ago"
+        return "just now"

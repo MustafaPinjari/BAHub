@@ -68,3 +68,63 @@ class ProjectMember(BaseModel):
 
     def __str__(self):
         return f"{self.user.username} - {self.project.name} ({self.get_role_display()})"
+
+class ProjectAttachment(BaseModel):
+    """
+    Project-associated related documents and specifications files.
+    """
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="attachments"
+    )
+    name = models.CharField(max_length=255)
+    file = models.FileField(upload_to="project_attachments/")
+    size_str = models.CharField(max_length=50, blank=True)
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="uploaded_attachments"
+    )
+
+    class Meta:
+        db_table = "project_attachments"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} ({self.project.name})"
+
+class ActivityLog(BaseModel):
+    """
+    Project activity log auditing changes in requirements, stories, and uploads.
+    """
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name="activities"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="activities"
+    )
+    action = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = "activity_logs"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.action} ({self.project.name})"
+
+def log_activity(project, user, action_message):
+    try:
+        ActivityLog.objects.create(
+            project=project,
+            user=user,
+            action=action_message
+        )
+    except Exception as e:
+        import logging
+        logger = logging.getLogger("django")
+        logger.warning(f"Failed to log activity: {e}")

@@ -45,12 +45,26 @@ class RequirementViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
         self._broadcast_change(serializer.instance, "create")
+        from projects.models import log_activity
+        log_activity(
+            serializer.instance.project,
+            self.request.user,
+            f"created requirement {serializer.instance.req_id}"
+        )
 
     def perform_update(self, serializer):
         serializer.save()
         self._broadcast_change(serializer.instance, "update")
+        from projects.models import log_activity
+        log_activity(
+            serializer.instance.project,
+            self.request.user,
+            f"modified requirement {serializer.instance.req_id}"
+        )
 
     def perform_destroy(self, instance):
+        project = instance.project
+        req_id_str = instance.req_id
         project_id = instance.project_id
         req_id = instance.id
         instance.delete()
@@ -63,8 +77,14 @@ class RequirementViewSet(viewsets.ModelViewSet):
                     "action": "delete",
                     "requirement_id": str(req_id),
                     "user": self.request.user.username if self.request.user.is_authenticated else "system",
-                }
-            )
+                  }
+              )
+        from projects.models import log_activity
+        log_activity(
+            project,
+            self.request.user,
+            f"deleted requirement {req_id_str}"
+        )
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
