@@ -168,3 +168,138 @@ class CoreAndAuthTests(APITestCase):
         self.assertEqual(user.first_name, "UpdatedName")
         self.assertEqual(user.preferences.theme, "dark")
         self.assertEqual(user.preferences.sidebar_state, "collapsed")
+
+    def test_registration_duplicate_organization_fails(self):
+        """Verify registration fails if no invite token is provided and organization name already exists."""
+        # Pre-create organization
+        Organization.objects.create(name="Existing Org")
+        
+        url = reverse("auth-register")
+        payload = {
+            "username": "tester_dup",
+            "email": "tester_dup@bahub.local",
+            "password": "SecureP@ss123",
+            "role": "BUSINESS_ANALYST",
+            "organization_name": "Existing Org"
+        }
+        
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(response.data["success"])
+        self.assertIn("organization_name", response.data["errors"])
+
+    def test_registration_with_valid_invite_token_succeeds(self):
+        """Verify registration succeeds with a valid invitation token and links the user to the invitation's org/role."""
+        import datetime
+        from django.utils import timezone
+        from organizations.models import OrganizationInvitation
+        
+        org = Organization.objects.create(name="Invite Org")
+        invite = OrganizationInvitation.objects.create(
+            organization=org,
+            email="invitee@bahub.local",
+            role="DEVELOPER",
+            expires_at=timezone.now() + datetime.timedelta(days=1)
+        )
+        
+        url = reverse("auth-register")
+        payload = {
+            "username": "invitee",
+            "email": "invitee@bahub.local",
+            "password": "SecureP@ss123",
+            "invite_token": str(invite.token)
+        }
+        
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        user = User.objects.get(username="invitee")
+        self.assertEqual(user.organization, org)
+        self.assertEqual(user.role, "DEVELOPER")
+        
+        # Verify invitation is marked as used
+        invite.refresh_from_db()
+        self.assertTrue(invite.is_used)
+
+    def test_registration_with_invalid_invite_token_fails(self):
+        """Verify registration fails if the invite token is invalid, expired, or email mismatches."""
+        import datetime
+        from django.utils import timezone
+        from organizations.models import OrganizationInvitation
+        
+        org = Organization.objects.create(name="Invite Org 2")
+        
+        # Expired token
+        expired_invite = OrganizationInvitation.objects.create(
+            organization=org,
+            email="expired@bahub.local",
+            role="DEVELOPER",
+            expires_at=timezone.now() - datetime.timedelta(days=1)
+        )
+        
+        url = reverse("auth-register")
+        
+        # Expired test
+        payload_expired = {
+            "username": "expired_user",
+            "email": "expired@bahub.local",
+            "password": "SecureP@ss123",
+            "invite_token": str(expired_invite.token)
+        }
+        response = self.client.post(url, payload_expired)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+        # Mismatched email test
+        valid_invite = OrganizationInvitation.objects.create(
+            organization=org,
+            email="valid@bahub.local",
+            role="DEVELOPER",
+            expires_at=timezone.now() + datetime.timedelta(days=1)
+        )
+        payload_mismatch = {
+            "username": "mismatch_user",
+            "email": "mismatch@bahub.local",
+            "password": "SecureP@ss123",
+            "invite_token": str(valid_invite.token)
+        }
+        response = self.client.post(url, payload_mismatch)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_logout_all_blacklists_tokens(self):
+        """Verify auth-logout-all blacklists outstanding tokens so that they cannot be refreshed."""
+        org = Organization.objects.create(name="Logout All Org")
+        user = User.objects.create_user(
+            username="logoutuser",
+            email="logout@bahub.local",
+            password="SecureP@ss123",
+            role="BUSINESS_ANALYST",
+            organization=org
+        )
+        UserPreference.objects.create(user=user)
+        
+        # Get tokens
+        login_url = reverse("token-login")
+        login_response = self.client.post(login_url, {
+            "username": "logoutuser",
+            "password": "SecureP@ss123"
+        })
+        self.assertEqual(login_response.status_code, status.HTTP_200_OK)
+        refresh_token = login_response.data["data"]["refresh"]
+        
+        # Authenticate
+        self.client.force_authenticate(user=user)
+        
+        # Logout All
+        logout_url = reverse("auth-logout-all")
+        logout_response = self.client.post(logout_url)
+        self.assertEqual(logout_response.status_code, status.HTTP_200_OK)
+        
+        # De-authenticate client to test refreshing anonymously
+        self.client.force_authenticate(user=None)
+        
+        # Try refreshing token
+        refresh_url = reverse("token-refresh")
+        refresh_response = self.client.post(refresh_url, {
+            "refresh": refresh_token
+        })
+        self.assertEqual(refresh_response.status_code, status.HTTP_401_UNAUTHORIZED)

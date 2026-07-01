@@ -1,4 +1,6 @@
+import uuid
 from django.db import models
+from django.conf import settings
 from core.models import BaseModel
 
 class Organization(BaseModel):
@@ -20,3 +22,29 @@ class Organization(BaseModel):
 
     def __str__(self):
         return self.name
+
+
+class OrganizationInvitation(BaseModel):
+    """
+    Model representing workspace join invitation tokens.
+    """
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name="invitations"
+    )
+    email = models.EmailField()
+    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    role = models.CharField(
+        max_length=50,
+        default="BUSINESS_ANALYST"
+    )
+    is_used = models.BooleanField(default=False)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        db_table = "organization_invitations"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Invite for {self.email} to {self.organization.name} ({self.token})"

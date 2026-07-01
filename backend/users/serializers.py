@@ -5,7 +5,8 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from organizations.models import Organization
+from django.utils import timezone
+from organizations.models import Organization, OrganizationInvitation
 from users.models import UserPreference, UserSession
 
 User = get_user_model()
@@ -93,6 +94,7 @@ class RegisterSerializer(serializers.Serializer):
     last_name = serializers.CharField(max_length=150, required=False, default="")
     role = serializers.ChoiceField(choices=User.ROLE_CHOICES, default=User.BUSINESS_ANALYST)
     organization_name = serializers.CharField(max_length=255, required=False, default="")
+    invite_token = serializers.UUIDField(required=False, allow_null=True)
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
@@ -112,6 +114,40 @@ class RegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError(list(e.messages))
         return value
 
+    def validate(self, attrs):
+        invite_token = attrs.get("invite_token")
+        org_name = attrs.get("organization_name", "").strip()
+        email = attrs.get("email")
+
+        if invite_token:
+            try:
+                invite = OrganizationInvitation.objects.get(
+                    token=invite_token,
+                    email=email,
+                    is_used=False
+                )
+            except OrganizationInvitation.DoesNotExist:
+                raise serializers.ValidationError({
+                    "invite_token": "Invalid or expired invitation token."
+                })
+            
+            if invite.expires_at < timezone.now():
+                raise serializers.ValidationError({
+                    "invite_token": "This invitation token has expired."
+                })
+            
+            attrs["validated_invite"] = invite
+        else:
+            if not org_name:
+                raise serializers.ValidationError({
+                    "organization_name": "Organization name is required to register a new workspace."
+                })
+            if Organization.objects.filter(name=org_name).exists():
+                raise serializers.ValidationError({
+                    "organization_name": "An organization with this name already exists. Please join via invitation token."
+                })
+        return attrs
+
     @transaction.atomic
     def create(self, validated_data):
         username = validated_data["username"]
@@ -120,17 +156,17 @@ class RegisterSerializer(serializers.Serializer):
         first_name = validated_data.get("first_name", "")
         last_name = validated_data.get("last_name", "")
         role = validated_data.get("role", User.BUSINESS_ANALYST)
-        org_name = validated_data.get("organization_name", "")
-
-        # Default organization name if not supplied
-        if not org_name:
-            org_name = f"{username}'s Organization"
         
-        # Get or create organization
-        organization, _ = Organization.objects.get_or_create(
-            name=org_name,
-            defaults={"description": f"Default workspace created for {username}."}
-        )
+        invite = validated_data.get("validated_invite")
+        if invite:
+            organization = invite.organization
+            role = invite.role
+        else:
+            org_name = validated_data.get("organization_name", "")
+            organization = Organization.objects.create(
+                name=org_name,
+                description=f"Default workspace created for {username}."
+            )
 
         # Create user
         user = User.objects.create_user(
@@ -145,6 +181,11 @@ class RegisterSerializer(serializers.Serializer):
 
         # Initialize default user preferences
         UserPreference.objects.create(user=user)
+
+        # Mark invitation as used
+        if invite:
+            invite.is_used = True
+            invite.save()
 
         return user
 

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     # Third party packages
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "channels",
     
@@ -100,13 +101,24 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/stable/ref/settings/#databases
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        ssl_require=True if os.getenv("DATABASE_URL") else False
-    )
-}
+import sys
+IS_TESTING = "test" in sys.argv
+
+if IS_TESTING:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    }
+else:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+            conn_max_age=600,
+            ssl_require=True if os.getenv("DATABASE_URL") else False
+        )
+    }
 
 
 # Custom User Model
@@ -207,7 +219,7 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=JWT_ACCESS_LIFETIME_MINUTES),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=JWT_REFRESH_LIFETIME_DAYS),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": False, # Switch to True if simplejwt blacklist is installed
+    "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
     "ALGORITHM": "HS256",
     "SIGNING_KEY": os.getenv("JWT_SECRET_KEY", SECRET_KEY),

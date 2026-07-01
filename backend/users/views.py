@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
 from core.responses import api_success, api_error
 from users.models import UserSession, UserPreference
@@ -175,16 +176,22 @@ class UserSessionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class LogoutAllView(APIView):
     """
-    Log out from all devices by invalidating all active sessions for the user.
-    Note: Token blacklisting will be integrated here if token revoking is enforced.
+    Log out from all devices by invalidating all active sessions for the user
+    and blacklisting all their issued outstanding tokens.
     """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # Set all user sessions to inactive
+        # 1. Set all user sessions to inactive in session tracker
         UserSession.objects.filter(user=request.user, is_active=True).update(is_active=False)
+        
+        # 2. Blacklist all outstanding JWT tokens for this user
+        outstanding_tokens = OutstandingToken.objects.filter(user=request.user)
+        for token in outstanding_tokens:
+            BlacklistedToken.objects.get_or_create(token=token)
+            
         return api_success(
-            message="Logged out from all sessions successfully."
+            message="Logged out from all sessions and blacklisted all tokens successfully."
         )
 
 

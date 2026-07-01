@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext";
+import { useProject } from "../../features/projects/ProjectContext";
 import { Button, Badge } from "../common/UIComponents";
 import logo from "../../assets/logo.png";
 import {
@@ -56,17 +58,19 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 ];
 
 interface DashboardShellProps {
-  currentTab: string;
-  onTabChange: (tab: string) => void;
   children: React.ReactNode;
 }
 
 export const DashboardShell: React.FC<DashboardShellProps> = ({
-  currentTab,
-  onTabChange,
   children,
 }) => {
   const { user, logout, updateProfile } = useAuth();
+  const { activeProject } = useProject();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const currentTab = location.pathname.substring(1) || "dashboard";
+
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -76,30 +80,6 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
       setSidebarExpanded(user.preferences.sidebar_state === "expanded");
     }
   }, [user?.preferences?.sidebar_state]);
-
-  const [activeProject, setActiveProject] = useState<any>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  useEffect(() => {
-    const handleActiveProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleActiveProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleActiveProjectChange);
-    };
-  }, []);
 
   const toggleSidebar = async () => {
     const nextState = !sidebarExpanded;
@@ -195,7 +175,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
             return (
               <button
                 key={item.name}
-                onClick={() => onTabChange(item.path)}
+                onClick={() => navigate(`/${item.path}`)}
                 className={`flex items-center gap-2.5 p-2 rounded-md text-xs font-semibold tracking-tight transition-all text-left cursor-pointer ${
                   isActive
                     ? "bg-accent text-accent-foreground"
@@ -276,7 +256,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
                         ? "text-foreground font-bold"
                         : "hover:text-foreground transition-colors cursor-pointer"
                     }
-                    onClick={() => bc.path && onTabChange(bc.path)}
+                    onClick={() => bc.path && navigate(`/${bc.path}`)}
                   >
                     {bc.label}
                   </span>
@@ -361,7 +341,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
                   <button
                     onClick={() => {
                       setProfileDropdownOpen(false);
-                      onTabChange("profile");
+                      navigate("/profile");
                     }}
                     className="w-full text-left px-2.5 py-1.5 text-xs text-foreground hover:bg-secondary rounded-lg flex items-center gap-2 cursor-pointer font-semibold"
                   >
@@ -371,7 +351,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
                   <button
                     onClick={() => {
                       setProfileDropdownOpen(false);
-                      onTabChange("settings");
+                      navigate("/settings");
                     }}
                     className="w-full text-left px-2.5 py-1.5 text-xs text-foreground hover:bg-secondary rounded-lg flex items-center gap-2 cursor-pointer font-semibold"
                   >

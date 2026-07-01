@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { api } from "../../services/api";
 import { Card, Button, Input, Alert } from "../../components/common/UIComponents";
+import { useProject } from "../projects/ProjectContext";
 import { 
   Bot, 
   Send, 
@@ -12,26 +13,13 @@ import {
   FileSpreadsheet
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
-
 interface Message {
   sender: "user" | "assistant";
   text: string;
 }
 
 export const AiAssistantPage: React.FC = () => {
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // States
   const [messages, setMessages] = useState<Message[]>([
@@ -54,28 +42,39 @@ export const AiAssistantPage: React.FC = () => {
     scrollToBottom();
   }, [messages, loading]);
 
-  // Listen to active project changes from top navbar
+  // Clear chat context when active project changes
   useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-        // Clear chat on project change to preserve context
-        setMessages([
-          {
-            sender: "assistant",
-            text: "Hello! I am your AI Business Analyst Assistant. Ask me to draft user stories, analyze project threats, or write QA test scripts based on your active database."
+    if (activeProject) {
+      setMessages([
+        {
+          sender: "assistant",
+          text: "Hello! I am your AI Business Analyst Assistant. Ask me to draft user stories, analyze project threats, or write QA test scripts based on your active database."
+        }
+      ]);
+    }
+  }, [activeProject]);
+
+  const pollJob = (jobId: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const interval = setInterval(async () => {
+        try {
+          const res = await api.get<any, { data: { status: string; result: string; error_message: string } }>(
+            `/strategic/ai/jobs/${jobId}/`
+          );
+          if (res.data.status === "SUCCESS") {
+            clearInterval(interval);
+            resolve(res.data.result);
+          } else if (res.data.status === "FAILED") {
+            clearInterval(interval);
+            reject(new Error(res.data.error_message || "AI execution failed."));
           }
-        ]);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
+        } catch (err) {
+          clearInterval(interval);
+          reject(err);
+        }
+      }, 1500);
+    });
+  };
 
   const handleSend = async (messageText: string, actionType = "CHAT") => {
     if (!activeProject || !messageText.trim()) return;
@@ -88,17 +87,20 @@ export const AiAssistantPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await api.post<any, { data: { reply: string } }>("/strategic/ai/chat/", {
+      const res = await api.post<any, { data: { job_id: string; status: string } }>("/strategic/ai/chat/", {
         project_id: activeProject.id,
         message: messageText,
         action_type: actionType
       });
 
+      // Poll for asynchronous background job results
+      const reply = await pollJob(res.data.job_id);
+
       // Add AI reply
-      setMessages(prev => [...prev, { sender: "assistant", text: res.data.reply }]);
+      setMessages(prev => [...prev, { sender: "assistant", text: reply }]);
     } catch (err: any) {
       console.error(err);
-      setError("AI was unable to process your analysis request.");
+      setError(err.message || "AI was unable to process your analysis request.");
     } finally {
       setLoading(false);
     }
