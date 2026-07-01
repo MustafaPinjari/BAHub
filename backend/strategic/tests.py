@@ -112,3 +112,53 @@ class StrategicManagementTests(APITestCase):
         )
         self.assertEqual(res_stories.status_code, status.HTTP_200_OK)
         self.assertIn("US-010", res_stories.data["data"]["reply"])
+
+    def test_ai_analyst_gemini_api(self):
+        """Verify chatbot view redirects to Gemini API when key is configured."""
+        import os
+        from unittest.mock import patch, MagicMock
+        
+        self.client.force_authenticate(user=self.analyst_a)
+        url_chat = reverse("ai-chat")
+        
+        mock_response = MagicMock()
+        mock_response.read.return_value = b'{"candidates": [{"content": {"parts": [{"text": "Gemini Live Response Text"}]}}]}'
+        mock_response.__enter__.return_value = mock_response
+
+        with patch("urllib.request.urlopen", return_value=mock_response) as mock_urlopen, \
+             patch.dict(os.environ, {"GEMINI_API_KEY": "fake_gemini_key_123"}):
+            
+            res = self.client.post(
+                url_chat,
+                {"project_id": str(self.project_a.id), "message": "Gemini Prompt"},
+                format="json"
+            )
+            
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+            self.assertEqual(res.data["data"]["reply"], "Gemini Live Response Text")
+            mock_urlopen.assert_called_once()
+            
+    def test_ai_analyst_openai_api(self):
+        """Verify chatbot view redirects to OpenAI API when key is configured."""
+        import os
+        from unittest.mock import patch, MagicMock
+        
+        self.client.force_authenticate(user=self.analyst_a)
+        url_chat = reverse("ai-chat")
+        
+        mock_response = MagicMock()
+        mock_response.read.return_value = b'{"choices": [{"message": {"content": "OpenAI Live Response Text"}}]}'
+        mock_response.__enter__.return_value = mock_response
+
+        with patch("urllib.request.urlopen", return_value=mock_response) as mock_urlopen, \
+             patch.dict(os.environ, {"OPENAI_API_KEY": "fake_openai_key_123"}):
+            
+            res = self.client.post(
+                url_chat,
+                {"project_id": str(self.project_a.id), "message": "OpenAI Prompt"},
+                format="json"
+            )
+            
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+            self.assertEqual(res.data["data"]["reply"], "OpenAI Live Response Text")
+            mock_urlopen.assert_called_once()
