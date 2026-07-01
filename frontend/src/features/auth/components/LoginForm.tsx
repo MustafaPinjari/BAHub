@@ -66,29 +66,23 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToReg
 
       {/* Form Fields */}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3.5">
-        <div className="relative">
-          <Input
-            label="Username"
-            type="text"
-            placeholder="e.g. analyst"
-            error={errors.username?.message}
-            className="pl-8.5"
-            {...register("username")}
-          />
-          <UserIcon className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
-        </div>
+        <Input
+          label="Username"
+          type="text"
+          placeholder="e.g. analyst"
+          error={errors.username?.message}
+          icon={<UserIcon className="w-3.5 h-3.5" />}
+          {...register("username")}
+        />
 
-        <div className="relative">
-          <Input
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            error={errors.password?.message}
-            className="pl-8.5"
-            {...register("password")}
-          />
-          <Lock className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
-        </div>
+        <Input
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          error={errors.password?.message}
+          icon={<Lock className="w-3.5 h-3.5" />}
+          {...register("password")}
+        />
 
         <Button type="submit" variant="primary" className="w-full mt-1.5 font-bold" isLoading={loading}>
           Sign In

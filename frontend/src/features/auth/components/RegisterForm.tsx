@@ -95,88 +95,73 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
 
       {/* Form fields */}
       <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div className="relative sm:col-span-2">
+        <div className="sm:col-span-2">
           <Input
             label="Organization Name"
             type="text"
             placeholder="e.g. Apex Analytics"
             error={errors.organization_name?.message}
-            className="pl-8.5"
+            icon={<Building className="w-3.5 h-3.5" />}
             {...register("organization_name")}
           />
-          <Building className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
-        <div className="relative">
-          <Input
-            label="First Name"
-            type="text"
-            placeholder="John"
-            error={errors.first_name?.message}
-            className="pl-8.5"
-            {...register("first_name")}
-          />
-          <UserIcon className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
-        </div>
+        <Input
+          label="First Name"
+          type="text"
+          placeholder="John"
+          error={errors.first_name?.message}
+          icon={<UserIcon className="w-3.5 h-3.5" />}
+          {...register("first_name")}
+        />
 
-        <div className="relative">
-          <Input
-            label="Last Name"
-            type="text"
-            placeholder="Doe"
-            error={errors.last_name?.message}
-            className="pl-8.5"
-            {...register("last_name")}
-          />
-          <UserIcon className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
-        </div>
+        <Input
+          label="Last Name"
+          type="text"
+          placeholder="Doe"
+          error={errors.last_name?.message}
+          icon={<UserIcon className="w-3.5 h-3.5" />}
+          {...register("last_name")}
+        />
 
-        <div className="relative">
-          <Input
-            label="Username"
-            type="text"
-            placeholder="johndoe"
-            error={errors.username?.message}
-            className="pl-8.5"
-            {...register("username")}
-          />
-          <UserIcon className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
-        </div>
+        <Input
+          label="Username"
+          type="text"
+          placeholder="johndoe"
+          error={errors.username?.message}
+          icon={<UserIcon className="w-3.5 h-3.5" />}
+          {...register("username")}
+        />
 
-        <div className="relative">
-          <Input
-            label="Email Address"
-            type="email"
-            placeholder="john@example.com"
-            error={errors.email?.message}
-            className="pl-8.5"
-            {...register("email")}
-          />
-          <Mail className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
-        </div>
+        <Input
+          label="Email Address"
+          type="email"
+          placeholder="john@example.com"
+          error={errors.email?.message}
+          icon={<Mail className="w-3.5 h-3.5" />}
+          {...register("email")}
+        />
 
-        <div className="relative sm:col-span-2">
+        <div className="sm:col-span-2">
           <Select
             label="Professional Role"
             options={ROLE_OPTIONS}
             error={errors.role?.message}
-            className="pl-8.5"
+            icon={<Briefcase className="w-3.5 h-3.5" />}
             {...register("role")}
           />
-          <Briefcase className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
-        <div className="relative sm:col-span-2">
+        <div className="sm:col-span-2">
           <Input
             label="Password"
             type="password"
             placeholder="••••••••"
             helperText="At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special."
             error={errors.password?.message}
-            className="pl-8.5"
+            icon={<Key className="w-3.5 h-3.5" />}
             {...register("password")}
           />
-          <Key className="w-3.5 h-3.5 text-muted-foreground/60 absolute left-3 top-[32.5px]" />
         </div>
 
         <Button type="submit" variant="primary" className="sm:col-span-2 w-full mt-1.5 font-bold" isLoading={loading}>
