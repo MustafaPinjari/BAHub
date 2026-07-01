@@ -57,6 +57,28 @@ All core phases of the product roadmap have been fully implemented, integrated, 
 
 ---
 
+## ⏳ Future Strategic Roadmap Backlog (Not Completed)
+
+These represent enterprise strategic features queued for subsequent releases:
+
+### Phase 12: Jira & Confluence Sync Integration
+- **Status**: *Not Started (Backlog)*
+- **Details**: Syncing drafted user stories directly into Jira project backlogs and publishing signed-off BRD/FRD documents to Confluence pages.
+
+### Phase 13: Real-Time Multi-Author Document Editing
+- **Status**: *Not Started (Backlog)*
+- **Details**: Incorporating Django Channels/WebSockets to support concurrent Notion-style co-authoring of requirement catalogs.
+
+### Phase 14: Direct PDF & Word Compilations
+- **Status**: *Not Started (Backlog)*
+- **Details**: Exporting generated BRD/FRD templates directly to styled PDF and DOCX file types, bypassing plain markdown copy-paste.
+
+### Phase 15: Production LLM Orchestrator
+- **Status**: *Not Started (Backlog)*
+- **Details**: Swapping the context-aware simulation template backend for active OpenAI/Gemini API key connectors.
+
+---
+
 ## 🚦 Summary Statistics
 
 - **Total Verification Unit Tests**: **31 Tests** (`OK`)
