@@ -170,6 +170,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = [
     origin.strip() for origin in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",") if origin.strip()
 ]
+# Ensure other standard local dev ports are allowed in DEBUG mode to prevent port-conflict CORS errors
+if DEBUG:
+    for port in ["5174", "5175", "5176"]:
+        for host in ["localhost", "127.0.0.1"]:
+            local_origin = f"http://{host}:{port}"
+            if local_origin not in CORS_ALLOWED_ORIGINS:
+                CORS_ALLOWED_ORIGINS.append(local_origin)
+
 CORS_ALLOW_CREDENTIALS = True
 
 
