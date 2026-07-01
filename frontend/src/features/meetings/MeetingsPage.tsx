@@ -120,7 +120,7 @@ export const MeetingsPage: React.FC = () => {
   const fetchOrgUsers = async () => {
     try {
       // Load members from workspace profile settings
-      const res = await api.get<any, { data: User[] }>("/users/");
+      const res = await api.get<any, { data: User[] }>("/auth/members/");
       setOrgUsers(res.data);
     } catch (err) {
       console.error(err);

@@ -201,6 +201,22 @@ def run_ai_job_task(job_id):
         job.result = reply
         job.save()
 
+        try:
+            from billing.models import TenantSubscription
+            sub, _ = TenantSubscription.objects.get_or_create(
+                organization=job.project.organization,
+                defaults={
+                    "plan_tier": "FREE",
+                    "seats_limit": 5,
+                    "is_active": True,
+                    "ai_credits_limit": 100
+                }
+            )
+            sub.ai_credits_used += 1
+            sub.save()
+        except Exception as sub_err:
+            logger.error(f"Failed to update subscription AI credit count: {sub_err}")
+
     except Exception as e:
         logger.exception(f"Error executing AIJob {job_id} in background: {e}")
         try:

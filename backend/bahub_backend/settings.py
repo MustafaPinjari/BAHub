@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "risks",
     "strategic",
     "integrations",
+    "billing",
 ]
 
 MIDDLEWARE = [
@@ -267,3 +268,11 @@ LOGGING = {
         },
     },
 }
+
+# Stripe Configuration
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", None)
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", None)
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", None)
+STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", None)
+STRIPE_PRICE_ENTERPRISE = os.getenv("STRIPE_PRICE_ENTERPRISE", None)
+

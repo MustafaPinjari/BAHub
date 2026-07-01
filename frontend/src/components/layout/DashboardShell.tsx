@@ -29,7 +29,8 @@ import {
   Moon,
   Bell,
   ChevronsUpDown,
-  Search
+  Search,
+  CreditCard
 } from "lucide-react";
 
 interface SidebarItem {
@@ -55,6 +56,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Reports", icon: BarChart2, path: "reports" },
   { name: "AI Assistant", icon: Bot, path: "ai" },
   { name: "Integrations", icon: Link2, path: "integrations" },
+  { name: "Billing", icon: CreditCard, path: "billing" },
 ];
 
 interface DashboardShellProps {

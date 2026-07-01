@@ -136,6 +136,27 @@ class RegisterSerializer(serializers.Serializer):
                     "invite_token": "This invitation token has expired."
                 })
             
+            # Check subscription seat limit
+            from billing.models import TenantSubscription
+            sub, _ = TenantSubscription.objects.get_or_create(
+                organization=invite.organization,
+                defaults={
+                    "plan_tier": "FREE",
+                    "seats_limit": 5,
+                    "is_active": True,
+                    "ai_credits_limit": 100
+                }
+            )
+            if not sub.is_active:
+                raise serializers.ValidationError({
+                    "invite_token": "The workspace subscription is currently inactive. Please contact your administrator."
+                })
+            current_members = User.objects.filter(organization=invite.organization, is_active=True).count()
+            if current_members >= sub.seats_limit:
+                raise serializers.ValidationError({
+                    "invite_token": "This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats."
+                })
+
             attrs["validated_invite"] = invite
         else:
             if not org_name:

@@ -24,6 +24,7 @@ import { GapAnalysisPage } from "./features/strategic/GapAnalysisPage";
 import { ReportsPage } from "./features/reports/ReportsPage";
 import { AiAssistantPage } from "./features/ai/AiAssistantPage";
 import { IntegrationsPage } from "./features/integrations/IntegrationsPage";
+import { BillingPage } from "./features/auth/BillingPage";
 
 const AuthenticatedApp: React.FC = () => {
   return (
@@ -48,6 +49,7 @@ const AuthenticatedApp: React.FC = () => {
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/ai" element={<AiAssistantPage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
+        <Route path="/billing" element={<BillingPage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </DashboardShell>

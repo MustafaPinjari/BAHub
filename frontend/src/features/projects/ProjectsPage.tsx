@@ -7,6 +7,7 @@ import { Card, Badge, Button, Input, Select, Alert } from "../../components/comm
 import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "./ProjectContext";
 import { 
   FolderGit, 
   Plus, 
@@ -58,6 +59,7 @@ const projectSchema = z.object({
 
 export const ProjectsPage: React.FC = () => {
   const { user } = useAuth();
+  const { setActiveProject } = useProject();
   
   // States
   const [projects, setProjects] = useState<Project[]>([]);
@@ -129,11 +131,9 @@ export const ProjectsPage: React.FC = () => {
   }, []);
 
   const handleSetActiveProject = (project: Project) => {
-    localStorage.setItem("active_project", JSON.stringify(project));
+    setActiveProject(project);
     setActiveProjectId(project.id);
     setSuccessMessage(`Switched active context to "${project.name}"`);
-    // Notify shell top navbar
-    window.dispatchEvent(new Event("activeProjectChanged"));
   };
 
   const openCreateModal = () => {

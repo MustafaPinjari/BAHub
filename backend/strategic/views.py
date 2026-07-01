@@ -150,6 +150,28 @@ class AIChatView(APIView):
         except Project.DoesNotExist:
             return api_error(message="Project not found or access denied.")
 
+        # Check subscription credit limit
+        from billing.models import TenantSubscription
+        sub, _ = TenantSubscription.objects.get_or_create(
+            organization=request.user.organization,
+            defaults={
+                "plan_tier": "FREE",
+                "seats_limit": 5,
+                "is_active": True,
+                "ai_credits_limit": 100
+            }
+        )
+        if not sub.is_active:
+            return api_error(
+                message="Your workspace subscription is inactive. Please update billing.",
+                status_code=status.HTTP_402_PAYMENT_REQUIRED
+            )
+        if sub.ai_credits_used >= sub.ai_credits_limit:
+            return api_error(
+                message="You have consumed your monthly AI credits quota. Please upgrade your subscription plan.",
+                status_code=status.HTTP_402_PAYMENT_REQUIRED
+            )
+
         # Create the AI job in PENDING state
         job = AIJob.objects.create(
             project=project,
