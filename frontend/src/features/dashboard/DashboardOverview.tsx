@@ -4,6 +4,7 @@ import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { DocumentEditor } from "./components/DocumentEditor";
 import { api } from "../../services/api";
+import { useAuth } from "../auth/AuthContext";
 import {
   Clock,
   FolderGit,
@@ -11,10 +12,19 @@ import {
   Paperclip,
   Plus,
   Trash2,
-  AlertCircle
+  AlertCircle,
+  Shield,
+  Activity,
+  FileText,
+  CheckCircle2,
+  Users,
+  UserCheck,
+  Building
 } from "lucide-react";
 
 export const DashboardOverview: React.FC = () => {
+  const { user } = useAuth();
+  
   // Project context from localStorage
   const [activeProject, setActiveProject] = useState<any>(() => {
     try {
@@ -90,13 +100,11 @@ export const DashboardOverview: React.FC = () => {
       await api.post("/projects/attachments/", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
-      // Refresh attachments & activities logs
       fetchDashboardData();
     } catch (err) {
       console.error("Failed to upload attachment file:", err);
     } finally {
       setUploading(false);
-      // Reset input
       e.target.value = "";
     }
   };
@@ -173,6 +181,15 @@ export const DashboardOverview: React.FC = () => {
   // Filter documents mapping to the Approvals pipeline status
   const pendingApprovals = documents.filter((doc: any) => doc.status === "REVIEW" || doc.status === "DRAFT");
 
+  // Calculate metrics
+  const totalReqs = backlogData.length;
+  const approvedReqs = backlogData.filter((r: any) => r.status === "APPROVED" || r.status === "SIGNED_OFF").length;
+  const draftReqs = backlogData.filter((r: any) => r.status === "DRAFT").length;
+  const complianceRate = totalReqs > 0 ? ((approvedReqs / totalReqs) * 100).toFixed(0) : "100";
+  const pendingDocsCount = documents.filter((doc: any) => doc.status === "REVIEW").length;
+
+  const isAdmin = user?.role === "ADMIN";
+
   return (
     <div className="max-w-7xl mx-auto flex flex-col gap-6 select-none text-foreground">
       {/* ==========================================
@@ -207,144 +224,432 @@ export const DashboardOverview: React.FC = () => {
       </div>
 
       {/* ==========================================
+          ROLE-BASED WELCOME HEADER CARD
+          ========================================== */}
+      {isAdmin ? (
+        // Admin Welcome Card
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-950 p-6 text-white flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="absolute top-[-50%] right-[-10%] w-[300px] h-[300px] rounded-full bg-primary/20 blur-[85px] pointer-events-none" />
+          <div className="flex flex-col text-left gap-1 z-10">
+            <div className="flex items-center gap-2">
+              <Badge variant="default" className="bg-primary/25 text-primary border border-primary/30 font-bold uppercase tracking-wider text-[9px]">
+                Administrator Portal
+              </Badge>
+            </div>
+            <h1 className="text-lg font-bold tracking-tight">Welcome, {user?.first_name || user?.username}!</h1>
+            <p className="text-xs text-white/70 max-w-xl">
+              Manage organization compliance, authorize spec sign-offs, and audit system activities. Currently viewing stats for <strong>{user?.organization_name || "Apex Business Solutions"}</strong>.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 z-10">
+            <Button size="sm" variant="outline" className="text-[10px] bg-slate-900/50 hover:bg-slate-900 border-white/10 hover:border-white/20 text-white font-bold">
+              Organization Directory
+            </Button>
+            <Button size="sm" className="text-[10px] font-bold">
+              Export Audit Trail
+            </Button>
+          </div>
+        </div>
+      ) : (
+        // Business Analyst Welcome Card
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-950 p-6 text-white flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="absolute top-[-50%] right-[-10%] w-[300px] h-[300px] rounded-full bg-emerald-500/10 blur-[85px] pointer-events-none" />
+          <div className="flex flex-col text-left gap-1 z-10">
+            <div className="flex items-center gap-2">
+              <Badge variant="default" className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold uppercase tracking-wider text-[9px]">
+                Business Analyst Portal
+              </Badge>
+            </div>
+            <h1 className="text-lg font-bold tracking-tight">Welcome, {user?.first_name || user?.username}!</h1>
+            <p className="text-xs text-white/70 max-w-xl">
+              Author and compile requirements, refine specifications, and manage related project assets. Your live synchronization channel is active.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 z-10">
+            <Button size="sm" variant="outline" className="text-[10px] bg-slate-900/50 hover:bg-slate-900 border-white/10 hover:border-white/20 text-white font-bold">
+              Generate Spec Docs
+            </Button>
+            <Button size="sm" className="text-[10px] font-bold">
+              Add Requirement
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* ==========================================
+          ROLE-BASED METRICS GRID
+          ========================================== */}
+      {isAdmin ? (
+        // Admin Statistics
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4.5 select-none">
+          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-indigo-500/10 bg-gradient-to-b from-indigo-500/[0.02] to-transparent">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Compliance Rate</span>
+              <Shield className="w-4 h-4 text-indigo-500" />
+            </div>
+            <span className="text-2xl font-black text-foreground leading-none">{complianceRate}%</span>
+            <span className="text-[9px] text-muted-foreground font-semibold">Approved requirements count</span>
+          </Card>
+          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-amber-500/10 bg-gradient-to-b from-amber-500/[0.02] to-transparent">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Pending Sign-Off</span>
+              <UserCheck className="w-4 h-4 text-amber-500" />
+            </div>
+            <span className="text-2xl font-black text-foreground leading-none">{pendingDocsCount}</span>
+            <span className="text-[9px] text-muted-foreground font-semibold">Documents awaiting approval</span>
+          </Card>
+          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-primary/10 bg-gradient-to-b from-primary/[0.02] to-transparent">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Active Teams</span>
+              <Users className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-2xl font-black text-foreground leading-none">2</span>
+            <span className="text-[9px] text-muted-foreground font-semibold">Assigned workspace units</span>
+          </Card>
+          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-rose-500/10 bg-gradient-to-b from-rose-500/[0.02] to-transparent">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Project Files</span>
+              <Paperclip className="w-4 h-4 text-rose-500" />
+            </div>
+            <span className="text-2xl font-black text-foreground leading-none">{attachments.length}</span>
+            <span className="text-[9px] text-muted-foreground font-semibold">Total workspace resource links</span>
+          </Card>
+        </div>
+      ) : (
+        // Analyst Statistics
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4.5 select-none">
+          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-emerald-500/10 bg-gradient-to-b from-emerald-500/[0.02] to-transparent">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Backlog Coverage</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            </div>
+            <span className="text-2xl font-black text-foreground leading-none">
+              {approvedReqs}/{totalReqs}
+            </span>
+            <span className="text-[9px] text-muted-foreground font-semibold">Approved vs Total specs</span>
+          </Card>
+          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-primary/10 bg-gradient-to-b from-primary/[0.02] to-transparent">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Specs Generated</span>
+              <FileText className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-2xl font-black text-foreground leading-none">{documents.length}</span>
+            <span className="text-[9px] text-muted-foreground font-semibold">Functional documentation files</span>
+          </Card>
+          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-amber-500/10 bg-gradient-to-b from-amber-500/[0.02] to-transparent">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Draft Items</span>
+              <AlertCircle className="w-4 h-4 text-amber-500" />
+            </div>
+            <span className="text-2xl font-black text-foreground leading-none">{draftReqs}</span>
+            <span className="text-[9px] text-muted-foreground font-semibold">Requirements in draft phase</span>
+          </Card>
+          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-purple-500/10 bg-gradient-to-b from-purple-500/[0.02] to-transparent">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Actions</span>
+              <Activity className="w-4 h-4 text-purple-500" />
+            </div>
+            <span className="text-2xl font-black text-foreground leading-none">{activities.length}</span>
+            <span className="text-[9px] text-muted-foreground font-semibold">Logged changes & activities</span>
+          </Card>
+        </div>
+      )}
+
+      {/* ==========================================
           THREE-COLUMN/LAYER GRID SYSTEM
           ========================================== */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
-        
-        {/* Left Side: Primary Work Area (75% width) */}
-        <div className="w-full lg:w-[75%] flex flex-col gap-6">
-          
-          {/* Notion-Style Split View Workspace */}
-          <div className="flex flex-col gap-2">
-            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-              Document Workspace
-            </h2>
-            <DocumentEditor />
+      {isAdmin ? (
+        // ==========================================
+        // ADMIN DASHBOARD CONTENT SPLIT
+        // ==========================================
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          {/* Left Side: Compliance and Review Hub (75% width) */}
+          <div className="w-full lg:w-[75%] flex flex-col gap-6">
+            
+            {/* Spec Approvals Quick-Control Console */}
+            <Card className="flex flex-col p-5 gap-4.5 text-left select-none">
+              <div className="flex items-center justify-between border-b border-border pb-2.5">
+                <div className="flex flex-col gap-0.5">
+                  <h3 className="font-bold text-sm text-foreground">Pending Sign-off Console</h3>
+                  <span className="text-[10px] text-muted-foreground font-semibold">Authorize and certify compiled specifications for engineering handover.</span>
+                </div>
+                <Badge variant="warning">{pendingApprovals.length} Documents</Badge>
+              </div>
+
+              {pendingApprovals.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-10 gap-3 border border-dashed border-border rounded-xl">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                  <p className="text-xs font-semibold text-foreground">All specifications are currently aligned and authorized!</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {pendingApprovals.map((doc: any) => (
+                    <div key={doc.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 border border-border rounded-xl bg-card hover:bg-secondary/40 transition-colors gap-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shrink-0 mt-0.5">
+                          <FileText className="w-4 h-4" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-xs text-foreground leading-snug">{doc.title}</span>
+                          <span className="text-[9px] text-muted-foreground font-bold uppercase mt-1">
+                            Type: {doc.doc_type || "BRD"} • Version: {doc.version || "1.0"} • Project Context: {activeProject.name}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 self-end sm:self-auto">
+                        <Button size="sm" variant="outline" className="text-[10px] py-1 font-bold">Reject</Button>
+                        <Button size="sm" className="text-[10px] py-1 font-bold flex items-center gap-1">
+                          <UserCheck className="w-3 h-3" />
+                          <span>Approve & Sign</span>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            {/* System Audit logs (Full width backlog spreadsheet equivalent) */}
+            <div className="flex flex-col gap-2.5">
+              <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-left">
+                System Audit Trail & History
+              </h2>
+              <DataTable
+                columns={[
+                  {
+                    key: "user",
+                    label: "Operated By",
+                    sortable: true,
+                    render: (row) => (
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-secondary border border-border flex items-center justify-center text-[9px] font-bold text-muted-foreground uppercase shrink-0">
+                          {row.user_detail?.username?.charAt(0) || "U"}
+                        </div>
+                        <span className="font-bold text-foreground">{row.user_detail?.first_name || row.user_detail?.username || "System"}</span>
+                      </div>
+                    )
+                  },
+                  {
+                    key: "action",
+                    label: "Action Performed",
+                    sortable: true,
+                    render: (row) => <span className="font-medium text-foreground">{row.action}</span>
+                  },
+                  {
+                    key: "time",
+                    label: "Timestamp",
+                    sortable: true,
+                    render: (row) => <span className="font-semibold text-muted-foreground uppercase text-[10px]">{row.created_at_human || "Just now"}</span>
+                  }
+                ]}
+                data={activities}
+                searchPlaceholder="Search audit logs..."
+                searchKeys={["action", "user_detail.username", "user_detail.first_name"]}
+              />
+            </div>
           </div>
 
-          {/* Spreadsheet-Style Backlog Table */}
-          <div className="flex flex-col gap-2.5">
-            <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-              Requirements Backlog Spreadsheet
-            </h2>
-            <DataTable
-              columns={columns}
-              data={backlogData}
-              searchPlaceholder="Filter requirements..."
-              searchKeys={["req_id", "title", "req_type"]}
-            />
+          {/* Right Side: Context Panel (25% width) */}
+          <div className="w-full lg:w-[25%] lg:sticky lg:top-5 flex flex-col gap-5 select-none">
+            
+            {/* Organization Metadata Widget */}
+            <Card className="flex flex-col gap-4.5 p-4.5 text-left">
+              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5 flex items-center gap-1.5">
+                <Building className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Organization Identity</span>
+              </h3>
+              <div className="flex flex-col gap-2.5 text-xs">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] uppercase font-bold text-muted-foreground">Workspace Name</span>
+                  <span className="font-semibold text-foreground">{user?.organization_name || "Apex Business Solutions"}</span>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] uppercase font-bold text-muted-foreground">Registered Email</span>
+                  <span className="font-semibold text-foreground">apex-workspace@bahub.local</span>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] uppercase font-bold text-muted-foreground">System Location</span>
+                  <span className="font-semibold text-foreground">Tech City, USA</span>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] uppercase font-bold text-muted-foreground">Timezone</span>
+                  <span className="font-semibold text-foreground">Coordinated Universal Time (UTC)</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Files & references */}
+            <Card className="flex flex-col gap-4 p-4.5 text-left">
+              <div className="flex items-center justify-between border-b border-border pb-1.5">
+                <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  System Reference Assets
+                </h3>
+              </div>
+
+              {attachments.length === 0 ? (
+                <p className="text-xs text-muted-foreground/75 py-2 font-medium">No files uploaded yet</p>
+              ) : (
+                <div className="flex flex-col gap-2 text-xs font-semibold">
+                  {attachments.map((file: any) => (
+                    <div key={file.id} className="group flex items-center justify-between p-1.5 rounded-lg hover:bg-secondary/60 transition-colors">
+                      <div
+                        onClick={() => window.open(file.file_url || file.file, "_blank")}
+                        className="flex items-center gap-2 overflow-hidden cursor-pointer flex-1"
+                        title="Download file"
+                      >
+                        <Paperclip className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <span className="text-foreground truncate max-w-[120px] hover:text-primary transition-colors">{file.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[9px] text-muted-foreground font-bold">{file.size_str || "0.0 KB"}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
           </div>
         </div>
-
-        {/* Right Side: Context Panel (25% width) */}
-        <div className="w-full lg:w-[25%] lg:sticky lg:top-5 flex flex-col gap-5 select-none">
+      ) : (
+        // ==========================================
+        // BUSINESS ANALYST DASHBOARD CONTENT SPLIT
+        // ==========================================
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
           
-          {/* Context Layer 1: Approval Actions */}
-          <Card className="flex flex-col gap-4 p-4.5">
-            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5">
-              Approvals Pipeline
-            </h3>
-            {pendingApprovals.length === 0 ? (
-              <p className="text-xs text-muted-foreground/75 py-2 font-medium">No approvals pending</p>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {pendingApprovals.map((item: any) => (
-                  <div key={item.id} className="flex flex-col gap-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-foreground truncate max-w-[130px]">{item.title}</span>
-                      <Badge variant={item.status === "REVIEW" ? "warning" : "secondary"} className="text-[9px] font-bold shrink-0">
-                        {item.status === "REVIEW" ? "Pending Sign-off" : "Pending Review"}
-                      </Badge>
-                    </div>
-                    <span className="text-[10px] font-bold text-primary uppercase">{item.doc_type || "DOC"}-{item.version || "1.0"}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
-
-          {/* Context Layer 2: Attachments / References */}
-          <Card className="flex flex-col gap-4 p-4.5">
-            <div className="flex items-center justify-between border-b border-border pb-1.5">
-              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                Related Documents
-              </h3>
-              <input
-                type="file"
-                id="dashboard-file-uploader"
-                className="hidden"
-                onChange={handleFileUpload}
-              />
-              <Button
-                size="sm"
-                variant="minimal"
-                onClick={() => document.getElementById("dashboard-file-uploader")?.click()}
-                className="text-[9px] py-0.5 px-1.5 border-dashed border-primary/20 text-primary hover:bg-primary/5 flex items-center gap-1 cursor-pointer"
-                disabled={uploading}
-              >
-                <Plus className="w-2.5 h-2.5" />
-                <span>Upload</span>
-              </Button>
+          {/* Left Side: Primary Work Area (75% width) */}
+          <div className="w-full lg:w-[75%] flex flex-col gap-6">
+            
+            {/* Notion-Style Split View Workspace */}
+            <div className="flex flex-col gap-2">
+              <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-left">
+                Document Workspace
+              </h2>
+              <DocumentEditor />
             </div>
 
-            {attachments.length === 0 ? (
-              <p className="text-xs text-muted-foreground/75 py-2 font-medium">No files uploaded yet</p>
-            ) : (
-              <div className="flex flex-col gap-2 text-xs font-semibold">
-                {attachments.map((file: any) => (
-                  <div key={file.id} className="group flex items-center justify-between p-1.5 rounded-lg hover:bg-secondary/60 transition-colors">
-                    <div
-                      onClick={() => window.open(file.file_url || file.file, "_blank")}
-                      className="flex items-center gap-2 overflow-hidden cursor-pointer flex-1"
-                      title="Download file"
-                    >
-                      <Paperclip className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                      <span className="text-foreground truncate max-w-[120px] hover:text-primary transition-colors">{file.name}</span>
+            {/* Spreadsheet-Style Backlog Table */}
+            <div className="flex flex-col gap-2.5">
+              <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-left">
+                Requirements Backlog Spreadsheet
+              </h2>
+              <DataTable
+                columns={columns}
+                data={backlogData}
+                searchPlaceholder="Filter requirements..."
+                searchKeys={["req_id", "title", "req_type"]}
+              />
+            </div>
+          </div>
+
+          {/* Right Side: Context Panel (25% width) */}
+          <div className="w-full lg:w-[25%] lg:sticky lg:top-5 flex flex-col gap-5 select-none">
+            
+            {/* Context Layer 1: Approval Actions */}
+            <Card className="flex flex-col gap-4 p-4.5 text-left">
+              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5">
+                Approvals Pipeline
+              </h3>
+              {pendingApprovals.length === 0 ? (
+                <p className="text-xs text-muted-foreground/75 py-2 font-medium">No approvals pending</p>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {pendingApprovals.map((item: any) => (
+                    <div key={item.id} className="flex flex-col gap-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-foreground truncate max-w-[130px]">{item.title}</span>
+                        <Badge variant={item.status === "REVIEW" ? "warning" : "secondary"} className="text-[9px] font-bold shrink-0">
+                          {item.status === "REVIEW" ? "Pending Sign-off" : "Pending Review"}
+                        </Badge>
+                      </div>
+                      <span className="text-[10px] font-bold text-primary uppercase">{item.doc_type || "DOC"}-{item.version || "1.0"}</span>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[9px] text-muted-foreground font-bold">{file.size_str || "0.0 KB"}</span>
-                      <button
-                        onClick={() => handleFileDelete(file.id)}
-                        className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-destructive/15 text-muted-foreground hover:text-destructive transition-all cursor-pointer"
-                        title="Delete attachment"
+                  ))}
+                </div>
+              )}
+            </Card>
+
+            {/* Context Layer 2: Attachments / References */}
+            <Card className="flex flex-col gap-4 p-4.5 text-left">
+              <div className="flex items-center justify-between border-b border-border pb-1.5">
+                <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  Related Documents
+                </h3>
+                <input
+                  type="file"
+                  id="dashboard-file-uploader"
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+                <Button
+                  size="sm"
+                  variant="minimal"
+                  onClick={() => document.getElementById("dashboard-file-uploader")?.click()}
+                  className="text-[9px] py-0.5 px-1.5 border-dashed border-primary/20 text-primary hover:bg-primary/5 flex items-center gap-1 cursor-pointer"
+                  disabled={uploading}
+                >
+                  <Plus className="w-2.5 h-2.5" />
+                  <span>Upload</span>
+                </Button>
+              </div>
+
+              {attachments.length === 0 ? (
+                <p className="text-xs text-muted-foreground/75 py-2 font-medium">No files uploaded yet</p>
+              ) : (
+                <div className="flex flex-col gap-2 text-xs font-semibold">
+                  {attachments.map((file: any) => (
+                    <div key={file.id} className="group flex items-center justify-between p-1.5 rounded-lg hover:bg-secondary/60 transition-colors">
+                      <div
+                        onClick={() => window.open(file.file_url || file.file, "_blank")}
+                        className="flex items-center gap-2 overflow-hidden cursor-pointer flex-1"
+                        title="Download file"
                       >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
+                        <Paperclip className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                        <span className="text-foreground truncate max-w-[120px] hover:text-primary transition-colors">{file.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[9px] text-muted-foreground font-bold">{file.size_str || "0.0 KB"}</span>
+                        <button
+                          onClick={() => handleFileDelete(file.id)}
+                          className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-destructive/15 text-muted-foreground hover:text-destructive transition-all cursor-pointer"
+                          title="Delete attachment"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
+                  ))}
+                </div>
+              )}
+            </Card>
 
-          {/* Context Layer 3: Activity Log & History */}
-          <Card className="flex flex-col gap-4 p-4.5">
-            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5">
-              Workspace Activity
-            </h3>
-            {activities.length === 0 ? (
-              <p className="text-xs text-muted-foreground/75 py-2 font-medium">No recent activities log</p>
-            ) : (
-              <div className="flex flex-col gap-3.5 max-h-[220px] overflow-y-auto pr-1">
-                {activities.map((act: any) => (
-                  <div key={act.id} className="flex items-start gap-2.5 text-[11px] leading-normal">
-                    <div className="w-5 h-5 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0 text-[9px] font-bold text-muted-foreground uppercase">
-                      {act.user_detail?.username?.charAt(0) || "U"}
+            {/* Context Layer 3: Activity Log & History */}
+            <Card className="flex flex-col gap-4 p-4.5 text-left">
+              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5">
+                Workspace Activity
+              </h3>
+              {activities.length === 0 ? (
+                <p className="text-xs text-muted-foreground/75 py-2 font-medium">No recent activities log</p>
+              ) : (
+                <div className="flex flex-col gap-3.5 max-h-[220px] overflow-y-auto pr-1">
+                  {activities.map((act: any) => (
+                    <div key={act.id} className="flex items-start gap-2.5 text-[11px] leading-normal">
+                      <div className="w-5 h-5 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0 text-[9px] font-bold text-muted-foreground uppercase">
+                        {act.user_detail?.username?.charAt(0) || "U"}
+                      </div>
+                      <div className="flex flex-col text-left">
+                        <p className="text-foreground">
+                          <span className="font-bold">{act.user_detail?.first_name || act.user_detail?.username || "Someone"}</span> {act.action}
+                        </p>
+                        <span className="text-[9px] text-muted-foreground font-bold uppercase mt-0.5">{act.created_at_human || "just now"}</span>
+                      </div>
                     </div>
-                    <div className="flex flex-col text-left">
-                      <p className="text-foreground">
-                        <span className="font-bold">{act.user_detail?.first_name || act.user_detail?.username || "Someone"}</span> {act.action}
-                      </p>
-                      <span className="text-[9px] text-muted-foreground font-bold uppercase mt-0.5">{act.created_at_human || "just now"}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Card>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
         </div>
-
-      </div>
+      )}
     </div>
   );
 };
