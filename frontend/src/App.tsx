@@ -23,6 +23,7 @@ import { SwotAnalysisPage } from "./features/strategic/SwotAnalysisPage";
 import { GapAnalysisPage } from "./features/strategic/GapAnalysisPage";
 import { ReportsPage } from "./features/reports/ReportsPage";
 import { AiAssistantPage } from "./features/ai/AiAssistantPage";
+import { IntegrationsPage } from "./features/integrations/IntegrationsPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -128,6 +129,8 @@ const MainAppContent: React.FC = () => {
         return <ReportsPage />;
       case "ai":
         return <AiAssistantPage />;
+      case "integrations":
+        return <IntegrationsPage />;
       default:
         // Elegant placeholder for subsequent sequential modules
         return (

@@ -47,4 +47,7 @@ urlpatterns = [
     
     # Strategic endpoints (SWOT & Gap)
     path("api/v1/strategic/", include("strategic.urls")),
+    
+    # Integration endpoints
+    path("api/v1/integrations/", include("integrations.urls")),
 ]

@@ -18,6 +18,7 @@ import {
   BarChart2,
   Settings,
   Bot,
+  Link2,
   LogOut,
   User as UserIcon,
   ChevronLeft,
@@ -51,6 +52,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "SWOT Analysis", icon: Grid, path: "swot" },
   { name: "Reports", icon: BarChart2, path: "reports" },
   { name: "AI Assistant", icon: Bot, path: "ai" },
+  { name: "Integrations", icon: Link2, path: "integrations" },
 ];
 
 interface DashboardShellProps {

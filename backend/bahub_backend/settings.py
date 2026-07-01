@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "meetings",
     "risks",
     "strategic",
+    "integrations",
 ]
 
 MIDDLEWARE = [
