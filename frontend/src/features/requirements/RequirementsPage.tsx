@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { api } from "../../services/api";
+import { api, API_BASE_URL } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
 import { 
@@ -139,7 +139,6 @@ export const RequirementsPage: React.FC = () => {
     setWsStatus("connecting");
     const accessToken = localStorage.getItem("accessToken") || "";
     const wsScheme = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1";
     const hostUrl = API_BASE_URL.replace(/^https?:\/\//, "").replace(/\/api\/v1\/?$/, "");
     const wsUrl = `${wsScheme}//${hostUrl}/ws/projects/${activeProject.id}/requirements/?token=${accessToken}`;
 

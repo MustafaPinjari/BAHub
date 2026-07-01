@@ -1,7 +1,8 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 
-// Access environment backend base url or fallback
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1";
+const isProd = import.meta.env.PROD || (typeof window !== "undefined" && window.location.hostname.endsWith("netlify.app"));
+const DEFAULT_API_URL = isProd ? "https://bahub-backend.onrender.com/api/v1" : "http://127.0.0.1:8000/api/v1";
+export const API_BASE_URL = import.meta.env.VITE_API_URL || DEFAULT_API_URL;
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
