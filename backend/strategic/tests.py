@@ -89,3 +89,26 @@ class StrategicManagementTests(APITestCase):
         res_ok = self.client.post(url_gap, payload_valid, format="json")
         self.assertEqual(res_ok.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res_ok.data["data"]["title"], "Stripe Integration Gap")
+
+    def test_ai_analyst_chat_simulation(self):
+        """Verify AI Business Analyst chat responses and prompt parameters."""
+        self.client.force_authenticate(user=self.analyst_a)
+        url_chat = reverse("ai-chat")
+
+        # 1. Ask for general analysis (Default prompt)
+        res_default = self.client.post(
+            url_chat, 
+            {"project_id": str(self.project_a.id), "message": "hello context"}, 
+            format="json"
+        )
+        self.assertEqual(res_default.status_code, status.HTTP_200_OK)
+        self.assertIn("Business Analyst", res_default.data["data"]["reply"])
+
+        # 2. Ask to generate user stories
+        res_stories = self.client.post(
+            url_chat, 
+            {"project_id": str(self.project_a.id), "message": "Draft user stories for login", "action_type": "GENERATE_STORIES"}, 
+            format="json"
+        )
+        self.assertEqual(res_stories.status_code, status.HTTP_200_OK)
+        self.assertIn("US-010", res_stories.data["data"]["reply"])

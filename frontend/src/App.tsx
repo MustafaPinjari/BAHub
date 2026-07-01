@@ -6,7 +6,7 @@ import { DashboardShell } from "./components/layout/DashboardShell";
 import { DashboardOverview } from "./features/dashboard/DashboardOverview";
 import { ProfilePage } from "./features/auth/ProfilePage";
 import { Card } from "./components/common/UIComponents";
-import { ShieldAlert, Bot } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import logo from "./assets/logo.png";
 import banner from "./assets/banner.png";
 import { TeamsPage } from "./features/teams/TeamsPage";
@@ -22,6 +22,7 @@ import { ChangeRequestsPage } from "./features/changes/ChangeRequestsPage";
 import { SwotAnalysisPage } from "./features/strategic/SwotAnalysisPage";
 import { GapAnalysisPage } from "./features/strategic/GapAnalysisPage";
 import { ReportsPage } from "./features/reports/ReportsPage";
+import { AiAssistantPage } from "./features/ai/AiAssistantPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -125,13 +126,15 @@ const MainAppContent: React.FC = () => {
         return <GapAnalysisPage />;
       case "reports":
         return <ReportsPage />;
+      case "ai":
+        return <AiAssistantPage />;
       default:
         // Elegant placeholder for subsequent sequential modules
         return (
           <div className="flex flex-col items-center justify-center min-h-[50vh]">
             <Card className="max-w-md text-center flex flex-col items-center gap-4">
               <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20 shrink-0">
-                {activeTab === "ai" ? <Bot className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
+                <ShieldAlert className="w-5 h-5" />
               </div>
               <h2 className="text-base font-bold text-foreground uppercase tracking-wider">
                 {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Module

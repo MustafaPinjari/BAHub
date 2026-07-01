@@ -402,3 +402,61 @@ Traceback (most recent call last):
 AttributeError: 'Requirement' object has no attribute 'category'
 ERROR 2026-07-01 07:27:29,696 log 13248 16476 Internal Server Error: /api/v1/projects/abe2c2bb-cf57-428a-a6d7-80f9f0479c0b/report/
 ERROR 2026-07-01 07:27:29,697 basehttp 13248 16476 "GET /api/v1/projects/abe2c2bb-cf57-428a-a6d7-80f9f0479c0b/report/ HTTP/1.1" 500 143
+WARNING 2026-07-01 07:28:28,887 log 13200 9708 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-01 07:28:28,924 log 13200 9708 Bad Request: /api/v1/documents/9a9dea84-bd76-4999-a8de-65593c083c00/sign-off/
+WARNING 2026-07-01 07:28:30,319 exceptions 13200 9708 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 07:28:30,319 log 13200 9708 Bad Request: /api/v1/meetings/
+WARNING 2026-07-01 07:28:30,343 exceptions 13200 9708 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-01 07:28:30,344 log 13200 9708 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-01 07:28:41,465 exceptions 13200 9708 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-01 07:28:41,465 log 13200 9708 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-01 07:28:46,754 exceptions 13200 9708 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:28:46,754 log 13200 9708 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 07:28:46,758 exceptions 13200 9708 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 07:28:46,759 log 13200 9708 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 07:28:48,198 log 13200 9708 Bad Request: /api/v1/risks/change-requests/6553970c-c7af-48c8-a97f-9c3d45dc26aa/review/
+WARNING 2026-07-01 07:28:49,735 exceptions 13200 9708 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:28:49,736 log 13200 9708 Bad Request: /api/v1/risks/
+WARNING 2026-07-01 07:28:50,909 exceptions 13200 9708 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-01 07:28:50,910 log 13200 9708 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 07:28:50,916 exceptions 13200 9708 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-01 07:28:50,917 log 13200 9708 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 07:28:54,802 exceptions 13200 9708 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:28:54,802 log 13200 9708 Bad Request: /api/v1/stories/
+WARNING 2026-07-01 07:28:55,904 exceptions 13200 9708 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:28:55,905 log 13200 9708 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-01 07:28:56,966 log 13200 9708 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-01 07:28:59,071 exceptions 13200 9708 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-01 07:28:59,072 log 13200 9708 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 07:28:59,075 exceptions 13200 9708 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-01 07:28:59,075 log 13200 9708 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 07:29:03,335 log 13200 9708 Forbidden: /api/v1/teams/
+WARNING 2026-07-01 07:31:10,115 log 7484 10204 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-01 07:31:10,139 log 7484 10204 Bad Request: /api/v1/documents/0b17bce9-1c5a-4c9e-b908-4e99f3d9a6a0/sign-off/
+WARNING 2026-07-01 07:31:11,636 exceptions 7484 10204 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 07:31:11,637 log 7484 10204 Bad Request: /api/v1/meetings/
+WARNING 2026-07-01 07:31:11,662 exceptions 7484 10204 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-01 07:31:11,662 log 7484 10204 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-01 07:31:22,562 exceptions 7484 10204 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-01 07:31:22,562 log 7484 10204 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-01 07:31:27,955 exceptions 7484 10204 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:31:27,955 log 7484 10204 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 07:31:27,961 exceptions 7484 10204 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 07:31:27,965 log 7484 10204 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 07:31:29,616 log 7484 10204 Bad Request: /api/v1/risks/change-requests/e4ff5947-9884-4db9-976a-40c7ee4a4338/review/
+WARNING 2026-07-01 07:31:31,160 exceptions 7484 10204 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:31:31,161 log 7484 10204 Bad Request: /api/v1/risks/
+WARNING 2026-07-01 07:31:32,206 exceptions 7484 10204 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-01 07:31:32,206 log 7484 10204 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 07:31:32,211 exceptions 7484 10204 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-01 07:31:32,211 log 7484 10204 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 07:31:35,338 exceptions 7484 10204 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:31:35,339 log 7484 10204 Bad Request: /api/v1/stories/
+WARNING 2026-07-01 07:31:37,474 exceptions 7484 10204 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:31:37,474 log 7484 10204 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-01 07:31:38,572 log 7484 10204 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-01 07:31:40,733 exceptions 7484 10204 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-01 07:31:40,734 log 7484 10204 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 07:31:40,739 exceptions 7484 10204 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-01 07:31:40,739 log 7484 10204 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 07:31:45,280 log 7484 10204 Forbidden: /api/v1/teams/
