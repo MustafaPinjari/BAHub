@@ -19,6 +19,8 @@ import { DocumentGeneratorPage } from "./features/documents/DocumentGeneratorPag
 import { MeetingsPage } from "./features/meetings/MeetingsPage";
 import { RisksPage } from "./features/risks/RisksPage";
 import { ChangeRequestsPage } from "./features/changes/ChangeRequestsPage";
+import { SwotAnalysisPage } from "./features/strategic/SwotAnalysisPage";
+import { GapAnalysisPage } from "./features/strategic/GapAnalysisPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -116,6 +118,10 @@ const MainAppContent: React.FC = () => {
         return <RisksPage />;
       case "changes":
         return <ChangeRequestsPage />;
+      case "swot":
+        return <SwotAnalysisPage />;
+      case "gap":
+        return <GapAnalysisPage />;
       default:
         // Elegant placeholder for subsequent sequential modules
         return (

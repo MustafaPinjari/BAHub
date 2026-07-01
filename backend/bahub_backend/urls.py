@@ -44,4 +44,7 @@ urlpatterns = [
     
     # Risk endpoints
     path("api/v1/risks/", include("risks.urls")),
+    
+    # Strategic endpoints (SWOT & Gap)
+    path("api/v1/strategic/", include("strategic.urls")),
 ]

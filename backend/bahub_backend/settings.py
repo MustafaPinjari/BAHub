@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "documents",
     "meetings",
     "risks",
+    "strategic",
 ]
 
 MIDDLEWARE = [

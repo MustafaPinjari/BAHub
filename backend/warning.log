@@ -282,3 +282,32 @@ WARNING 2026-06-30 21:44:26,254 log 13448 10036 Bad Request: /api/v1/teams/
 WARNING 2026-06-30 21:44:26,261 exceptions 13448 10036 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
 WARNING 2026-06-30 21:44:26,261 log 13448 10036 Bad Request: /api/v1/teams/
 WARNING 2026-06-30 21:44:31,383 log 13448 10036 Forbidden: /api/v1/teams/
+WARNING 2026-07-01 07:20:10,518 log 17872 18240 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-01 07:20:10,565 log 17872 18240 Bad Request: /api/v1/documents/b143e6a9-aa5f-46dd-ad74-8bb767ab154a/sign-off/
+WARNING 2026-07-01 07:20:11,970 exceptions 17872 18240 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 07:20:11,971 log 17872 18240 Bad Request: /api/v1/meetings/
+WARNING 2026-07-01 07:20:11,995 exceptions 17872 18240 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-01 07:20:11,995 log 17872 18240 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-01 07:20:22,782 exceptions 17872 18240 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-01 07:20:22,782 log 17872 18240 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-01 07:20:25,975 exceptions 17872 18240 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:20:25,975 log 17872 18240 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 07:20:25,981 exceptions 17872 18240 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-01 07:20:25,982 log 17872 18240 Bad Request: /api/v1/requirements/
+WARNING 2026-07-01 07:20:27,552 log 17872 18240 Bad Request: /api/v1/risks/change-requests/e6c39458-2092-4d6d-9bf4-59948abe3ef4/review/
+WARNING 2026-07-01 07:20:29,054 exceptions 17872 18240 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:20:29,054 log 17872 18240 Bad Request: /api/v1/risks/
+WARNING 2026-07-01 07:20:30,096 exceptions 17872 18240 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-01 07:20:30,096 log 17872 18240 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 07:20:30,100 exceptions 17872 18240 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-01 07:20:30,101 log 17872 18240 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-01 07:20:33,359 exceptions 17872 18240 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:20:33,359 log 17872 18240 Bad Request: /api/v1/stories/
+WARNING 2026-07-01 07:20:34,349 exceptions 17872 18240 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-01 07:20:34,349 log 17872 18240 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-01 07:20:35,380 log 17872 18240 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-01 07:20:37,447 exceptions 17872 18240 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-01 07:20:37,448 log 17872 18240 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 07:20:37,451 exceptions 17872 18240 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-01 07:20:37,452 log 17872 18240 Bad Request: /api/v1/teams/
+WARNING 2026-07-01 07:20:41,608 log 17872 18240 Forbidden: /api/v1/teams/
