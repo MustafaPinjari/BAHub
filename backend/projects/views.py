@@ -87,7 +87,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             reqs_by_status[r.status] = reqs_by_status.get(r.status, 0) + 1
         reqs_by_category = {}
         for r in reqs:
-            reqs_by_category[r.category] = reqs_by_category.get(r.category, 0) + 1
+            reqs_by_category[r.req_type] = reqs_by_category.get(r.req_type, 0) + 1
 
         # 2. User Stories
         from stories.models import UserStory

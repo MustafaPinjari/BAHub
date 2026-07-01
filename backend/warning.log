@@ -382,3 +382,23 @@ WARNING 2026-07-01 07:26:30,321 log 4088 3380 Bad Request: /api/v1/teams/
 WARNING 2026-07-01 07:26:30,324 exceptions 4088 3380 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
 WARNING 2026-07-01 07:26:30,324 log 4088 3380 Bad Request: /api/v1/teams/
 WARNING 2026-07-01 07:26:34,542 log 4088 3380 Forbidden: /api/v1/teams/
+ERROR 2026-07-01 07:27:29,608 exceptions 13248 4540 Unhandled Server Error: 'Requirement' object has no attribute 'category'
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\projects\views.py", line 90, in report
+    reqs_by_category[r.category] = reqs_by_category.get(r.category, 0) + 1
+                                                        ^^^^^^^^^^
+AttributeError: 'Requirement' object has no attribute 'category'
+ERROR 2026-07-01 07:27:29,678 log 13248 4540 Internal Server Error: /api/v1/projects/abe2c2bb-cf57-428a-a6d7-80f9f0479c0b/report/
+ERROR 2026-07-01 07:27:29,680 basehttp 13248 4540 "GET /api/v1/projects/abe2c2bb-cf57-428a-a6d7-80f9f0479c0b/report/ HTTP/1.1" 500 143
+ERROR 2026-07-01 07:27:29,694 exceptions 13248 16476 Unhandled Server Error: 'Requirement' object has no attribute 'category'
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\projects\views.py", line 90, in report
+    reqs_by_category[r.category] = reqs_by_category.get(r.category, 0) + 1
+                                                        ^^^^^^^^^^
+AttributeError: 'Requirement' object has no attribute 'category'
+ERROR 2026-07-01 07:27:29,696 log 13248 16476 Internal Server Error: /api/v1/projects/abe2c2bb-cf57-428a-a6d7-80f9f0479c0b/report/
+ERROR 2026-07-01 07:27:29,697 basehttp 13248 16476 "GET /api/v1/projects/abe2c2bb-cf57-428a-a6d7-80f9f0479c0b/report/ HTTP/1.1" 500 143
