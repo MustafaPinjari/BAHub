@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { api } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
@@ -10,7 +10,8 @@ import {
   Wand2,
   Loader2,
   FolderGit,
-  ShieldCheck
+  ShieldCheck,
+  Info
 } from "lucide-react";
 
 interface Project {
@@ -73,6 +74,12 @@ export const RequirementsPage: React.FC = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // WebSocket Co-authoring States
+  const socketRef = useRef<WebSocket | null>(null);
+  const [activeUsers, setActiveUsers] = useState<string[]>([]);
+  const [typingUsers, setTypingUsers] = useState<Record<string, string>>({});
+  const [wsStatus, setWsStatus] = useState<"connecting" | "connected" | "disconnected">("disconnected");
+
   const canManage = user ? ["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER"].includes(user.role) : false;
 
   const fetchRequirements = async () => {
@@ -124,6 +131,97 @@ export const RequirementsPage: React.FC = () => {
       window.removeEventListener("activeProjectChanged", handleProjectChange);
     };
   }, []);
+
+  // WebSocket Live Sync Connection Effect
+  useEffect(() => {
+    if (!activeProject) return;
+
+    setWsStatus("connecting");
+    const accessToken = localStorage.getItem("accessToken") || "";
+    const wsScheme = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1";
+    const hostUrl = API_BASE_URL.replace(/^https?:\/\//, "").replace(/\/api\/v1\/?$/, "");
+    const wsUrl = `${wsScheme}//${hostUrl}/ws/projects/${activeProject.id}/requirements/?token=${accessToken}`;
+
+    const socket = new WebSocket(wsUrl);
+    socketRef.current = socket;
+
+    socket.onopen = () => {
+      setWsStatus("connected");
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const data = jsonParse(event.data);
+        if (!data) return;
+
+        if (data.type === "requirement.update") {
+          // Reload specifications silently from database
+          fetchRequirementsSilently();
+        } else if (data.type === "presence") {
+          setActiveUsers((prev) => {
+            const userExists = prev.includes(data.user);
+            if (data.status === "online" && !userExists) {
+              return [...prev, data.user];
+            } else if (data.status === "offline" && userExists) {
+              return prev.filter((u) => u !== data.user);
+            }
+            return prev;
+          });
+        } else if (data.type === "requirement.typing") {
+          setTypingUsers((prev) => {
+            const copy = { ...prev };
+            if (data.is_typing) {
+              copy[data.requirement_id] = data.user;
+            } else {
+              delete copy[data.requirement_id];
+            }
+            return copy;
+          });
+        }
+      } catch (err) {
+        console.error("Failed to parse socket message:", err);
+      }
+    };
+
+    socket.onclose = () => {
+      setWsStatus("disconnected");
+      setActiveUsers([]);
+      setTypingUsers({});
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, [activeProject]);
+
+  const jsonParse = (str: string) => {
+    try {
+      return JSON.parse(str);
+    } catch {
+      return null;
+    }
+  };
+
+  const fetchRequirementsSilently = async () => {
+    if (!activeProject) return;
+    try {
+      const res = await api.get<any, { data: Requirement[] }>(`/requirements/?project=${activeProject.id}`);
+      setRequirements(res.data);
+    } catch (err) {
+      console.error("Silent reload failed:", err);
+    }
+  };
+
+  const broadcastTyping = (reqId: string, isTyping: boolean) => {
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify({
+        type: "typing",
+        requirement_id: reqId,
+        is_typing: isTyping
+      }));
+    }
+  };
 
   const loadReqInEditor = (req: Requirement) => {
     setSelectedReq(req);
@@ -272,280 +370,341 @@ export const RequirementsPage: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col md:flex-row gap-5 items-stretch select-none text-foreground min-h-[75vh]">
-      {/* LEFT COLUMN: Backlog Spreadsheet Table */}
-      <div className="w-full md:w-[40%] flex flex-col gap-4">
-        <Card className="p-4 flex flex-col gap-4 flex-1">
-          <div className="flex justify-between items-center border-b border-border pb-3">
-            <div>
-              <h2 className="text-xs font-bold text-foreground uppercase tracking-wider">
-                Project Backlog
-              </h2>
-              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block mt-0.5">
-                Project: {activeProject.name}
-              </span>
-            </div>
-            {canManage && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCreateNew}
-                className="text-[10px] font-bold h-7 py-1 px-2.5 rounded"
-              >
-                <Plus className="w-3 h-3 mr-1" />
-                Add Req
-              </Button>
-            )}
-          </div>
-
-          {/* Quick Search */}
-          <Input
-            placeholder="Search backlog..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="text-xs py-1.5 h-8 rounded-md"
-          />
-
-          {loading ? (
-            <div className="flex items-center justify-center py-10 flex-1">
-              <Loader2 className="w-6 h-6 animate-spin text-primary mr-2" />
-              <span className="text-xs text-muted-foreground font-semibold">Loading backlog...</span>
-            </div>
-          ) : filteredReqs.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center text-xs text-muted-foreground flex-1">
-              <FileSpreadsheet className="w-8 h-8 text-muted-foreground/40 mb-2" />
-              <span>No requirements matching search found.</span>
-            </div>
+    <div className="flex flex-col gap-5 select-none text-foreground">
+      {/* Top Banner: Presence and Live Status */}
+      <Card className="p-4 py-3 flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-card border-border">
+        <div className="flex items-center gap-2">
+          {wsStatus === "connected" ? (
+            <Badge variant="success" className="gap-1.5 text-[10px] py-1 font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live Sync Active
+            </Badge>
+          ) : wsStatus === "connecting" ? (
+            <Badge variant="warning" className="gap-1.5 text-[10px] py-1 font-bold">
+              <Loader2 className="w-3 h-3 animate-spin text-current" />
+              Connecting Live Sync...
+            </Badge>
           ) : (
-            /* Backlog directory rows */
-            <div className="flex flex-col gap-2 overflow-y-auto max-h-[550px] pr-1">
-              {filteredReqs.map((req) => {
-                const isSelected = selectedReq?.id === req.id;
-                return (
-                  <div
-                    key={req.id}
-                    onClick={() => loadReqInEditor(req)}
-                    className={`p-3 border rounded-xl flex items-start justify-between gap-3 cursor-pointer text-left transition-all ${
-                      isSelected
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-border bg-card hover:border-primary/20"
-                    }`}
-                  >
-                    <div className="flex flex-col gap-0.5 overflow-hidden">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[9px] font-bold text-primary uppercase tracking-wider">{req.req_id}</span>
-                        {req.version !== "1.0" && <Badge variant="secondary" className="text-[8px] px-1 py-0 font-bold">v{req.version}</Badge>}
-                      </div>
-                      <h4 className="font-bold text-xs text-foreground truncate max-w-[200px] mt-0.5">{req.title}</h4>
-                      <span className="text-[9px] text-muted-foreground leading-none font-bold uppercase mt-1">
-                        Type: {req.req_type.replace("_", " ")}
-                      </span>
-                    </div>
+            <Badge variant="destructive" className="gap-1.5 text-[10px] py-1 font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+              Live Sync Offline
+            </Badge>
+          )}
 
-                    <div className="flex flex-col items-end gap-1.5 shrink-0">
-                      {getPriorityBadge(req.priority)}
-                      {getStatusBadge(req.status)}
-                    </div>
-                  </div>
-                );
-              })}
+          {activeUsers.length > 0 && (
+            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-500 ml-3">
+              <span>Collaborators:</span>
+              <div className="flex gap-1">
+                {activeUsers.map((username) => (
+                  <span
+                    key={username}
+                    className="bg-primary/10 border border-primary/20 text-primary px-1.5 py-0.5 rounded font-bold"
+                  >
+                    @{username}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
-        </Card>
-      </div>
+        </div>
+        
+        <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+          Requirement Workspace: {activeProject.name}
+        </span>
+      </Card>
 
-      {/* RIGHT COLUMN: Split Notion-Style Document Editor */}
-      <div className="w-full md:w-[60%] flex flex-col gap-4">
-        {selectedReq ? (
-          <Card className="p-6 flex flex-col gap-5 flex-1 relative bg-card border border-border">
-            
-            {/* Action Header Context */}
+      <div className="h-full flex flex-col md:flex-row gap-5 items-stretch min-h-[70vh]">
+        {/* LEFT COLUMN: Backlog Spreadsheet Table */}
+        <div className="w-full md:w-[40%] flex flex-col gap-4">
+          <Card className="p-4 flex flex-col gap-4 flex-1">
             <div className="flex justify-between items-center border-b border-border pb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-foreground uppercase tracking-wider">
-                  {selectedReq.id === "new" ? "New Requirement Profile" : "Notion-style editor"}
+              <div>
+                <h2 className="text-xs font-bold text-foreground uppercase tracking-wider">
+                  Project Backlog
+                </h2>
+                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider block mt-0.5">
+                  Requirements Registry
                 </span>
-                {selectedReq.id !== "new" && (
-                  <Badge variant="default" className="text-[9px]">
-                    v{editVersion}
-                  </Badge>
-                )}
               </div>
-              
-              <div className="flex items-center gap-2">
-                {canManage && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={triggerAIAssist}
-                    disabled={aiGenerating}
-                    className="text-[10px] font-bold h-7 py-1 px-2.5 rounded text-indigo-600 hover:text-indigo-700 bg-indigo-50 border border-indigo-100 flex items-center gap-1.5"
-                  >
-                    {aiGenerating ? (
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                    ) : (
-                      <Wand2 className="w-3 h-3" />
-                    )}
-                    AI Assist
-                  </Button>
-                )}
-                {selectedReq.id !== "new" && canManage && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleDelete}
-                    className="text-muted-foreground hover:text-destructive w-7 h-7 rounded"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {successMessage && <Alert variant="success">{successMessage}</Alert>}
-            {formError && <Alert variant="destructive">{formError}</Alert>}
-
-            {/* Document Workspace Form */}
-            <div className="flex flex-col gap-4 overflow-y-auto max-h-[460px] pr-1">
-              
-              {/* Document Title input */}
-              <div className="flex flex-col gap-1">
-                <input
-                  type="text"
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  placeholder="Requirement Title"
-                  disabled={!canManage}
-                  className="text-lg font-bold bg-transparent border-b border-transparent focus:border-border outline-none text-foreground pb-1"
-                />
-              </div>
-
-              {/* Grid Metadata options */}
-              <div className="grid grid-cols-2 gap-4 border-y border-border/60 py-3 bg-secondary/15 px-3 rounded-lg">
-                <Select
-                  label="Priority"
-                  value={editPriority}
-                  disabled={!canManage}
-                  onChange={(e) => setEditPriority(e.target.value as any)}
-                  options={[
-                    { value: "HIGH", label: "High" },
-                    { value: "MEDIUM", label: "Medium" },
-                    { value: "LOW", label: "Low" },
-                  ]}
-                />
-                <Select
-                  label="Type"
-                  value={editType}
-                  disabled={!canManage}
-                  onChange={(e) => setEditType(e.target.value as any)}
-                  options={[
-                    { value: "FUNCTIONAL", label: "Functional" },
-                    { value: "NON_FUNCTIONAL", label: "Non-Functional" },
-                    { value: "TECHNICAL", label: "Technical" },
-                    { value: "UI", label: "UI / UX" },
-                  ]}
-                />
-                <Select
-                  label="Status"
-                  value={editStatus}
-                  disabled={!canManage}
-                  onChange={(e) => setEditStatus(e.target.value as any)}
-                  options={[
-                    { value: "DRAFT", label: "Draft" },
-                    { value: "REVIEW", label: "In Review" },
-                    { value: "APPROVED", label: "Approved" },
-                    { value: "REJECTED", label: "Rejected" },
-                  ]}
-                />
-                <Select
-                  label="Traceability (Stakeholder)"
-                  value={editStakeholder}
-                  disabled={!canManage}
-                  onChange={(e) => setEditStakeholder(e.target.value)}
-                  options={[
-                    { value: "", label: "No linked stakeholder" },
-                    ...stakeholders.map((s) => ({
-                      value: s.id,
-                      label: `${s.name} (${s.title})`,
-                    })),
-                  ]}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Version"
-                  value={editVersion}
-                  disabled={!canManage}
-                  onChange={(e) => setEditVersion(e.target.value)}
-                  placeholder="e.g. 1.0"
-                />
-                {selectedReq.id !== "new" && (
-                  <div className="flex flex-col text-left">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Author</span>
-                    <span className="text-xs font-semibold text-foreground mt-2 truncate">
-                      @{selectedReq.created_by_username || "System Seeder"}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Requirement Description text body */}
-              <div className="flex flex-col gap-1 text-left mt-2">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Requirement Specification
-                </label>
-                <textarea
-                  value={editDesc}
-                  onChange={(e) => setEditDesc(e.target.value)}
-                  placeholder="Provide requirement definitions, schemas, and details..."
-                  rows={8}
-                  disabled={!canManage}
-                  className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-3 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
-                />
-              </div>
-            </div>
-
-            {/* Persistent/Sticky Action Bar */}
-            {canManage && (
-              <div className="flex items-center justify-end gap-2 border-t border-border pt-4 mt-auto">
-                {selectedReq.status === "REVIEW" && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setEditStatus("APPROVED");
-                      setSuccessMessage("Status queued to 'Approved'. Save specifications to apply.");
-                    }}
-                    className="text-xs font-bold py-1 px-3 border-emerald-200 text-emerald-600 hover:bg-emerald-50/50 flex items-center gap-1.5"
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    Approve
-                  </Button>
-                )}
-                
+              {canManage && (
                 <Button
-                  variant="primary"
+                  variant="outline"
                   size="sm"
-                  onClick={handleSave}
-                  isLoading={saving}
-                  className="text-xs font-bold py-1.5 px-4 flex items-center gap-1.5"
+                  onClick={handleCreateNew}
+                  className="text-[10px] font-bold h-7 py-1 px-2.5 rounded"
                 >
-                  <Save className="w-3.5 h-3.5" />
-                  Save Specifications
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Req
                 </Button>
+              )}
+            </div>
+
+            {/* Quick Search */}
+            <Input
+              placeholder="Search backlog..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="text-xs py-1.5 h-8 rounded-md"
+            />
+
+            {loading ? (
+              <div className="flex items-center justify-center py-10 flex-1">
+                <Loader2 className="w-6 h-6 animate-spin text-primary mr-2" />
+                <span className="text-xs text-muted-foreground font-semibold">Loading backlog...</span>
+              </div>
+            ) : filteredReqs.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center text-xs text-muted-foreground flex-1">
+                <FileSpreadsheet className="w-8 h-8 text-muted-foreground/40 mb-2" />
+                <span>No requirements matching search found.</span>
+              </div>
+            ) : (
+              /* Backlog directory rows */
+              <div className="flex flex-col gap-2 overflow-y-auto max-h-[500px] pr-1">
+                {filteredReqs.map((req) => {
+                  const isSelected = selectedReq?.id === req.id;
+                  const typingUser = typingUsers[req.id];
+                  return (
+                    <div
+                      key={req.id}
+                      onClick={() => loadReqInEditor(req)}
+                      className={`p-3 border rounded-xl flex items-start justify-between gap-3 cursor-pointer text-left transition-all ${
+                        isSelected
+                          ? "border-primary bg-primary/5 shadow-sm"
+                          : "border-border bg-card hover:border-primary/20"
+                      }`}
+                    >
+                      <div className="flex flex-col gap-0.5 overflow-hidden w-full">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[9px] font-bold text-primary uppercase tracking-wider">{req.req_id}</span>
+                          {req.version !== "1.0" && <Badge variant="secondary" className="text-[8px] px-1 py-0 font-bold">v{req.version}</Badge>}
+                        </div>
+                        <h4 className="font-bold text-xs text-foreground truncate max-w-[200px] mt-0.5">{req.title}</h4>
+                        <span className="text-[9px] text-muted-foreground leading-none font-bold uppercase mt-1">
+                          Type: {req.req_type.replace("_", " ")}
+                        </span>
+                        {typingUser && (
+                          <span className="text-[9px] font-bold text-indigo-500 animate-pulse mt-1.5 flex items-center gap-1">
+                            ✍️ @{typingUser} is editing...
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        {getPriorityBadge(req.priority)}
+                        {getStatusBadge(req.status)}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </Card>
-        ) : (
-          <Card className="flex-1 flex flex-col items-center justify-center text-center p-8 select-none text-foreground font-semibold">
-            <FileSpreadsheet className="w-10 h-10 text-muted-foreground/30 animate-pulse mb-3" />
-            <h3 className="text-sm font-bold uppercase tracking-wider">No Requirement Selected</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mt-1">
-              Select a requirement card from the project backlog table, or click "Add Req" to draft a new specification profile.
-            </p>
-          </Card>
-        )}
+        </div>
+
+        {/* RIGHT COLUMN: Split Notion-Style Document Editor */}
+        <div className="w-full md:w-[60%] flex flex-col gap-4">
+          {selectedReq ? (
+            <Card className="p-6 flex flex-col gap-5 flex-1 relative bg-card border border-border">
+              
+              {/* Action Header Context */}
+              <div className="flex justify-between items-center border-b border-border pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-foreground uppercase tracking-wider">
+                    {selectedReq.id === "new" ? "New Requirement Profile" : "Notion-style editor"}
+                  </span>
+                  {selectedReq.id !== "new" && (
+                    <Badge variant="default" className="text-[9px]">
+                      v{editVersion}
+                    </Badge>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  {canManage && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={triggerAIAssist}
+                      disabled={aiGenerating}
+                      className="text-[10px] font-bold h-7 py-1 px-2.5 rounded text-indigo-600 hover:text-indigo-700 bg-indigo-50 border border-indigo-100 flex items-center gap-1.5"
+                    >
+                      {aiGenerating ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Wand2 className="w-3 h-3" />
+                      )}
+                      AI Assist
+                    </Button>
+                  )}
+                  {selectedReq.id !== "new" && canManage && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleDelete}
+                      className="text-muted-foreground hover:text-destructive w-7 h-7 rounded"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {successMessage && <Alert variant="success">{successMessage}</Alert>}
+              {formError && <Alert variant="destructive">{formError}</Alert>}
+
+              {typingUsers[selectedReq.id] && (
+                <div className="flex items-center gap-1.5 text-[10px] text-indigo-600 bg-indigo-50 border border-indigo-200/50 p-2 rounded-lg font-semibold animate-pulse">
+                  <Info className="w-3.5 h-3.5" />
+                  <span>@{typingUsers[selectedReq.id]} is currently modifying this requirement.</span>
+                </div>
+              )}
+
+              {/* Document Workspace Form */}
+              <div className="flex flex-col gap-4 overflow-y-auto max-h-[420px] pr-1">
+                
+                {/* Document Title input */}
+                <div className="flex flex-col gap-1">
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    onFocus={() => broadcastTyping(selectedReq.id, true)}
+                    onBlur={() => broadcastTyping(selectedReq.id, false)}
+                    placeholder="Requirement Title"
+                    disabled={!canManage}
+                    className="text-lg font-bold bg-transparent border-b border-transparent focus:border-border outline-none text-foreground pb-1"
+                  />
+                </div>
+
+                {/* Grid Metadata options */}
+                <div className="grid grid-cols-2 gap-4 border-y border-border/60 py-3 bg-secondary/15 px-3 rounded-lg">
+                  <Select
+                    label="Priority"
+                    value={editPriority}
+                    disabled={!canManage}
+                    onChange={(e) => setEditPriority(e.target.value as any)}
+                    options={[
+                      { value: "HIGH", label: "High" },
+                      { value: "MEDIUM", label: "Medium" },
+                      { value: "LOW", label: "Low" },
+                    ]}
+                  />
+                  <Select
+                    label="Type"
+                    value={editType}
+                    disabled={!canManage}
+                    onChange={(e) => setEditType(e.target.value as any)}
+                    options={[
+                      { value: "FUNCTIONAL", label: "Functional" },
+                      { value: "NON_FUNCTIONAL", label: "Non-Functional" },
+                      { value: "TECHNICAL", label: "Technical" },
+                      { value: "UI", label: "UI / UX" },
+                    ]}
+                  />
+                  <Select
+                    label="Status"
+                    value={editStatus}
+                    disabled={!canManage}
+                    onChange={(e) => setEditStatus(e.target.value as any)}
+                    options={[
+                      { value: "DRAFT", label: "Draft" },
+                      { value: "REVIEW", label: "In Review" },
+                      { value: "APPROVED", label: "Approved" },
+                      { value: "REJECTED", label: "Rejected" },
+                    ]}
+                  />
+                  <Select
+                    label="Traceability (Stakeholder)"
+                    value={editStakeholder}
+                    disabled={!canManage}
+                    onChange={(e) => setEditStakeholder(e.target.value)}
+                    options={[
+                      { value: "", label: "No linked stakeholder" },
+                      ...stakeholders.map((s) => ({
+                        value: s.id,
+                        label: `${s.name} (${s.title})`,
+                      })),
+                    ]}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Version"
+                    value={editVersion}
+                    disabled={!canManage}
+                    onChange={(e) => setEditVersion(e.target.value)}
+                    placeholder="e.g. 1.0"
+                  />
+                  {selectedReq.id !== "new" && (
+                    <div className="flex flex-col text-left">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Author</span>
+                      <span className="text-xs font-semibold text-foreground mt-2 truncate">
+                        @{selectedReq.created_by_username || "System Seeder"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Requirement Description text body */}
+                <div className="flex flex-col gap-1 text-left mt-2">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Requirement Specification
+                  </label>
+                  <textarea
+                    value={editDesc}
+                    onChange={(e) => setEditDesc(e.target.value)}
+                    onFocus={() => broadcastTyping(selectedReq.id, true)}
+                    onBlur={() => broadcastTyping(selectedReq.id, false)}
+                    placeholder="Provide requirement definitions, schemas, and details..."
+                    rows={8}
+                    disabled={!canManage}
+                    className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-3 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Persistent/Sticky Action Bar */}
+              {canManage && (
+                <div className="flex items-center justify-end gap-2 border-t border-border pt-4 mt-auto">
+                  {selectedReq.status === "REVIEW" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditStatus("APPROVED");
+                        setSuccessMessage("Status queued to 'Approved'. Save specifications to apply.");
+                      }}
+                      className="text-xs font-bold py-1 px-3 border-emerald-200 text-emerald-600 hover:bg-emerald-50/50 flex items-center gap-1.5"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      Approve
+                    </Button>
+                  )}
+                  
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleSave}
+                    isLoading={saving}
+                    className="text-xs font-bold py-1.5 px-4 flex items-center gap-1.5"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    Save Specifications
+                  </Button>
+                </div>
+              )}
+            </Card>
+          ) : (
+            <Card className="flex-1 flex flex-col items-center justify-center text-center p-8 select-none text-foreground font-semibold">
+              <FileSpreadsheet className="w-10 h-10 text-muted-foreground/30 animate-pulse mb-3" />
+              <h3 className="text-sm font-bold uppercase tracking-wider">No Requirement Selected</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mt-1">
+                Select a requirement card from the project backlog table, or click "Add Req" to draft a new specification profile.
+              </p>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

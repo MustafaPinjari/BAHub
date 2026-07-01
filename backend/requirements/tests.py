@@ -108,3 +108,54 @@ class RequirementManagementTests(APITestCase):
         response = self.client.post(url, payload_invalid_stakeholder, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("source_stakeholder", response.data["errors"])
+
+    def test_websocket_connect_and_scoping(self):
+        """Verify that websocket connection validates token permissions and limits by tenant."""
+        from asgiref.sync import async_to_sync
+        from channels.testing import WebsocketCommunicator
+        from channels.routing import URLRouter
+        from django.urls import re_path
+        from requirements.consumers import RequirementConsumer
+        from rest_framework_simplejwt.tokens import AccessToken
+
+        token_a = str(AccessToken.for_user(self.analyst_a))
+
+        # Build testing application router
+        application = URLRouter([
+            re_path(r"ws/projects/(?P<project_id>[^/]+)/requirements/$", RequirementConsumer.as_asgi()),
+        ])
+
+        async def run_ws_test():
+            # 1. Connect analyst_a to Project A1 (Authorized)
+            communicator = WebsocketCommunicator(
+                application, 
+                f"/ws/projects/{self.project_a1.id}/requirements/?token={token_a}"
+            )
+            connected, _ = await communicator.connect()
+            self.assertTrue(connected)
+
+            # Check presence message on connect
+            res_presence = await communicator.receive_json_from()
+            self.assertEqual(res_presence["type"], "presence")
+            self.assertEqual(res_presence["user"], "analyst_a")
+            self.assertEqual(res_presence["status"], "online")
+
+            # Send typing notice
+            await communicator.send_json_to({
+                "type": "typing",
+                "requirement_id": "req-uuid-123",
+                "is_typing": True
+            })
+
+            # Disconnect
+            await communicator.disconnect()
+
+            # 2. Connect analyst_a to Project Gamma (Org B - Forbidden)
+            communicator_forbidden = WebsocketCommunicator(
+                application, 
+                f"/ws/projects/{self.project_b.id}/requirements/?token={token_a}"
+            )
+            connected_forbidden, _ = await communicator_forbidden.connect()
+            self.assertFalse(connected_forbidden)
+
+        async_to_sync(run_ws_test)()

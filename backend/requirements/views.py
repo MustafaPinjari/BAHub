@@ -1,5 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.permissions import IsAuthenticated
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from .models import Requirement
 from .serializers import RequirementSerializer
 from core.responses import api_success
@@ -8,7 +10,7 @@ from core.exceptions import ValidationError
 class RequirementViewSet(viewsets.ModelViewSet):
     """
     ViewSet handling Requirement CRUD operations.
-    Enforces tenant isolation and maps records to the active project context.
+    Enforces tenant isolation, maps records to active project context, and broadcasts real-time updates.
     """
     serializer_class = RequirementSerializer
     permission_classes = [IsAuthenticated]
@@ -27,8 +29,42 @@ class RequirementViewSet(viewsets.ModelViewSet):
             
         return queryset
 
+    def _broadcast_change(self, instance, action):
+        channel_layer = get_channel_layer()
+        if channel_layer:
+            async_to_sync(channel_layer.group_send)(
+                f"project_{instance.project_id}_requirements",
+                {
+                    "type": "requirement.update",
+                    "action": action,
+                    "requirement_id": str(instance.id),
+                    "user": self.request.user.username if self.request.user.is_authenticated else "system",
+                }
+            )
+
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+        self._broadcast_change(serializer.instance, "create")
+
+    def perform_update(self, serializer):
+        serializer.save()
+        self._broadcast_change(serializer.instance, "update")
+
+    def perform_destroy(self, instance):
+        project_id = instance.project_id
+        req_id = instance.id
+        instance.delete()
+        channel_layer = get_channel_layer()
+        if channel_layer:
+            async_to_sync(channel_layer.group_send)(
+                f"project_{project_id}_requirements",
+                {
+                    "type": "requirement.update",
+                    "action": "delete",
+                    "requirement_id": str(req_id),
+                    "user": self.request.user.username if self.request.user.is_authenticated else "system",
+                }
+            )
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
