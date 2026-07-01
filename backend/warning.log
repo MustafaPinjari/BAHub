@@ -751,3 +751,26 @@ WARNING 2026-07-01 08:54:19,549 log 13596 2216 Bad Request: /api/v1/teams/
 WARNING 2026-07-01 08:54:19,552 exceptions 13596 2216 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
 WARNING 2026-07-01 08:54:19,552 log 13596 2216 Bad Request: /api/v1/teams/
 WARNING 2026-07-01 08:54:22,578 log 13596 2216 Forbidden: /api/v1/teams/
+WARNING 2026-07-01 08:56:40,092 log 4692 6532 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-01 08:56:40,111 runserver 4692 16472 [31;1mHTTP POST /api/v1/auth/login/ 401 [1.29, 127.0.0.1:62169][0m
+WARNING 2026-07-01 08:57:26,122 log 4692 6532 Not Found: /
+WARNING 2026-07-01 08:57:26,126 runserver 4692 16472 [33mHTTP GET / 404 [0.10, 127.0.0.1:51413][0m
+WARNING 2026-07-01 08:57:26,312 log 4692 6532 Not Found: /favicon.ico
+WARNING 2026-07-01 08:57:26,316 runserver 4692 16472 [33mHTTP GET /favicon.ico 404 [0.03, 127.0.0.1:51413][0m
+WARNING 2026-07-01 08:58:10,341 log 4692 6532 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-01 08:58:10,343 runserver 4692 16472 [31;1mHTTP POST /api/v1/auth/login/ 401 [0.82, 127.0.0.1:58192][0m
+WARNING 2026-07-01 08:59:19,570 log 4692 16924 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-01 08:59:19,574 runserver 4692 16472 [31;1mHTTP POST /api/v1/auth/login/ 401 [0.97, 127.0.0.1:63811][0m
+WARNING 2026-07-01 09:00:59,096 log 4692 5864 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-01 09:00:59,098 runserver 4692 16472 [31;1mHTTP POST /api/v1/auth/login/ 401 [0.89, 127.0.0.1:63378][0m
+WARNING 2026-07-01 09:01:34,113 log 4692 6532 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-01 09:01:34,115 runserver 4692 16472 [31;1mHTTP POST /api/v1/auth/login/ 401 [0.99, 127.0.0.1:63378][0m
+WARNING 2026-07-01 09:01:53,322 log 4692 5864 Not Found: /api/v1/
+WARNING 2026-07-01 09:01:53,323 runserver 4692 16472 [33mHTTP GET /api/v1/ 404 [0.03, 127.0.0.1:57719][0m
+WARNING 2026-07-01 09:02:10,884 exceptions 4692 14752 API Error (405): Method "GET" not allowed.
+WARNING 2026-07-01 09:02:11,825 log 4692 6532 Method Not Allowed: /api/v1/auth/login/
+WARNING 2026-07-01 09:02:11,827 runserver 4692 16472 [31;1mHTTP GET /api/v1/auth/login/ 405 [0.96, 127.0.0.1:57719][0m
+WARNING 2026-07-01 09:04:06,793 log 4692 5864 Not Found: /api/v1/
+WARNING 2026-07-01 09:04:06,794 runserver 4692 16472 [33mHTTP GET /api/v1/ 404 [0.02, 127.0.0.1:62800][0m
+WARNING 2026-07-01 09:04:06,868 log 4692 6532 Not Found: /favicon.ico
+WARNING 2026-07-01 09:04:06,869 runserver 4692 16472 [33mHTTP GET /favicon.ico 404 [0.01, 127.0.0.1:62800][0m
