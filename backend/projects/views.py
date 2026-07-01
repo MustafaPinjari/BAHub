@@ -4,6 +4,7 @@ from .models import Project, ProjectMember
 from .serializers import ProjectSerializer, ProjectMemberSerializer
 from core.responses import api_success
 from core.exceptions import ValidationError
+from rest_framework.decorators import action
 
 class ProjectViewSet(viewsets.ModelViewSet):
     """
@@ -73,6 +74,88 @@ class ProjectViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return api_success(message="Project soft-deleted successfully.")
+
+    @action(detail=True, methods=["get"], url_path="report")
+    def report(self, request, pk=None):
+        project = self.get_object()
+        
+        # 1. Requirements
+        reqs = project.requirements.all()
+        reqs_total = reqs.count()
+        reqs_by_status = {}
+        for r in reqs:
+            reqs_by_status[r.status] = reqs_by_status.get(r.status, 0) + 1
+        reqs_by_category = {}
+        for r in reqs:
+            reqs_by_category[r.category] = reqs_by_category.get(r.category, 0) + 1
+
+        # 2. User Stories
+        from stories.models import UserStory
+        stories = UserStory.objects.filter(requirement__project=project)
+        stories_total = stories.count()
+        stories_by_status = {}
+        total_points = 0
+        for s in stories:
+            stories_by_status[s.status] = stories_by_status.get(s.status, 0) + 1
+            if s.points:
+                total_points += s.points
+
+        # 3. Risks
+        risks = project.risks.all()
+        risks_total = risks.count()
+        risks_by_prob = {}
+        risks_by_impact = {}
+        risks_by_status = {}
+        for r in risks:
+            risks_by_prob[r.probability] = risks_by_prob.get(r.probability, 0) + 1
+            risks_by_impact[r.impact] = risks_by_impact.get(r.impact, 0) + 1
+            risks_by_status[r.status] = risks_by_status.get(r.status, 0) + 1
+
+        # 4. Change Requests
+        crs = project.change_requests.all()
+        crs_total = crs.count()
+        crs_by_status = {}
+        for c in crs:
+            crs_by_status[c.status] = crs_by_status.get(c.status, 0) + 1
+
+        # 5. Meetings & Action Items
+        meetings_count = project.meetings.count()
+        from meetings.models import ActionItem
+        actions = ActionItem.objects.filter(meeting__project=project)
+        actions_total = actions.count()
+        actions_open = actions.filter(status="OPEN").count() + actions.filter(status="IN_PROGRESS").count()
+        actions_completed = actions.filter(status="COMPLETED").count()
+
+        data = {
+            "requirements": {
+                "total": reqs_total,
+                "by_status": reqs_by_status,
+                "by_category": reqs_by_category,
+            },
+            "stories": {
+                "total": stories_total,
+                "by_status": stories_by_status,
+                "total_points": total_points,
+            },
+            "risks": {
+                "total": risks_total,
+                "by_probability": risks_by_prob,
+                "by_impact": risks_by_impact,
+                "by_status": risks_by_status,
+            },
+            "changes": {
+                "total": crs_total,
+                "by_status": crs_by_status,
+            },
+            "meetings": {
+                "total": meetings_count,
+                "action_items_total": actions_total,
+                "action_items_open": actions_open,
+                "action_items_completed": actions_completed,
+            }
+        }
+        
+        return api_success(data=data, message="Project strategic report compiled successfully.")
 
 class ProjectMemberViewSet(viewsets.ModelViewSet):
     """

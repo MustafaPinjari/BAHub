@@ -21,6 +21,7 @@ import { RisksPage } from "./features/risks/RisksPage";
 import { ChangeRequestsPage } from "./features/changes/ChangeRequestsPage";
 import { SwotAnalysisPage } from "./features/strategic/SwotAnalysisPage";
 import { GapAnalysisPage } from "./features/strategic/GapAnalysisPage";
+import { ReportsPage } from "./features/reports/ReportsPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -122,6 +123,8 @@ const MainAppContent: React.FC = () => {
         return <SwotAnalysisPage />;
       case "gap":
         return <GapAnalysisPage />;
+      case "reports":
+        return <ReportsPage />;
       default:
         // Elegant placeholder for subsequent sequential modules
         return (

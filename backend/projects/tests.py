@@ -84,3 +84,14 @@ class ProjectManagementTests(APITestCase):
         response = self.client.post(url, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("non_field_errors", response.data["errors"])
+
+    def test_project_strategic_report(self):
+        """Verify project strategic report compilation endpoint aggregates metrics."""
+        self.client.force_authenticate(user=self.analyst_a)
+        url = reverse("project-report", kwargs={"pk": str(self.project_a1.id)})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("requirements", response.data["data"])
+        self.assertIn("stories", response.data["data"])
+        self.assertIn("risks", response.data["data"])
+        self.assertIn("meetings", response.data["data"])
