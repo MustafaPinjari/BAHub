@@ -63,15 +63,15 @@ All core phases of the product roadmap have been fully implemented, integrated, 
 - **Backend**: Configured Daphne ASGI servers, WebSocket protocol routes, and `RequirementConsumer` validating simple JWT token query params and broadcasting presence/typing events securely.
 - **Frontend**: Integrated live connection badges, active collaborator presence indicators, catalog typing flags, and silent backlog synchronizers.
 
+### Phase 14: Direct PDF & Word Compilations
+- **Backend**: Added custom action endpoints translating markdown text bodies to native Word (.docx) files via python-docx and styled A4 layout PDFs via ReportLab.
+- **Frontend**: Integrated action triggers for PDF and Word downloads in the BRD/FRD preview dashboards, saving raw binary streams directly as local files.
+
 ---
 
 ## ⏳ Future Strategic Roadmap Backlog (Not Completed)
 
-These represent enterprise strategic features queued for subsequent releases:
-
-### Phase 14: Direct PDF & Word Compilations
-- **Status**: *Not Started (Backlog)*
-- **Details**: Exporting generated BRD/FRD templates directly to styled PDF and DOCX file types, bypassing plain markdown copy-paste.
+All roadmap phases are completed. There are no items currently in the strategic backlog.
 
 ### Phase 15: Production LLM Orchestrator
 - **Status**: *Not Started (Backlog)*
@@ -81,6 +81,6 @@ These represent enterprise strategic features queued for subsequent releases:
 
 ## 🚦 Summary Statistics
 
-- **Total Verification Unit Tests**: **35 Tests** (`OK`)
+- **Total Verification Unit Tests**: **36 Tests** (`OK`)
 - **Vite Frontend Compile Build**: **Successful** (`zero errors / zero warnings`)
 - **Multi-Tenant Scoping**: Enforced on all models (100% Tenant Scoped)

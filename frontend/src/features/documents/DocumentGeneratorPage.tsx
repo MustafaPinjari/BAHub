@@ -13,7 +13,9 @@ import {
   ClipboardList,
   Save,
   Send,
-  X
+  X,
+  Download,
+  FileDown
 } from "lucide-react";
 
 interface Project {
@@ -210,6 +212,60 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
       fetchDocuments();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!selectedDoc) return;
+    setSaving(true);
+    setFormError(null);
+    setSuccessMessage(null);
+    try {
+      const res = await api.get(`/documents/${selectedDoc.id}/export-pdf/`, {
+        responseType: "blob"
+      } as any);
+      
+      const blob = new Blob([res as any], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${selectedDoc.title}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      setSuccessMessage("PDF exported successfully.");
+    } catch (err: any) {
+      setFormError("Failed to export PDF document.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleExportWord = async () => {
+    if (!selectedDoc) return;
+    setSaving(true);
+    setFormError(null);
+    setSuccessMessage(null);
+    try {
+      const res = await api.get(`/documents/${selectedDoc.id}/export-word/`, {
+        responseType: "blob"
+      } as any);
+      
+      const blob = new Blob([res as any], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${selectedDoc.title}.docx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      setSuccessMessage("Word document exported successfully.");
+    } catch (err: any) {
+      setFormError("Failed to export Word document.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -497,6 +553,28 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
               </div>
 
               <div className="flex items-center gap-2">
+                {/* Export Buttons */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportPDF}
+                  disabled={saving}
+                  className="text-[10px] font-bold h-7.5 py-1 px-3 border border-red-200 text-red-600 hover:bg-red-50/50 rounded flex items-center gap-1.5"
+                >
+                  <Download className="w-3 h-3" />
+                  PDF
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportWord}
+                  disabled={saving}
+                  className="text-[10px] font-bold h-7.5 py-1 px-3 border border-blue-200 text-blue-600 hover:bg-blue-50/50 rounded flex items-center gap-1.5"
+                >
+                  <FileDown className="w-3.5 h-3.5" />
+                  Word
+                </Button>
+
                 {selectedDoc.status === "DRAFT" && canManage && (
                   <Button
                     variant="outline"

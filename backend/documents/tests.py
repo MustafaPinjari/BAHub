@@ -94,3 +94,38 @@ class DocumentManagementTests(APITestCase):
         self.assertEqual(res_sign_ok.status_code, status.HTTP_200_OK)
         self.assertEqual(res_sign_ok.data["data"]["status"], "SIGNED_OFF")
         self.assertEqual(res_sign_ok.data["data"]["signed_off_by_username"], "po_a")
+
+    def test_document_exports(self):
+        """Verify direct PDF and Word export streams and their tenant bounds."""
+        doc = BusinessDocument.objects.create(
+            project=self.project_a,
+            doc_type="BRD",
+            title="Export Spec",
+            content="# Document Title\n\n## Section 1\nSome paragraph text here.\n\n| Col A | Col B |\n| --- | --- |\n| Val 1 | Val 2 |",
+            created_by=self.analyst_a
+        )
+
+        # Export PDF (as analyst_a, who belongs to Org A) -> should succeed
+        self.client.force_authenticate(user=self.analyst_a)
+        url_pdf = reverse("document-export-pdf", kwargs={"pk": doc.id})
+        res_pdf = self.client.get(url_pdf)
+        self.assertEqual(res_pdf.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_pdf.headers["Content-Type"], "application/pdf")
+        self.assertIn("attachment; filename=", res_pdf.headers["Content-Disposition"])
+
+        # Export Word (as analyst_a) -> should succeed
+        url_word = reverse("document-export-word", kwargs={"pk": doc.id})
+        res_word = self.client.get(url_word)
+        self.assertEqual(res_word.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_word.headers["Content-Type"], "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        self.assertIn("attachment; filename=", res_word.headers["Content-Disposition"])
+
+        # Create user b in Org B
+        user_b = User.objects.create_user(
+            username="user_b", password="Password123!", role=User.BUSINESS_ANALYST, organization=self.org_b
+        )
+        self.client.force_authenticate(user=user_b)
+        
+        # Export PDF of Doc A (Org A) as User B (Org B) -> should be denied
+        res_pdf_deny = self.client.get(url_pdf)
+        self.assertEqual(res_pdf_deny.status_code, status.HTTP_404_NOT_FOUND)

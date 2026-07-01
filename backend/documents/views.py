@@ -1,7 +1,18 @@
 import datetime
+import io
+import markdown
+from django.http import FileResponse
 from rest_framework import viewsets, permissions, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
+from docx import Document
+
+# Pure-python PDF library (robust across environments)
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+
 from .models import BusinessDocument
 from .serializers import BusinessDocumentSerializer
 from projects.models import Project
@@ -60,7 +71,6 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
         stakeholders = project.stakeholders.all()
         requirements = project.requirements.all()
 
-        # Build markdown template
         content = f"# Business Document: {doc_type} - {project.name}\n\n"
         content += "## 1. Document Control & Scope\n"
         content += f"- **Project Scope**: {project.name}\n"
@@ -168,3 +178,218 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return api_success(message="Document deleted successfully.", status_code=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"], url_path="export-pdf")
+    def export_pdf(self, request, pk=None):
+        document = self.get_object()
+        pdf_io = io.BytesIO()
+        self._generate_pdf_reportlab(document, pdf_io)
+        pdf_io.seek(0)
+        
+        response = FileResponse(pdf_io, content_type='application/pdf')
+        safe_title = "".join(x for x in document.title if x.isalnum() or x in "._- ")
+        response['Content-Disposition'] = f'attachment; filename="{safe_title}.pdf"'
+        return response
+
+    @action(detail=True, methods=["get"], url_path="export-word")
+    def export_word(self, request, pk=None):
+        document = self.get_object()
+        doc = self._markdown_to_docx(document.content)
+        word_io = io.BytesIO()
+        doc.save(word_io)
+        word_io.seek(0)
+        
+        response = FileResponse(word_io, content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        safe_title = "".join(x for x in document.title if x.isalnum() or x in "._- ")
+        response['Content-Disposition'] = f'attachment; filename="{safe_title}.docx"'
+        return response
+
+    def _generate_pdf_reportlab(self, document, stream):
+        doc = SimpleDocTemplate(stream, pagesize=A4, rightMargin=54, leftMargin=54, topMargin=54, bottomMargin=54)
+        story = []
+        styles = getSampleStyleSheet()
+        
+        title_style = ParagraphStyle(
+            'DocTitle',
+            parent=styles['Heading1'],
+            fontName='Helvetica-Bold',
+            fontSize=22,
+            leading=26,
+            textColor=colors.HexColor('#1E3A8A'),
+            spaceAfter=15
+        )
+        h2_style = ParagraphStyle(
+            'DocH2',
+            parent=styles['Heading2'],
+            fontName='Helvetica-Bold',
+            fontSize=14,
+            leading=18,
+            textColor=colors.HexColor('#2563EB'),
+            spaceBefore=15,
+            spaceAfter=10
+        )
+        body_style = ParagraphStyle(
+            'DocBody',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=9.5,
+            leading=13.5,
+            textColor=colors.HexColor('#334155'),
+            spaceAfter=8
+        )
+        bullet_style = ParagraphStyle(
+            'DocBullet',
+            parent=styles['Normal'],
+            fontName='Helvetica',
+            fontSize=9.5,
+            leading=13.5,
+            leftIndent=15,
+            firstLineIndent=-10,
+            textColor=colors.HexColor('#334155'),
+            spaceAfter=4
+        )
+        
+        lines = document.content.split('\n')
+        table_rows = []
+        in_table = False
+        
+        for line in lines:
+            stripped = line.strip()
+            
+            if stripped.startswith('|'):
+                in_table = True
+                cells = [c.strip() for c in stripped.split('|')[1:-1]]
+                if cells and all(c.startswith('-') for c in cells):
+                    continue
+                table_rows.append(cells)
+                continue
+            else:
+                if in_table:
+                    if table_rows:
+                        formatted_rows = []
+                        for row_idx, r_data in enumerate(table_rows):
+                            formatted_row = []
+                            for cell_val in r_data:
+                                c_style = ParagraphStyle('Cell', parent=body_style, fontSize=8, leading=10)
+                                if row_idx == 0:
+                                    c_style = ParagraphStyle('HeaderCell', parent=body_style, fontName='Helvetica-Bold', fontSize=8, leading=10, textColor=colors.white)
+                                formatted_row.append(Paragraph(cell_val, c_style))
+                            formatted_rows.append(formatted_row)
+                        
+                        t = Table(formatted_rows)
+                        t_style = [
+                            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#CBD5E1')),
+                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2563EB')),
+                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                            ('TOPPADDING', (0, 0), (-1, -1), 5),
+                            ('LEFTPADDING', (0, 0), (-1, -1), 5),
+                            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+                        ]
+                        for r_idx in range(1, len(table_rows)):
+                            if r_idx % 2 == 0:
+                                t_style.append(('BACKGROUND', (0, r_idx), (-1, r_idx), colors.HexColor('#F8FAFC')))
+                        t.setStyle(TableStyle(t_style))
+                        story.append(t)
+                        story.append(Spacer(1, 8))
+                    table_rows = []
+                    in_table = False
+                    
+            if not stripped:
+                continue
+                
+            if stripped.startswith('# '):
+                story.append(Paragraph(stripped[2:], title_style))
+            elif stripped.startswith('## '):
+                story.append(Paragraph(stripped[3:], h2_style))
+            elif stripped.startswith('### '):
+                story.append(Paragraph(stripped[4:], styles['Heading3']))
+            elif stripped.startswith('- '):
+                story.append(Paragraph(f"&bull; {stripped[2:]}", bullet_style))
+            elif stripped.startswith('* '):
+                story.append(Paragraph(f"&bull; {stripped[2:]}", bullet_style))
+            else:
+                story.append(Paragraph(stripped, body_style))
+                
+        if in_table and table_rows:
+            formatted_rows = []
+            for row_idx, r_data in enumerate(table_rows):
+                formatted_row = []
+                for cell_val in r_data:
+                    c_style = ParagraphStyle('Cell', parent=body_style, fontSize=8, leading=10)
+                    if row_idx == 0:
+                        c_style = ParagraphStyle('HeaderCell', parent=body_style, fontName='Helvetica-Bold', fontSize=8, leading=10, textColor=colors.white)
+                    formatted_row.append(Paragraph(cell_val, c_style))
+                formatted_rows.append(formatted_row)
+            t = Table(formatted_rows)
+            t_style = [
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#CBD5E1')),
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2563EB')),
+            ]
+            for r_idx in range(1, len(table_rows)):
+                if r_idx % 2 == 0:
+                    t_style.append(('BACKGROUND', (0, r_idx), (-1, r_idx), colors.HexColor('#F8FAFC')))
+            t.setStyle(TableStyle(t_style))
+            story.append(t)
+            
+        doc.build(story)
+
+    def _markdown_to_docx(self, markdown_text):
+        doc = Document()
+        lines = markdown_text.split('\n')
+        
+        table_rows = []
+        in_table = False
+        
+        for line in lines:
+            stripped = line.strip()
+            
+            if stripped.startswith('|'):
+                in_table = True
+                cells = [c.strip() for c in stripped.split('|')[1:-1]]
+                if cells and all(c.startswith('-') for c in cells):
+                    continue
+                table_rows.append(cells)
+                continue
+            else:
+                if in_table:
+                    if table_rows:
+                        num_cols = len(table_rows[0])
+                        table = doc.add_table(rows=0, cols=num_cols)
+                        table.style = 'Table Grid'
+                        for r_data in table_rows:
+                            row_cells = table.add_row().cells
+                            for col_idx, cell_value in enumerate(r_data):
+                                if col_idx < len(row_cells):
+                                    row_cells[col_idx].text = cell_value
+                    table_rows = []
+                    in_table = False
+
+            if not stripped:
+                continue
+                
+            if stripped.startswith('# '):
+                doc.add_heading(stripped[2:], level=1)
+            elif stripped.startswith('## '):
+                doc.add_heading(stripped[3:], level=2)
+            elif stripped.startswith('### '):
+                doc.add_heading(stripped[4:], level=3)
+            elif stripped.startswith('- '):
+                doc.add_paragraph(stripped[2:], style='List Bullet')
+            elif stripped.startswith('* '):
+                doc.add_paragraph(stripped[2:], style='List Bullet')
+            else:
+                doc.add_paragraph(stripped)
+                
+        if in_table and table_rows:
+            num_cols = len(table_rows[0])
+            table = doc.add_table(rows=0, cols=num_cols)
+            table.style = 'Table Grid'
+            for r_data in table_rows:
+                row_cells = table.add_row().cells
+                for col_idx, cell_value in enumerate(r_data):
+                    if col_idx < len(row_cells):
+                        row_cells[col_idx].text = cell_value
+                        
+        return doc
