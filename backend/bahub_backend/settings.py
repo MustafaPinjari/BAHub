@@ -168,8 +168,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS Configurations
 CORS_ALLOWED_ORIGINS = [
-    origin.strip() for origin in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",") if origin.strip()
+    origin.strip().rstrip("/") for origin in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",") if origin.strip()
 ]
+# Ensure production Netlify host is always allowed
+production_origin = "https://ba-assistant.netlify.app"
+if production_origin not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append(production_origin)
+
 # Ensure other standard local dev ports are allowed in DEBUG mode to prevent port-conflict CORS errors
 if DEBUG:
     for port in ["5174", "5175", "5176"]:
