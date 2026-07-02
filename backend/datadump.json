@@ -1,0 +1,857 @@
+[
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 1,
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "jti": "1c97d70ecbd04f40a21b19c34a4ffa96",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUwMjc2MSwiaWF0IjoxNzgyODk3OTYxLCJqdGkiOiIxYzk3ZDcwZWNiZDA0ZjQwYTIxYjE5YzM0YTRmZmE5NiIsInVzZXJfaWQiOiJlYTYyNTA0My05ODZmLTQ5MmItOWM3OS1lZjljZWUxYzljYTYiLCJyb2xlIjoiQURNSU4iLCJvcmdhbml6YXRpb25faWQiOiJiZGRjNTk3ZC1kZjFhLTQ4ZGUtYWNjYy05NThhMjE5NDdjM2IiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBiYWh1Yi5sb2NhbCJ9.NFd-KjzbapdWOfEP7rhLqTXGIGnU1ieU7ZkPCMt126s",
+        "created_at": "2026-07-01T10:48:01.447Z",
+        "expires_at": "2026-07-08T09:26:01Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 2,
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "jti": "e03b9340d39d4de999a8ad60a21e9634",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUwNzY4MSwiaWF0IjoxNzgyOTAyODgxLCJqdGkiOiJlMDNiOTM0MGQzOWQ0ZGU5OTlhOGFkNjBhMjFlOTYzNCIsInVzZXJfaWQiOiJlYTYyNTA0My05ODZmLTQ5MmItOWM3OS1lZjljZWUxYzljYTYiLCJyb2xlIjoiQURNSU4iLCJvcmdhbml6YXRpb25faWQiOiJiZGRjNTk3ZC1kZjFhLTQ4ZGUtYWNjYy05NThhMjE5NDdjM2IiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBiYWh1Yi5sb2NhbCJ9.rC6wIoPIVqkm0T-HwsuksC6S4CXBVU1PAW6yxtM9IRs",
+        "created_at": "2026-07-01T10:48:01.447Z",
+        "expires_at": "2026-07-08T10:48:01Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 3,
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "jti": "bcd867ab1bcf45fdaac9c10c1511a168",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUwNzY5NywiaWF0IjoxNzgyOTAyODk3LCJqdGkiOiJiY2Q4NjdhYjFiY2Y0NWZkYWFjOWMxMGMxNTExYTE2OCIsInVzZXJfaWQiOiJlYTYyNTA0My05ODZmLTQ5MmItOWM3OS1lZjljZWUxYzljYTYifQ.JbdwZdiuzEIPeiUmeJ4CawOixesAVk5slSx3fAvfrjg",
+        "created_at": "2026-07-01T10:48:17.111Z",
+        "expires_at": "2026-07-08T10:48:17Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 4,
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "jti": "77a434a4eeeb46658a49eb1cac4e00f2",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUxNDcwOCwiaWF0IjoxNzgyOTA5OTA4LCJqdGkiOiI3N2E0MzRhNGVlZWI0NjY1OGE0OWViMWNhYzRlMDBmMiIsInVzZXJfaWQiOiJlYTYyNTA0My05ODZmLTQ5MmItOWM3OS1lZjljZWUxYzljYTYiLCJyb2xlIjoiQURNSU4iLCJvcmdhbml6YXRpb25faWQiOiJiZGRjNTk3ZC1kZjFhLTQ4ZGUtYWNjYy05NThhMjE5NDdjM2IiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBiYWh1Yi5sb2NhbCJ9.pNCuRKJxG0o4N31yrJBUtEJUQgwIf2xWJfeFTZmvHWo",
+        "created_at": "2026-07-01T12:45:08.522Z",
+        "expires_at": "2026-07-08T12:45:08Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 5,
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "jti": "2b1a26ec78b1475d9d8a6e50b8c00c38",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUxNDcyNCwiaWF0IjoxNzgyOTA5OTI0LCJqdGkiOiIyYjFhMjZlYzc4YjE0NzVkOWQ4YTZlNTBiOGMwMGMzOCIsInVzZXJfaWQiOiJlYTYyNTA0My05ODZmLTQ5MmItOWM3OS1lZjljZWUxYzljYTYifQ.Oq3WGBOCR-a7-dZwU2MJmdPDyxz02H22tpXJW6S0X90",
+        "created_at": "2026-07-01T12:45:24.600Z",
+        "expires_at": "2026-07-08T12:45:24Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 6,
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "jti": "310df1b0a0274b61b95f59c241a0a0cc",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUxNDgwNiwiaWF0IjoxNzgyOTEwMDA2LCJqdGkiOiIzMTBkZjFiMGEwMjc0YjYxYjk1ZjU5YzI0MWEwYTBjYyIsInVzZXJfaWQiOiI0OWNhNGQyYi04MDliLTQxYWMtYTBiZS1mYjUyMzBlZDI1NDAifQ._bHPc-p1gHeKw5i8G_nGVhxmQikB2r_U20de-6r0iII",
+        "created_at": "2026-07-01T12:46:46.735Z",
+        "expires_at": "2026-07-08T12:46:46Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 7,
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "jti": "3a91baa08c4c4ad5870be18d8e2dfc40",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUxNDg3OCwiaWF0IjoxNzgyOTEwMDc4LCJqdGkiOiIzYTkxYmFhMDhjNGM0YWQ1ODcwYmUxOGQ4ZTJkZmM0MCIsInVzZXJfaWQiOiI0OWNhNGQyYi04MDliLTQxYWMtYTBiZS1mYjUyMzBlZDI1NDAifQ.Kp4YyRACD1hzLShDK2GHyMYVI_erZVtn2RYsgy_gpXo",
+        "created_at": "2026-07-01T12:47:58.006Z",
+        "expires_at": "2026-07-08T12:47:58Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 8,
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "jti": "f41834e188cf42ab8f2b3c8d8dafab3a",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUyMjg4MywiaWF0IjoxNzgyOTE4MDgzLCJqdGkiOiJmNDE4MzRlMTg4Y2Y0MmFiOGYyYjNjOGQ4ZGFmYWIzYSIsInVzZXJfaWQiOiI0OWNhNGQyYi04MDliLTQxYWMtYTBiZS1mYjUyMzBlZDI1NDAiLCJyb2xlIjoiQlVTSU5FU1NfQU5BTFlTVCIsIm9yZ2FuaXphdGlvbl9pZCI6ImJkZGM1OTdkLWRmMWEtNDhkZS1hY2NjLTk1OGEyMTk0N2MzYiIsInVzZXJuYW1lIjoiYW5hbHlzdCIsImVtYWlsIjoiYW5hbHlzdEBiYWh1Yi5sb2NhbCJ9.OZuv4Eai-nopFwpJQJiXQy8jZ-W-kHGvx1bTgdWEmV4",
+        "created_at": "2026-07-01T15:01:23.688Z",
+        "expires_at": "2026-07-08T15:01:23Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 9,
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "jti": "452a14839a6544b0a51a10bdcf507d61",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUyMjkwMywiaWF0IjoxNzgyOTE4MTAzLCJqdGkiOiI0NTJhMTQ4MzlhNjU0NGIwYTUxYTEwYmRjZjUwN2Q2MSIsInVzZXJfaWQiOiI0OWNhNGQyYi04MDliLTQxYWMtYTBiZS1mYjUyMzBlZDI1NDAifQ.WGrSTd-7N4C-5zHbBTABeHTmyr3Gm3yyLTPsjnqmbXI",
+        "created_at": "2026-07-01T15:01:43.392Z",
+        "expires_at": "2026-07-08T15:01:43Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 10,
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "jti": "d6ba1938e8ea405a91a2c761fe7b72e5",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzUyMzU5NSwiaWF0IjoxNzgyOTE4Nzk1LCJqdGkiOiJkNmJhMTkzOGU4ZWE0MDVhOTFhMmM3NjFmZTdiNzJlNSIsInVzZXJfaWQiOiJlYTYyNTA0My05ODZmLTQ5MmItOWM3OS1lZjljZWUxYzljYTYifQ.HLTUYX3WM7q6mJNS4IbI6aUT6d-y_ByBt7HOtiLJMQA",
+        "created_at": "2026-07-01T15:13:15.352Z",
+        "expires_at": "2026-07-08T15:13:15Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 11,
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "jti": "91f4a09075a44207b871e0b58251f091",
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzU2ODQ5NSwiaWF0IjoxNzgyOTYzNjk1LCJqdGkiOiI5MWY0YTA5MDc1YTQ0MjA3Yjg3MWUwYjU4MjUxZjA5MSIsInVzZXJfaWQiOiJlYTYyNTA0My05ODZmLTQ5MmItOWM3OS1lZjljZWUxYzljYTYiLCJyb2xlIjoiQURNSU4iLCJvcmdhbml6YXRpb25faWQiOiJiZGRjNTk3ZC1kZjFhLTQ4ZGUtYWNjYy05NThhMjE5NDdjM2IiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBiYWh1Yi5sb2NhbCJ9.zGBYfIJQf9wsc2ezbPSLkeT_KbnBQU2BpdqBUjNGyKk",
+        "created_at": "2026-07-02T03:41:35.676Z",
+        "expires_at": "2026-07-09T03:41:35Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 12,
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "jti": "75d886413fe34cb38c14414c3b06a48b",
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4MzU2ODUxMiwiaWF0IjoxNzgyOTYzNzEyLCJqdGkiOiI3NWQ4ODY0MTNmZTM0Y2IzOGMxNDQxNGMzYjA2YTQ4YiIsInVzZXJfaWQiOiJlYTYyNTA0My05ODZmLTQ5MmItOWM3OS1lZjljZWUxYzljYTYifQ.1oE8ml6f7TxMn2k9jXdXXOddLp0CapiAgkCZGsHLTKM",
+        "created_at": "2026-07-02T03:41:52.859Z",
+        "expires_at": "2026-07-09T03:41:52Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 1,
+    "fields": {
+        "token": 1,
+        "blacklisted_at": "2026-07-01T10:48:05.588Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 2,
+    "fields": {
+        "token": 3,
+        "blacklisted_at": "2026-07-01T12:45:13.616Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 3,
+    "fields": {
+        "token": 7,
+        "blacklisted_at": "2026-07-01T15:01:27.136Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 4,
+    "fields": {
+        "token": 6,
+        "blacklisted_at": "2026-07-01T15:13:04.378Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 5,
+    "fields": {
+        "token": 8,
+        "blacklisted_at": "2026-07-01T15:13:05.704Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 6,
+    "fields": {
+        "token": 9,
+        "blacklisted_at": "2026-07-01T15:13:06.749Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 7,
+    "fields": {
+        "token": 10,
+        "blacklisted_at": "2026-07-02T03:41:39.316Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 8,
+    "fields": {
+        "token": 2,
+        "blacklisted_at": "2026-07-02T03:43:44.343Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 9,
+    "fields": {
+        "token": 4,
+        "blacklisted_at": "2026-07-02T03:43:45.589Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 10,
+    "fields": {
+        "token": 5,
+        "blacklisted_at": "2026-07-02T03:43:46.584Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 11,
+    "fields": {
+        "token": 11,
+        "blacklisted_at": "2026-07-02T03:43:47.833Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 12,
+    "fields": {
+        "token": 12,
+        "blacklisted_at": "2026-07-02T03:43:48.829Z"
+    }
+},
+{
+    "model": "organizations.organization",
+    "pk": "bddc597d-df1a-48de-accc-958a21947c3b",
+    "fields": {
+        "created_at": "2026-07-01T09:18:17.777Z",
+        "updated_at": "2026-07-01T09:18:17.777Z",
+        "is_deleted": false,
+        "name": "Apex Business Solutions",
+        "logo": "",
+        "description": "Enterprise workspace for business analytics and project design.",
+        "timezone": "UTC",
+        "email": "apex-workspace@bahub.local",
+        "phone": "+1 800 555 0199",
+        "website": "https://apex-analytics.local",
+        "address": "100 Innovation Way, Suite 400, Tech City"
+    }
+},
+{
+    "model": "users.user",
+    "pk": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$K36Pn4O2IEoVX6k3z9ZDtN$yXbLWSWXEksUMJb1kqbvOgDGngyP26G+7yEXzpJTfic=",
+        "last_login": "2026-07-01T15:01:43.644Z",
+        "is_superuser": false,
+        "username": "analyst",
+        "first_name": "David",
+        "last_name": "Miller",
+        "email": "analyst@bahub.local",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-07-01T09:18:22.516Z",
+        "role": "BUSINESS_ANALYST",
+        "organization": "bddc597d-df1a-48de-accc-958a21947c3b",
+        "phone": null,
+        "bio": null,
+        "profile_picture": "",
+        "created_at": "2026-07-01T09:18:22.517Z",
+        "updated_at": "2026-07-01T12:48:22.696Z",
+        "is_deleted": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$MRvhCqZn47Sp0t8PVPh3EN$9Uy//3+ctSB/tGL91UItl3c2ZUXBH/CRzBk0XfL/uPc=",
+        "last_login": "2026-07-02T03:41:53.112Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "Sarah",
+        "last_name": "Jenkins",
+        "email": "admin@bahub.local",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-07-01T09:18:19.033Z",
+        "role": "ADMIN",
+        "organization": "bddc597d-df1a-48de-accc-958a21947c3b",
+        "phone": "",
+        "bio": "",
+        "profile_picture": "",
+        "created_at": "2026-07-01T09:18:19.033Z",
+        "updated_at": "2026-07-02T03:42:46.573Z",
+        "is_deleted": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.userpreference",
+    "pk": 1,
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "theme": "system",
+        "accent_color": "emerald",
+        "language": "en",
+        "timezone": "UTC",
+        "date_format": "YYYY-MM-DD",
+        "time_format": "24h",
+        "sidebar_state": "expanded"
+    }
+},
+{
+    "model": "users.userpreference",
+    "pk": 2,
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "theme": "dark",
+        "accent_color": "indigo",
+        "language": "en",
+        "timezone": "UTC",
+        "date_format": "YYYY-MM-DD",
+        "time_format": "24h",
+        "sidebar_state": "expanded"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "0ad01afb-1fa4-4c4d-a284-3db24aea1d15",
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "token_id": "5f1fc29a-c8b6-4ac7-8c9d-cab3afefbad6",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-01T12:47:59.718Z",
+        "created_at": "2026-07-01T12:47:59.718Z"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "24c6ad59-f14f-4d4e-b587-ecfb06bacb9d",
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "token_id": "e87b1959-df98-4b9a-94f7-634c0d36fd0c",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-01T12:45:27.846Z",
+        "created_at": "2026-07-01T12:45:27.846Z"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "40dd359b-5c29-483a-b528-dc12c48ae2e4",
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "token_id": "ab56750a-773b-46d2-a1aa-390b8bbca0b3",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-01T15:01:44.934Z",
+        "created_at": "2026-07-01T15:01:44.934Z"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "4f0fda40-3f3c-401e-90b4-8c67ae7ae291",
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "token_id": "892c0006-ee8a-45e4-9ea3-6e5b218f5017",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-01T09:26:03.031Z",
+        "created_at": "2026-07-01T09:26:03.031Z"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "649a9d3a-62d9-45ca-a821-c56f31708efc",
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "token_id": "26209b54-be79-4206-8e9b-37cc1aa9320b",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-01T12:46:48.274Z",
+        "created_at": "2026-07-01T12:46:48.274Z"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "87901480-6eda-40dc-a5f6-2d4b3a27629b",
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "token_id": "a0ecb109-34bf-4392-82aa-b84e1bd0d35d",
+        "ip_address": "104.28.158.8",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-01T09:42:59.736Z",
+        "created_at": "2026-07-01T09:42:59.736Z"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "b5d31ecb-918c-4744-917d-19b1c227c88f",
+    "fields": {
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "token_id": "35ebb2b4-f206-442a-8253-d16ea2aec576",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-01T09:19:37.512Z",
+        "created_at": "2026-07-01T09:19:37.512Z"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "d4e9402a-54fc-4521-bf52-b3a5c900e075",
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "token_id": "094af8a2-55d5-4e1f-864b-2f29129f2847",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-01T10:48:18.748Z",
+        "created_at": "2026-07-01T10:48:18.748Z"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "e20e9d7f-1837-40aa-8e5a-2705accc1bdf",
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "token_id": "83adcb7f-ae07-43ee-bf06-52b5cbd4c9ba",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-02T03:41:54.507Z",
+        "created_at": "2026-07-02T03:41:54.507Z"
+    }
+},
+{
+    "model": "users.usersession",
+    "pk": "ffdd5788-c40d-464c-84c3-480578483dbe",
+    "fields": {
+        "user": "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+        "token_id": "c21cfdc2-6dab-454d-90e0-2ac7dad968ad",
+        "ip_address": "127.0.0.1",
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0",
+        "browser": "Chrome",
+        "device": "Desktop",
+        "is_active": false,
+        "last_activity": "2026-07-01T15:13:17.231Z",
+        "created_at": "2026-07-01T15:13:17.231Z"
+    }
+},
+{
+    "model": "teams.team",
+    "pk": "c40ec546-5243-4921-89cf-d84143bf3c83",
+    "fields": {
+        "created_at": "2026-07-01T15:03:15.959Z",
+        "updated_at": "2026-07-01T15:03:15.959Z",
+        "is_deleted": false,
+        "organization": "bddc597d-df1a-48de-accc-958a21947c3b",
+        "name": "Chaos",
+        "description": "Lala",
+        "lead": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "members": [
+            "ea625043-986f-492b-9c79-ef9cee1c9ca6",
+            "49ca4d2b-809b-41ac-a0be-fb5230ed2540"
+        ]
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "12953fdc-5254-4944-8779-03e58368197c",
+    "fields": {
+        "created_at": "2026-07-01T09:18:40.803Z",
+        "updated_at": "2026-07-01T09:18:40.803Z",
+        "is_deleted": false,
+        "name": "Create Requirement",
+        "codename": "create_requirement",
+        "description": "Ability to add requirement records."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "210a643d-376d-4777-a82d-d07729218409",
+    "fields": {
+        "created_at": "2026-07-01T09:18:44.617Z",
+        "updated_at": "2026-07-01T09:18:44.617Z",
+        "is_deleted": false,
+        "name": "Approve BRD",
+        "codename": "approve_brd",
+        "description": "Ability to authorize business requirements documents."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "2d025b7f-0bf6-4c27-a521-7c4c44798f13",
+    "fields": {
+        "created_at": "2026-07-01T09:18:39.787Z",
+        "updated_at": "2026-07-01T09:18:39.787Z",
+        "is_deleted": false,
+        "name": "Manage Permissions",
+        "codename": "manage_permissions",
+        "description": "Ability to configure role-permission assignments."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "46162457-b1af-493a-9801-e110167de07e",
+    "fields": {
+        "created_at": "2026-07-01T09:18:28.719Z",
+        "updated_at": "2026-07-01T09:18:28.719Z",
+        "is_deleted": false,
+        "name": "Edit Project",
+        "codename": "edit_project",
+        "description": "Ability to update project configurations."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "59fd0820-e53b-4f92-a969-32de6223761b",
+    "fields": {
+        "created_at": "2026-07-01T09:18:33.900Z",
+        "updated_at": "2026-07-01T09:18:33.900Z",
+        "is_deleted": false,
+        "name": "Create Team",
+        "codename": "create_team",
+        "description": "Ability to build new teams."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "719bdd86-7b5f-4f63-8993-73f6b7fe9627",
+    "fields": {
+        "created_at": "2026-07-01T09:18:43.383Z",
+        "updated_at": "2026-07-01T09:18:43.383Z",
+        "is_deleted": false,
+        "name": "Delete Requirement",
+        "codename": "delete_requirement",
+        "description": "Ability to remove requirement entries."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "98cbb7f5-7c01-4b43-8fb5-f59f6b768e3b",
+    "fields": {
+        "created_at": "2026-07-01T09:18:34.901Z",
+        "updated_at": "2026-07-01T09:18:34.901Z",
+        "is_deleted": false,
+        "name": "Edit Team",
+        "codename": "edit_team",
+        "description": "Ability to edit team details and membership."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "ad93ca6b-1f71-41d6-9325-14d4b309c730",
+    "fields": {
+        "created_at": "2026-07-01T09:18:26.704Z",
+        "updated_at": "2026-07-01T09:18:26.704Z",
+        "is_deleted": false,
+        "name": "Create Project",
+        "codename": "create_project",
+        "description": "Ability to create new projects."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "ba0a9898-4d3d-4d5f-aeb2-64f4e14c0461",
+    "fields": {
+        "created_at": "2026-07-01T09:18:42.152Z",
+        "updated_at": "2026-07-01T09:18:42.152Z",
+        "is_deleted": false,
+        "name": "Edit Requirement",
+        "codename": "edit_requirement",
+        "description": "Ability to update requirements."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "d4580852-bfb0-4c59-9438-05bef3f6ba41",
+    "fields": {
+        "created_at": "2026-07-01T09:18:32.888Z",
+        "updated_at": "2026-07-01T09:18:32.888Z",
+        "is_deleted": false,
+        "name": "Delete Project",
+        "codename": "delete_project",
+        "description": "Ability to soft delete projects."
+    }
+},
+{
+    "model": "permissions.permission",
+    "pk": "f84fd4d8-fe95-4de4-9fc1-bfe5bae821c5",
+    "fields": {
+        "created_at": "2026-07-01T09:18:38.345Z",
+        "updated_at": "2026-07-01T09:18:38.345Z",
+        "is_deleted": false,
+        "name": "Delete Team",
+        "codename": "delete_team",
+        "description": "Ability to delete teams."
+    }
+},
+{
+    "model": "projects.project",
+    "pk": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+    "fields": {
+        "created_at": "2026-07-01T15:02:30.711Z",
+        "updated_at": "2026-07-01T15:02:30.711Z",
+        "is_deleted": false,
+        "organization": "bddc597d-df1a-48de-accc-958a21947c3b",
+        "name": "basanti",
+        "description": "asdads",
+        "status": "ACTIVE",
+        "start_date": "2026-06-01",
+        "end_date": "2026-07-31"
+    }
+},
+{
+    "model": "projects.projectmember",
+    "pk": "3a6be815-4164-4d43-8943-1916b4a29939",
+    "fields": {
+        "created_at": "2026-07-01T15:02:31.249Z",
+        "updated_at": "2026-07-01T15:02:31.249Z",
+        "is_deleted": false,
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "role": "PROJECT_MANAGER"
+    }
+},
+{
+    "model": "projects.activitylog",
+    "pk": "f7393d96-746b-4d5a-84d7-7795e5d1a400",
+    "fields": {
+        "created_at": "2026-07-01T15:04:44.929Z",
+        "updated_at": "2026-07-01T15:04:44.929Z",
+        "is_deleted": false,
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "user": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "action": "created requirement REQ-001"
+    }
+},
+{
+    "model": "stakeholders.stakeholder",
+    "pk": "13064658-8ef9-4fdc-8156-293f28c441bf",
+    "fields": {
+        "created_at": "2026-07-01T15:04:08.266Z",
+        "updated_at": "2026-07-01T15:04:08.266Z",
+        "is_deleted": false,
+        "organization": "bddc597d-df1a-48de-accc-958a21947c3b",
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "name": "Mustafa Mukhtar Pinjari",
+        "title": "Sponser",
+        "department": "Sales",
+        "email": "unlessuser99@gmail.com",
+        "phone": "+918799849225",
+        "power": "HIGH",
+        "interest": "HIGH",
+        "influence": 5,
+        "impact": 1,
+        "notes": "asdgb"
+    }
+},
+{
+    "model": "requirements.requirement",
+    "pk": "f7a6ccde-eaf4-4fef-890c-6f799e58a40e",
+    "fields": {
+        "created_at": "2026-07-01T15:04:44.427Z",
+        "updated_at": "2026-07-01T15:04:44.427Z",
+        "is_deleted": false,
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "req_id": "REQ-001",
+        "title": "Untitled Requirement",
+        "description": "Provide requirement specification details...\n\n### Acceptance Criteria (AI Generated)\n- **GIVEN** a registered business analyst is modifying requirement fields\n- **WHEN** they input details and click the sticky \"Save Specifications\" action button\n- **THEN** details are validated against active organization schemas and stored.",
+        "req_type": "FUNCTIONAL",
+        "status": "APPROVED",
+        "priority": "HIGH",
+        "version": "1.0",
+        "source_stakeholder": "13064658-8ef9-4fdc-8156-293f28c441bf",
+        "created_by": "49ca4d2b-809b-41ac-a0be-fb5230ed2540"
+    }
+},
+{
+    "model": "stories.userstory",
+    "pk": "3e6c668b-f987-4f70-8996-d699083743c9",
+    "fields": {
+        "created_at": "2026-07-01T15:06:48.539Z",
+        "updated_at": "2026-07-01T15:06:48.539Z",
+        "is_deleted": false,
+        "requirement": "f7a6ccde-eaf4-4fef-890c-6f799e58a40e",
+        "story_id": "US-001",
+        "title": "Story for REQ-001 - Untitled Requirement",
+        "role": "Business Analyst",
+        "action": "use the 'Untitled Requirement' feature interface",
+        "benefit": "ensure all business process logic runs in accordance with specifications",
+        "acceptance_criteria": "- **GIVEN** a user is logged in as a Business Analyst\n- **WHEN** they execute operations matching: 'Untitled Requirement'\n- **THEN** the backend process validates constraints, updates state data, and returns HTTP 200 OK.",
+        "jira_key": null,
+        "jira_url": null,
+        "status": "TODO",
+        "points": 3
+    }
+},
+{
+    "model": "documents.businessdocument",
+    "pk": "796b1e76-04c0-4ba8-931e-68207bf1126f",
+    "fields": {
+        "created_at": "2026-07-01T15:07:17.289Z",
+        "updated_at": "2026-07-01T15:07:32.149Z",
+        "is_deleted": false,
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "doc_type": "BRD",
+        "title": "BRD - basanti - Version 1.0",
+        "version": "1.0",
+        "status": "REVIEW",
+        "content": "# Business Document: BRD - basanti\n\n## 1. Document Control & Scope\n- **Project Scope**: basanti\n- **Workspace Organisation**: Apex Business Solutions\n- **Document Schema Type**: BRD\n- **Author**: @analyst\n- **Status**: DRAFT\n- **Scope Description**: asdads\n\n## 2. Key Stakeholder Registry\n| Name | Title | Department | Power / Interest |\n| --- | --- | --- | --- |\n| Mustafa Mukhtar Pinjari | Sponser | Sales | HIGH / HIGH |\n\n## 3. Business & Technical Specifications Catalog\n| ID | Title | Priority | Type | Status |\n| --- | --- | --- | --- | --- |\n| REQ-001 | Untitled Requirement | HIGH | FUNCTIONAL | APPROVED |",
+        "confluence_page_id": null,
+        "confluence_page_url": null,
+        "created_by": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "signed_off_by": null,
+        "signed_off_at": null
+    }
+},
+{
+    "model": "meetings.meeting",
+    "pk": "63dcd62c-cc52-4b09-bbc3-aa2a6262903e",
+    "fields": {
+        "created_at": "2026-07-01T15:08:42.874Z",
+        "updated_at": "2026-07-01T15:08:42.874Z",
+        "is_deleted": false,
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "title": "NAnao",
+        "date": "2026-07-01",
+        "time": "20:39:00",
+        "objective": "def",
+        "notes": "",
+        "attendees": []
+    }
+},
+{
+    "model": "risks.risk",
+    "pk": "04717c0d-2ecc-4753-a906-b77581bf0492",
+    "fields": {
+        "created_at": "2026-07-01T15:10:03.571Z",
+        "updated_at": "2026-07-01T15:10:03.571Z",
+        "is_deleted": false,
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "title": "Payment",
+        "description": "desces",
+        "probability": "MEDIUM",
+        "impact": "MEDIUM",
+        "mitigation": "dan dana dan",
+        "status": "IDENTIFIED"
+    }
+},
+{
+    "model": "risks.changerequest",
+    "pk": "53ff472c-81e9-492a-ac83-8ea69ff1cdb5",
+    "fields": {
+        "created_at": "2026-07-01T15:10:45.797Z",
+        "updated_at": "2026-07-01T15:10:45.797Z",
+        "is_deleted": false,
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "title": "dashboard",
+        "description": "tan tana tan",
+        "reason": "dan dana dan",
+        "impact_analysis": "laowsa",
+        "status": "DRAFT",
+        "requested_by": "49ca4d2b-809b-41ac-a0be-fb5230ed2540",
+        "reviewed_by": null,
+        "reviewed_at": null
+    }
+},
+{
+    "model": "strategic.swotanalysis",
+    "pk": 1,
+    "fields": {
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "strengths": "ADASDFSDFDSF",
+        "weaknesses": "ZCVFBVDSVX",
+        "opportunities": "S DF   DV F HGNV D",
+        "threats": "G ASG FG RG A"
+    }
+},
+{
+    "model": "strategic.gapanalysis",
+    "pk": "2389b11c-5540-4499-a8cb-1ea7e0e2de29",
+    "fields": {
+        "created_at": "2026-07-01T15:11:20.565Z",
+        "updated_at": "2026-07-01T15:11:20.565Z",
+        "is_deleted": false,
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "title": "asdas",
+        "current_state": "asdafdsdfdasf",
+        "future_state": "asdfsdafdfasd",
+        "gap_description": "sdafsaffsd",
+        "action_plan": "dsfdsafdsfds",
+        "status": "IN_PROGRESS"
+    }
+},
+{
+    "model": "integrations.integrationconfig",
+    "pk": "fb8230fe-0c98-4baa-b412-3b2ecfdf3137",
+    "fields": {
+        "created_at": "2026-07-01T15:12:40.525Z",
+        "updated_at": "2026-07-01T15:12:40.525Z",
+        "is_deleted": false,
+        "project": "61b3918a-ffe7-410a-8395-6bb30a139c48",
+        "jira_url": null,
+        "jira_username": null,
+        "jira_api_token": null,
+        "jira_project_key": null,
+        "confluence_url": null,
+        "confluence_username": null,
+        "confluence_api_token": null,
+        "confluence_space_key": null
+    }
+},
+{
+    "model": "billing.tenantsubscription",
+    "pk": "884b68be-c7ec-4384-ba54-5d763af0a888",
+    "fields": {
+        "created_at": "2026-07-01T15:12:44.920Z",
+        "updated_at": "2026-07-01T15:13:59.903Z",
+        "is_deleted": false,
+        "organization": "bddc597d-df1a-48de-accc-958a21947c3b",
+        "stripe_customer_id": null,
+        "stripe_subscription_id": null,
+        "plan_tier": "ENTERPRISE",
+        "seats_limit": 1000,
+        "is_active": true,
+        "ai_credits_used": 0,
+        "ai_credits_limit": 10000
+    }
+}
+]

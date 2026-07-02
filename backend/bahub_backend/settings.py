@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     "strategic",
     "integrations",
     "billing",
+    "django_saml2_auth",
+    "audit",
 ]
 
 MIDDLEWARE = [
@@ -69,6 +71,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "audit.middleware.AuditThreadLocalMiddleware",
 ]
 
 ROOT_URLCONF = "bahub_backend.urls"
@@ -275,4 +278,26 @@ STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", None)
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", None)
 STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", None)
 STRIPE_PRICE_ENTERPRISE = os.getenv("STRIPE_PRICE_ENTERPRISE", None)
+
+
+# Enterprise SAML2 / SSO Configuration
+SAML2_AUTH = {
+    "Metadata": {
+        "Remote": ["https://identityprovider.okta.com/metadata/endpoint"],
+    },
+    "Entity_Id": "https://api.bahub.com/saml2/metadata/",
+    "Attribute_Mapping": {
+        "email": ("email",),
+        "username": ("username",),
+        "first_name": ("first_name",),
+        "last_name": ("last_name",),
+    },
+    "Trigger": {
+        "CREATE_USER": "billing.sso_auth_utils.provision_user_organization",
+    },
+    "TRIGGER": {
+        "CREATE_USER": "billing.sso_auth_utils.provision_user_organization",
+    }
+}
+
 

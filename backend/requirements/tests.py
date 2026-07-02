@@ -159,3 +159,62 @@ class RequirementManagementTests(APITestCase):
             self.assertFalse(connected_forbidden)
 
         async_to_sync(run_ws_test)()
+
+    def test_collaborative_yjs_sync(self):
+        """Verify that Yjs binary updates are successfully broadcasted to other clients."""
+        from asgiref.sync import async_to_sync
+        from channels.testing import WebsocketCommunicator
+        from channels.routing import URLRouter
+        from django.urls import re_path
+        from requirements.consumers import RequirementConsumer
+        from rest_framework_simplejwt.tokens import AccessToken
+
+        token_a = str(AccessToken.for_user(self.analyst_a))
+        
+        # We will create another user analyst_a2 in the same organization Org A to collaborate
+        analyst_a2 = User.objects.create_user(
+            username="analyst_a2", password="Password123!", role=User.BUSINESS_ANALYST, organization=self.org_a
+        )
+        token_a2 = str(AccessToken.for_user(analyst_a2))
+
+        # Build testing application router
+        application = URLRouter([
+            re_path(r"ws/projects/(?P<project_id>[^/]+)/requirements/$", RequirementConsumer.as_asgi()),
+        ])
+
+        async def run_ws_collab_test():
+            # 1. Connect first collaborator
+            communicator1 = WebsocketCommunicator(
+                application, 
+                f"/ws/projects/{self.project_a1.id}/requirements/?token={token_a}"
+            )
+            connected1, _ = await communicator1.connect()
+            self.assertTrue(connected1)
+            # Drain presence update
+            await communicator1.receive_json_from()
+
+            # 2. Connect second collaborator
+            communicator2 = WebsocketCommunicator(
+                application, 
+                f"/ws/projects/{self.project_a1.id}/requirements/?token={token_a2}"
+            )
+            connected2, _ = await communicator2.connect()
+            self.assertTrue(connected2)
+            # Drain presence updates
+            await communicator2.receive_json_from() # presence for analyst_a2
+            await communicator1.receive_json_from() # presence for analyst_a2 on communicator1
+
+            # 3. Send binary payload (Yjs packet) from communicator1
+            binary_payload = b"\x01\x02\x03\x04"
+            await communicator1.send_to(bytes_data=binary_payload)
+
+            # 4. Assert communicator2 receives the binary broadcast
+            received_bytes = await communicator2.receive_from()
+            self.assertEqual(received_bytes, binary_payload)
+
+            # 5. Clean up
+            await communicator1.disconnect()
+            await communicator2.disconnect()
+
+        async_to_sync(run_ws_collab_test)()
+

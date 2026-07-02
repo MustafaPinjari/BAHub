@@ -1,5 +1,13 @@
+import django.conf.urls
+from django.urls import path, re_path, include
+django.conf.urls.url = re_path
+
+import django.utils.http
+from django.utils.http import url_has_allowed_host_and_scheme
+django.utils.http.is_safe_url = url_has_allowed_host_and_scheme
+
+
 from django.contrib import admin
-from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
 from core.views import health_check
 from users.views import CustomTokenObtainPairView
@@ -53,6 +61,12 @@ urlpatterns = [
     
     # Integration endpoints
     path("api/v1/integrations/", include("integrations.urls")),
+    
+    # Audit log endpoints
+    path("api/v1/audit/", include("audit.urls")),
+    
+    # SAML2 SSO login endpoints
+    path("saml2_auth/", include("django_saml2_auth.urls")),
 ]
 
 from django.conf import settings

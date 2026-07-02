@@ -119,3 +119,62 @@ class BillingTests(APITestCase):
         response = self.client.post(url, payload)
         self.assertEqual(response.status_code, status.HTTP_402_PAYMENT_REQUIRED)
         self.assertIn("monthly AI credits quota", response.data["message"])
+
+    def test_provision_user_organization(self):
+        """Verify that provision_user_organization JIT hook handles user/org pairing and enterprise upgrades."""
+        # 1. Create a guest user (unassociated)
+        sso_email = "jane.smith@corporate-domain.com"
+        sso_username = "jane_smith"
+        user = User.objects.create_user(
+            username=sso_username,
+            email=sso_email,
+            password="SecureP@ss123"
+        )
+        self.assertIsNone(user.organization)
+
+        # 2. Invoke the JIT SSO provisioning utility
+        from billing.sso_auth_utils import provision_user_organization
+        user_info = {
+            "email": [sso_email],
+            "username": [sso_username],
+            "first_name": ["Jane"],
+            "last_name": ["Smith"],
+        }
+        
+        result_user = provision_user_organization(user_info)
+        self.assertIsNotNone(result_user)
+        
+        # 3. Assert organization details matched company domain name
+        user.refresh_from_db()
+        self.assertIsNotNone(user.organization)
+        self.assertEqual(user.organization.name, "Corporate-domain Org")
+        self.assertEqual(user.organization.website, "https://corporate-domain.com")
+        self.assertEqual(user.role, User.ADMIN)  # First member in org is ADMIN
+
+        # 4. Verify organization is upgraded to ENTERPRISE plan limits
+        sub = TenantSubscription.objects.get(organization=user.organization)
+        self.assertEqual(sub.plan_tier, "ENTERPRISE")
+        self.assertEqual(sub.seats_limit, 1000)
+        self.assertEqual(sub.ai_credits_limit, 10000)
+
+        # 5. Connect second user from the same domain
+        sso_email2 = "bob.jones@corporate-domain.com"
+        sso_username2 = "bob_jones"
+        user2 = User.objects.create_user(
+            username=sso_username2,
+            email=sso_email2,
+            password="SecureP@ss123"
+        )
+        user_info2 = {
+            "email": [sso_email2],
+            "username": [sso_username2],
+            "first_name": ["Bob"],
+            "last_name": ["Jones"],
+        }
+        result_user2 = provision_user_organization(user_info2)
+        self.assertIsNotNone(result_user2)
+        
+        user2.refresh_from_db()
+        self.assertEqual(user2.organization, user.organization)
+        self.assertEqual(user2.role, User.DEVELOPER)  # Subsequent member is DEVELOPER
+

@@ -83,29 +83,48 @@ class RequirementConsumer(AsyncWebsocketConsumer):
                 self.channel_name
             )
 
-    async def receive(self, text_data):
-        try:
-            data = json.loads(text_data)
-        except Exception:
-            return
-            
-        action_type = data.get("type")
-
-        if action_type == "typing":
-            req_id = data.get("requirement_id")
-            is_typing = data.get("is_typing", False)
-            
+    async def receive(self, text_data=None, bytes_data=None):
+        if bytes_data:
+            # Broadcast Yjs document updates directly to channel group members
             await self.channel_layer.group_send(
                 self.group_name,
                 {
-                    "type": "requirement.typing",
-                    "user": self.user.username,
-                    "requirement_id": req_id,
-                    "is_typing": is_typing,
+                    "type": "collab.update",
+                    "sender": self.channel_name,
+                    "payload": bytes_data,
                 }
             )
+            return
+
+        if text_data:
+            try:
+                data = json.loads(text_data)
+            except Exception:
+                return
+                
+            action_type = data.get("type")
+
+            if action_type == "typing":
+                req_id = data.get("requirement_id")
+                is_typing = data.get("is_typing", False)
+                
+                await self.channel_layer.group_send(
+                    self.group_name,
+                    {
+                        "type": "requirement.typing",
+                        "user": self.user.username,
+                        "requirement_id": req_id,
+                        "is_typing": is_typing,
+                    }
+                )
+
 
     # Group message handlers
+    async def collab_update(self, event):
+        if self.channel_name != event["sender"]:
+            # Forward binary document changes to other connected clients
+            await self.send(bytes_data=event["payload"])
+
     async def requirement_update(self, event):
         await self.send(text_data=json.dumps({
             "type": "requirement.update",
