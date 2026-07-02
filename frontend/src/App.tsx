@@ -25,6 +25,7 @@ import { ReportsPage } from "./features/reports/ReportsPage";
 import { AiAssistantPage } from "./features/ai/AiAssistantPage";
 import { IntegrationsPage } from "./features/integrations/IntegrationsPage";
 import { BillingPage } from "./features/auth/BillingPage";
+import { AuditLogPage } from "./features/audit/AuditLogPage";
 
 const AuthenticatedApp: React.FC = () => {
   return (
@@ -50,6 +51,7 @@ const AuthenticatedApp: React.FC = () => {
         <Route path="/ai" element={<AiAssistantPage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
         <Route path="/billing" element={<BillingPage />} />
+        <Route path="/audit" element={<AuditLogPage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </DashboardShell>

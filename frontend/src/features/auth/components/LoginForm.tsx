@@ -87,6 +87,24 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToReg
         <Button type="submit" variant="primary" className="w-full mt-1.5 font-bold" isLoading={loading}>
           Sign In
         </Button>
+
+        <div className="flex items-center my-1.5">
+          <div className="flex-grow border-t border-border"></div>
+          <span className="px-2 text-[9px] text-muted-foreground uppercase font-bold tracking-wider">or</span>
+          <div className="flex-grow border-t border-border"></div>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            const apiBase = (import.meta.env.VITE_API_URL as string) || (import.meta.env.PROD || window.location.hostname.endsWith("netlify.app") ? "https://bahub-backend.onrender.com/api/v1" : "http://127.0.0.1:8000/api/v1");
+            window.location.href = apiBase.replace("/api/v1", "/saml2_auth/login/");
+          }}
+          className="w-full font-bold border-indigo-200 text-indigo-600 hover:bg-indigo-50/20"
+        >
+          Sign in with SAML SSO
+        </Button>
       </form>
 
       {/* Footer Nav */}
