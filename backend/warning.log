@@ -1415,3 +1415,1073 @@ WARNING 2026-07-02 09:35:17,749 exceptions 21252 21256 API Error (400): {'invite
 WARNING 2026-07-02 09:35:17,749 log 21252 21256 Bad Request: /api/v1/auth/register/
 WARNING 2026-07-02 09:35:17,753 exceptions 21252 21256 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
 WARNING 2026-07-02 09:35:17,753 log 21252 21256 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:34:05,922 log 11056 8160 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-02 10:34:09,622 exceptions 11056 8160 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-02 10:34:09,623 log 11056 8160 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:34:12,217 log 11056 8160 Not Found: /api/v1/documents/1d8734ae-42a2-4802-8594-6f6bcd3de88c/export-pdf/
+WARNING 2026-07-02 10:34:13,731 log 11056 8160 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-02 10:34:13,746 log 11056 8160 Bad Request: /api/v1/documents/c9f5b8a6-35f4-4396-a823-ed3254793afc/sign-off/
+WARNING 2026-07-02 10:34:15,266 log 11056 8160 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-02 10:34:15,332 log 11056 8160 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-02 10:34:16,949 log 11056 8160 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-02 10:34:20,097 log 11056 8160 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-02 10:34:21,105 exceptions 11056 8160 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:34:21,106 log 11056 8160 Bad Request: /api/v1/meetings/
+WARNING 2026-07-02 10:34:21,127 exceptions 11056 8160 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-02 10:34:21,128 log 11056 8160 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-02 10:34:31,426 exceptions 11056 8160 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:34:31,427 log 11056 8160 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-02 10:34:40,108 exceptions 11056 8160 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:34:40,108 log 11056 8160 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:34:40,115 exceptions 11056 8160 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:34:40,116 log 11056 8160 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:34:42,302 log 11056 8160 Bad Request: /api/v1/risks/change-requests/38503f0b-6599-40a2-86af-8600e5809808/review/
+WARNING 2026-07-02 10:34:43,813 exceptions 11056 8160 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:34:43,813 log 11056 8160 Bad Request: /api/v1/risks/
+WARNING 2026-07-02 10:34:44,859 exceptions 11056 8160 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-02 10:34:44,860 log 11056 8160 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:34:44,863 exceptions 11056 8160 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-02 10:34:44,863 log 11056 8160 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:34:48,035 exceptions 11056 8160 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:34:48,036 log 11056 8160 Bad Request: /api/v1/stories/
+WARNING 2026-07-02 10:34:52,150 exceptions 11056 8160 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:34:52,151 log 11056 8160 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-02 10:34:53,145 log 11056 8160 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-02 10:34:55,192 exceptions 11056 8160 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-02 10:34:55,193 log 11056 8160 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:34:55,196 exceptions 11056 8160 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-02 10:34:55,197 log 11056 8160 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:34:59,223 log 11056 8160 Forbidden: /api/v1/teams/
+WARNING 2026-07-02 10:35:02,222 log 11056 8160 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-02 10:35:02,743 exceptions 11056 8160 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:35:02,744 log 11056 8160 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:35:02,753 exceptions 11056 8160 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-02 10:35:02,755 log 11056 8160 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:35:02,760 exceptions 11056 8160 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:35:02,761 log 11056 8160 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:37:47,792 log 8380 5704 Forbidden: /api/v1/audit/logs/
+WARNING 2026-07-02 10:37:48,318 log 8380 5704 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-02 10:37:51,839 exceptions 8380 5704 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-02 10:37:51,839 log 8380 5704 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:37:54,494 log 8380 5704 Not Found: /api/v1/documents/eb763fea-f88f-4531-8ebd-f332d6ef0e52/export-pdf/
+WARNING 2026-07-02 10:37:56,020 log 8380 5704 Forbidden: /api/v1/documents/generate/
+WARNING 2026-07-02 10:37:57,529 log 8380 5704 Forbidden: /api/v1/integrations/config/by-project/
+WARNING 2026-07-02 10:37:59,085 log 8380 5704 Forbidden: /api/v1/integrations/test-connection/
+WARNING 2026-07-02 10:38:00,631 log 8380 5704 Forbidden: /api/v1/integrations/config/save-config/
+WARNING 2026-07-02 10:38:02,117 log 8380 5704 Forbidden: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-02 10:38:03,142 exceptions 8380 5704 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:38:03,142 log 8380 5704 Bad Request: /api/v1/meetings/
+WARNING 2026-07-02 10:38:03,166 exceptions 8380 5704 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-02 10:38:03,167 log 8380 5704 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-02 10:38:13,225 exceptions 8380 5704 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:38:13,225 log 8380 5704 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-02 10:38:21,266 exceptions 8380 5704 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:38:21,267 log 8380 5704 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:38:21,271 exceptions 8380 5704 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:38:21,272 log 8380 5704 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:38:23,229 log 8380 5704 Bad Request: /api/v1/risks/change-requests/8f8d88bf-7cfe-4a21-b235-09e122e638c9/review/
+WARNING 2026-07-02 10:38:24,781 exceptions 8380 5704 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:38:24,781 log 8380 5704 Bad Request: /api/v1/risks/
+WARNING 2026-07-02 10:38:25,792 exceptions 8380 5704 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-02 10:38:25,792 log 8380 5704 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:38:25,795 exceptions 8380 5704 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-02 10:38:25,795 log 8380 5704 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:38:28,864 exceptions 8380 5704 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:38:28,865 log 8380 5704 Bad Request: /api/v1/stories/
+WARNING 2026-07-02 10:38:32,965 exceptions 8380 5704 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:38:32,966 log 8380 5704 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-02 10:38:33,955 log 8380 5704 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-02 10:38:35,924 exceptions 8380 5704 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-02 10:38:35,924 log 8380 5704 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:38:35,933 exceptions 8380 5704 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-02 10:38:35,933 log 8380 5704 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:38:39,928 log 8380 5704 Forbidden: /api/v1/teams/
+WARNING 2026-07-02 10:38:42,862 log 8380 5704 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-02 10:38:43,402 exceptions 8380 5704 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:38:43,402 log 8380 5704 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:38:43,409 exceptions 8380 5704 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-02 10:38:43,410 log 8380 5704 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:38:43,413 exceptions 8380 5704 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:38:43,414 log 8380 5704 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:39:45,791 log 4540 4488 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-02 10:39:49,509 exceptions 4540 4488 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-02 10:39:49,509 log 4540 4488 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:39:52,163 log 4540 4488 Not Found: /api/v1/documents/8a3a20cc-288b-4e5c-84e7-1afc132716a0/export-pdf/
+WARNING 2026-07-02 10:39:53,762 log 4540 4488 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-02 10:39:53,778 log 4540 4488 Bad Request: /api/v1/documents/02f1fed9-abad-49fd-abf6-9c1326a53437/sign-off/
+WARNING 2026-07-02 10:39:55,383 log 4540 4488 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-02 10:39:55,425 log 4540 4488 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-02 10:39:56,963 log 4540 4488 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-02 10:40:00,021 log 4540 4488 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-02 10:40:00,997 exceptions 4540 4488 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:40:00,998 log 4540 4488 Bad Request: /api/v1/meetings/
+WARNING 2026-07-02 10:40:01,039 exceptions 4540 4488 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-02 10:40:01,041 log 4540 4488 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-02 10:40:15,362 exceptions 4540 4488 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:40:15,362 log 4540 4488 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-02 10:40:27,318 exceptions 4540 4488 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:40:27,318 log 4540 4488 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:40:27,324 exceptions 4540 4488 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:40:27,324 log 4540 4488 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:40:30,004 log 4540 4488 Bad Request: /api/v1/risks/change-requests/52a72329-2cba-4985-8326-f9a26230c245/review/
+WARNING 2026-07-02 10:40:32,031 exceptions 4540 4488 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:40:32,031 log 4540 4488 Bad Request: /api/v1/risks/
+WARNING 2026-07-02 10:40:33,440 exceptions 4540 4488 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-02 10:40:33,440 log 4540 4488 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:40:33,445 exceptions 4540 4488 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-02 10:40:33,445 log 4540 4488 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:40:37,595 exceptions 4540 4488 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:40:37,595 log 4540 4488 Bad Request: /api/v1/stories/
+WARNING 2026-07-02 10:40:42,424 exceptions 4540 4488 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:40:42,425 log 4540 4488 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-02 10:40:43,655 log 4540 4488 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-02 10:40:45,711 exceptions 4540 4488 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-02 10:40:45,711 log 4540 4488 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:40:45,715 exceptions 4540 4488 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-02 10:40:45,716 log 4540 4488 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:40:50,731 log 4540 4488 Forbidden: /api/v1/teams/
+WARNING 2026-07-02 10:40:53,948 log 4540 4488 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-02 10:40:54,476 exceptions 4540 4488 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:40:54,476 log 4540 4488 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:40:54,487 exceptions 4540 4488 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-02 10:40:54,488 log 4540 4488 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:40:54,493 exceptions 4540 4488 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:40:54,494 log 4540 4488 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:43:34,437 log 6288 18536 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-02 10:43:38,302 exceptions 6288 18536 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-02 10:43:38,303 log 6288 18536 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:43:40,863 log 6288 18536 Not Found: /api/v1/documents/c322c8ce-4af0-47de-a905-94ee19cee827/export-pdf/
+WARNING 2026-07-02 10:43:42,387 log 6288 18536 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-02 10:43:42,401 log 6288 18536 Bad Request: /api/v1/documents/73b5a7fe-26c0-40c8-8a65-fea13bd36d85/sign-off/
+WARNING 2026-07-02 10:43:43,947 log 6288 18536 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-02 10:43:43,999 log 6288 18536 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-02 10:43:45,607 log 6288 18536 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-02 10:43:48,686 log 6288 18536 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-02 10:43:49,709 exceptions 6288 18536 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:43:49,709 log 6288 18536 Bad Request: /api/v1/meetings/
+WARNING 2026-07-02 10:43:49,735 exceptions 6288 18536 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-02 10:43:49,736 log 6288 18536 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-02 10:43:59,961 exceptions 6288 18536 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:43:59,962 log 6288 18536 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-02 10:44:08,596 exceptions 6288 18536 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:44:08,596 log 6288 18536 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:44:08,599 exceptions 6288 18536 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:44:08,600 log 6288 18536 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:44:10,895 log 6288 18536 Bad Request: /api/v1/risks/change-requests/2f189c37-2488-4670-8f17-3b8bf3daa2cd/review/
+WARNING 2026-07-02 10:44:12,481 exceptions 6288 18536 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:44:12,482 log 6288 18536 Bad Request: /api/v1/risks/
+WARNING 2026-07-02 10:44:13,492 exceptions 6288 18536 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-02 10:44:13,492 log 6288 18536 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:44:13,495 exceptions 6288 18536 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-02 10:44:13,495 log 6288 18536 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:44:16,695 exceptions 6288 18536 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:44:16,695 log 6288 18536 Bad Request: /api/v1/stories/
+WARNING 2026-07-02 10:44:20,799 exceptions 6288 18536 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:44:20,799 log 6288 18536 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-02 10:44:21,851 log 6288 18536 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-02 10:44:23,933 exceptions 6288 18536 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-02 10:44:23,934 log 6288 18536 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:44:23,937 exceptions 6288 18536 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-02 10:44:23,938 log 6288 18536 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:44:28,135 log 6288 18536 Forbidden: /api/v1/teams/
+WARNING 2026-07-02 10:44:31,216 log 6288 18536 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-02 10:44:31,773 exceptions 6288 18536 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:44:31,774 log 6288 18536 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:44:31,782 exceptions 6288 18536 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-02 10:44:31,782 log 6288 18536 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:44:31,787 exceptions 6288 18536 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:44:31,787 log 6288 18536 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:49:52,064 exceptions 9780 12376 API Error (400): {'username': [ErrorDetail(string='A user with that username already exists.', code='invalid')]}
+WARNING 2026-07-02 10:49:52,071 log 9780 4384 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:49:52,072 runserver 9780 6612 [31;1mHTTP POST /api/v1/auth/register/ 400 [2.76, 127.0.0.1:60181][0m
+WARNING 2026-07-02 10:50:24,774 exceptions 9780 17428 API Error (400): {'username': [ErrorDetail(string='A user with that username already exists.', code='invalid')]}
+WARNING 2026-07-02 10:50:24,779 log 9780 4384 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:50:24,780 runserver 9780 6612 [31;1mHTTP POST /api/v1/auth/register/ 400 [2.55, 127.0.0.1:60181][0m
+WARNING 2026-07-02 10:52:41,490 log 2932 12832 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-02 10:52:45,593 exceptions 2932 12832 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-02 10:52:45,594 log 2932 12832 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:52:48,409 log 2932 12832 Not Found: /api/v1/documents/4e6e67cd-a090-49b9-b80c-e062930ccc8c/export-pdf/
+WARNING 2026-07-02 10:52:50,077 log 2932 12832 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-02 10:52:50,091 log 2932 12832 Bad Request: /api/v1/documents/d7065ec9-cdcf-477f-a10c-be30dbe93c1e/sign-off/
+WARNING 2026-07-02 10:52:51,793 log 2932 12832 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-02 10:52:51,849 log 2932 12832 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-02 10:52:53,614 log 2932 12832 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-02 10:52:57,063 log 2932 12832 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-02 10:52:58,206 exceptions 2932 12832 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:52:58,207 log 2932 12832 Bad Request: /api/v1/meetings/
+WARNING 2026-07-02 10:52:58,234 exceptions 2932 12832 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-02 10:52:58,235 log 2932 12832 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-02 10:53:09,608 exceptions 2932 12832 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:53:09,608 log 2932 12832 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-02 10:53:18,794 exceptions 2932 12832 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:53:18,794 log 2932 12832 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:53:18,799 exceptions 2932 12832 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-02 10:53:18,799 log 2932 12832 Bad Request: /api/v1/requirements/
+WARNING 2026-07-02 10:53:21,087 log 2932 12832 Bad Request: /api/v1/risks/change-requests/5d2b6dcd-b1ce-4021-bfeb-242ebe1c6f8a/review/
+WARNING 2026-07-02 10:53:22,769 exceptions 2932 12832 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:53:22,769 log 2932 12832 Bad Request: /api/v1/risks/
+WARNING 2026-07-02 10:53:23,924 exceptions 2932 12832 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-02 10:53:23,924 log 2932 12832 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:53:23,927 exceptions 2932 12832 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-02 10:53:23,927 log 2932 12832 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-02 10:53:27,398 exceptions 2932 12832 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:53:27,398 log 2932 12832 Bad Request: /api/v1/stories/
+WARNING 2026-07-02 10:53:32,141 exceptions 2932 12832 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-02 10:53:32,142 log 2932 12832 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-02 10:53:33,252 log 2932 12832 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-02 10:53:35,417 exceptions 2932 12832 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-02 10:53:35,417 log 2932 12832 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:53:35,420 exceptions 2932 12832 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-02 10:53:35,421 log 2932 12832 Bad Request: /api/v1/teams/
+WARNING 2026-07-02 10:53:39,929 log 2932 12832 Forbidden: /api/v1/teams/
+WARNING 2026-07-02 10:53:43,512 log 2932 12832 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-02 10:53:44,206 exceptions 2932 12832 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:53:44,206 log 2932 12832 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:53:44,212 exceptions 2932 12832 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-02 10:53:44,213 log 2932 12832 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:53:44,217 exceptions 2932 12832 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-02 10:53:44,217 log 2932 12832 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:54:28,334 exceptions 9780 13860 API Error (400): {'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-02 10:54:28,338 log 9780 4384 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-02 10:54:28,339 runserver 9780 6612 [31;1mHTTP POST /api/v1/auth/register/ 400 [2.55, 127.0.0.1:56554][0m
+WARNING 2026-07-02 11:10:21,532 log 2444 5512 Not Found: /saml2_auth/login/
+WARNING 2026-07-02 11:10:21,534 runserver 2444 3920 [33mHTTP GET /saml2_auth/login/ 404 [0.05, 127.0.0.1:59855][0m
+WARNING 2026-07-02 11:10:22,029 log 2444 5512 Not Found: /saml2_auth/login/
+WARNING 2026-07-02 11:10:22,030 runserver 2444 3920 [33mHTTP GET /saml2_auth/login/ 404 [0.02, 127.0.0.1:59855][0m
+WARNING 2026-07-02 11:13:42,451 log 2444 5512 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-02 11:13:42,453 runserver 2444 3920 [31;1mHTTP POST /api/v1/auth/login/ 401 [3.85, 127.0.0.1:50402][0m
+WARNING 2026-07-02 11:13:47,128 log 2444 5512 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-02 11:13:47,129 runserver 2444 3920 [31;1mHTTP POST /api/v1/auth/login/ 401 [3.50, 127.0.0.1:50402][0m
+WARNING 2026-07-02 11:14:25,421 log 2444 5512 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-02 11:14:25,422 runserver 2444 3920 [31;1mHTTP POST /api/v1/auth/login/ 401 [4.58, 127.0.0.1:50402][0m
+WARNING 2026-07-02 11:14:30,031 log 2444 5512 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-02 11:14:30,032 runserver 2444 3920 [31;1mHTTP POST /api/v1/auth/login/ 401 [3.12, 127.0.0.1:50402][0m
+WARNING 2026-07-02 11:14:36,131 log 2444 5512 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-02 11:14:36,132 runserver 2444 3920 [31;1mHTTP POST /api/v1/auth/login/ 401 [2.84, 127.0.0.1:50402][0m
+WARNING 2026-07-02 11:14:43,107 log 2444 5512 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-02 11:14:43,108 runserver 2444 3920 [31;1mHTTP POST /api/v1/auth/login/ 401 [3.76, 127.0.0.1:50402][0m
+WARNING 2026-07-02 11:14:47,493 log 2444 5512 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-02 11:14:47,495 runserver 2444 3920 [31;1mHTTP POST /api/v1/auth/login/ 401 [2.75, 127.0.0.1:63628][0m
+WARNING 2026-07-02 11:14:53,572 log 2444 5512 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-02 11:14:53,573 runserver 2444 3920 [31;1mHTTP POST /api/v1/auth/login/ 401 [3.00, 127.0.0.1:63628][0m
+WARNING 2026-07-05 12:46:31,421 log 21348 16192 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-05 12:46:34,750 exceptions 21348 16192 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-05 12:46:34,750 log 21348 16192 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-05 12:46:37,071 log 21348 16192 Not Found: /api/v1/documents/d9585ee3-2cd2-45d7-9f00-cde3782b84d3/export-pdf/
+WARNING 2026-07-05 12:46:38,392 log 21348 16192 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-05 12:46:38,410 log 21348 16192 Bad Request: /api/v1/documents/0fa52568-7280-4972-bd07-a8aa8cdf1416/sign-off/
+WARNING 2026-07-05 12:46:39,733 log 21348 16192 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-05 12:46:39,774 log 21348 16192 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-05 12:46:41,142 log 21348 16192 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-05 12:46:43,935 log 21348 16192 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-05 12:46:44,939 exceptions 21348 16192 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-05 12:46:44,939 log 21348 16192 Bad Request: /api/v1/meetings/
+WARNING 2026-07-05 12:46:44,962 exceptions 21348 16192 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-05 12:46:44,963 log 21348 16192 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-05 12:46:56,187 exceptions 21348 16192 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-05 12:46:56,188 log 21348 16192 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-05 12:47:04,754 exceptions 21348 16192 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-05 12:47:04,754 log 21348 16192 Bad Request: /api/v1/requirements/
+WARNING 2026-07-05 12:47:04,759 exceptions 21348 16192 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-05 12:47:04,759 log 21348 16192 Bad Request: /api/v1/requirements/
+WARNING 2026-07-05 12:47:06,725 log 21348 16192 Bad Request: /api/v1/risks/change-requests/80109784-87a4-4d5d-a475-c98bb027fa20/review/
+WARNING 2026-07-05 12:47:08,083 exceptions 21348 16192 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-05 12:47:08,083 log 21348 16192 Bad Request: /api/v1/risks/
+WARNING 2026-07-05 12:47:08,964 exceptions 21348 16192 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-05 12:47:08,964 log 21348 16192 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-05 12:47:08,967 exceptions 21348 16192 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-05 12:47:08,967 log 21348 16192 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-05 12:47:11,768 exceptions 21348 16192 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-05 12:47:11,769 log 21348 16192 Bad Request: /api/v1/stories/
+WARNING 2026-07-05 12:47:15,430 exceptions 21348 16192 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-05 12:47:15,431 log 21348 16192 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-05 12:47:16,358 log 21348 16192 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-05 12:47:18,161 exceptions 21348 16192 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-05 12:47:18,161 log 21348 16192 Bad Request: /api/v1/teams/
+WARNING 2026-07-05 12:47:18,164 exceptions 21348 16192 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-05 12:47:18,165 log 21348 16192 Bad Request: /api/v1/teams/
+WARNING 2026-07-05 12:47:21,915 log 21348 16192 Forbidden: /api/v1/teams/
+WARNING 2026-07-05 12:47:24,733 log 21348 16192 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-05 12:47:25,186 exceptions 21348 16192 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-05 12:47:25,186 log 21348 16192 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-05 12:47:25,191 exceptions 21348 16192 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-05 12:47:25,192 log 21348 16192 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-05 12:47:25,196 exceptions 21348 16192 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-05 12:47:25,196 log 21348 16192 Bad Request: /api/v1/auth/register/
+ERROR 2026-07-05 12:55:42,007 exceptions 21492 11628 Unhandled Server Error: could not translate host name "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" to address: Temporary failure in name resolution
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: could not translate host name "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" to address: Temporary failure in name resolution
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\views.py", line 60, in post
+    response = super().post(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\views.py", line 46, in post
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 459, in run_validation
+    value = self.validate(value)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\serializers.py", line 281, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 73, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 54, in validate
+    self.user = authenticate(**authenticate_kwargs)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\views\decorators\debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 114, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\backends.py", line 65, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\base_user.py", line 37, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 631, in get
+    num = len(clone)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1621, in execute_sql
+    cursor = self.connection.cursor()
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 320, in cursor
+    return self._cursor()
+           ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 296, in _cursor
+    self.ensure_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 278, in ensure_connection
+    with self.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+django.db.utils.OperationalError: could not translate host name "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" to address: Temporary failure in name resolution
+
+ERROR 2026-07-05 12:55:42,697 log 21492 5340 Internal Server Error: /api/v1/auth/login/
+ERROR 2026-07-05 12:55:42,700 runserver 21492 2432 HTTP POST /api/v1/auth/login/ 500 [5.03, 127.0.0.1:63371]
+ERROR 2026-07-05 12:55:54,401 exceptions 21492 20476 Unhandled Server Error: could not translate host name "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" to address: Temporary failure in name resolution
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: could not translate host name "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" to address: Temporary failure in name resolution
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\views.py", line 60, in post
+    response = super().post(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\views.py", line 46, in post
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 459, in run_validation
+    value = self.validate(value)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\serializers.py", line 281, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 73, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 54, in validate
+    self.user = authenticate(**authenticate_kwargs)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\views\decorators\debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 114, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\backends.py", line 65, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\base_user.py", line 37, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 631, in get
+    num = len(clone)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1621, in execute_sql
+    cursor = self.connection.cursor()
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 320, in cursor
+    return self._cursor()
+           ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 296, in _cursor
+    self.ensure_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 278, in ensure_connection
+    with self.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+django.db.utils.OperationalError: could not translate host name "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" to address: Temporary failure in name resolution
+
+ERROR 2026-07-05 12:55:54,416 log 21492 5340 Internal Server Error: /api/v1/auth/login/
+ERROR 2026-07-05 12:55:54,417 runserver 21492 2432 HTTP POST /api/v1/auth/login/ 500 [4.28, 127.0.0.1:63371]
+ERROR 2026-07-05 12:56:19,494 exceptions 21492 14052 Unhandled Server Error: connection to server at "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" (44.198.216.75), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" (44.198.216.75), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\views.py", line 60, in post
+    response = super().post(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\views.py", line 46, in post
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 459, in run_validation
+    value = self.validate(value)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\serializers.py", line 281, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 73, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 54, in validate
+    self.user = authenticate(**authenticate_kwargs)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\views\decorators\debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 114, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\backends.py", line 65, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\base_user.py", line 37, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 631, in get
+    num = len(clone)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1621, in execute_sql
+    cursor = self.connection.cursor()
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 320, in cursor
+    return self._cursor()
+           ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 296, in _cursor
+    self.ensure_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 278, in ensure_connection
+    with self.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+django.db.utils.OperationalError: connection to server at "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" (44.198.216.75), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+ERROR 2026-07-05 12:56:19,511 log 21492 5340 Internal Server Error: /api/v1/auth/login/
+ERROR 2026-07-05 12:56:19,512 runserver 21492 2432 HTTP POST /api/v1/auth/login/ 500 [15.05, 127.0.0.1:63371]
+ERROR 2026-07-05 12:56:21,562 exceptions 21492 20628 Unhandled Server Error: connection to server at "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" (44.198.216.75), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" (44.198.216.75), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\views.py", line 60, in post
+    response = super().post(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\views.py", line 46, in post
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 459, in run_validation
+    value = self.validate(value)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\serializers.py", line 281, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 73, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 54, in validate
+    self.user = authenticate(**authenticate_kwargs)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\views\decorators\debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 114, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\backends.py", line 65, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\base_user.py", line 37, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 631, in get
+    num = len(clone)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1621, in execute_sql
+    cursor = self.connection.cursor()
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 320, in cursor
+    return self._cursor()
+           ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 296, in _cursor
+    self.ensure_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 278, in ensure_connection
+    with self.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+django.db.utils.OperationalError: connection to server at "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" (44.198.216.75), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+ERROR 2026-07-05 12:56:21,569 log 21492 5340 Internal Server Error: /api/v1/auth/login/
+ERROR 2026-07-05 12:56:21,570 runserver 21492 2432 HTTP POST /api/v1/auth/login/ 500 [25.14, 127.0.0.1:60493]
+ERROR 2026-07-05 12:56:53,945 exceptions 21492 16456 Unhandled Server Error: connection to server at "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" (44.198.216.75), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" (44.198.216.75), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\views.py", line 60, in post
+    response = super().post(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\views.py", line 46, in post
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 459, in run_validation
+    value = self.validate(value)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\serializers.py", line 281, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 73, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 54, in validate
+    self.user = authenticate(**authenticate_kwargs)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\views\decorators\debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 114, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\backends.py", line 65, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\base_user.py", line 37, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 631, in get
+    num = len(clone)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1621, in execute_sql
+    cursor = self.connection.cursor()
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 320, in cursor
+    return self._cursor()
+           ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 296, in _cursor
+    self.ensure_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 278, in ensure_connection
+    with self.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+django.db.utils.OperationalError: connection to server at "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" (44.198.216.75), port 5432 failed: server closed the connection unexpectedly
+	This probably means the server terminated abnormally
+	before or while processing the request.
+
+ERROR 2026-07-05 12:56:53,959 log 21492 5340 Internal Server Error: /api/v1/auth/login/
+ERROR 2026-07-05 12:56:53,960 runserver 21492 2432 HTTP POST /api/v1/auth/login/ 500 [17.16, 127.0.0.1:63371]
+ERROR 2026-07-05 12:57:34,757 exceptions 21492 8136 Unhandled Server Error: could not translate host name "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" to address: Temporary failure in name resolution
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: could not translate host name "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" to address: Temporary failure in name resolution
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\views.py", line 60, in post
+    response = super().post(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\views.py", line 46, in post
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 459, in run_validation
+    value = self.validate(value)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\serializers.py", line 281, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 73, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 54, in validate
+    self.user = authenticate(**authenticate_kwargs)
+                ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\views\decorators\debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\__init__.py", line 114, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\backends.py", line 65, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\contrib\auth\base_user.py", line 37, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 631, in get
+    num = len(clone)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 368, in __len__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 1954, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 93, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1621, in execute_sql
+    cursor = self.connection.cursor()
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 320, in cursor
+    return self._cursor()
+           ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 296, in _cursor
+    self.ensure_connection()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 278, in ensure_connection
+    with self.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 279, in ensure_connection
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\base\base.py", line 256, in connect
+    self.connection = self.get_new_connection(conn_params)
+                      ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\asyncio.py", line 26, in inner
+    return func(*args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\postgresql\base.py", line 332, in get_new_connection
+    connection = self.Database.connect(**conn_params)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\psycopg2\__init__.py", line 135, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+django.db.utils.OperationalError: could not translate host name "ep-ancient-fire-ad04qtd4-pooler.c-2.us-east-1.aws.neon.tech" to address: Temporary failure in name resolution
+
+ERROR 2026-07-05 12:57:34,767 log 21492 5340 Internal Server Error: /api/v1/auth/login/
+ERROR 2026-07-05 12:57:34,768 runserver 21492 2432 HTTP POST /api/v1/auth/login/ 500 [4.29, 127.0.0.1:49237]
+ERROR 2026-07-05 13:03:45,371 exceptions 19080 1888 Unhandled Server Error: no such table: token_blacklist_outstandingtoken
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: token_blacklist_outstandingtoken
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\views.py", line 60, in post
+    response = super().post(request, *args, **kwargs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\views.py", line 46, in post
+    serializer.is_valid(raise_exception=True)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 225, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py", line 459, in run_validation
+    value = self.validate(value)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\serializers.py", line 281, in validate
+    data = super().validate(attrs)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 75, in validate
+    refresh = self.get_token(self.user)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\users\serializers.py", line 272, in get_token
+    token = super().get_token(user)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py", line 66, in get_token
+    return cls.token_class.for_user(user)  # type: ignore
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\tokens.py", line 344, in for_user
+    OutstandingToken.objects.create(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        user=user,
+        ^^^^^^^^^^
+    ...<3 lines>...
+        expires_at=datetime_from_epoch(exp),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 665, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py", line 1873, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: token_blacklist_outstandingtoken
+ERROR 2026-07-05 13:03:45,546 log 19080 8132 Internal Server Error: /api/v1/auth/login/
+ERROR 2026-07-05 13:03:45,549 runserver 19080 13020 HTTP POST /api/v1/auth/login/ 500 [0.91, 127.0.0.1:64376]
+WARNING 2026-07-05 13:10:44,176 log 10932 11692 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-05 13:10:47,546 exceptions 10932 11692 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-05 13:10:47,547 log 10932 11692 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-05 13:10:50,690 log 10932 11692 Not Found: /api/v1/documents/901ad219-eb88-4c75-bdcd-a2e1f3c56e6b/export-pdf/
+WARNING 2026-07-05 13:10:52,373 log 10932 11692 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-05 13:10:52,388 log 10932 11692 Bad Request: /api/v1/documents/83da979f-35ac-40cd-a503-7c2970f45ec3/sign-off/
+WARNING 2026-07-05 13:10:54,220 log 10932 11692 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-05 13:10:54,280 log 10932 11692 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-05 13:10:56,010 log 10932 11692 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-05 13:10:59,570 log 10932 11692 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-05 13:11:00,776 exceptions 10932 11692 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-05 13:11:00,777 log 10932 11692 Bad Request: /api/v1/meetings/
+WARNING 2026-07-05 13:11:00,805 exceptions 10932 11692 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-05 13:11:00,806 log 10932 11692 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-05 13:11:12,062 exceptions 10932 11692 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-05 13:11:12,063 log 10932 11692 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-05 13:11:21,128 exceptions 10932 11692 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-05 13:11:21,128 log 10932 11692 Bad Request: /api/v1/requirements/
+WARNING 2026-07-05 13:11:21,131 exceptions 10932 11692 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-05 13:11:21,131 log 10932 11692 Bad Request: /api/v1/requirements/
+WARNING 2026-07-05 13:11:23,509 log 10932 11692 Bad Request: /api/v1/risks/change-requests/26e9a1ce-dc43-4ad2-85a0-d53dff575de9/review/
+WARNING 2026-07-05 13:11:25,304 exceptions 10932 11692 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-05 13:11:25,305 log 10932 11692 Bad Request: /api/v1/risks/
+WARNING 2026-07-05 13:11:26,402 exceptions 10932 11692 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-05 13:11:26,403 log 10932 11692 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-05 13:11:26,407 exceptions 10932 11692 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-05 13:11:26,407 log 10932 11692 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-05 13:11:29,989 exceptions 10932 11692 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-05 13:11:29,990 log 10932 11692 Bad Request: /api/v1/stories/
+WARNING 2026-07-05 13:11:34,704 exceptions 10932 11692 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-05 13:11:34,704 log 10932 11692 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-05 13:11:35,996 log 10932 11692 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-05 13:11:38,286 exceptions 10932 11692 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-05 13:11:38,286 log 10932 11692 Bad Request: /api/v1/teams/
+WARNING 2026-07-05 13:11:38,290 exceptions 10932 11692 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-05 13:11:38,291 log 10932 11692 Bad Request: /api/v1/teams/
+WARNING 2026-07-05 13:11:42,911 log 10932 11692 Forbidden: /api/v1/teams/
+WARNING 2026-07-05 13:11:46,197 log 10932 11692 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-05 13:11:46,815 exceptions 10932 11692 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-05 13:11:46,816 log 10932 11692 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-05 13:11:46,823 exceptions 10932 11692 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-05 13:11:46,823 log 10932 11692 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-05 13:11:46,829 exceptions 10932 11692 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-05 13:11:46,829 log 10932 11692 Bad Request: /api/v1/auth/register/

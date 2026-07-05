@@ -27,6 +27,13 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
     serializer_class = BusinessDocumentSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy", "generate_document"]:
+            from billing.permissions import IsProOrEnterprise
+            return [IsAuthenticated(), IsProOrEnterprise()]
+        return [IsAuthenticated()]
+
+
     def get_queryset(self):
         user = self.request.user
         if not user.is_authenticated or not user.organization_id:

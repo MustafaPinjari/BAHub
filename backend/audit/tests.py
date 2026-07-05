@@ -19,6 +19,11 @@ class AuditLoggingTests(APITestCase):
         self.org_a = Organization.objects.create(name="Company A")
         self.org_b = Organization.objects.create(name="Company B")
 
+        # Provision Enterprise plan tier for tests
+        from billing.models import TenantSubscription
+        TenantSubscription.objects.filter(organization=self.org_a).update(plan_tier="ENTERPRISE")
+        TenantSubscription.objects.filter(organization=self.org_b).update(plan_tier="ENTERPRISE")
+
         # Create Users
         self.user_a = User.objects.create_user(
             username="analyst_a",

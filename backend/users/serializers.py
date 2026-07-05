@@ -28,6 +28,7 @@ class UserPreferenceSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     preferences = UserPreferenceSerializer(read_only=True)
     organization_name = serializers.CharField(source="organization.name", read_only=True)
+    plan_tier = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -44,9 +45,25 @@ class UserSerializer(serializers.ModelSerializer):
             "organization",
             "organization_name",
             "preferences",
+            "plan_tier",
             "created_at",
         ]
-        read_only_fields = ["id", "username", "email", "role", "organization", "created_at"]
+        read_only_fields = ["id", "username", "email", "role", "organization", "plan_tier", "created_at"]
+
+    def get_plan_tier(self, obj):
+        if obj.organization:
+            from billing.models import TenantSubscription
+            sub, _ = TenantSubscription.objects.get_or_create(
+                organization=obj.organization,
+                defaults={
+                    "plan_tier": "FREE",
+                    "seats_limit": 5,
+                    "is_active": True,
+                    "ai_credits_limit": 100
+                }
+            )
+            return sub.plan_tier
+        return "FREE"
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
@@ -95,6 +112,7 @@ class RegisterSerializer(serializers.Serializer):
     role = serializers.ChoiceField(choices=User.ROLE_CHOICES, default=User.BUSINESS_ANALYST)
     organization_name = serializers.CharField(max_length=255, required=False, default="")
     invite_token = serializers.UUIDField(required=False, allow_null=True)
+    plan_tier = serializers.ChoiceField(choices=["FREE", "PRO", "ENTERPRISE"], default="FREE", required=False)
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
@@ -202,6 +220,28 @@ class RegisterSerializer(serializers.Serializer):
 
         # Initialize default user preferences
         UserPreference.objects.create(user=user)
+
+        # Update tenant subscription if plan_tier was specified and is not FREE
+        plan_tier = validated_data.get("plan_tier", "FREE")
+        if not invite and plan_tier != "FREE":
+            from billing.models import TenantSubscription
+            sub, _ = TenantSubscription.objects.get_or_create(
+                organization=organization,
+                defaults={
+                    "plan_tier": "FREE",
+                    "seats_limit": 5,
+                    "is_active": True,
+                    "ai_credits_limit": 100
+                }
+            )
+            sub.plan_tier = plan_tier
+            if plan_tier == "PRO":
+                sub.seats_limit = 20
+                sub.ai_credits_limit = 1000
+            elif plan_tier == "ENTERPRISE":
+                sub.seats_limit = 1000
+                sub.ai_credits_limit = 10000
+            sub.save()
 
         # Mark invitation as used
         if invite:

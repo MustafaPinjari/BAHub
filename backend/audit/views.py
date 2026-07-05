@@ -4,13 +4,15 @@ from .models import AuditLog
 from .serializers import AuditLogSerializer
 from core.responses import api_success
 
+from billing.permissions import IsEnterprise
+
 class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     """
     ViewSet for retrieving database audit logs.
     Strictly isolates queries to the user's organization context.
     """
     serializer_class = AuditLogSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEnterprise]
 
     def get_queryset(self):
         user = self.request.user

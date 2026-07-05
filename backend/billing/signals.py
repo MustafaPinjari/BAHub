@@ -5,6 +5,8 @@ from .models import TenantSubscription
 
 @receiver(post_save, sender=Organization)
 def create_tenant_subscription(sender, instance, created, **kwargs):
+    if kwargs.get('raw'):
+        return
     if created:
         TenantSubscription.objects.get_or_create(
             organization=instance,

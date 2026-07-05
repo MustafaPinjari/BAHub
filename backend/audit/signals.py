@@ -15,9 +15,8 @@ EXCLUDED_FIELDS = ["id", "created_at", "updated_at"]
 
 @receiver(pre_save)
 def track_old_state(sender, instance, **kwargs):
-    """
-    Tracks and caches the old state of the model before save.
-    """
+    if kwargs.get('raw'):
+        return
     if sender not in AUDITED_MODELS:
         return
 
@@ -36,9 +35,8 @@ def track_old_state(sender, instance, **kwargs):
 
 @receiver(post_save)
 def log_resource_save(sender, instance, created, **kwargs):
-    """
-    Logs resource creation or update. Computes delta diffs for updates.
-    """
+    if kwargs.get('raw'):
+        return
     if sender not in AUDITED_MODELS:
         return
 

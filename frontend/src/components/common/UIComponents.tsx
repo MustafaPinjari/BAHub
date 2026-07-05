@@ -76,7 +76,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className={cn(
               "w-full px-3 py-1.5 text-xs font-semibold rounded-lg bg-card border border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none placeholder:text-muted-foreground/50 shadow-sm",
               {
-                "pl-8.5": !!icon,
+                "pl-10": !!icon,
                 "border-destructive focus:border-destructive focus:ring-destructive/10": !!error,
               },
               className
@@ -159,7 +159,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             className={cn(
               "w-full px-3 py-1.5 text-xs font-semibold rounded-lg bg-card border border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none appearance-none cursor-pointer shadow-sm pr-8",
               {
-                "pl-8.5": !!icon,
+                "pl-10": !!icon,
                 "border-destructive focus:border-destructive focus:ring-destructive/10": !!error,
               },
               className

@@ -40,6 +40,8 @@ const ROLE_OPTIONS = [
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigateToLogin }) => {
   const { register: registerApi } = useAuth();
+  const [step, setStep] = useState<1 | 2>(1);
+  const [selectedPlan, setSelectedPlan] = useState<"FREE" | "PRO" | "ENTERPRISE">("FREE");
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +60,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
     setFormError(null);
     setLoading(true);
     try {
-      await registerApi(data);
+      // Submit registration along with chosen plan_tier. 
+      // AuthContext's register method handles payment redirect internally for paid plans.
+      await registerApi({
+        ...data,
+        plan_tier: selectedPlan,
+      });
+
       onSuccess();
     } catch (err: any) {
       console.error(err);
@@ -76,101 +84,195 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
 
   return (
     <div className="w-full max-w-[380px] flex flex-col gap-5 select-none bg-background">
-      {/* Header */}
-      <div className="flex flex-col items-center gap-2 text-center">
-        <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20 shrink-0 mb-1">
-          <Building className="w-4 h-4" />
-        </div>
-        <h1 className="text-xl font-bold text-foreground tracking-tight">Create BAHub Workspace</h1>
-        <p className="text-xs text-muted-foreground">
-          Register your profile and workspace organization workspace.
-        </p>
-      </div>
+      {step === 1 ? (
+        <>
+          {/* Header */}
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20 shrink-0 mb-1">
+              <Building className="w-4 h-4" />
+            </div>
+            <h1 className="text-xl font-bold text-foreground tracking-tight">Select Subscription Plan</h1>
+            <p className="text-xs text-muted-foreground">
+              Choose a plan to customize your AI-powered analyst workspace.
+            </p>
+          </div>
 
-      {formError && (
-        <Alert variant="destructive">
-          {formError}
-        </Alert>
+          <div className="flex flex-col gap-3">
+            {/* Free Plan Card */}
+            <div
+              onClick={() => setSelectedPlan("FREE")}
+              className={`p-3.5 rounded-xl border-2 text-left cursor-pointer transition-all flex justify-between items-center ${
+                selectedPlan === "FREE"
+                  ? "border-primary bg-primary/5 shadow-md"
+                  : "border-border hover:border-slate-400 bg-card"
+              }`}
+            >
+              <div className="flex flex-col">
+                <span className="font-bold text-sm text-foreground">Free Starter</span>
+                <span className="text-[10px] text-muted-foreground mt-0.5">5 Seats • 100 AI credits • Basic SWOT & Gap</span>
+              </div>
+              <span className="font-extrabold text-base text-foreground">$0</span>
+            </div>
+
+            {/* Pro Plan Card */}
+            <div
+              onClick={() => setSelectedPlan("PRO")}
+              className={`p-3.5 rounded-xl border-2 text-left cursor-pointer transition-all flex justify-between items-center relative overflow-hidden ${
+                selectedPlan === "PRO"
+                  ? "border-primary bg-primary/5 shadow-md"
+                  : "border-border hover:border-slate-400 bg-card"
+              }`}
+            >
+              <div className="absolute top-0 right-0 bg-primary text-[8px] font-black text-white px-2 py-0.5 rounded-bl">
+                POPULAR
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-sm text-foreground">Pro Growth</span>
+                <span className="text-[10px] text-muted-foreground mt-0.5">20 Seats • 1,000 AI credits • BRD/FRD Compiler</span>
+              </div>
+              <span className="font-extrabold text-base text-foreground">$49</span>
+            </div>
+
+            {/* Enterprise Plan Card */}
+            <div
+              onClick={() => setSelectedPlan("ENTERPRISE")}
+              className={`p-3.5 rounded-xl border-2 text-left cursor-pointer transition-all flex justify-between items-center ${
+                selectedPlan === "ENTERPRISE"
+                  ? "border-primary bg-primary/5 shadow-md"
+                  : "border-border hover:border-slate-400 bg-card"
+              }`}
+            >
+              <div className="flex flex-col">
+                <span className="font-bold text-sm text-foreground">Enterprise Core</span>
+                <span className="text-[10px] text-muted-foreground mt-0.5">1,000 Seats • 10,000 AI credits • SSO & Audit Logs</span>
+              </div>
+              <span className="font-extrabold text-base text-foreground">$299</span>
+            </div>
+
+            <Button
+              onClick={() => setStep(2)}
+              variant="primary"
+              className="w-full font-bold mt-2 py-2.5 flex items-center justify-center gap-1.5"
+            >
+              Continue to Details
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Header */}
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20 shrink-0 mb-1">
+              <Building className="w-4 h-4" />
+            </div>
+            <h1 className="text-xl font-bold text-foreground tracking-tight">Create BAHub Workspace</h1>
+            <p className="text-xs text-muted-foreground">
+              Register your profile and workspace details for the <strong className="text-primary">{selectedPlan}</strong> plan.
+            </p>
+          </div>
+
+          {formError && (
+            <Alert variant="destructive">
+              {formError}
+            </Alert>
+          )}
+
+          {/* Form fields */}
+          <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="sm:col-span-2">
+              <Input
+                label="Organization Name"
+                type="text"
+                placeholder="e.g. Apex Analytics"
+                error={errors.organization_name?.message}
+                icon={<Building className="w-3.5 h-3.5" />}
+                {...register("organization_name")}
+              />
+            </div>
+
+            <Input
+              label="First Name"
+              type="text"
+              placeholder="John"
+              error={errors.first_name?.message}
+              icon={<UserIcon className="w-3.5 h-3.5" />}
+              {...register("first_name")}
+            />
+
+            <Input
+              label="Last Name"
+              type="text"
+              placeholder="Doe"
+              error={errors.last_name?.message}
+              icon={<UserIcon className="w-3.5 h-3.5" />}
+              {...register("last_name")}
+            />
+
+            <Input
+              label="Username"
+              type="text"
+              placeholder="johndoe"
+              error={errors.username?.message}
+              icon={<UserIcon className="w-3.5 h-3.5" />}
+              {...register("username")}
+            />
+
+            <Input
+              label="Email Address"
+              type="email"
+              placeholder="john@example.com"
+              error={errors.email?.message}
+              icon={<Mail className="w-3.5 h-3.5" />}
+              {...register("email")}
+            />
+
+            <div className="sm:col-span-2">
+              <Select
+                label="Professional Role"
+                options={ROLE_OPTIONS}
+                error={errors.role?.message}
+                icon={<Briefcase className="w-3.5 h-3.5" />}
+                {...register("role")}
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <Input
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                helperText="At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special."
+                error={errors.password?.message}
+                icon={<Key className="w-3.5 h-3.5" />}
+                {...register("password")}
+              />
+            </div>
+
+            <div className="flex gap-2 sm:col-span-2 mt-1.5">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setStep(1)}
+                className="w-1/3 font-bold"
+                disabled={loading}
+              >
+                Back
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-2/3 font-bold"
+                isLoading={loading}
+              >
+                Create Workspace
+              </Button>
+            </div>
+          </form>
+        </>
       )}
 
-      {/* Form fields */}
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div className="sm:col-span-2">
-          <Input
-            label="Organization Name"
-            type="text"
-            placeholder="e.g. Apex Analytics"
-            error={errors.organization_name?.message}
-            icon={<Building className="w-3.5 h-3.5" />}
-            {...register("organization_name")}
-          />
-        </div>
-
-        <Input
-          label="First Name"
-          type="text"
-          placeholder="John"
-          error={errors.first_name?.message}
-          icon={<UserIcon className="w-3.5 h-3.5" />}
-          {...register("first_name")}
-        />
-
-        <Input
-          label="Last Name"
-          type="text"
-          placeholder="Doe"
-          error={errors.last_name?.message}
-          icon={<UserIcon className="w-3.5 h-3.5" />}
-          {...register("last_name")}
-        />
-
-        <Input
-          label="Username"
-          type="text"
-          placeholder="johndoe"
-          error={errors.username?.message}
-          icon={<UserIcon className="w-3.5 h-3.5" />}
-          {...register("username")}
-        />
-
-        <Input
-          label="Email Address"
-          type="email"
-          placeholder="john@example.com"
-          error={errors.email?.message}
-          icon={<Mail className="w-3.5 h-3.5" />}
-          {...register("email")}
-        />
-
-        <div className="sm:col-span-2">
-          <Select
-            label="Professional Role"
-            options={ROLE_OPTIONS}
-            error={errors.role?.message}
-            icon={<Briefcase className="w-3.5 h-3.5" />}
-            {...register("role")}
-          />
-        </div>
-
-        <div className="sm:col-span-2">
-          <Input
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            helperText="At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special."
-            error={errors.password?.message}
-            icon={<Key className="w-3.5 h-3.5" />}
-            {...register("password")}
-          />
-        </div>
-
-        <Button type="submit" variant="primary" className="sm:col-span-2 w-full mt-1.5 font-bold" isLoading={loading}>
-          Create Workspace
-        </Button>
-      </form>
-
       {/* Nav Back */}
-      <div className="text-center text-xs text-muted-foreground">
+      <div className="text-center text-xs text-muted-foreground mt-1">
         Already have an account?{" "}
         <button
           onClick={onNavigateToLogin}

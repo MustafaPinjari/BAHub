@@ -14,9 +14,11 @@ from stories.models import UserStory
 from documents.models import BusinessDocument
 from core.responses import api_success, api_error
 
+from billing.permissions import IsEnterprise
+
 class IntegrationConfigViewSet(viewsets.ModelViewSet):
     serializer_class = IntegrationConfigSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEnterprise]
 
     def get_queryset(self):
         user = self.request.user
@@ -59,7 +61,7 @@ class IntegrationConfigViewSet(viewsets.ModelViewSet):
 
 class SyncLogViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SyncLogSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEnterprise]
 
     def get_queryset(self):
         user = self.request.user
@@ -74,7 +76,7 @@ class SyncLogViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class TestConnectionView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEnterprise]
 
     def post(self, request):
         system_type = request.data.get("system")  # "jira" or "confluence"
@@ -111,7 +113,7 @@ class TestConnectionView(APIView):
 
 
 class JiraSyncView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEnterprise]
 
     def post(self, request):
         project_id = request.data.get("project_id")
@@ -234,7 +236,7 @@ class JiraSyncView(APIView):
 
 
 class ConfluenceSyncView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEnterprise]
 
     def post(self, request):
         project_id = request.data.get("project_id")

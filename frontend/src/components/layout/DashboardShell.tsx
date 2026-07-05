@@ -161,8 +161,14 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
                   <span className="font-semibold text-xs text-foreground truncate w-32 leading-tight">
                     {user?.organization_name || "BAHub"}
                   </span>
-                  <span className="text-[9px] uppercase font-bold text-muted-foreground tracking-wider leading-none mt-0.5">
-                    Free Plan
+                  <span className={`text-[9px] uppercase font-extrabold tracking-wider leading-none mt-0.5 ${
+                    user?.plan_tier === "ENTERPRISE"
+                      ? "text-emerald-500"
+                      : user?.plan_tier === "PRO"
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  }`}>
+                    {user?.plan_tier ? `${user.plan_tier} Plan` : "Free Plan"}
                   </span>
                 </div>
                 <ChevronsUpDown className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0 ml-1" />

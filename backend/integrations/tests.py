@@ -17,6 +17,11 @@ class IntegrationServicesTests(APITestCase):
         self.org_a = Organization.objects.create(name="Org A")
         self.org_b = Organization.objects.create(name="Org B")
 
+        # Provision Enterprise plan tier for tests
+        from billing.models import TenantSubscription
+        TenantSubscription.objects.filter(organization=self.org_a).update(plan_tier="ENTERPRISE")
+        TenantSubscription.objects.filter(organization=self.org_b).update(plan_tier="ENTERPRISE")
+
         # Create Users
         self.analyst_a = User.objects.create_user(
             username="analyst_a", password="Password123!", role=User.BUSINESS_ANALYST, organization=self.org_a

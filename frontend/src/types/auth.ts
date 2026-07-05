@@ -29,6 +29,7 @@ export interface User {
   organization: string | null;
   organization_name: string;
   preferences: UserPreference;
+  plan_tier?: "FREE" | "PRO" | "ENTERPRISE";
   created_at: string;
 }
 

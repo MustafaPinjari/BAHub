@@ -11,10 +11,7 @@ import {
   ArrowRight,
   Shield,
   Zap,
-  Loader2,
-  CheckCircle2,
-  XCircle,
-  HelpCircle
+  Loader2
 } from "lucide-react";
 
 interface SubscriptionDetail {
@@ -27,7 +24,7 @@ interface SubscriptionDetail {
 }
 
 export const BillingPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -64,6 +61,10 @@ export const BillingPage: React.FC = () => {
         type: "success",
         message: "Congratulations! Your workspace has been upgraded successfully."
       });
+      // Refresh profile to sync user plan_tier
+      if (refreshProfile) {
+        refreshProfile();
+      }
       // Clear the query parameters from browser URL
       navigate(location.pathname, { replace: true });
     } else if (params.get("cancelled") === "true") {

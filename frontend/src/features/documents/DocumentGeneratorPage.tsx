@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Badge, Button, Input, Alert } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
+import { FeatureLock } from "../../components/common/FeatureLock";
 import { 
   FileText, 
   Plus, 
@@ -44,7 +45,7 @@ interface DocumentGeneratorPageProps {
 
 export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ docType }) => {
   const { user } = useAuth();
-  
+
   // Project context from localStorage
   const [activeProject, setActiveProject] = useState<Project | null>(() => {
     try {
@@ -347,6 +348,16 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
       );
     });
   };
+
+  if (user?.plan_tier === "FREE") {
+    return (
+      <FeatureLock
+        requiredTier="PRO"
+        featureName={`${docType} Generator`}
+        featureDescription={`Synthesize full professional requirements and specification documents (${docType}) dynamically from project backlogs, stakeholder maps, and user story catalogs.`}
+      />
+    );
+  }
 
   // 1. Placeholder screen if no active project context is selected
   if (!activeProject) {

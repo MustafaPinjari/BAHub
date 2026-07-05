@@ -72,8 +72,10 @@ class CoreAndAuthTests(APITestCase):
         response = self.client.post(url, payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.data["success"])
-        self.assertEqual(response.data["data"]["username"], "tester")
-        self.assertEqual(response.data["data"]["organization_name"], "Test Organization")
+        self.assertEqual(response.data["data"]["user"]["username"], "tester")
+        self.assertEqual(response.data["data"]["user"]["organization_name"], "Test Organization")
+        self.assertIn("access", response.data["data"])
+        self.assertIn("refresh", response.data["data"])
         
         # Verify db persistence
         user = User.objects.get(username="tester")

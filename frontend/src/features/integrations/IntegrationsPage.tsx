@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Button, Alert, Input, Select, Badge } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
+import { FeatureLock } from "../../components/common/FeatureLock";
 import {
   FolderGit,
   Loader2,
@@ -51,7 +52,7 @@ interface BusinessDocument {
 
 export const IntegrationsPage: React.FC = () => {
   const { user } = useAuth();
-  
+
   // Project context from localStorage
   const [activeProject, setActiveProject] = useState<Project | null>(() => {
     try {
@@ -318,6 +319,16 @@ export const IntegrationsPage: React.FC = () => {
       setSyncingDoc(false);
     }
   };
+
+  if (user?.plan_tier !== "ENTERPRISE") {
+    return (
+      <FeatureLock
+        requiredTier="ENTERPRISE"
+        featureName="Jira & Confluence Sync"
+        featureDescription="Integrate your workspace with external tracking systems. Synchronize requirement backlogs, compile reports, and publish specs directly to Atlassian tools."
+      />
+    );
+  }
 
   // Placeholder if no project context
   if (!activeProject) {

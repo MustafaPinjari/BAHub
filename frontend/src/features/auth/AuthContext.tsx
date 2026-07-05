@@ -7,8 +7,9 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;
-  register: (payload: any) => Promise<void>;
+  register: (payload: any) => Promise<User>;
   updateProfile: (payload: any) => Promise<User>;
+  refreshProfile: () => Promise<User | undefined>;
   logout: () => Promise<void>;
 }
 
@@ -76,9 +77,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (payload: any) => {
     setLoading(true);
     try {
-      await api.post<any, { data: User }>("/auth/register/", payload);
+      const response = await api.post<any, { data: { user: User; access: string; refresh: string } }>("/auth/register/", payload);
+      localStorage.setItem("accessToken", response.data.access);
+      localStorage.setItem("refreshToken", response.data.refresh);
+      
+      // Auto-trigger checkout redirect for paid plan tiers before updating state to avoid React unmount race
+      if (payload.plan_tier && payload.plan_tier !== "FREE") {
+        try {
+          const checkoutResponse = await api.post<any, { data: { checkout_url: string; mode: string } }>(
+            "/billing/checkout/",
+            { plan: payload.plan_tier },
+            {
+              headers: {
+                Authorization: `Bearer ${response.data.access}`
+              }
+            }
+          );
+          if (checkoutResponse.data?.checkout_url) {
+            window.location.href = checkoutResponse.data.checkout_url;
+            // Return user but do not set it in state immediately since we are navigating away
+            return response.data.user;
+          }
+        } catch (checkoutErr) {
+          console.error("Auto checkout redirection failed during registration", checkoutErr);
+        }
+      }
+
+      setUser(response.data.user);
+      return response.data.user;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const refreshProfile = async () => {
+    try {
+      const response = await api.get<any, { data: User }>("/auth/profile/");
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to refresh profile:", error);
     }
   };
 
@@ -106,6 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     updateProfile,
+    refreshProfile,
     logout,
   };
 

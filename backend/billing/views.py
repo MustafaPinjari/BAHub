@@ -47,6 +47,30 @@ class CreateCheckoutSessionView(APIView):
         if request.user.role != "ADMIN":
             return api_error(message="Only administrators can manage subscription upgrades.")
 
+        # Resolve frontend origin dynamically
+        frontend_origin = request.META.get('HTTP_ORIGIN') or request.headers.get('origin')
+        if not frontend_origin:
+            referer = request.META.get('HTTP_REFERER')
+            if referer:
+                from urllib.parse import urlparse
+                parsed_uri = urlparse(referer)
+                frontend_origin = f"{parsed_uri.scheme}://{parsed_uri.netloc}"
+        
+        if not frontend_origin:
+            allowed_origins = getattr(settings, "CORS_ALLOWED_ORIGINS", ["http://localhost:5173"])
+            frontend_origin = allowed_origins[0] if isinstance(allowed_origins, list) else allowed_origins
+
+        # Ensure TenantSubscription exists
+        TenantSubscription.objects.get_or_create(
+            organization=request.user.organization,
+            defaults={
+                "plan_tier": "FREE",
+                "seats_limit": 5,
+                "is_active": True,
+                "ai_credits_limit": 100
+            }
+        )
+
         price_id = None
         if plan == "PRO":
             price_id = getattr(settings, "STRIPE_PRICE_PRO", None)
@@ -55,8 +79,9 @@ class CreateCheckoutSessionView(APIView):
 
         # Fallback to mock session if Stripe is not fully configured
         if not stripe.api_key or not price_id:
+            from urllib.parse import quote
             checkout_url = request.build_absolute_uri(
-                f"/api/v1/billing/mock-upgrade/?plan={plan}&org_id={str(request.user.organization.id)}"
+                f"/api/v1/billing/mock-upgrade/?plan={plan}&org_id={str(request.user.organization.id)}&redirect_uri={quote(frontend_origin)}"
             )
             return api_success(
                 data={"checkout_url": checkout_url, "mode": "MOCK"},
@@ -71,8 +96,8 @@ class CreateCheckoutSessionView(APIView):
                     'quantity': 1,
                 }],
                 mode='subscription',
-                success_url=request.build_absolute_uri('/billing/?success=true'),
-                cancel_url=request.build_absolute_uri('/billing/?cancelled=true'),
+                success_url=f"{frontend_origin.rstrip('/')}/billing?success=true",
+                cancel_url=f"{frontend_origin.rstrip('/')}/billing?cancelled=true",
                 client_reference_id=str(request.user.organization.id),
                 customer_email=request.user.email,
             )
@@ -180,28 +205,35 @@ class MockUpgradeView(APIView):
     def get(self, request):
         plan = request.query_params.get("plan", "FREE")
         org_id = request.query_params.get("org_id")
+        redirect_uri = request.query_params.get("redirect_uri")
 
         if org_id:
-            try:
-                sub = TenantSubscription.objects.get(organization_id=org_id)
-                sub.plan_tier = plan
-                if plan == "PRO":
-                    sub.seats_limit = 20
-                    sub.ai_credits_limit = 1000
-                elif plan == "ENTERPRISE":
-                    sub.seats_limit = 1000
-                    sub.ai_credits_limit = 10000
-                else:
-                    sub.seats_limit = 5
-                    sub.ai_credits_limit = 100
-                sub.is_active = True
-                sub.save()
-            except TenantSubscription.DoesNotExist:
-                pass
+            sub, _ = TenantSubscription.objects.get_or_create(
+                organization_id=org_id,
+                defaults={
+                    "plan_tier": "FREE",
+                    "seats_limit": 5,
+                    "is_active": True,
+                    "ai_credits_limit": 100
+                }
+            )
+            sub.plan_tier = plan
+            if plan == "PRO":
+                sub.seats_limit = 20
+                sub.ai_credits_limit = 1000
+            elif plan == "ENTERPRISE":
+                sub.seats_limit = 1000
+                sub.ai_credits_limit = 10000
+            else:
+                sub.seats_limit = 5
+                sub.ai_credits_limit = 100
+            sub.is_active = True
+            sub.save()
 
         # Redirect back to the frontend billing success view
-        frontend_origin = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
-        if isinstance(frontend_origin, list):
-            frontend_origin = frontend_origin[0]
+        if not redirect_uri:
+            redirect_uri = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
+            if isinstance(redirect_uri, list):
+                redirect_uri = redirect_uri[0]
         
-        return redirect(f"{frontend_origin.rstrip('/')}/billing?success=true")
+        return redirect(f"{redirect_uri.rstrip('/')}/billing?success=true")

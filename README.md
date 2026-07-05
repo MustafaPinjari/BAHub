@@ -76,6 +76,12 @@ Double-click `run_all.bat` in the workspace root, or run it via PowerShell:
 ```
 *Press `Ctrl+C` in that console window to stop both servers.*
 
+### Seeding / Resetting Demo Data
+To reset your local SQLite database and seed it with a rich dataset of sample projects, stakeholders, requirements, and user stories, run:
+```powershell
+.\seed_data.bat
+```
+
 ### Manual Deployment
 
 #### 1. Setup Backend

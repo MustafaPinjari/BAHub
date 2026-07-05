@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { useProject } from "../projects/ProjectContext";
+import { useAuth } from "../auth/AuthContext";
+import { FeatureLock } from "../../components/common/FeatureLock";
 import { Card, Badge, Button, Select, Alert } from "../../components/common/UIComponents";
 import { History, ArrowRight, User, Terminal, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -32,7 +34,9 @@ interface PaginationMeta {
 }
 
 export const AuditLogPage: React.FC = () => {
+  const { user } = useAuth();
   const { activeProject } = useProject();
+
   const [logs, setLogs] = useState<AuditLogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -118,6 +122,16 @@ export const AuditLogPage: React.FC = () => {
       second: "2-digit"
     });
   };
+
+  if (user?.plan_tier !== "ENTERPRISE") {
+    return (
+      <FeatureLock
+        requiredTier="ENTERPRISE"
+        featureName="Compliance Audit Logs"
+        featureDescription="Track every database transaction, model mutation, configuration change, and team member activity inside your workspace."
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 p-6 max-w-6xl mx-auto w-full text-foreground select-none">

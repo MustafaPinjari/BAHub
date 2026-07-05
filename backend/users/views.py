@@ -110,10 +110,22 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         
+        # Generate JWT tokens for auto-login
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(user)
+        refresh["role"] = user.role
+        refresh["organization_id"] = str(user.organization_id) if user.organization_id else None
+        refresh["username"] = user.username
+        refresh["email"] = user.email
+
         # Serialize created user
         user_data = UserSerializer(user).data
         return api_success(
-            data=user_data, 
+            data={
+                "user": user_data,
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+            }, 
             message="User registered successfully. Welcome to BAHub!", 
             status_code=status.HTTP_201_CREATED
         )
