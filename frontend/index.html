@@ -1,12 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <meta name="description" content="BAHub — The AI-Powered Business Analyst Workspace. Synthesize requirements, generate compliant BRDs, manage stakeholders, and run AI-assisted analyses." />
+    <title>BAHub — AI-Powered Business Analyst Workspace</title>
+    <!-- Prevent white flash: inline black bg before CSS loads -->
+    <style>
+      html, body, #root {
+        background-color: #000000;
+        color: #f8fafc;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
-  <body>
+  <body style="background-color: #000000;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

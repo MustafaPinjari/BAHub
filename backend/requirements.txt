@@ -19,6 +19,7 @@ service-identity>=24.2.0,<25.0.0
 setuptools<70
 stripe>=15.3.0,<16.0.0
 jira>=3.10.5,<4.0.0
+rich>=13.0,<15.0
 
 
 
