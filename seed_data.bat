@@ -23,9 +23,9 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-echo Loading demo workspace dataset (datadump.json)...
-:: Load fixture
-call venv\Scripts\python manage.py loaddata datadump.json
+echo Loading rich demo workspace dataset (seed_rich_demo_data.py)...
+:: Run seed script
+call venv\Scripts\python seed_rich_demo_data.py
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Failed to load data fixture.
     cd ..

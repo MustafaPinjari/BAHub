@@ -350,7 +350,7 @@ export const IntegrationsPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-6 select-none text-foreground">
       {/* Header Context */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-border pb-4.5 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-border pb-5 gap-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Database className="w-5.5 h-5.5 text-[#2563EB]" />

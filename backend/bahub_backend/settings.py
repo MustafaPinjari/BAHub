@@ -3,6 +3,9 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 import dj_database_url
+from rich.logging import RichHandler
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -92,6 +95,21 @@ TEMPLATES = [
     },
 ]
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "rich": {
+            "class": "rich.logging.RichHandler",
+            "rich_tracebacks": True,
+            "markup": True,
+        },
+    },
+    "root": {
+        "handlers": ["rich"],
+        "level": "INFO",
+    },
+}
 WSGI_APPLICATION = "bahub_backend.wsgi.application"
 ASGI_APPLICATION = "bahub_backend.asgi.application"
 
@@ -233,44 +251,150 @@ SIMPLE_JWT = {
 
 
 # Central Logging System
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
+# Configure colored logging for development (when DEBUG=True)
+if DEBUG:
+    import re
+    from colorlog import ColoredFormatter
+
+    class CleanColoredFormatter(ColoredFormatter):
+        def format(self, record):
+            if record.name == "django.server":
+                msg = record.getMessage()
+                # 1. Match custom runserver format with HTTP prefix and duration/IP:
+                # e.g., HTTP GET /api/v1/requirements/?project=a6ed0b03-120a-4559-9172-147284cefc85 200 [0.02, 127.0.0.1:58297]
+                match = re.match(r'^(?:HTTP\s+)?([A-Z]+)\s+([^\s?]+)(?:\?[^\s]*)?\s+(\d+)(?:\s+\[.*\])?$', msg)
+                if not match:
+                    # 2. Match standard Django runserver format:
+                    # e.g., "GET /api/v1/projects/ HTTP/1.1" 200 1234
+                    match = re.match(r'^"([A-Z]+)\s+([^\s?]+)(?:\?[^\s]*)?\s+HTTP/[0-9.]+"\s+(\d+)\s+\d+', msg)
+                
+                if match:
+                    method, path, status = match.groups()
+                    status_color = "\033[37m"  # Default white
+                    if status.startswith("2"):
+                        status_color = "\033[32m"  # Green
+                    elif status.startswith("3"):
+                        status_color = "\033[36m"  # Cyan
+                    elif status.startswith("4"):
+                        status_color = "\033[33m"  # Yellow
+                    elif status.startswith("5"):
+                        status_color = "\033[31m"  # Red
+                    
+                    reset = "\033[0m"
+                    
+                    # Clean message layout: aligned method, path, and colored status code
+                    record.msg = f"{method:<6} {path:<50} {status_color}{status}{reset}"
+                    record.args = ()
+            return super().format(record)
+
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            # Standard Django formatters
+            "verbose": {
+                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+                "style": "{",
+            },
+            "simple": {
+                "format": "{levelname} {message}",
+                "style": "{",
+            },
+            # Development colored formatter with clean formatting structure
+            "colored": {
+                "()": "bahub_backend.settings.CleanColoredFormatter",
+                "format": "%(log_color)s[%(asctime)s] %(levelname)-8s%(reset)s %(message)s",
+                "datefmt": "%H:%M:%S",
+                "log_colors": {
+                    "DEBUG": "cyan",
+                    "INFO": "green",
+                    "WARNING": "yellow",
+                    "ERROR": "red",
+                    "CRITICAL": "bold_red",
+                },
+            },
         },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
+        "handlers": {
+            # Console handler using the colorlog CleanColoredFormatter
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "colored",
+            },
+            # Fallback/production file handler to write logs to warning.log
+            "file": {
+                "level": "WARNING",
+                "class": "logging.FileHandler",
+                "filename": BASE_DIR / "warning.log",
+                "formatter": "verbose",
+            },
         },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
+        "loggers": {
+            # Top-level Django logger
+            "django": {
+                "handlers": ["console", "file"],
+                "level": "INFO",
+                "propagate": True,
+            },
+            # Django server logger (logs requests e.g. "GET /api/... 200")
+            "django.server": {
+                "handlers": ["console"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            # Django request logger (logs system warning/errors in requests)
+            "django.request": {
+                "handlers": ["console", "file"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            # Custom application logger
+            "bahub.core": {
+                "handlers": ["console", "file"],
+                "level": "INFO",
+                "propagate": True,
+            },
         },
-        "file": {
-            "level": "WARNING",
-            "class": "logging.FileHandler",
-            "filename": BASE_DIR / "warning.log",
-            "formatter": "verbose",
+    }
+else:
+    # Production-safe logging structure without requiring colorlog at runtime
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+                "style": "{",
+            },
+            "simple": {
+                "format": "{levelname} {message}",
+                "style": "{",
+            },
         },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-            "propagate": True,
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "verbose",
+            },
+            "file": {
+                "level": "WARNING",
+                "class": "logging.FileHandler",
+                "filename": BASE_DIR / "warning.log",
+                "formatter": "verbose",
+            },
         },
-        "bahub.core": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-            "propagate": True,
+        "loggers": {
+            "django": {
+                "handlers": ["console", "file"],
+                "level": "INFO",
+                "propagate": True,
+            },
+            "bahub.core": {
+                "handlers": ["console", "file"],
+                "level": "INFO",
+                "propagate": True,
+            },
         },
-    },
-}
+    }
 
 # Stripe Configuration
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", None)

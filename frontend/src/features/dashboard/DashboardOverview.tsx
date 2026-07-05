@@ -187,6 +187,8 @@ export const DashboardOverview: React.FC = () => {
   const draftReqs = backlogData.filter((r: any) => r.status === "DRAFT").length;
   const complianceRate = totalReqs > 0 ? ((approvedReqs / totalReqs) * 100).toFixed(0) : "100";
   const pendingDocsCount = documents.filter((doc: any) => doc.status === "REVIEW").length;
+  const brdCount = documents.filter((d: any) => d.doc_type === "BRD").length;
+  const frdCount = documents.filter((d: any) => d.doc_type === "FRD").length;
 
   const isAdmin = user?.role === "ADMIN";
 
@@ -281,35 +283,46 @@ export const DashboardOverview: React.FC = () => {
           ========================================== */}
       {isAdmin ? (
         // Admin Statistics
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4.5 select-none">
-          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-indigo-500/10 bg-gradient-to-b from-indigo-500/[0.02] to-transparent">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 select-none">
+          <Card className="flex flex-col p-5 gap-2 text-left border-indigo-500/10 bg-gradient-to-b from-indigo-500/[0.02] to-transparent hover:scale-[1.02] hover:border-indigo-500/30 transition-all duration-200 cursor-default">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Compliance Rate</span>
-              <Shield className="w-4 h-4 text-indigo-500" />
+              <div className="w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                <Shield className="w-4 h-4" />
+              </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{complianceRate}%</span>
+            <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden mt-1 border border-border/20">
+              <div className="bg-indigo-500 h-full rounded-full transition-all duration-300" style={{ width: `${complianceRate}%` }} />
+            </div>
             <span className="text-[9px] text-muted-foreground font-semibold">Approved requirements count</span>
           </Card>
-          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-amber-500/10 bg-gradient-to-b from-amber-500/[0.02] to-transparent">
+          <Card className="flex flex-col p-5 gap-2 text-left border-amber-500/10 bg-gradient-to-b from-amber-500/[0.02] to-transparent hover:scale-[1.02] hover:border-amber-500/30 transition-all duration-200 cursor-default">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Pending Sign-Off</span>
-              <UserCheck className="w-4 h-4 text-amber-500" />
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center ${pendingDocsCount > 0 ? 'bg-amber-500/15 text-amber-500' : 'bg-amber-500/10 text-amber-500/70'}`}>
+                <UserCheck className="w-4 h-4" />
+              </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{pendingDocsCount}</span>
             <span className="text-[9px] text-muted-foreground font-semibold">Documents awaiting approval</span>
           </Card>
-          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-primary/10 bg-gradient-to-b from-primary/[0.02] to-transparent">
+          <Card className="flex flex-col p-5 gap-2 text-left border-primary/10 bg-gradient-to-b from-primary/[0.02] to-transparent hover:scale-[1.02] hover:border-primary/30 transition-all duration-200 cursor-default">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Active Teams</span>
-              <Users className="w-4 h-4 text-primary" />
+              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <Users className="w-4 h-4" />
+              </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">2</span>
             <span className="text-[9px] text-muted-foreground font-semibold">Assigned workspace units</span>
           </Card>
-          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-rose-500/10 bg-gradient-to-b from-rose-500/[0.02] to-transparent">
+          <Card className="flex flex-col p-5 gap-2 text-left border-rose-500/10 bg-gradient-to-b from-rose-500/[0.02] to-transparent hover:scale-[1.02] hover:border-rose-500/30 transition-all duration-200 cursor-default">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Project Files</span>
-              <Paperclip className="w-4 h-4 text-rose-500" />
+              <div className="w-7 h-7 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-500">
+                <Paperclip className="w-4 h-4" />
+              </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{attachments.length}</span>
             <span className="text-[9px] text-muted-foreground font-semibold">Total workspace resource links</span>
@@ -317,37 +330,48 @@ export const DashboardOverview: React.FC = () => {
         </div>
       ) : (
         // Analyst Statistics
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4.5 select-none">
-          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-emerald-500/10 bg-gradient-to-b from-emerald-500/[0.02] to-transparent">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 select-none">
+          <Card className="flex flex-col p-5 gap-2 text-left border-emerald-500/10 bg-gradient-to-b from-emerald-500/[0.02] to-transparent hover:scale-[1.02] hover:border-emerald-500/30 transition-all duration-200 cursor-default">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Backlog Coverage</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <div className="w-7 h-7 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">
               {approvedReqs}/{totalReqs}
             </span>
-            <span className="text-[9px] text-muted-foreground font-semibold">Approved vs Total specs</span>
+            <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden mt-1 border border-border/20">
+              <div className="bg-emerald-500 h-full rounded-full transition-all duration-300" style={{ width: `${totalReqs > 0 ? (approvedReqs / totalReqs) * 100 : 0}%` }} />
+            </div>
+            <span className="text-[9px] text-muted-foreground font-semibold">Approved vs Total requirements</span>
           </Card>
-          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-primary/10 bg-gradient-to-b from-primary/[0.02] to-transparent">
+          <Card className="flex flex-col p-5 gap-2 text-left border-primary/10 bg-gradient-to-b from-primary/[0.02] to-transparent hover:scale-[1.02] hover:border-primary/30 transition-all duration-200 cursor-default">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Specs Generated</span>
-              <FileText className="w-4 h-4 text-primary" />
+              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <FileText className="w-4 h-4" />
+              </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{documents.length}</span>
-            <span className="text-[9px] text-muted-foreground font-semibold">Functional documentation files</span>
+            <span className="text-[9px] text-muted-foreground font-semibold">{brdCount} BRD • {frdCount} FRD compiled</span>
           </Card>
-          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-amber-500/10 bg-gradient-to-b from-amber-500/[0.02] to-transparent">
+          <Card className={`flex flex-col p-5 gap-2 text-left border-amber-500/10 hover:scale-[1.02] hover:border-amber-500/30 transition-all duration-200 cursor-default bg-gradient-to-b ${draftReqs > 0 ? 'from-amber-500/[0.04]' : 'from-transparent'}`}>
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Draft Items</span>
-              <AlertCircle className="w-4 h-4 text-amber-500" />
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center ${draftReqs > 0 ? 'bg-amber-500/15 text-amber-500' : 'bg-amber-500/10 text-amber-500/70'}`}>
+                <AlertCircle className="w-4 h-4" />
+              </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{draftReqs}</span>
-            <span className="text-[9px] text-muted-foreground font-semibold">Requirements in draft phase</span>
+            <span className="text-[9px] text-muted-foreground font-semibold">{draftReqs > 0 ? "Awaiting review & submission" : "All specifications approved!"}</span>
           </Card>
-          <Card className="flex flex-col p-4.5 gap-1.5 text-left border-purple-500/10 bg-gradient-to-b from-purple-500/[0.02] to-transparent">
+          <Card className="flex flex-col p-5 gap-2 text-left border-purple-500/10 bg-gradient-to-b from-purple-500/[0.02] to-transparent hover:scale-[1.02] hover:border-purple-500/30 transition-all duration-200 cursor-default">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Actions</span>
-              <Activity className="w-4 h-4 text-purple-500" />
+              <div className="w-7 h-7 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
+                <Activity className="w-4 h-4" />
+              </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{activities.length}</span>
             <span className="text-[9px] text-muted-foreground font-semibold">Logged changes & activities</span>
@@ -367,7 +391,7 @@ export const DashboardOverview: React.FC = () => {
           <div className="w-full lg:w-[75%] flex flex-col gap-6">
             
             {/* Spec Approvals Quick-Control Console */}
-            <Card className="flex flex-col p-5 gap-4.5 text-left select-none">
+            <Card className="flex flex-col p-5 gap-5 text-left select-none">
               <div className="flex items-center justify-between border-b border-border pb-2.5">
                 <div className="flex flex-col gap-0.5">
                   <h3 className="font-bold text-sm text-foreground">Pending Sign-off Console</h3>
@@ -453,7 +477,7 @@ export const DashboardOverview: React.FC = () => {
           <div className="w-full lg:w-[25%] lg:sticky lg:top-5 flex flex-col gap-5 select-none">
             
             {/* Organization Metadata Widget */}
-            <Card className="flex flex-col gap-4.5 p-4.5 text-left">
+            <Card className="flex flex-col gap-5 p-5 text-left">
               <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5 flex items-center gap-1.5">
                 <Building className="w-3.5 h-3.5 text-indigo-500" />
                 <span>Organization Identity</span>
@@ -479,7 +503,7 @@ export const DashboardOverview: React.FC = () => {
             </Card>
 
             {/* Files & references */}
-            <Card className="flex flex-col gap-4 p-4.5 text-left">
+            <Card className="flex flex-col gap-4 p-5 text-left">
               <div className="flex items-center justify-between border-b border-border pb-1.5">
                 <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                   System Reference Assets
@@ -524,7 +548,7 @@ export const DashboardOverview: React.FC = () => {
               <h2 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-left">
                 Document Workspace
               </h2>
-              <DocumentEditor />
+              <DocumentEditor activeProject={activeProject} onSave={fetchDashboardData} />
             </div>
 
             {/* Spreadsheet-Style Backlog Table */}
@@ -545,7 +569,7 @@ export const DashboardOverview: React.FC = () => {
           <div className="w-full lg:w-[25%] lg:sticky lg:top-5 flex flex-col gap-5 select-none">
             
             {/* Context Layer 1: Approval Actions */}
-            <Card className="flex flex-col gap-4 p-4.5 text-left">
+            <Card className="flex flex-col gap-4 p-5 text-left">
               <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5">
                 Approvals Pipeline
               </h3>
@@ -569,7 +593,7 @@ export const DashboardOverview: React.FC = () => {
             </Card>
 
             {/* Context Layer 2: Attachments / References */}
-            <Card className="flex flex-col gap-4 p-4.5 text-left">
+            <Card className="flex flex-col gap-4 p-5 text-left">
               <div className="flex items-center justify-between border-b border-border pb-1.5">
                 <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                   Related Documents
@@ -623,7 +647,7 @@ export const DashboardOverview: React.FC = () => {
             </Card>
 
             {/* Context Layer 3: Activity Log & History */}
-            <Card className="flex flex-col gap-4 p-4.5 text-left">
+            <Card className="flex flex-col gap-4 p-5 text-left">
               <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-b border-border pb-1.5">
                 Workspace Activity
               </h3>

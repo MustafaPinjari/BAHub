@@ -389,7 +389,7 @@ export const ProjectsPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-5 select-none text-foreground">
       {/* Header Context */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-border pb-4.5 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-border pb-5 gap-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-foreground">Workspace Projects</h1>
           <p className="text-xs text-muted-foreground mt-0.5">

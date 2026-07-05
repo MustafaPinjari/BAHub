@@ -1,21 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Badge } from "../../../components/common/UIComponents";
+import { api } from "../../../services/api";
+import { useAuth } from "../../auth/AuthContext";
 import { 
   Sparkles, 
   FileDown, 
   CheckCircle2, 
-  Share2, 
   Save, 
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from "lucide-react";
 
-export const DocumentEditor: React.FC = () => {
+interface DocumentEditorProps {
+  activeProject: {
+    id: string;
+    name: string;
+    description?: string;
+  } | null;
+  onSave?: () => void;
+}
+
+interface BusinessDocument {
+  id: string;
+  project: string;
+  doc_type: "BRD" | "FRD";
+  title: string;
+  version: string;
+  status: "DRAFT" | "REVIEW" | "APPROVED" | "SIGNED_OFF";
+  content: string;
+  created_by_username?: string;
+  updated_at?: string;
+}
+
+export const DocumentEditor: React.FC<DocumentEditorProps> = ({ activeProject, onSave }) => {
+  const { user } = useAuth();
+  const canSignOff = user ? ["ADMIN", "PRODUCT_OWNER", "PROJECT_MANAGER"].includes(user.role) : false;
+
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState<BusinessDocument | null>(null);
+
   const [docContent, setDocContent] = useState({
-    title: "BRD-102: Apex Payment Gateway Integration",
-    scope: "Integrate third-party gateways (Stripe, PayPal) to support multi-currency checkouts.",
-    flow: "1. User initiates checkout.\n2. System requests token from payment provider.\n3. Gateway returns transaction result.",
-    reqs: "- REQ-1: System must support payment retries up to 3 times on transaction failures.\n- REQ-2: Transaction logs must be encrypted in transit.",
+    title: "",
+    scope: "",
+    flow: "",
+    reqs: "",
   });
+
+  const [version, setVersion] = useState("1.0");
+  const [status, setStatus] = useState("DRAFT");
+  const [lastEditedText, setLastEditedText] = useState("Not saved yet");
 
   const [aiSuggestions, setAiSuggestions] = useState([
     {
@@ -36,6 +70,257 @@ export const DocumentEditor: React.FC = () => {
 
   const [activePane, setActivePane] = useState<"editor" | "split" | "preview">("split");
 
+  const parseMarkdownContent = (content: string, defaultTitle: string) => {
+    const result = {
+      title: defaultTitle,
+      scope: "",
+      flow: "",
+      reqs: ""
+    };
+    
+    if (!content) return result;
+    
+    // Find Title
+    const titleMatch = content.match(/^# Business Document:\s*(.*)$/m);
+    if (titleMatch) {
+      result.title = titleMatch[1].trim();
+    }
+    
+    // Find sections using RegExp or splitting
+    const sections = content.split(/^##\s+/m);
+    for (const section of sections) {
+      const lines = section.split("\n");
+      const header = lines[0].trim();
+      const body = lines.slice(1).join("\n").trim();
+      
+      if (header.includes("Scope") || header.includes("1.")) {
+        result.scope = body;
+      } else if (header.includes("User Flow") || header.includes("2.")) {
+        result.flow = body;
+      } else if (header.includes("Requirements") || header.includes("3.")) {
+        result.reqs = body;
+      }
+    }
+    
+    return result;
+  };
+
+  const compileMarkdownContent = (title: string, scope: string, flow: string, reqs: string) => {
+    return `# Business Document: ${title}
+
+## 1. Scope & Objective
+${scope}
+
+## 2. User Flow Steps
+${flow}
+
+## 3. Functional Requirements
+${reqs}`;
+  };
+
+  const loadDocumentData = async () => {
+    if (!activeProject?.id) return;
+    setLoading(true);
+    try {
+      // 1. Fetch BRD documents for this project
+      const docsRes = await api.get<any, { data: BusinessDocument[] }>(
+        `/documents/?project=${activeProject.id}&doc_type=BRD`
+      );
+      
+      if (docsRes.data && docsRes.data.length > 0) {
+        const doc = docsRes.data[0];
+        setSelectedDoc(doc);
+        setVersion(doc.version || "1.0");
+        setStatus(doc.status || "DRAFT");
+        setDocContent(parseMarkdownContent(doc.content, doc.title));
+        
+        if (doc.updated_at) {
+          const date = new Date(doc.updated_at);
+          setLastEditedText(`Last edited ${date.toLocaleDateString()} by ${doc.created_by_username || 'David'}`);
+        } else {
+          setLastEditedText(`Last edited by ${doc.created_by_username || 'David'}`);
+        }
+      } else {
+        // No document exists, fetch requirements to auto-populate a default template
+        setSelectedDoc(null);
+        setVersion("1.0");
+        setStatus("DRAFT");
+        setLastEditedText("New Draft");
+        
+        const reqsRes = await api.get<any, { data: any[] }>(
+          `/requirements/?project=${activeProject.id}`
+        );
+        const reqsList = reqsRes.data || [];
+        
+        const defaultReqsText = reqsList.length > 0 
+          ? reqsList.map((r: any) => `- ${r.req_id || 'REQ'}: ${r.title}\n  Description: ${r.description || ''}`).join('\n\n')
+          : "- REQ-1: System must implement core business rules.\n- REQ-2: Ensure proper authentication for APIs.";
+
+        setDocContent({
+          title: `BRD - ${activeProject.name}`,
+          scope: `Scope & Objectives for ${activeProject.name}.\n${activeProject.description || 'No description provided.'}`,
+          flow: "1. User initiates task.\n2. System processes request.\n3. System returns confirmation.",
+          reqs: defaultReqsText
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load document/requirements for dashboard workspace:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDocumentData();
+  }, [activeProject?.id]);
+
+  const handleSaveDraft = async () => {
+    if (!activeProject?.id) return;
+    setSaving(true);
+    try {
+      const contentStr = compileMarkdownContent(docContent.title, docContent.scope, docContent.flow, docContent.reqs);
+      const payload = {
+        project: activeProject.id,
+        doc_type: "BRD" as const,
+        title: docContent.title,
+        version: version,
+        content: contentStr,
+        status: "DRAFT"
+      };
+
+      let res;
+      if (selectedDoc) {
+        // Update existing
+        res = await api.put<any, { data: BusinessDocument }>(`/documents/${selectedDoc.id}/`, {
+          ...payload,
+          status: status
+        });
+      } else {
+        // Create new
+        res = await api.post<any, { data: BusinessDocument }>("/documents/", payload);
+      }
+
+      setSelectedDoc(res.data);
+      setVersion(res.data.version);
+      setStatus(res.data.status);
+      setLastEditedText("Saved just now");
+      
+      if (onSave) onSave();
+    } catch (err) {
+      console.error("Failed to save document:", err);
+      alert("Failed to save draft.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleApproveSignOff = async () => {
+    if (!activeProject?.id) return;
+    setSaving(true);
+    try {
+      // 1. Compile and save/update the document first
+      const contentStr = compileMarkdownContent(docContent.title, docContent.scope, docContent.flow, docContent.reqs);
+      const payload = {
+        project: activeProject.id,
+        doc_type: "BRD" as const,
+        title: docContent.title,
+        version: version,
+        content: contentStr,
+      };
+
+      let docId = selectedDoc?.id;
+      if (selectedDoc) {
+        await api.put(`/documents/${selectedDoc.id}/`, {
+          ...payload,
+          status: "REVIEW"
+        });
+      } else {
+        const res = await api.post<any, { data: BusinessDocument }>("/documents/", {
+          ...payload,
+          status: "REVIEW"
+        });
+        docId = res.data.id;
+      }
+
+      // 2. Perform sign-off
+      const signRes = await api.post<any, { data: BusinessDocument }>(`/documents/${docId}/sign-off/`);
+      setSelectedDoc(signRes.data);
+      setVersion(signRes.data.version);
+      setStatus(signRes.data.status);
+      setLastEditedText("Signed off just now");
+      
+      if (onSave) onSave();
+    } catch (err: any) {
+      console.error("Failed to sign off document:", err);
+      alert(err.message || "Failed to sign off document.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSubmitForReview = async () => {
+    if (!activeProject?.id) return;
+    setSaving(true);
+    try {
+      const contentStr = compileMarkdownContent(docContent.title, docContent.scope, docContent.flow, docContent.reqs);
+      const payload = {
+        project: activeProject.id,
+        doc_type: "BRD" as const,
+        title: docContent.title,
+        version: version,
+        content: contentStr,
+        status: "REVIEW"
+      };
+
+      let res;
+      if (selectedDoc) {
+        res = await api.put<any, { data: BusinessDocument }>(`/documents/${selectedDoc.id}/`, payload);
+      } else {
+        res = await api.post<any, { data: BusinessDocument }>("/documents/", payload);
+      }
+
+      setSelectedDoc(res.data);
+      setVersion(res.data.version);
+      setStatus(res.data.status);
+      setLastEditedText("Submitted for review just now");
+      
+      if (onSave) onSave();
+    } catch (err: any) {
+      console.error("Failed to submit document for review:", err);
+      alert(err.message || "Failed to submit document for review.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    if (!selectedDoc) {
+      alert("Please save a draft of the document first.");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await api.get(`/documents/${selectedDoc.id}/export-pdf/`, {
+        responseType: "blob"
+      } as any);
+      
+      const blob = new Blob([res as any], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${selectedDoc.title}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to export PDF.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleApplyAi = (id: string, field: "scope" | "reqs") => {
     const item = aiSuggestions.find((s) => s.id === id);
     if (!item) return;
@@ -48,14 +333,25 @@ export const DocumentEditor: React.FC = () => {
     setAiSuggestions((prev) => prev.filter((s) => s.id !== id));
   };
 
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 bg-card rounded-xl border border-border min-h-[350px] w-full">
+        <Loader2 className="w-8 h-8 text-primary animate-spin mb-2" />
+        <span className="text-xs text-muted-foreground font-semibold">Loading project specification...</span>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-full bg-card rounded-xl border border-border overflow-hidden text-foreground">
+    <div className="flex flex-col h-full bg-card rounded-xl border border-border overflow-hidden text-foreground w-full">
       {/* Editor Context bar */}
       <div className="flex items-center justify-between p-4 border-b border-border bg-secondary/30 select-none">
         <div className="flex items-center gap-2">
-          <Badge variant="default">v1.2</Badge>
+          <Badge variant={status === "SIGNED_OFF" ? "success" : status === "REVIEW" ? "warning" : "default"}>
+            {status === "SIGNED_OFF" ? "Signed Off" : status === "REVIEW" ? "Under Review" : `v${version}`}
+          </Badge>
           <span className="text-xs text-muted-foreground font-semibold">
-            Last edited 5m ago by David
+            {lastEditedText}
           </span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -93,13 +389,13 @@ export const DocumentEditor: React.FC = () => {
           activePane === "preview" ? "bg-secondary/10" : "bg-card"
         }`}>
           {activePane === "preview" ? (
-            <div className="max-w-2xl mx-auto flex flex-col gap-6 prose prose-slate">
+            <div className="max-w-2xl mx-auto flex flex-col gap-6 prose prose-slate w-full">
               <h1 className="text-xl font-bold text-foreground border-b border-border pb-2">
                 {docContent.title}
               </h1>
               <div>
                 <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Scope</h3>
-                <p className="text-sm leading-relaxed">{docContent.scope}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{docContent.scope}</p>
               </div>
               <div>
                 <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Checkout Flow</h3>
@@ -115,12 +411,13 @@ export const DocumentEditor: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 w-full">
               <input
                 type="text"
                 value={docContent.title}
                 onChange={(e) => setDocContent({ ...docContent, title: e.target.value })}
                 className="w-full text-lg font-bold bg-transparent border-b border-transparent focus:border-border outline-none pb-1.5 focus:ring-0 text-foreground"
+                disabled={status === "SIGNED_OFF"}
               />
 
               <div className="flex flex-col gap-1.5">
@@ -132,6 +429,7 @@ export const DocumentEditor: React.FC = () => {
                   onChange={(e) => setDocContent({ ...docContent, scope: e.target.value })}
                   className="w-full text-sm bg-transparent border-0 focus:ring-0 outline-none resize-none min-h-[60px] text-foreground leading-relaxed placeholder:text-muted-foreground/40"
                   placeholder="Describe project scope..."
+                  disabled={status === "SIGNED_OFF"}
                 />
               </div>
 
@@ -143,6 +441,7 @@ export const DocumentEditor: React.FC = () => {
                   value={docContent.flow}
                   onChange={(e) => setDocContent({ ...docContent, flow: e.target.value })}
                   className="w-full text-sm bg-transparent border-0 focus:ring-0 outline-none resize-none min-h-[90px] font-mono text-foreground leading-relaxed"
+                  disabled={status === "SIGNED_OFF"}
                 />
               </div>
 
@@ -154,6 +453,7 @@ export const DocumentEditor: React.FC = () => {
                   value={docContent.reqs}
                   onChange={(e) => setDocContent({ ...docContent, reqs: e.target.value })}
                   className="w-full text-sm bg-transparent border-0 focus:ring-0 outline-none resize-none min-h-[100px] text-foreground leading-relaxed"
+                  disabled={status === "SIGNED_OFF"}
                 />
               </div>
             </div>
@@ -170,7 +470,7 @@ export const DocumentEditor: React.FC = () => {
               </span>
             </div>
 
-            {aiSuggestions.length === 0 ? (
+            {aiSuggestions.length === 0 || status === "SIGNED_OFF" ? (
               <div className="text-center py-8 text-xs text-muted-foreground font-semibold">
                 No active recommendations. The editor matches best practices.
               </div>
@@ -213,24 +513,51 @@ export const DocumentEditor: React.FC = () => {
       {/* Persistent Sticky Action Bar */}
       <div className="p-3 border-t border-border bg-secondary/50 flex items-center justify-between gap-3 select-none">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="text-xs font-bold text-[#64748B] hover:text-foreground">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleSaveDraft}
+            disabled={saving || status === "SIGNED_OFF"}
+            className="text-xs font-bold text-[#64748B] hover:text-foreground"
+          >
             <Save className="w-3.5 h-3.5 mr-1" />
-            Save Draft
+            {saving ? "Saving..." : "Save Draft"}
           </Button>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="text-xs font-bold">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleExportPDF}
+            disabled={saving || !selectedDoc}
+            className="text-xs font-bold"
+          >
             <FileDown className="w-3.5 h-3.5 mr-1" />
-            Export DOCX
+            Export PDF
           </Button>
-          <Button variant="outline" size="sm" className="text-xs font-bold">
-            <Share2 className="w-3.5 h-3.5 mr-1" />
-            Share
-          </Button>
-          <Button variant="primary" size="sm" className="text-xs font-bold px-4">
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-            Approve & Sign-off
-          </Button>
+          {canSignOff ? (
+            <Button 
+              variant="primary" 
+              size="sm" 
+              onClick={handleApproveSignOff}
+              disabled={saving || status === "SIGNED_OFF"}
+              className="text-xs font-bold px-4"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+              {status === "SIGNED_OFF" ? "Signed Off" : "Approve & Sign-off"}
+            </Button>
+          ) : (
+            <Button 
+              variant="primary" 
+              size="sm" 
+              onClick={handleSubmitForReview}
+              disabled={saving || status === "REVIEW" || status === "SIGNED_OFF"}
+              className="text-xs font-bold px-4"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+              {status === "SIGNED_OFF" ? "Signed Off" : status === "REVIEW" ? "Pending Sign-off" : "Submit for Review"}
+            </Button>
+          )}
         </div>
       </div>
     </div>

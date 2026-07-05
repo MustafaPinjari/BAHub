@@ -257,7 +257,7 @@ export const UserStoriesPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-5 select-none text-foreground">
       {/* Header Context */}
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-border pb-4.5 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-border pb-5 gap-4">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold tracking-tight text-foreground">Agile User Stories</h1>
