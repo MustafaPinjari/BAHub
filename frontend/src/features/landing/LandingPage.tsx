@@ -21,9 +21,7 @@ import {
   Shield,
   Clock,
   Globe,
-  ChevronDown,
-  Plus,
-  Minus
+  Plus
 } from "lucide-react";
 import logo from "../../assets/logo.png";
 

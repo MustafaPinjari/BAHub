@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext";
 import { useProject } from "../../features/projects/ProjectContext";
-import { Button, Badge } from "../common/UIComponents";
+import { Badge } from "../common/UIComponents";
 import logo from "../../assets/logo.png";
 import {
   LayoutDashboard,
