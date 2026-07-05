@@ -4,3 +4,36 @@ WARNING 2026-07-05 14:00:45,584 log 9932 11452 Bad Request: /api/v1/documents/bd
 WARNING 2026-07-05 14:00:45,585 runserver 9932 15356 [31;1mHTTP POST /api/v1/documents/bd5cca84-56b6-408d-9482-456a4b415f11/sign-off/ 400 [0.01, 127.0.0.1:55326][0m
 WARNING 2026-07-05 14:02:44,082 log 2172 3608 Bad Request: /api/v1/documents/bd5cca84-56b6-408d-9482-456a4b415f11/sign-off/
 WARNING 2026-07-05 14:02:44,083 runserver 2172 6516 [31;1mHTTP POST /api/v1/documents/bd5cca84-56b6-408d-9482-456a4b415f11/sign-off/ 400 [0.01, 127.0.0.1:64601][0m
+WARNING 2026-07-05 14:30:38,371 log 2172 3608 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-05 14:30:38,378 runserver 2172 6516 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.05, 127.0.0.1:64475][0m
+WARNING 2026-07-05 14:30:38,395 log 2172 3608 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-05 14:30:38,400 runserver 2172 6516 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.02, 127.0.0.1:64475][0m
+ERROR 2026-07-05 14:30:38,432 exceptions 2172 10948 Unhandled Server Error: User matching query does not exist.
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\views.py"[0m, line [35m46[0m, in [35mpost[0m
+    [31mserializer.is_valid[0m[1;31m(raise_exception=True)[0m
+    [31m~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m225[0m, in [35mis_valid[0m
+    self._validated_data = [31mself.run_validation[0m[1;31m(self.initial_data)[0m
+                           [31m~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m459[0m, in [35mrun_validation[0m
+    value = self.validate(value)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework_simplejwt\serializers.py"[0m, line [35m116[0m, in [35mvalidate[0m
+    user := [31mget_user_model().objects.get[0m[1;31m([0m
+            [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31m**{api_settings.USER_ID_FIELD: user_id}[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py"[0m, line [35m87[0m, in [35mmanager_method[0m
+    return [31mgetattr(self.get_queryset(), name)[0m[1;31m(*args, **kwargs)[0m
+           [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m635[0m, in [35mget[0m
+    raise self.model.DoesNotExist(
+        "%s matching query does not exist." % self.model._meta.object_name
+    )
+[1;35musers.models.User.DoesNotExist[0m: [35mUser matching query does not exist.[0m
+ERROR 2026-07-05 14:30:38,559 log 2172 3608 Internal Server Error: /api/v1/auth/token/refresh/
+ERROR 2026-07-05 14:30:38,560 runserver 2172 6516 [35;1mHTTP POST /api/v1/auth/token/refresh/ 500 [0.16, 127.0.0.1:51683][0m
