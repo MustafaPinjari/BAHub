@@ -120,6 +120,29 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
                     content += f"| {s.story_id} | {s.title} | {s.points} pts | {s.status} | {s.requirement.req_id} |\n"
                 content += "\n"
 
+        # Embed Project Diagrams and Models
+        project_diagrams = project.diagrams.all()
+        if project_diagrams.exists():
+            content += "## 5. Visual Analysis Models & Diagram Specifications\n"
+            for d in project_diagrams:
+                # For FRD, prioritize sequence/activity/ERD diagrams; for BRD, include all process/usecase
+                if doc_type == "FRD" and d.diagram_type.upper() not in ["SEQUENCE", "ERD", "BPMN 2.0", "USE CASE"]:
+                    continue
+                content += f"### {d.name} ({d.diagram_type})\n"
+                if d.description:
+                    content += f"**Description**: {d.description}\n\n"
+                if d.documentation:
+                    content += f"**Model Documentation Details**:\n{d.documentation}\n\n"
+                
+                try:
+                    from diagrams.exporters import export_to_mermaid
+                    mermaid_code = export_to_mermaid(d.diagram_type, d.canvas_json)
+                    content += "```mermaid\n"
+                    content += mermaid_code + "\n"
+                    content += "```\n\n"
+                except Exception as e:
+                    content += f"*Unable to export visual graphic: {str(e)}*\n\n"
+
         title = f"{doc_type} - {project.name} - Version 1.0"
 
         data = {

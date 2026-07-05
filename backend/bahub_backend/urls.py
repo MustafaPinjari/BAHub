@@ -65,6 +65,9 @@ urlpatterns = [
     # Audit log endpoints
     path("api/v1/audit/", include("audit.urls")),
     
+    # Diagrams endpoints
+    path("api/v1/diagrams/", include("diagrams.urls")),
+    
     # SAML2 SSO login endpoints
     path("saml2_auth/", include("django_saml2_auth.urls")),
 ]

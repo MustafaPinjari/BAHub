@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "billing",
     "django_saml2_auth",
     "audit",
+    "diagrams",
 ]
 
 MIDDLEWARE = [

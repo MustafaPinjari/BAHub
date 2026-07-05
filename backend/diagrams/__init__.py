@@ -1,0 +1,1 @@
+# Diagrams Django App Package

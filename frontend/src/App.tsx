@@ -14,6 +14,7 @@ import { WorkspaceSettingsPage } from "./features/auth/WorkspaceSettingsPage";
 import { ProjectsPage } from "./features/projects/ProjectsPage";
 import { StakeholdersPage } from "./features/stakeholders/StakeholdersPage";
 import { RequirementsPage } from "./features/requirements/RequirementsPage";
+import { DiagramsPage } from "./features/diagrams/DiagramsPage";
 import { UserStoriesPage } from "./features/stories/UserStoriesPage";
 import { DocumentGeneratorPage } from "./features/documents/DocumentGeneratorPage";
 import { MeetingsPage } from "./features/meetings/MeetingsPage";
@@ -39,6 +40,7 @@ const AuthenticatedApp: React.FC = () => {
         <Route path="/stakeholders" element={<StakeholdersPage />} />
         <Route path="/settings" element={<WorkspaceSettingsPage />} />
         <Route path="/requirements" element={<RequirementsPage />} />
+        <Route path="/diagrams" element={<DiagramsPage />} />
         <Route path="/stories" element={<UserStoriesPage />} />
         <Route path="/brd" element={<DocumentGeneratorPage docType="BRD" />} />
         <Route path="/frd" element={<DocumentGeneratorPage docType="FRD" />} />

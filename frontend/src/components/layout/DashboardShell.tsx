@@ -31,7 +31,8 @@ import {
   ChevronsUpDown,
   Search,
   CreditCard,
-  History
+  History,
+  Network
 } from "lucide-react";
 
 interface SidebarItem {
@@ -46,6 +47,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Teams", icon: Users, path: "teams" },
   { name: "Stakeholders", icon: UserIcon, path: "stakeholders" },
   { name: "Requirements", icon: FileSpreadsheet, path: "requirements" },
+  { name: "Analysis Models", icon: Network, path: "diagrams" },
   { name: "User Stories", icon: ClipboardList, path: "stories" },
   { name: "BRD Generator", icon: FileText, path: "brd" },
   { name: "FRD Generator", icon: FileCheck, path: "frd" },
