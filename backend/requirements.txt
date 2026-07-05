@@ -20,6 +20,7 @@ setuptools<70
 stripe>=15.3.0,<16.0.0
 jira>=3.10.5,<4.0.0
 rich>=13.0,<15.0
+colorlog>=6.0,<7.0
 
 
 
