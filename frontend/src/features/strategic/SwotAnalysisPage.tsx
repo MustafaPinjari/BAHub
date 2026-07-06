@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Button, Alert } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import { 
   Save, 
   Loader2, 
@@ -12,10 +13,6 @@ import {
   ShieldCheck 
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
 
 interface SWOT {
   id: string;
@@ -29,16 +26,7 @@ interface SWOT {
 
 export const SwotAnalysisPage: React.FC = () => {
   const { user } = useAuth();
-  
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // States
   const [swot, setSwot] = useState<SWOT | null>(null);
@@ -80,22 +68,6 @@ export const SwotAnalysisPage: React.FC = () => {
     fetchSwot();
   }, [activeProject]);
 
-  // Listen to active project changes from top navbar
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-        setSwot(null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   const handleSave = async () => {
     if (!swot) return;

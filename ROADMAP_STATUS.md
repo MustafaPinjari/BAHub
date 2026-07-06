@@ -77,14 +77,29 @@ All core phases of the product roadmap have been fully implemented, integrated, 
 
 ---
 
-## ⏳ Future Strategic Roadmap Backlog (Not Completed)
+## ⏳ Future Strategic Roadmap Backlog
 
-All roadmap phases are completed. There are no items currently in the strategic backlog.
+The following items are confirmed on the product roadmap but not yet implemented:
+
+### P1 — High Priority
+- **Onboarding Wizard** — Guided new-user flow: create org → project → stakeholders → first BRD.
+- **Traceability Matrix** — Full `Requirement → Story → Risk → Document → Approval` linkage view.
+- **Global Search** — `Ctrl+K` command palette across requirements, documents, risks, meetings, and users.
+- **Import/Export Flows** — Ingest requirements from Excel, CSV, Word, or Jira export.
+- **UAT / Test-Case Module** — Test scenarios, acceptance criteria, UAT status, defects, sign-off evidence.
+
+### P2 — Medium Priority
+- **Code-split frontend bundle** — Reduce Vite chunk size below the 500 kB advisory threshold.
+- **In-app help & templates** — Guided BA templates, example projects, and contextual help panels.
+- **Admin dashboards** — Workspace usage, seat management, billing invoice history.
+- **Error tracking & analytics** — Integration with Sentry / PostHog.
+- **Approval workflow improvements** — Rejection reasons, version comparison, approval history timeline.
 
 ---
 
 ## 🚦 Summary Statistics
 
-- **Total Verification Unit Tests**: **38 Tests** (`OK`)
-- **Vite Frontend Compile Build**: **Successful** (`zero errors / zero warnings`)
+- **Total Verification Unit Tests**: **100+ Tests** (`OK`)
+- **Vite Frontend Compile Build**: **Successful** (one chunk-size advisory ≥ 500 kB — non-breaking; targeted for code-split in P2)
 - **Multi-Tenant Scoping**: Enforced on all models (100% Tenant Scoped)
+- **Mock Billing Security**: `DEBUG`-only URL registration + `IsAuthenticated` permission guard

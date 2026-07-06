@@ -66,7 +66,10 @@ export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
   const [historyLoading, setHistoryLoading] = useState(false);
 
   const fetchComments = async () => {
-    if (!diagramId) return;
+    if (!diagramId || diagramId === "new-ai") {
+      setComments([]);
+      return;
+    }
     try {
       const res = await api.get<any, { data: Comment[] }>(`/diagrams/comments/?diagram=${diagramId}`);
       setComments(res.data || []);
@@ -76,7 +79,10 @@ export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
   };
 
   const fetchApprovals = async () => {
-    if (!diagramId) return;
+    if (!diagramId || diagramId === "new-ai") {
+      setApprovals([]);
+      return;
+    }
     try {
       const res = await api.get<any, { data: Approval[] }>(`/diagrams/approvals/?diagram=${diagramId}`);
       setApprovals(res.data || []);
@@ -86,7 +92,10 @@ export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
   };
 
   const fetchHistory = async () => {
-    if (!diagramId) return;
+    if (!diagramId || diagramId === "new-ai") {
+      setVersions([]);
+      return;
+    }
     setHistoryLoading(true);
     try {
       const res = await api.get<any, { data: any[] }>(`/diagrams/${diagramId}/versions/`);
@@ -99,16 +108,20 @@ export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
   };
 
   useEffect(() => {
-    if (diagramId) {
+    if (diagramId && diagramId !== "new-ai") {
       fetchComments();
       fetchApprovals();
       fetchHistory();
+    } else {
+      setComments([]);
+      setApprovals([]);
+      setVersions([]);
     }
   }, [diagramId]);
 
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentText.trim() || !diagramId) return;
+    if (!commentText.trim() || !diagramId || diagramId === "new-ai") return;
 
     try {
       await api.post("/diagrams/comments/", {
@@ -134,7 +147,7 @@ export const CollaborationPanel: React.FC<CollaborationPanelProps> = ({
 
   const handlePostApproval = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!diagramId) return;
+    if (!diagramId || diagramId === "new-ai") return;
 
     setApprovalLoading(true);
     try {

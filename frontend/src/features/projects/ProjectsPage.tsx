@@ -59,8 +59,9 @@ const projectSchema = z.object({
 
 export const ProjectsPage: React.FC = () => {
   const { user } = useAuth();
-  const { setActiveProject } = useProject();
-  
+  const { activeProject, setActiveProject } = useProject();
+  const activeProjectId = activeProject?.id ?? null;
+
   // States
   const [projects, setProjects] = useState<Project[]>([]);
   const [members, setMembers] = useState<UserProfile[]>([]);
@@ -69,14 +70,6 @@ export const ProjectsPage: React.FC = () => {
   const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [selectedProjectForMembers, setSelectedProjectForMembers] = useState<Project | null>(null);
-  const [activeProjectId, setActiveProjectId] = useState<string | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored).id : null;
-    } catch {
-      return null;
-    }
-  });
 
   // Project membership assignment states
   const [selectedUserId, setSelectedUserId] = useState("");
@@ -132,7 +125,6 @@ export const ProjectsPage: React.FC = () => {
 
   const handleSetActiveProject = (project: Project) => {
     setActiveProject(project);
-    setActiveProjectId(project.id);
     setSuccessMessage(`Switched active context to "${project.name}"`);
   };
 
@@ -207,12 +199,9 @@ export const ProjectsPage: React.FC = () => {
     try {
       await api.delete(`/projects/${projectId}/`);
       setSuccessMessage("Project deleted successfully.");
-      // Clear active project context if deleted
-      const stored = localStorage.getItem("active_project");
-      if (stored && JSON.parse(stored).id === projectId) {
-        localStorage.removeItem("active_project");
-        setActiveProjectId(null);
-        window.dispatchEvent(new Event("activeProjectChanged"));
+      // Clear active project context if the deleted project was active
+      if (activeProject?.id === projectId) {
+        setActiveProject(null);
       }
       fetchProjects();
     } catch (err) {

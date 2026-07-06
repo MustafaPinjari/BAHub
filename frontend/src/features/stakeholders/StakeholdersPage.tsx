@@ -7,6 +7,7 @@ import { Card, Badge, Button, Input, Select, Alert } from "../../components/comm
 import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import { 
   UserCheck, 
   Plus, 
@@ -71,15 +72,7 @@ export const StakeholdersPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingStakeholder, setEditingStakeholder] = useState<Stakeholder | null>(null);
   
-  // Project isolation context
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
   
   const [filterByProject, setFilterByProject] = useState(true);
   const [formError, setFormError] = useState<string | null>(null);
@@ -139,22 +132,6 @@ export const StakeholdersPage: React.FC = () => {
     fetchStakeholders();
     fetchProjects();
   }, [filterByProject, activeProject]);
-
-  // Listen to top-navbar active project switches
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   const openCreateModal = () => {
     setEditingStakeholder(null);
@@ -427,18 +404,21 @@ export const StakeholdersPage: React.FC = () => {
       ) : stakeholders.length === 0 ? (
         <Card className="flex flex-col items-center justify-center text-center p-12 py-16 max-w-lg mx-auto gap-4 mt-6">
           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20 shrink-0">
-            <UserCheck className="w-6 h-6 animate-pulse" />
+            <UserCheck className="w-6 h-6" />
           </div>
           <div className="flex flex-col gap-1">
             <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">No Stakeholders Registered</h2>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
-              Stakeholder records help you catalog end-users, project sponsors, and business leaders. Create your first entry to begin.
+              Stakeholders define who influences or is affected by the project. Add sponsors, end-users, SMEs, and regulators to build your Power/Interest matrix.
             </p>
           </div>
           {canManage && (
-            <Button variant="primary" size="sm" onClick={openCreateModal} className="text-xs font-bold mt-2">
-              Add Stakeholder
-            </Button>
+            <div className="flex flex-col items-center gap-2">
+              <Button variant="primary" size="sm" onClick={openCreateModal} className="text-xs font-bold mt-2">
+                Add First Stakeholder
+              </Button>
+              <span className="text-[10px] text-muted-foreground/60">Tip: Add at least one sponsor and one end-user to populate the matrix</span>
+            </div>
           )}
         </Card>
       ) : viewMode === "list" ? (

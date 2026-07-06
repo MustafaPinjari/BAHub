@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Badge, Alert } from "../../components/common/UIComponents";
+import { useProject } from "../projects/ProjectContext";
 import { 
   FileText, 
   Layers, 
@@ -10,10 +11,6 @@ import {
   FolderGit
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
 
 interface ReportData {
   requirements: {
@@ -45,15 +42,7 @@ interface ReportData {
 }
 
 export const ReportsPage: React.FC = () => {
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // States
   const [report, setReport] = useState<ReportData | null>(null);
@@ -78,23 +67,6 @@ export const ReportsPage: React.FC = () => {
   useEffect(() => {
     fetchReport();
   }, [activeProject]);
-
-  // Listen to active project changes from top navbar
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-        setReport(null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   // 1. Placeholder screen if no active project context is selected
   if (!activeProject) {

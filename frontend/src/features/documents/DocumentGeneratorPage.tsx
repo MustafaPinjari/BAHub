@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Badge, Button, Input, Alert } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import { FeatureLock } from "../../components/common/FeatureLock";
 import { 
   FileText, 
@@ -19,10 +20,6 @@ import {
   FileDown
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
 
 interface BusinessDocument {
   id: string;
@@ -45,16 +42,7 @@ interface DocumentGeneratorPageProps {
 
 export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ docType }) => {
   const { user } = useAuth();
-
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // States
   const [documents, setDocuments] = useState<BusinessDocument[]>([]);
@@ -99,23 +87,6 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
     setIsDrafting(false);
   }, [activeProject, docType]);
 
-  // Listen to active project changes from top navbar
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-        setSelectedDoc(null);
-        setIsDrafting(false);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   const handleGenerateTemplate = async () => {
     if (!activeProject) return;

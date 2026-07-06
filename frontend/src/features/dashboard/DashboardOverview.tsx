@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, Badge, Button } from "../../components/common/UIComponents";
 import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { DocumentEditor } from "./components/DocumentEditor";
 import { api } from "../../services/api";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import {
   Clock,
   FolderGit,
@@ -24,16 +26,8 @@ import {
 
 export const DashboardOverview: React.FC = () => {
   const { user } = useAuth();
-  
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<any>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
+  const navigate = useNavigate();
 
   // Dynamic States
   const [backlogData, setBacklogData] = useState<any[]>([]);
@@ -41,21 +35,6 @@ export const DashboardOverview: React.FC = () => {
   const [attachments, setAttachments] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
-
-  useEffect(() => {
-    const handleActiveProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleActiveProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleActiveProjectChange);
-    };
-  }, []);
 
   // Fetch all dashboard data for active project
   const fetchDashboardData = async () => {
@@ -244,10 +223,10 @@ export const DashboardOverview: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0 z-10">
-            <Button size="sm" variant="outline" className="text-[10px] bg-slate-900/50 hover:bg-slate-900 border-white/10 hover:border-white/20 text-white font-bold">
+            <Button size="sm" variant="outline" onClick={() => navigate("/settings")} className="text-[10px] bg-slate-900/50 hover:bg-slate-900 border-white/10 hover:border-white/20 text-white font-bold">
               Organization Directory
             </Button>
-            <Button size="sm" className="text-[10px] font-bold">
+            <Button size="sm" onClick={() => navigate("/audit")} className="text-[10px] font-bold">
               Export Audit Trail
             </Button>
           </div>
@@ -268,10 +247,10 @@ export const DashboardOverview: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0 z-10">
-            <Button size="sm" variant="outline" className="text-[10px] bg-slate-900/50 hover:bg-slate-900 border-white/10 hover:border-white/20 text-white font-bold">
+            <Button size="sm" variant="outline" onClick={() => navigate("/brd")} className="text-[10px] bg-slate-900/50 hover:bg-slate-900 border-white/10 hover:border-white/20 text-white font-bold">
               Generate Spec Docs
             </Button>
-            <Button size="sm" className="text-[10px] font-bold">
+            <Button size="sm" onClick={() => navigate("/requirements")} className="text-[10px] font-bold">
               Add Requirement
             </Button>
           </div>

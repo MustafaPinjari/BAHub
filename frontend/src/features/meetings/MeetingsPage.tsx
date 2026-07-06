@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import { 
   Calendar, 
   Plus, 
@@ -16,10 +17,6 @@ import {
   UserCheck
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
 
 interface User {
   id: string;
@@ -55,16 +52,7 @@ interface Meeting {
 
 export const MeetingsPage: React.FC = () => {
   const { user } = useAuth();
-  
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // States
   const [meetings, setMeetings] = useState<Meeting[]>([]);
@@ -132,22 +120,6 @@ export const MeetingsPage: React.FC = () => {
     fetchOrgUsers();
   }, [activeProject]);
 
-  // Listen to active project changes from top navbar
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-        setSelectedMeeting(null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   const loadMeeting = (meeting: Meeting) => {
     setSelectedMeeting(meeting);

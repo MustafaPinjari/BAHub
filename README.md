@@ -140,11 +140,3 @@ Compiles all modules, style rules, and types into a production build:
 cd frontend
 npm run build
 ```
-Current landing page gaps:
-
-Features section only shows 3 features (AI diagram, trace linkage, compliance) — misses 15+ major features
-No mention of: Stakeholder management, Risk/Change Requests, SWOT/Gap Analysis, Meetings, User Stories/Kanban, BRD/FRD generators, PDF/Word exports, SAML SSO, Audit Logs, Multi-tenant orgs, Real-time collaboration, Reports dashboard
-No "How it works" / workflow section
-No stats/social proof numbers
-Pricing features list is very slim
-The features grid needs a full comprehensive module breakdown

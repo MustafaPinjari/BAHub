@@ -249,6 +249,29 @@
   50%       { transform: translateY(-8px); }
 }
 
+@keyframes meteor {
+  0% {
+    transform: rotate(215deg) translateX(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(215deg) translateX(-600px);
+    opacity: 0;
+  }
+}
+
+@keyframes border-beam {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* ============================================================
    ANIMATION UTILITY CLASSES
    ============================================================ */
@@ -291,6 +314,14 @@
 
   .animate-float {
     animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-meteor {
+    animation: meteor 5s linear infinite;
+  }
+
+  .animate-border-beam {
+    animation: border-beam 12s linear infinite;
   }
 
   /* Text gradient utility */

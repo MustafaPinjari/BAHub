@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { api, API_BASE_URL } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import { 
   FileSpreadsheet, 
   Plus, 
@@ -14,10 +15,6 @@ import {
   Info
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
 
 interface Stakeholder {
   id: string;
@@ -42,16 +39,7 @@ interface Requirement {
 
 export const RequirementsPage: React.FC = () => {
   const { user } = useAuth();
-  
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // States
   const [requirements, setRequirements] = useState<Requirement[]>([]);
@@ -113,24 +101,6 @@ export const RequirementsPage: React.FC = () => {
     fetchRequirements();
     fetchStakeholders();
   }, [activeProject]);
-
-  // Listen to active project changes from top navbar
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        const nextProject = stored ? JSON.parse(stored) : null;
-        setActiveProject(nextProject);
-        setSelectedReq(null); // Reset selected req when project changes
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   // WebSocket Live Sync Connection Effect
   useEffect(() => {
@@ -452,9 +422,28 @@ export const RequirementsPage: React.FC = () => {
                 <span className="text-xs text-muted-foreground font-semibold">Loading backlog...</span>
               </div>
             ) : filteredReqs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center text-xs text-muted-foreground flex-1">
-                <FileSpreadsheet className="w-8 h-8 text-muted-foreground/40 mb-2" />
-                <span>No requirements matching search found.</span>
+              <div className="flex flex-col items-center justify-center py-12 text-center flex-1 gap-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-xl border border-primary/20 flex items-center justify-center">
+                  <FileSpreadsheet className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-xs font-bold text-foreground">
+                    {searchQuery ? "No requirements match your search" : "No requirements yet"}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground max-w-[180px] leading-relaxed">
+                    {searchQuery
+                      ? "Try a different keyword or clear the filter."
+                      : "Create your first requirement to start building your backlog."}
+                  </p>
+                </div>
+                {!searchQuery && canManage && (
+                  <button
+                    onClick={handleCreateNew}
+                    className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
+                  >
+                    + Create first requirement
+                  </button>
+                )}
               </div>
             ) : (
               /* Backlog directory rows */

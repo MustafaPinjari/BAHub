@@ -22,6 +22,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToReg
   const { login } = useAuth();
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const ssoEnabled = import.meta.env.VITE_ENABLE_SAML_SSO === "true";
 
   const {
     register,
@@ -94,17 +95,23 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToReg
           <div className="flex-grow border-t border-border"></div>
         </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => {
-            const apiBase = (import.meta.env.VITE_API_URL as string) || (import.meta.env.PROD || window.location.hostname.endsWith("netlify.app") ? "https://bahub-backend.onrender.com/api/v1" : "http://127.0.0.1:8000/api/v1");
-            window.location.href = apiBase.replace("/api/v1", "/saml2_auth/login/");
-          }}
-          className="w-full font-bold border-indigo-200 text-indigo-600 hover:bg-indigo-50/20"
-        >
-          Sign in with SAML SSO
-        </Button>
+        {ssoEnabled ? (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              const apiBase = (import.meta.env.VITE_API_URL as string) || (import.meta.env.PROD || window.location.hostname.endsWith("netlify.app") ? "https://bahub-backend.onrender.com/api/v1" : "http://127.0.0.1:8000/api/v1");
+              window.location.href = apiBase.replace("/api/v1", "/saml2_auth/login/");
+            }}
+            className="w-full font-bold border-indigo-200 text-indigo-600 hover:bg-indigo-50/20"
+          >
+            Sign in with SAML SSO
+          </Button>
+        ) : (
+          <p className="text-[10px] text-muted-foreground text-center font-semibold leading-relaxed">
+            Enterprise SSO is available for configured workspaces.
+          </p>
+        )}
       </form>
 
       {/* Footer Nav */}

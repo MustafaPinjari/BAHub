@@ -5,6 +5,9 @@ export interface Project {
   name: string;
   description?: string;
   organization?: string;
+  status?: string;
+  start_date?: string | null;
+  end_date?: string | null;
   created_at?: string;
 }
 

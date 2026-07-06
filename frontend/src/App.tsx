@@ -28,6 +28,7 @@ import { IntegrationsPage } from "./features/integrations/IntegrationsPage";
 import { BillingPage } from "./features/auth/BillingPage";
 import { AuditLogPage } from "./features/audit/AuditLogPage";
 import { LandingPage } from "./features/landing/LandingPage.tsx";
+import { TraceabilityPage } from "./features/traceability/TraceabilityPage";
 
 const AuthenticatedApp: React.FC = () => {
   return (
@@ -55,6 +56,7 @@ const AuthenticatedApp: React.FC = () => {
         <Route path="/integrations" element={<IntegrationsPage />} />
         <Route path="/billing" element={<BillingPage />} />
         <Route path="/audit" element={<AuditLogPage />} />
+        <Route path="/traceability" element={<TraceabilityPage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </DashboardShell>
@@ -195,15 +197,15 @@ const MainAppContent: React.FC = () => {
             <div className="flex items-center gap-4 mt-1">
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                <span className="text-[10px] text-gray-500 font-medium">SOC 2 Type II</span>
+                <span className="text-[10px] text-gray-500 font-medium">Audit trail ready</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                <span className="text-[10px] text-gray-500 font-medium">GDPR Ready</span>
+                <span className="text-[10px] text-gray-500 font-medium">Data controls planned</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                <span className="text-[10px] text-gray-500 font-medium">99.9% Uptime</span>
+                <span className="text-[10px] text-gray-500 font-medium">Status monitoring planned</span>
               </div>
             </div>
           </div>

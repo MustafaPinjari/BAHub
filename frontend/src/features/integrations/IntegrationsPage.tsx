@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Button, Alert, Input, Select, Badge } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import { FeatureLock } from "../../components/common/FeatureLock";
 import {
   FolderGit,
@@ -16,10 +17,6 @@ import {
   Info
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
 
 interface IntegrationConfig {
   id?: string;
@@ -52,16 +49,7 @@ interface BusinessDocument {
 
 export const IntegrationsPage: React.FC = () => {
   const { user } = useAuth();
-
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // Connection Configurations
   const [jiraUrl, setJiraUrl] = useState("");
@@ -167,22 +155,6 @@ export const IntegrationsPage: React.FC = () => {
   useEffect(() => {
     fetchIntegrationData();
   }, [activeProject]);
-
-  // Listen to project swaps
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   // 2. Save Jira configuration
   const handleSaveJira = async () => {

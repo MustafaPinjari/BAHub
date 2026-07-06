@@ -7,6 +7,7 @@ import { Card, Badge, Button, Input, Alert } from "../../components/common/UICom
 import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import { 
   GitPullRequest, 
   Plus, 
@@ -19,10 +20,6 @@ import {
   ThumbsDown
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
 
 interface ChangeRequest {
   id: string;
@@ -48,16 +45,7 @@ const crSchema = z.object({
 
 export const ChangeRequestsPage: React.FC = () => {
   const { user } = useAuth();
-  
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // States
   const [changes, setChanges] = useState<ChangeRequest[]>([]);
@@ -102,22 +90,6 @@ export const ChangeRequestsPage: React.FC = () => {
   useEffect(() => {
     fetchChanges();
   }, [activeProject]);
-
-  // Listen to active project changes from top navbar
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   const openCreateModal = () => {
     setEditingCr(null);

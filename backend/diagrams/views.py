@@ -322,7 +322,12 @@ class DiagramCommentViewSet(viewsets.ModelViewSet):
         
         diagram_id = self.request.query_params.get("diagram")
         if diagram_id:
-            queryset = queryset.filter(diagram_id=diagram_id)
+            import uuid
+            try:
+                uuid.UUID(str(diagram_id))
+                queryset = queryset.filter(diagram_id=diagram_id)
+            except ValueError:
+                return DiagramComment.objects.none()
             
         return queryset
 
@@ -365,7 +370,12 @@ class DiagramApprovalViewSet(viewsets.ModelViewSet):
         
         diagram_id = self.request.query_params.get("diagram")
         if diagram_id:
-            queryset = queryset.filter(diagram_id=diagram_id)
+            import uuid
+            try:
+                uuid.UUID(str(diagram_id))
+                queryset = queryset.filter(diagram_id=diagram_id)
+            except ValueError:
+                return DiagramApproval.objects.none()
             
         return queryset
 

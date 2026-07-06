@@ -7,6 +7,7 @@ import { Card, Badge, Button, Input, Select, Alert } from "../../components/comm
 import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import { 
   AlertTriangle, 
   Plus, 
@@ -17,10 +18,6 @@ import {
   FolderGit
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
 
 interface Risk {
   id: string;
@@ -46,16 +43,7 @@ const riskSchema = z.object({
 
 export const RisksPage: React.FC = () => {
   const { user } = useAuth();
-  
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // States
   const [risks, setRisks] = useState<Risk[]>([]);
@@ -101,22 +89,6 @@ export const RisksPage: React.FC = () => {
   useEffect(() => {
     fetchRisks();
   }, [activeProject]);
-
-  // Listen to active project changes from top navbar
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   const openCreateModal = () => {
     setEditingRisk(null);

@@ -1,7 +1,7 @@
 import json
 import stripe
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import redirect
 from rest_framework import status
 from rest_framework.views import APIView
@@ -77,8 +77,10 @@ class CreateCheckoutSessionView(APIView):
         elif plan == "ENTERPRISE":
             price_id = getattr(settings, "STRIPE_PRICE_ENTERPRISE", None)
 
-        # Fallback to mock session if Stripe is not fully configured
+        # In development, fall back to mock checkout. In production, fail closed until Stripe is configured.
         if not stripe.api_key or not price_id:
+            if not settings.DEBUG:
+                return api_error(message="Stripe billing is not configured for this environment.", status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
             from urllib.parse import quote
             checkout_url = request.build_absolute_uri(
                 f"/api/v1/billing/mock-upgrade/?plan={plan}&org_id={str(request.user.organization.id)}&redirect_uri={quote(frontend_origin)}"
@@ -200,12 +202,27 @@ class StripeWebhookView(APIView):
 
 
 class MockUpgradeView(APIView):
-    permission_classes = [AllowAny]
+    """Development-only endpoint for mock plan upgrades.
+
+    Protected by two independent guards:
+    1. IsAuthenticated — callers must hold a valid JWT even in dev.
+    2. DEBUG check inside get() — raises Http404 in production regardless.
+    """
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        if not settings.DEBUG:
+            raise Http404("Mock billing is only available in development.")
+
         plan = request.query_params.get("plan", "FREE")
         org_id = request.query_params.get("org_id")
         redirect_uri = request.query_params.get("redirect_uri")
+
+        if plan not in ["PRO", "ENTERPRISE"]:
+            return api_error(message="Invalid mock upgrade plan.")
+
+        if not org_id:
+            return api_error(message="Organization id is required for mock billing.")
 
         if org_id:
             sub, _ = TenantSubscription.objects.get_or_create(

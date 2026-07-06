@@ -4,19 +4,14 @@ import {
   Workflow,
   FileText,
   CheckCircle,
-  Lock,
   ArrowRight,
   GitBranch,
   FileCheck,
-  AlertTriangle,
   Heart,
   Link2,
   Terminal,
-  Settings,
-  Layers,
   Zap,
   RefreshCw,
-  Check,
   Star,
   Shield,
   Clock,
@@ -24,93 +19,19 @@ import {
   Plus
 } from "lucide-react";
 import logo from "../../assets/logo.png";
+import sectionPng from "../../assets/section_png.png";
+import sandboxPng from "../../assets/sandbox.png";
 
 interface LandingPageProps {
   onNavigateToLogin: () => void;
   onNavigateToRegister: () => void;
 }
 
-// Preset datasets for the live AI synthesis playground simulator
-const PRESETS = {
-  checkout: {
-    prompt: "Generate an E-Commerce checkout flow with compliance validation",
-    nodes: [
-      { id: "c1", label: "Cart Checkout", type: "process", desc: "User triggers checkout workflow.", x: 20, y: 35 },
-      { id: "c2", label: "Risk Scan", type: "ai", desc: "AI fraud scoring checks IP, email, & history.", x: 190, y: 35, warning: "Missing retry handler" },
-      { id: "c3", label: "Payment Route", type: "gateway", desc: "Selects stripe vs. local fallback bank.", x: 360, y: 35 },
-      { id: "c4", label: "Fulfill Order", type: "document", desc: "Triggers order confirmation emails & logs.", x: 530, y: 35 }
-    ],
-    brd: `# Business Requirements Document (BRD-2026-92)
-## E-Commerce Checkout & Payment Routing Engine
-
-### 1. Executive Summary
-This document specifies the integration of risk scanning and intelligent payment routing systems to minimize credit card transaction chargebacks while optimizing authorization rates.
-
-### 2. Functional Requirements
-- **FR-1**: System must evaluate transactions using dynamic risk scores (0-100) before presenting final settlement.
-- **FR-2**: Integration with secondary backup gateways must handle automatic failovers in less than 500ms.
-- **FR-3**: Order confirmation records must be posted to internal audit logs.`,
-    stories: [
-      { id: "US-101", title: "Automated pre-fraud transaction analysis", pts: 5, role: "Risk Officer" },
-      { id: "US-102", title: "Graceful payment routing failover checks", pts: 8, role: "Customer" },
-      { id: "US-103", title: "Automated invoice receipt generation", pts: 3, role: "System Manager" }
-    ]
-  },
-  sso: {
-    prompt: "SAML 2.0 Single Sign-On flow with JIT user provisioning",
-    nodes: [
-      { id: "s1", label: "Login Request", type: "process", desc: "User visits corporate sub-domain portal.", x: 20, y: 35 },
-      { id: "s2", label: "SAML assertion", type: "gateway", desc: "Validates digital signatures (SHA-256).", x: 190, y: 35 },
-      { id: "s3", label: "JIT Provisioning", type: "ai", desc: "AI checks attributes & maps to workspace.", x: 360, y: 35, warning: "Unencrypted token store" },
-      { id: "s4", label: "Session Grant", type: "document", desc: "Generates authorization tokens and scopes.", x: 530, y: 35 }
-    ],
-    brd: `# Business Requirements Document (BRD-2026-08)
-## SAML 2.0 Identity Federation & JIT Account Provisioning
-
-### 1. Project Background
-To reduce enterprise employee access overhead, this project enables direct connection between organizational active directories and BAHub workspace domains using SAML tokens.
-
-### 2. Security Mandates
-- **SEC-1**: Assertions must be signed using X.509 certificates with minimum SHA-256 algorithms.
-- **SEC-2**: The Identity Provider (IdP) assertion consumer URL must reject requests older than 120 seconds.
-- **SEC-3**: Workspace role profiles must be parsed and synced to permissions DB during JIT execution.`,
-    stories: [
-      { id: "US-201", title: "Directory verification assertion mappings", pts: 5, role: "IT Engineer" },
-      { id: "US-202", title: "Seamless sign-in with active sessions", pts: 2, role: "Employee" },
-      { id: "US-203", title: "JIT automatic workspace creation logs", pts: 8, role: "Administrator" }
-    ]
-  },
-  compliance: {
-    prompt: "Vendor compliance audit workflow and risk analysis",
-    nodes: [
-      { id: "v1", label: "Upload KYC", type: "process", desc: "Vendor submits incorporation and tax papers.", x: 20, y: 35 },
-      { id: "v2", label: "AI OCR Scan", type: "ai", desc: "AI extracts registry details and flags gaps.", x: 190, y: 35 },
-      { id: "v3", label: "Registry Check", type: "gateway", desc: "Compares flags to international compliance guidelines.", x: 360, y: 35, warning: "No fallback human gate" },
-      { id: "v4", label: "Onboard Partner", type: "document", desc: "Vendor status set to active, billing webhook fired.", x: 530, y: 35 }
-    ],
-    brd: `# Business Requirements Document (BRD-2026-44)
-## Automated Third-Party Vendor Compliance & OCR Verification
-
-### 1. Overview
-Automates the capture, reading, and legal compliance verification of newly registered business suppliers using OCR document parsing engines.
-
-### 2. Regulatory Compliance
-- **COMP-1**: Verify tax identifications (EIN/W8) against active federal registers.
-- **COMP-2**: All uploads must undergo automated malware and metadata scrubbing protocols.
-- **COMP-3**: Any non-matching database entries must immediately flag as suspended and alert internal legal teams.`,
-    stories: [
-      { id: "US-301", title: "Automated tax identification OCR reading", pts: 8, role: "Supplier Partner" },
-      { id: "US-302", title: "Security scan checking of files", pts: 5, role: "Compliance Officer" },
-      { id: "US-303", title: "Workspace activation status triggers", pts: 3, role: "Billing System" }
-    ]
-  }
-};
-
 // Testimonials data for the 3D marquee
 const TESTIMONIALS = [
   { name: "Priya Sharma", role: "Lead BA, FinTech Corp", text: "BAHub transformed our requirements process. The AI canvas generates BRDs in minutes instead of weeks. Game-changing.", stars: 5 },
   { name: "Alex Chen", role: "Product Manager, SaaS Co", text: "The bidirectional trace linkage is phenomenal. Change a requirement, watch it update everywhere instantly.", stars: 5 },
-  { name: "Mohammed Al-Rashid", role: "Systems Architect", text: "Finally a tool that understands the BA workflow. IEEE compliance checks save us hours of manual review.", stars: 5 },
+  { name: "Mohammed Al-Rashid", role: "Systems Architect", text: "Finally a tool that understands the BA workflow. Structured quality checks save us hours of manual review.", stars: 5 },
   { name: "Sarah Williams", role: "Agile Coach, Consulting", text: "Our clients are impressed with the professional BRDs. The Dracula-themed export is a nice touch for devs.", stars: 5 },
   { name: "Raj Patel", role: "CTO, Product Studio", text: "Replaced Lucidchart + Confluence + Jira with one platform. The integration webhooks are seamless.", stars: 5 },
   { name: "Elena Kowalski", role: "Senior BA, Insurance", text: "The SWOT and Gap Analysis modules alone justify the subscription. Absolutely essential tooling.", stars: 5 },
@@ -135,13 +56,45 @@ const FAQS = [
   },
   {
     q: "Do you support SAML Single Sign-On (SSO)?",
-    a: "Yes, our Enterprise and Custom packages support full SAML 2.0 Identity Provider assertions, mapping directory permissions dynamically onto local workspace profiles during JIT logins."
+    a: "Enterprise SSO scaffolding is available for configured workspaces. Production IdP onboarding should be completed during enterprise setup."
   },
   {
     q: "Is there an on-premise deployment option?",
-    a: "Enterprise tier includes Docker Compose and Kubernetes Helm chart packaging for self-hosted deployments with full data sovereignty, BYOK encryption, and VPN-gated access controls."
+    a: "Self-hosted deployment is a roadmap item for enterprise customers. Today, BAHub is designed for cloud deployment with environment-based configuration."
   }
 ];
+
+// Magic UI style GridPattern component
+const GridPattern = () => (
+  <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#1f29370e_1px,transparent_1px),linear-gradient(to_bottom,#1f29370e_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-40 pointer-events-none" />
+);
+
+// Magic UI style Meteors component
+const Meteors: React.FC<{ number?: number }> = ({ number = 20 }) => {
+  const [meteorStyles, setMeteorStyles] = useState<React.CSSProperties[]>([]);
+
+  useEffect(() => {
+    const styles = [...Array(number)].map(() => ({
+      top: Math.floor(Math.random() * -20) + "px",
+      left: Math.floor(Math.random() * 300) + "px",
+      animationDelay: Math.random() * 8 + 0.2 + "s",
+      animationDuration: Math.floor(Math.random() * 8 + 2) + "s",
+    }));
+    setMeteorStyles(styles);
+  }, [number]);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      {meteorStyles.map((style, idx) => (
+        <span
+          key={idx}
+          className="absolute h-0.5 w-0.5 rotate-[215deg] animate-meteor rounded-full bg-purple-400 shadow-[0_0_0_1px_#ffffff10] before:absolute before:top-1/2 before:w-[50px] before:-translate-y-1/2 before:bg-gradient-to-r before:from-purple-500 before:to-transparent before:content-['']"
+          style={style}
+        />
+      ))}
+    </div>
+  );
+};
 
 // ─── Testimonial Card ────────────────────────────────────────────────────────
 const TestimonialCard: React.FC<{ t: typeof TESTIMONIALS[0] }> = ({ t }) => (
@@ -185,51 +138,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onNavigateToLogin,
   onNavigateToRegister
 }) => {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
-  const [teamSize, setTeamSize] = useState<number>(5);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [activePresetKey, setActivePresetKey] = useState<"checkout" | "sso" | "compliance">("checkout");
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [generationStep, setGenerationStep] = useState<number>(4);
-  const [selectedNode, setSelectedNode] = useState<string>("c1");
-  const [nodesList, setNodesList] = useState<any[]>(PRESETS.checkout.nodes);
-  const [workspaceTab, setWorkspaceTab] = useState<"canvas" | "brd" | "backlog">("canvas");
-
-  useEffect(() => {
-    setNodesList(PRESETS[activePresetKey].nodes);
-    setSelectedNode(PRESETS[activePresetKey].nodes[0].id);
-  }, [activePresetKey]);
-
-  const handleTriggerGenerator = (key: "checkout" | "sso" | "compliance") => {
-    setActivePresetKey(key);
-    setIsGenerating(true);
-    setGenerationStep(0);
-    setWorkspaceTab("canvas");
-    const interval = setInterval(() => {
-      setGenerationStep(prev => {
-        if (prev >= 3) { clearInterval(interval); setIsGenerating(false); return 4; }
-        return prev + 1;
-      });
-    }, 850);
-  };
-
-  const handleAutoFix = (nodeId: string) => {
-    setNodesList(prev => prev.map(n => {
-      if (n.id === nodeId) {
-        const { warning, ...rest } = n;
-        return { ...rest, label: n.label + " [Fixed]", desc: n.desc + " (Compliance issue resolved by AI)." };
-      }
-      return n;
-    }));
-  };
-
-  const activePreset = PRESETS[activePresetKey];
-  const activeNode = nodesList.find(n => n.id === selectedNode) || nodesList[0];
-
-  const calculatePrice = () => {
-    const basePrice = billingCycle === "monthly" ? 2500 : 2000;
-    return basePrice * teamSize;
-  };
 
   // Split testimonials into 3 columns
   const col1 = TESTIMONIALS.slice(0, 4);
@@ -245,6 +154,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <div className="absolute top-[600px] right-[-100px] w-[500px] h-[500px] rounded-full bg-blue-600/[0.05] blur-[150px]" />
         <div className="absolute bottom-[200px] left-[-100px] w-[600px] h-[600px] rounded-full bg-violet-500/[0.04] blur-[180px]" />
       </div>
+      <GridPattern />
 
       {/* ══════════════════════════════════════════════════════════════════
           NAVBAR — DNA Floating Pill
@@ -338,7 +248,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className="w-6 h-6 rounded-md bg-green-500/10 border border-green-500/20 flex items-center justify-center">
               <Shield className="w-3 h-3 text-green-500" />
             </div>
-            <span className="text-[11px] font-medium text-gray-500">SOC 2 Compliant</span>
+            <span className="text-[11px] font-medium text-gray-500">Audit trails</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
@@ -350,51 +260,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className="w-6 h-6 rounded-md bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
               <Globe className="w-3 h-3 text-purple-400" />
             </div>
-            <span className="text-[11px] font-medium text-gray-500">GDPR Ready</span>
+            <span className="text-[11px] font-medium text-gray-500">Data controls planned</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
               <Clock className="w-3 h-3 text-amber-400" />
             </div>
-            <span className="text-[11px] font-medium text-gray-500">99.9% Uptime</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          AI PLAYGROUND PROMPT SELECTOR
-          ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative px-6 md:px-12 max-w-6xl mx-auto pb-4 z-10">
-        <div className="w-full rounded-2xl border border-white/[0.07] bg-gray-950/40 p-4 backdrop-blur-md shadow-2xl">
-          <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-md" style={{ background: '#282a36', border: '1px solid #44475a' }}>
-                <Terminal className="w-3 h-3 m-0.5" style={{ color: '#8be9fd' }} />
-              </div>
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">AI Generation Playground</span>
-            </div>
-            <span className="text-[9px] font-medium text-gray-700">Select a prompt template:</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-            {(["checkout", "sso", "compliance"] as const).map((key) => (
-              <button
-                key={key}
-                disabled={isGenerating}
-                onClick={() => handleTriggerGenerator(key)}
-                className={`p-3 rounded-xl text-left border transition-all duration-200 cursor-pointer flex flex-col gap-1 ${
-                  activePresetKey === key
-                    ? "bg-purple-600/10 border-purple-500/30"
-                    : "bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12]"
-                }`}
-              >
-                <span className="text-[10px] font-bold text-white">
-                  {key === "checkout" ? "E-Commerce Checkouts" : key === "sso" ? "SAML 2.0 SSO Portal" : "Supplier Audit Compliance"}
-                </span>
-                <span className="text-[8px] font-medium text-gray-600 line-clamp-1">
-                  {key === "checkout" ? "With multi-gateway failure fallbacks" : key === "sso" ? "With dynamic JIT mappings" : "Automated tax & registry check flow"}
-                </span>
-              </button>
-            ))}
+            <span className="text-[11px] font-medium text-gray-500">Status monitoring planned</span>
           </div>
         </div>
       </section>
@@ -402,237 +274,47 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ══════════════════════════════════════════════════════════════════
           INTERACTIVE SANDBOX
           ══════════════════════════════════════════════════════════════════ */}
-      <section id="sandbox" className="py-8 px-6 md:px-12 max-w-6xl mx-auto z-10 relative">
-        {/* Dracula-chrome sandbox container */}
-        <div className="w-full rounded-2xl overflow-hidden shadow-2xl border" style={{ background: '#0d0f17', borderColor: 'rgba(255,255,255,0.07)' }}>
+      <section id="sandbox" className="py-16 px-6 md:px-12 max-w-6xl mx-auto z-10 relative">
+        <div className="text-center mb-10 flex flex-col items-center gap-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-purple-400">
+            Interactive Modeling Sandbox
+          </div>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+            No-Code Process <span className="text-gradient-blue-purple">Playground</span>
+          </h2>
+          <p className="text-gray-500 text-sm max-w-xl">
+            Experience our workspace in action. Model functional relationships, trigger AI verification loops, and keep your documentation in lockstep.
+          </p>
+        </div>
+
+        {/* Dracula-chrome sandbox container with Border Beam */}
+        <div className="w-full rounded-2xl overflow-hidden shadow-2xl border relative group" style={{ background: '#0d0f17', borderColor: 'rgba(255,255,255,0.07)' }}>
+          {/* Magic UI Border Beam */}
+          <div className="absolute inset-0 rounded-2xl pointer-events-none z-20 overflow-hidden">
+            <div className="absolute -inset-[200%] animate-border-beam [background:linear-gradient(to_right,transparent_50%,rgba(168,85,247,0.4)_70%,rgba(168,85,247,0.7)_80%,transparent_100%)] [mask-image:linear-gradient(transparent_0%,#000_100%)]" />
+          </div>
+
           {/* Browser chrome header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(10,10,10,0.8)' }}>
+          <div className="flex items-center justify-between px-4 py-3 border-b relative z-10" style={{ borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(10,10,10,0.8)' }}>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#ff5555' }} />
-              <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#f1fa8c' }} />
-              <span className="w-2.5 h-2.5 rounded-full" style={{ background: '#50fa7b' }} />
-              <span className="text-[9px] font-mono ml-3" style={{ color: '#6272a4' }}>Workspace Preview (Interactive Sandbox)</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+              <span className="text-[9px] font-mono ml-3 text-gray-500">Workspace Preview (Interactive Sandbox)</span>
             </div>
-            {isGenerating && (
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-md border text-[9px] font-bold animate-pulse" style={{ background: 'rgba(80,250,123,0.05)', borderColor: 'rgba(80,250,123,0.2)', color: '#50fa7b' }}>
-                <RefreshCw className="w-3 h-3 animate-spin" />
-                <span>AI Synthesis Running... Step {generationStep + 1}/4</span>
-              </div>
-            )}
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500" />
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">Active Server</span>
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-0 h-auto min-h-[480px]">
-            {/* Mock sidebar */}
-            <div className="w-full lg:w-44 border-r flex flex-col gap-0 shrink-0" style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}>
-              <div className="flex items-center gap-2 px-3 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                <Layers className="w-3.5 h-3.5" style={{ color: '#8be9fd' }} />
-                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider">Workspace</span>
-              </div>
-              {(["canvas", "brd", "backlog"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setWorkspaceTab(tab)}
-                  className={`w-full px-3 py-2.5 text-left text-[9px] font-bold flex items-center gap-2 transition-all cursor-pointer border-l-2 ${
-                    workspaceTab === tab
-                      ? "border-l-purple-500 bg-purple-500/5 text-white"
-                      : "border-l-transparent text-gray-600 hover:text-gray-400"
-                  }`}
-                >
-                  {tab === "canvas" && <Workflow className="w-3 h-3" />}
-                  {tab === "brd" && <FileText className="w-3 h-3" />}
-                  {tab === "backlog" && <GitBranch className="w-3 h-3" />}
-                  {tab === "canvas" ? "Process Canvas" : tab === "brd" ? "BRD Specs" : "Req. Backlog"}
-                </button>
-              ))}
-              <div className="mt-auto border-t px-3 py-3 flex flex-col gap-2 text-[9px] font-semibold text-gray-600" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                <span className="uppercase text-[8px] font-extrabold text-gray-600 tracking-wider">Traceability</span>
-                <div className="flex justify-between"><span>Linked Nodes</span><span className="text-white font-bold">100%</span></div>
-                <div className="flex justify-between"><span>IEEE Checks</span><span className="text-green-500 font-bold">Passed</span></div>
-              </div>
-            </div>
-
-            {/* Center canvas */}
-            <div className="flex-1 relative overflow-hidden flex flex-col" style={{ background: '#050709' }}>
-              {isGenerating && (
-                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6" style={{ background: 'rgba(5,7,9,0.9)', backdropFilter: 'blur(8px)' }}>
-                  <div className="w-64 flex flex-col gap-3">
-                    <div className="flex items-center justify-between text-[10px] font-bold text-gray-500">
-                      <span>Deconstructing Prompt Specification</span>
-                      <span className="animate-pulse" style={{ color: '#bd93f9' }}>Running</span>
-                    </div>
-                    <div className="flex flex-col gap-2 text-[9px] font-semibold">
-                      {["Parsed lexical structures & actors", "Auto-arranged 4 sequence modeling coordinates", "Generated dynamic markdown documentation", "Created 3 trace-linked user story backlog items"].map((step, i) => (
-                        <div key={i} className={`flex items-center gap-2 ${generationStep >= i ? "text-green-400" : "text-gray-600"}`}>
-                          {generationStep >= i ? <Check className="w-3 h-3" /> : <div className="w-1.5 h-1.5 rounded-full bg-gray-700 animate-ping" />}
-                          <span>{step}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="w-full bg-gray-900 h-0.5 rounded-full overflow-hidden mt-2">
-                      <div className="h-full transition-all duration-700 rounded-full" style={{ width: `${(generationStep / 3) * 100}%`, background: '#bd93f9' }} />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {workspaceTab === "canvas" && (
-                <div className="flex-1 flex flex-col h-full">
-                  <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
-                  <div className="h-8 border-b flex items-center justify-between px-3 z-10 select-none shrink-0" style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.4)' }}>
-                    <span className="text-[9px] font-bold text-gray-600">Interactive Canvas Board</span>
-                    <span className="text-[8px] font-bold px-2 py-0.5 rounded" style={{ background: 'rgba(189,147,249,0.1)', color: '#bd93f9', border: '1px solid rgba(189,147,249,0.2)' }}>BPMN Flowchart</span>
-                  </div>
-                  <div className="flex-1 relative flex items-center justify-center p-6">
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-                      <defs>
-                        <marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#44475a" />
-                        </marker>
-                        <marker id="arr-sel" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#bd93f9" />
-                        </marker>
-                      </defs>
-                      <path d="M 120 75 L 180 75" fill="none" stroke={["c1","c2","s1","s2","v1","v2"].includes(selectedNode) ? "#bd93f9" : "#44475a"} strokeWidth="1.5" strokeDasharray="3,3" markerEnd="url(#arr)" />
-                      <path d="M 290 75 L 350 75" fill="none" stroke={["c2","c3","s2","s3","v2","v3"].includes(selectedNode) ? "#bd93f9" : "#44475a"} strokeWidth="1.5" strokeDasharray="3,3" markerEnd="url(#arr)" />
-                      <path d="M 460 75 L 520 75" fill="none" stroke={["c3","c4","s3","s4","v3","v4"].includes(selectedNode) ? "#bd93f9" : "#44475a"} strokeWidth="1.5" strokeDasharray="3,3" markerEnd="url(#arr)" />
-                    </svg>
-                    <div className="relative w-full flex items-center justify-between z-10 px-4">
-                      {nodesList.map((node) => (
-                        <div
-                          key={node.id}
-                          onClick={() => setSelectedNode(node.id)}
-                          className="w-36 p-3 rounded-xl border text-left flex flex-col gap-1.5 transition-all cursor-pointer relative"
-                          style={{
-                            background: selectedNode === node.id ? 'rgba(189,147,249,0.08)' : 'rgba(255,255,255,0.02)',
-                            borderColor: selectedNode === node.id ? '#bd93f9' : '#44475a',
-                            transform: selectedNode === node.id ? 'translateY(-2px)' : undefined,
-                          }}
-                        >
-                          {node.warning && (
-                            <div className="absolute -top-2 -right-1 flex items-center gap-1 px-1.5 py-0.5 rounded text-[7px] font-black uppercase" style={{ background: 'rgba(255,184,108,0.12)', border: '1px solid rgba(255,184,108,0.25)', color: '#ffb86c' }}>
-                              <AlertTriangle className="w-2.5 h-2.5" />
-                              <span>Lacks Gate</span>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-5 h-5 rounded-md flex items-center justify-center" style={{ background: selectedNode === node.id ? 'rgba(189,147,249,0.15)' : 'rgba(255,255,255,0.04)' }}>
-                              {node.type === "process" && <Workflow className="w-3 h-3" style={{ color: selectedNode === node.id ? '#bd93f9' : '#6272a4' }} />}
-                              {node.type === "ai" && <Sparkles className="w-3 h-3" style={{ color: selectedNode === node.id ? '#bd93f9' : '#6272a4' }} />}
-                              {node.type === "gateway" && <Layers className="w-3 h-3" style={{ color: selectedNode === node.id ? '#bd93f9' : '#6272a4' }} />}
-                              {node.type === "document" && <FileText className="w-3 h-3" style={{ color: selectedNode === node.id ? '#bd93f9' : '#6272a4' }} />}
-                            </div>
-                            <span className="text-[7px] font-black uppercase tracking-wider" style={{ color: '#6272a4' }}>{node.type}</span>
-                          </div>
-                          <h5 className="font-extrabold text-[10px] text-white tracking-tight">{node.label}</h5>
-                          <p className="text-[8px] leading-normal line-clamp-2 font-medium" style={{ color: '#6272a4' }}>{node.desc}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {workspaceTab === "brd" && (
-                <div className="flex-1 flex flex-col h-full">
-                  <div className="h-8 border-b flex items-center justify-between px-3 select-none shrink-0" style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.4)' }}>
-                    <span className="text-[9px] font-bold text-gray-600">Spec Document Preview</span>
-                    <span className="text-[8px] font-bold text-gray-700">IEEE Standard Format</span>
-                  </div>
-                  <div className="flex-1 overflow-y-auto p-4 text-left text-[11px] font-mono leading-relaxed" style={{ color: '#f8f8f2', whiteSpace: 'pre-wrap' }}>
-                    {activePreset.brd}
-                  </div>
-                </div>
-              )}
-
-              {workspaceTab === "backlog" && (
-                <div className="flex-1 flex flex-col h-full">
-                  <div className="h-8 border-b flex items-center justify-between px-3 select-none shrink-0" style={{ borderColor: 'rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.4)' }}>
-                    <span className="text-[9px] font-bold text-gray-600">Backlog Stories Traceability</span>
-                    <span className="text-[8px] font-bold" style={{ color: '#50fa7b' }}>Synced to Canvas Nodes</span>
-                  </div>
-                  <div className="flex-1 p-4 overflow-y-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b text-[9px] font-bold uppercase tracking-wider" style={{ borderColor: 'rgba(255,255,255,0.05)', color: '#6272a4' }}>
-                          <th className="pb-2">Story ID</th>
-                          <th className="pb-2">Persona</th>
-                          <th className="pb-2">Description</th>
-                          <th className="pb-2 text-right">Points</th>
-                        </tr>
-                      </thead>
-                      <tbody style={{ color: '#f8f8f2' }}>
-                        {activePreset.stories.map((story) => (
-                          <tr key={story.id} className="border-b hover:bg-white/[0.02] text-[10px] font-semibold" style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
-                            <td className="py-2.5 font-mono font-bold" style={{ color: '#8be9fd' }}>{story.id}</td>
-                            <td className="py-2.5" style={{ color: '#6272a4' }}>{story.role}</td>
-                            <td className="py-2.5">{story.title}</td>
-                            <td className="py-2.5 text-right font-mono" style={{ color: '#bd93f9' }}>{story.pts} SP</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Right Inspector */}
-            <div className="w-full lg:w-64 border-l flex flex-col gap-4 p-4 text-left shrink-0" style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}>
-              <div className="flex justify-between items-center pb-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                <div className="flex items-center gap-2">
-                  <Settings className="w-3.5 h-3.5" style={{ color: '#8be9fd' }} />
-                  <span className="text-[10px] font-bold text-white uppercase tracking-wider">Inspector</span>
-                </div>
-                <span className="text-[8px] font-black px-1.5 py-0.5 rounded capitalize" style={{ background: 'rgba(189,147,249,0.1)', color: '#bd93f9', border: '1px solid rgba(189,147,249,0.2)' }}>
-                  {activeNode.type}
-                </span>
-              </div>
-              <div className="flex flex-col gap-3">
-                <div>
-                  <span className="text-[8px] font-bold uppercase tracking-widest" style={{ color: '#6272a4' }}>Label</span>
-                  <p className="text-[11px] font-bold text-white mt-1">{activeNode.label}</p>
-                </div>
-                <div>
-                  <span className="text-[8px] font-bold uppercase tracking-widest" style={{ color: '#6272a4' }}>Description</span>
-                  <p className="text-[10px] leading-normal font-medium mt-1" style={{ color: '#6272a4' }}>{activeNode.desc}</p>
-                </div>
-                <div className="border-t pt-3" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                  <span className="text-[8px] font-bold uppercase tracking-widest" style={{ color: '#6272a4' }}>Trace Link</span>
-                  <div className="flex items-center gap-1.5 mt-1.5 p-2 rounded-lg text-[9px] font-bold" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#6272a4' }}>
-                    <Link2 className="w-3 h-3" />
-                    <span>REQ-{activeNode.id}</span>
-                  </div>
-                </div>
-              </div>
-              {activeNode.warning ? (
-                <div className="mt-auto rounded-xl p-3 flex flex-col gap-2" style={{ border: '1px solid rgba(255,184,108,0.2)', background: 'rgba(255,184,108,0.05)' }}>
-                  <div className="flex gap-2">
-                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: '#ffb86c' }} />
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[10px] font-black uppercase tracking-wider" style={{ color: '#ffb86c' }}>Compliance Warning</span>
-                      <p className="text-[9px] leading-tight font-semibold mt-1" style={{ color: 'rgba(255,184,108,0.7)' }}>"{activeNode.warning}" — violates IEEE loop checking.</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleAutoFix(activeNode.id)}
-                    className="w-full mt-1 py-1.5 px-3 rounded-lg font-black text-[9px] uppercase tracking-wider text-center cursor-pointer flex items-center justify-center gap-1.5 transition-all"
-                    style={{ background: '#ffb86c', color: '#1e1e2e' }}
-                  >
-                    <Zap className="w-3 h-3" />
-                    <span>Run AI Loop Fixer</span>
-                  </button>
-                </div>
-              ) : (
-                <div className="mt-auto rounded-xl p-3 flex items-center gap-2" style={{ border: '1px solid rgba(80,250,123,0.15)', background: 'rgba(80,250,123,0.05)' }}>
-                  <CheckCircle className="w-4 h-4 shrink-0" style={{ color: '#50fa7b' }} />
-                  <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#50fa7b' }}>Node Logic Validated Clean</span>
-                </div>
-              )}
-            </div>
+          {/* Image sandbox */}
+          <div className="relative w-full aspect-[16/9] lg:aspect-[16/8.8] overflow-hidden bg-black flex items-center justify-center">
+            <img 
+              src={sandboxPng} 
+              alt="BAHub Interactive Sandbox Workspace" 
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.01]" 
+            />
           </div>
         </div>
       </section>
@@ -642,12 +324,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           ══════════════════════════════════════════════════════════════════ */}
       <section className="py-10 border-t border-b border-white/[0.05]">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <p className="text-[9px] font-bold text-gray-700 uppercase tracking-widest mb-5">Trusted by engineering teams at</p>
-          <div className="flex flex-wrap items-center justify-center gap-12 md:gap-16 opacity-25 select-none font-bold text-sm tracking-widest text-gray-500">
-            <span>A P E X &nbsp; A N A L Y T I C S</span>
-            <span>H O R I Z O N &nbsp; D E V S</span>
-            <span>B L U E &nbsp; S T R E A M</span>
-            <span>V O R T E X &nbsp; P M</span>
+          <p className="text-[9px] font-bold text-gray-700 uppercase tracking-widest mb-5">In active use by early-access teams</p>
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 select-none">
+            {[
+              { label: "Free Early Access", detail: "No credit card required" },
+              { label: "BA-Focused", detail: "Built for analysts & PMs" },
+              { label: "MIT Licensed", detail: "Open & transparent" },
+              { label: "Live Sandbox", detail: "Try it without signing up" },
+            ].map((item) => (
+              <div key={item.label} className="flex flex-col items-center gap-1">
+                <span className="text-[11px] font-bold text-gray-500">{item.label}</span>
+                <span className="text-[9px] text-gray-700 font-medium">{item.detail}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -667,43 +356,80 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </h2>
           </div>
           <p className="text-gray-500 text-sm font-normal max-w-md leading-relaxed">
-            BAHub treats diagrams not as simple drawings, but as relational schemas synced in real-time. Link shapes, evaluate compliance, and export artifacts.
+            BAHub treats diagrams not as simple drawings, but as relational schemas synced in real-time. Link shapes, run quality checks, and export artifacts.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              icon: <Sparkles className="w-5 h-5 text-blue-400" />,
-              iconBg: "bg-blue-500/10 border-blue-500/20",
-              title: "AI Flow Diagram Synthesis",
-              desc: "Paste unstructured transcripts or briefs. Our layout parser extracts actors, states, and logic paths, building sequence structures automatically."
-            },
-            {
-              icon: <Link2 className="w-5 h-5 text-green-400" />,
-              iconBg: "bg-green-500/10 border-green-500/20",
-              title: "Bidirectional Trace Linkage",
-              desc: "Modify a requirement in the database view and witness the linked flowchart node properties and exported spec documents update instantly."
-            },
-            {
-              icon: <FileCheck className="w-5 h-5 text-purple-400" />,
-              iconBg: "bg-purple-500/10 border-purple-500/20",
-              title: "IEEE Logic Compliance Engine",
-              desc: "Scan diagram structures for inconsistencies. Warnings highlight loose endpoints, broken branches, and missing gateways with one-click AI resolution."
-            },
-          ].map((feat, i) => (
-            <div
-              key={i}
-              className="group rounded-2xl border border-white/[0.07] bg-gray-950/40 p-6 flex flex-col gap-4 hover:border-white/[0.15] hover:scale-[1.02] hover:shadow-2xl transition-all duration-300 relative overflow-hidden cursor-default"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/[0.02] transition-all duration-300 rounded-2xl" />
-              <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${feat.iconBg}`}>
-                {feat.icon}
+        {/* Row 1 — Requirements & Documentation */}
+        <div className="mb-3">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-gray-700 mb-4">Requirements &amp; Documentation</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: <FileCheck className="w-4 h-4 text-blue-400" />, bg: "bg-blue-500/10 border-blue-500/20", title: "Requirements Manager", desc: "Capture Functional, Non-Functional, Technical, and UI requirements with priority levels, versioning, and stakeholder source links. AI-generates drafts from raw text." },
+              { icon: <FileText className="w-4 h-4 text-indigo-400" />, bg: "bg-indigo-500/10 border-indigo-500/20", title: "BRD Generator", desc: "AI-compiles Business Requirements Documents from your project data with one click. Supports draft → review → approved → signed-off workflow and PDF download." },
+              { icon: <FileText className="w-4 h-4 text-violet-400" />, bg: "bg-violet-500/10 border-violet-500/20", title: "FRD Generator", desc: "Functional Requirements Documents with full versioning, sign-off tracking, and downloadable export. Linked directly to your requirements backlog." },
+            ].map((f, i) => (
+              <div key={i} className="group rounded-xl border border-white/[0.07] bg-gray-950/40 p-5 flex flex-col gap-3 hover:border-white/[0.15] hover:bg-gray-900/60 transition-all duration-200 cursor-default">
+                <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${f.bg}`}>{f.icon}</div>
+                <h3 className="font-bold text-[13px] text-white tracking-tight">{f.title}</h3>
+                <p className="text-gray-600 text-[11px] leading-relaxed">{f.desc}</p>
               </div>
-              <h3 className="font-extrabold text-sm text-white tracking-tight">{feat.title}</h3>
-              <p className="text-gray-500 text-xs leading-relaxed">{feat.desc}</p>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2 — Diagrams & Analysis */}
+        <div className="mb-3">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-gray-700 mb-4">Diagrams &amp; Process Modeling</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: <Workflow className="w-4 h-4 text-green-400" />, bg: "bg-green-500/10 border-green-500/20", title: "Interactive Flow Canvas", desc: "Build BPMN 2.0, UML Use Case, Sequence, ERD, System Context, and Customer Journey diagrams. 12+ industry starter templates (E-Commerce, Banking, Healthcare, ERP…)." },
+              { icon: <Sparkles className="w-4 h-4 text-yellow-400" />, bg: "bg-yellow-500/10 border-yellow-500/20", title: "AI Assistant", desc: "Context-aware BA chat powered by LLMs. Drafts user stories, audits project risks, writes QA scripts, and answers questions about your active project database." },
+              { icon: <GitBranch className="w-4 h-4 text-cyan-400" />, bg: "bg-cyan-500/10 border-cyan-500/20", title: "User Stories Backlog", desc: "Generate As a [role] / I want / So that user stories with AI. Tracks status (TODO → In Progress → QA → Done), story points, and acceptance criteria." },
+            ].map((f, i) => (
+              <div key={i} className="group rounded-xl border border-white/[0.07] bg-gray-950/40 p-5 flex flex-col gap-3 hover:border-white/[0.15] hover:bg-gray-900/60 transition-all duration-200 cursor-default">
+                <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${f.bg}`}>{f.icon}</div>
+                <h3 className="font-bold text-[13px] text-white tracking-tight">{f.title}</h3>
+                <p className="text-gray-600 text-[11px] leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 3 — Strategic & Risk */}
+        <div className="mb-3">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-gray-700 mb-4">Strategic Analysis &amp; Risk</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: <Shield className="w-4 h-4 text-red-400" />, bg: "bg-red-500/10 border-red-500/20", title: "Risk Register", desc: "Log risks with probability (High/Medium/Low), impact scoring, mitigation plans, and lifecycle status (Identified → Mitigated → Occurred → Closed)." },
+              { icon: <Zap className="w-4 h-4 text-amber-400" />, bg: "bg-amber-500/10 border-amber-500/20", title: "SWOT Analysis", desc: "Structured Strengths, Weaknesses, Opportunities, and Threats workspace per project. Save, load, and compare SWOT models across project iterations." },
+              { icon: <Link2 className="w-4 h-4 text-pink-400" />, bg: "bg-pink-500/10 border-pink-500/20", title: "Gap Analysis", desc: "Map current state vs. future state for each identified gap. Tracks action plans and resolution status (Identified → In Progress → Resolved)." },
+            ].map((f, i) => (
+              <div key={i} className="group rounded-xl border border-white/[0.07] bg-gray-950/40 p-5 flex flex-col gap-3 hover:border-white/[0.15] hover:bg-gray-900/60 transition-all duration-200 cursor-default">
+                <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${f.bg}`}>{f.icon}</div>
+                <h3 className="font-bold text-[13px] text-white tracking-tight">{f.title}</h3>
+                <p className="text-gray-600 text-[11px] leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 4 — Governance & Collaboration */}
+        <div>
+          <p className="text-[9px] font-bold uppercase tracking-widest text-gray-700 mb-4">Governance &amp; Collaboration</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: <Clock className="w-4 h-4 text-teal-400" />, bg: "bg-teal-500/10 border-teal-500/20", title: "Meeting Notes & Action Items", desc: "Log meetings with objectives, attendees, and notes. Track open action items with assignees, due dates, and completion status from a single dashboard." },
+              { icon: <RefreshCw className="w-4 h-4 text-orange-400" />, bg: "bg-orange-500/10 border-orange-500/20", title: "Change Request Manager", desc: "Formal change request workflow: Draft → Review → Approved/Rejected. Includes reason, impact analysis, and reviewer sign-off with timestamps." },
+              { icon: <Terminal className="w-4 h-4 text-purple-400" />, bg: "bg-purple-500/10 border-purple-500/20", title: "Full Audit Log", desc: "Every CREATE, UPDATE, DELETE, LOGIN, and LOGOUT event is recorded with IP address, user agent, field-level change diffs, and paginated search." },
+            ].map((f, i) => (
+              <div key={i} className="group rounded-xl border border-white/[0.07] bg-gray-950/40 p-5 flex flex-col gap-3 hover:border-white/[0.15] hover:bg-gray-900/60 transition-all duration-200 cursor-default">
+                <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${f.bg}`}>{f.icon}</div>
+                <h3 className="font-bold text-[13px] text-white tracking-tight">{f.title}</h3>
+                <p className="text-gray-600 text-[11px] leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -731,21 +457,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               ))}
             </div>
           </div>
-          <div className="flex-1 rounded-2xl border border-white/[0.07] h-[280px] w-full relative overflow-hidden flex items-center justify-center" style={{ background: '#050709' }}>
-            <div className="w-16 h-16 rounded-2xl border flex items-center justify-center relative z-10 animate-pulse" style={{ background: 'rgba(189,147,249,0.08)', borderColor: 'rgba(189,147,249,0.25)' }}>
-              <Layers className="w-8 h-8" style={{ color: '#bd93f9' }} />
-              <div className="absolute inset-0 rounded-2xl blur-xl animate-ping" style={{ background: 'rgba(189,147,249,0.1)' }} />
-            </div>
-            <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-              {[["50 50","140 100"],["450 50","320 100"],["50 230","140 180"],["450 230","320 180"]].map(([s,e],i)=>(
-                <path key={i} d={`M ${s} L ${e}`} stroke="#44475a" strokeWidth="1" strokeDasharray="3,3" />
-              ))}
-            </svg>
-            {[["top-6 left-12","Jira"],["top-6 right-12","Confluence"],["bottom-6 left-10","Slack"],["bottom-6 right-10","GitHub"]].map(([pos, label]) => (
-              <div key={label} className={`absolute ${pos} rounded-lg px-2.5 py-1.5 text-[9px] font-bold tracking-wider uppercase`} style={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.08)', color: '#6272a4' }}>
-                {label}
-              </div>
-            ))}
+          <div className="flex-1 w-full flex items-center justify-center relative">
+            <div className="absolute -inset-4 bg-purple-500/10 rounded-3xl filter blur-2xl opacity-40 z-0 pointer-events-none" />
+            <img 
+              src={sectionPng} 
+              alt="Engineering Integration Sync Map" 
+              className="w-full max-w-[500px] h-auto object-contain rounded-2xl relative z-10" 
+            />
           </div>
         </div>
       </section>
@@ -787,114 +505,144 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════
-          PRICING
+          PRICING — exact match to BillingPage.tsx & RegisterForm.tsx
           ══════════════════════════════════════════════════════════════════ */}
       <section id="pricing" className="py-28 px-6 md:px-12 max-w-6xl mx-auto text-center z-10 relative">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-green-400 mb-5">
-          Subscription Models
+          Subscription Plans
         </div>
         <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
-          Transparent, Team-Adjustable <span className="text-gradient-blue-purple">Pricing</span>
+          Simple, Transparent <span className="text-gradient-blue-purple">Pricing</span>
         </h2>
-        <p className="text-gray-500 text-sm max-w-md mx-auto mb-10">
-          Scale your pricing dynamically. Get substantial savings with yearly plans.
+        <p className="text-gray-500 text-sm max-w-lg mx-auto mb-12">
+          Choose a plan tailored to scale your B2B specification work, BRD/FRD generation, and strategic roadmap modelling.
         </p>
 
-        {/* Billing toggle */}
-        <div className="flex items-center justify-center gap-3 mb-12">
-          <span className={`text-[11px] font-semibold ${billingCycle === "monthly" ? "text-white" : "text-gray-600"}`}>Monthly</span>
-          <button
-            onClick={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
-            className="w-11 h-6 rounded-full relative transition-all border cursor-pointer"
-            style={{ background: '#111', borderColor: 'rgba(255,255,255,0.08)' }}
-          >
-            <div className={`w-4 h-4 rounded-full absolute top-1 transition-all ${billingCycle === "yearly" ? "left-6" : "left-1"}`} style={{ background: '#a78bfa' }} />
-          </button>
-          <span className={`text-[11px] font-semibold flex items-center gap-1.5 ${billingCycle === "yearly" ? "text-white" : "text-gray-600"}`}>
-            Annual
-            <span className="text-[8px] font-black px-2 py-0.5 rounded uppercase" style={{ background: 'rgba(167,139,250,0.1)', color: '#a78bfa', border: '1px solid rgba(167,139,250,0.2)' }}>Save 20%</span>
-          </span>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-          {/* Starter */}
-          <div className="rounded-2xl border border-white/[0.07] bg-gray-950/40 p-7 flex flex-col justify-between text-left hover:border-white/[0.14] hover:scale-[1.02] transition-all duration-300">
-            <div className="flex flex-col gap-5">
-              <div>
-                <span className="text-[9px] font-bold uppercase text-gray-600 tracking-wider">Starter Tier</span>
-                <h4 className="text-xl font-extrabold text-white mt-1">Core Analyst</h4>
-              </div>
-              <p className="text-[11px] text-gray-500 leading-relaxed">Ideal for individual analysts compiling requirements and logic maps.</p>
-              <div className="flex items-baseline gap-1 py-3 border-t border-b border-white/[0.06]">
-                <span className="text-4xl font-extrabold text-white">₹0</span>
-                <span className="text-[10px] text-gray-600 font-medium">/ user / forever</span>
-              </div>
-              <ul className="flex flex-col gap-3 text-[11px] text-gray-500">
-                {["1 Active Project workspace", "5 trace backlog requirements", "Basic AI prompt capabilities"].map(f => (
-                  <li key={f} className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0" />{f}</li>
-                ))}
-                <li className="flex items-center gap-2 text-gray-700"><Lock className="w-3 h-3 shrink-0" />No logical validation checking</li>
-              </ul>
-            </div>
-            <button onClick={onNavigateToRegister} className="w-full mt-8 py-2.5 px-4 rounded-xl text-[11px] font-bold text-center border border-white/[0.08] hover:bg-white/[0.05] text-gray-400 hover:text-white transition-all cursor-pointer uppercase tracking-wider">
-              Get started free
-            </button>
-          </div>
 
-          {/* Pro — gradient card */}
-          <div className="rounded-2xl p-7 flex flex-col justify-between text-left relative overflow-hidden hover:scale-[1.02] transition-all duration-300 shadow-glow-purple" style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(109,40,217,0.20) 100%)', border: '1px solid rgba(167,139,250,0.25)' }}>
-            <div className="absolute top-0 right-0 text-[7.5px] font-black uppercase px-3 py-1 rounded-bl-xl tracking-widest" style={{ background: '#a78bfa', color: '#0a0a0a' }}>Most Popular</div>
+          {/* FREE STARTER — exact from BillingPage */}
+          <div className="rounded-2xl border border-white/[0.07] bg-gray-950/40 p-7 flex flex-col justify-between text-left hover:border-white/[0.14] hover:shadow-2xl transition-all duration-300">
             <div className="flex flex-col gap-5">
               <div>
-                <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: '#a78bfa' }}>Premium Tier</span>
-                <h4 className="text-xl font-extrabold text-white mt-1">Apex Professional</h4>
-              </div>
-              <div className="p-3 rounded-xl border border-white/[0.08] flex flex-col gap-2 select-none" style={{ background: 'rgba(0,0,0,0.3)' }}>
-                <div className="flex justify-between items-center text-[10px] font-bold">
-                  <span className="text-gray-400">Team Size</span>
-                  <span className="text-white px-2 py-0.5 rounded text-[9px]" style={{ background: 'rgba(167,139,250,0.2)', color: '#a78bfa' }}>{teamSize} Users</span>
+                <h4 className="text-xl font-bold text-white">Free Starter</h4>
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span className="text-4xl font-black text-white">$0</span>
+                  <span className="text-[11px] text-gray-600 font-medium ml-1">/ month</span>
                 </div>
-                <input type="range" min="1" max="30" value={teamSize} onChange={(e) => setTeamSize(Number(e.target.value))} className="w-full h-1 rounded-lg cursor-pointer" style={{ accentColor: '#a78bfa', background: '#333' }} />
-                <span className="text-[8px] text-gray-600 text-center">Adjust slider to update price</span>
+                <p className="text-[11px] text-gray-500 leading-relaxed mt-2">
+                  Perfect for individual analysts exploring requirements generation and SWOT analyses.
+                </p>
               </div>
-              <div className="flex items-baseline gap-1 py-3 border-t border-b border-white/[0.08]">
-                <span className="text-4xl font-extrabold" style={{ color: '#c4b5fd' }}>₹{calculatePrice().toLocaleString("en-IN")}</span>
-                <span className="text-[10px] text-gray-600 font-medium">/ total / month</span>
-              </div>
-              <ul className="flex flex-col gap-3 text-[11px] text-gray-400">
-                {["Unlimited Project workspaces", "Full Interactive Flow Canvas", "Dynamic compliance checking", "50 AI synthesis credits/month"].map(f => (
-                  <li key={f} className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 shrink-0" style={{ color: '#50fa7b' }} />{f}</li>
+              <div className="border-t border-white/[0.06] pt-4 flex flex-col gap-2.5">
+                {[
+                  "Up to 5 Workspace Seats",
+                  "100 AI Credits per Month",
+                  "Basic SWOT & Gap Analysis",
+                ].map(f => (
+                  <div key={f} className="flex items-start gap-2 text-[11px] text-gray-400">
+                    <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0 mt-0.5" />
+                    <span>{f}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
-            <button onClick={onNavigateToRegister} className="w-full mt-8 py-2.5 px-4 rounded-xl text-[11px] font-bold text-center text-white transition-all cursor-pointer uppercase tracking-wider shadow-glow-purple" style={{ background: '#7c3aed' }}>
-              Start 14-day free trial
+            <button
+              onClick={onNavigateToRegister}
+              className="w-full mt-8 py-2.5 px-4 rounded-xl text-[11px] font-bold text-center border border-white/[0.08] hover:bg-white/[0.05] text-gray-400 hover:text-white transition-all cursor-pointer uppercase tracking-wider"
+            >
+              Get Started Free
             </button>
           </div>
 
-          {/* Enterprise */}
-          <div className="rounded-2xl border border-white/[0.07] bg-gray-950/40 p-7 flex flex-col justify-between text-left hover:border-white/[0.14] hover:scale-[1.02] transition-all duration-300">
+          {/* PRO GROWTH — exact from BillingPage, highlighted */}
+          <div
+            className="rounded-2xl p-7 flex flex-col justify-between text-left relative overflow-hidden hover:shadow-2xl transition-all duration-300"
+            style={{ background: 'linear-gradient(135deg, rgba(124,58,237,0.18) 0%, rgba(109,40,217,0.22) 100%)', border: '1px solid rgba(167,139,250,0.30)' }}
+          >
+            <Meteors number={12} />
+            <div className="absolute top-0 right-0 text-[7.5px] font-black uppercase px-3 py-1 rounded-bl-xl tracking-widest z-10" style={{ background: '#a78bfa', color: '#0a0a0a' }}>Popular</div>
             <div className="flex flex-col gap-5">
               <div>
-                <span className="text-[9px] font-bold uppercase text-gray-600 tracking-wider">Agency Tier</span>
-                <h4 className="text-xl font-extrabold text-white mt-1">Enterprise Org</h4>
+                <h4 className="text-xl font-bold text-white flex items-center gap-2">
+                  Pro Growth
+                  <Zap className="w-4 h-4" style={{ color: '#a78bfa' }} />
+                </h4>
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span className="text-4xl font-black" style={{ color: '#c4b5fd' }}>$49</span>
+                  <span className="text-[11px] text-gray-500 font-medium ml-1">/ month</span>
+                </div>
+                <p className="text-[11px] text-gray-400 leading-relaxed mt-2">
+                  Accelerated design suite for teams that compile documents and run heavy AI chat audits.
+                </p>
               </div>
-              <p className="text-[11px] text-gray-500 leading-relaxed">For complete consultancies running complex, concurrent system scoping.</p>
-              <div className="flex items-baseline gap-1 py-3 border-t border-b border-white/[0.06]">
-                <span className="text-4xl font-extrabold text-white">{billingCycle === "monthly" ? "₹6,500" : "₹5,200"}</span>
-                <span className="text-[10px] text-gray-600 font-medium">/ user / month</span>
-              </div>
-              <ul className="flex flex-col gap-3 text-[11px] text-gray-500">
-                {["Bi-directional Jira & Confluence", "Exporters: Draw.io, BPMN, PlantUML", "Concurrent editor collaboration locks", "Unlimited priority AI generations"].map(f => (
-                  <li key={f} className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0" />{f}</li>
+              <div className="border-t border-white/[0.10] pt-4 flex flex-col gap-2.5">
+                {[
+                  "Up to 20 Workspace Seats",
+                  "1,000 AI Credits per Month",
+                  "Advanced SWOT/Gap strategic models",
+                  "Priority Document Compile Jobs",
+                ].map(f => (
+                  <div key={f} className="flex items-start gap-2 text-[11px] text-gray-300">
+                    <CheckCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: '#50fa7b' }} />
+                    <span>{f}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
-            <button onClick={onNavigateToRegister} className="w-full mt-8 py-2.5 px-4 rounded-xl text-[11px] font-bold text-center border border-white/[0.08] hover:bg-white/[0.05] text-gray-400 hover:text-white transition-all cursor-pointer uppercase tracking-wider">
-              Contact Sales team
+            <button
+              onClick={onNavigateToRegister}
+              className="w-full mt-8 py-2.5 px-4 rounded-xl text-[11px] font-bold text-center text-white transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2"
+              style={{ background: '#7c3aed' }}
+            >
+              Upgrade Workspace <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
+
+          {/* ENTERPRISE CORE — exact from BillingPage */}
+          <div className="rounded-2xl border border-white/[0.07] bg-gray-950/40 p-7 flex flex-col justify-between text-left hover:border-white/[0.14] hover:shadow-2xl transition-all duration-300">
+            <div className="flex flex-col gap-5">
+              <div>
+                <h4 className="text-xl font-bold text-white flex items-center gap-2">
+                  Enterprise Core
+                  <Shield className="w-4 h-4 text-purple-400" />
+                </h4>
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span className="text-4xl font-black text-white">$299</span>
+                  <span className="text-[11px] text-gray-600 font-medium ml-1">/ month</span>
+                </div>
+                <p className="text-[11px] text-gray-500 leading-relaxed mt-2">
+                  Designed for global consulting agencies needing deep limits and customisable systems.
+                </p>
+              </div>
+              <div className="border-t border-white/[0.06] pt-4 flex flex-col gap-2.5">
+                {[
+                  "Up to 1,000 Workspace Seats",
+                  "10,000 AI Credits per Month",
+                  "Configurable AI prompt templates",
+                  "SSO, custom integrations & Audit trails",
+                ].map(f => (
+                  <div key={f} className="flex items-start gap-2 text-[11px] text-gray-400">
+                    <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0 mt-0.5" />
+                    <span>{f}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={onNavigateToRegister}
+              className="w-full mt-8 py-2.5 px-4 rounded-xl text-[11px] font-bold text-center border border-white/[0.08] hover:bg-white/[0.05] text-gray-400 hover:text-white transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2"
+            >
+              Contact Sales / Upgrade <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
         </div>
+
+        {/* Comparison note */}
+        <p className="text-[10px] text-gray-700 mt-8">
+          Free Starter does not require a paid subscription. Trial and checkout availability depends on billing configuration.
+          Workspace Admin required to upgrade plans.
+        </p>
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════

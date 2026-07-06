@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../features/auth/AuthContext";
 import { useProject } from "../../features/projects/ProjectContext";
 import { Badge } from "../common/UIComponents";
+import { GlobalSearchModal } from "../common/GlobalSearchModal";
 import logo from "../../assets/logo.png";
 import {
   LayoutDashboard,
@@ -31,7 +32,8 @@ import {
   CreditCard,
   History,
   Network,
-  Zap
+  Zap,
+  GitMerge,
 } from "lucide-react";
 
 interface SidebarItem {
@@ -47,6 +49,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Teams", icon: Users, path: "teams", category: "overview" },
   { name: "Stakeholders", icon: UserIcon, path: "stakeholders", category: "workspace" },
   { name: "Requirements", icon: FileSpreadsheet, path: "requirements", category: "workspace" },
+  { name: "Traceability", icon: GitMerge, path: "traceability", category: "workspace" },
   { name: "Analysis Models", icon: Network, path: "diagrams", category: "workspace" },
   { name: "User Stories", icon: ClipboardList, path: "stories", category: "workspace" },
   { name: "BRD Generator", icon: FileText, path: "brd", category: "documents" },
@@ -80,6 +83,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     if (user?.preferences?.sidebar_state) {
@@ -97,9 +101,22 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
     return () => document.removeEventListener("click", handler);
   }, []);
 
+  // Global Ctrl+K / Cmd+K shortcut to open search
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
   const toggleSidebar = () => {
     setSidebarExpanded((prev) => !prev);
   };
+
 
   const breadcrumbs = [
     { label: user?.organization_name || "Workspace", path: "" },
@@ -250,15 +267,16 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1.5 relative">
-            {/* Quick Search */}
+            {/* Quick Search — opens GlobalSearchModal */}
             <div className="relative hidden sm:flex items-center">
               <Search className="w-3 h-3 text-gray-700 absolute left-2.5" />
-              <input
-                type="text"
-                placeholder="Search..."
-                disabled
-                className="pl-7 pr-3 py-1 text-[11px] rounded-md bg-gray-900/60 border border-white/[0.06] text-gray-500 outline-none w-36 placeholder:text-gray-700 cursor-not-allowed font-medium"
-              />
+              <button
+                id="global-search-trigger"
+                onClick={() => setIsSearchOpen(true)}
+                className="pl-7 pr-10 py-1 text-[11px] rounded-md bg-gray-900/60 border border-white/[0.06] text-gray-600 outline-none w-44 text-left placeholder:text-gray-700 hover:border-white/[0.16] hover:text-gray-400 font-medium transition-colors cursor-pointer"
+              >
+                Search…
+              </button>
               <kbd className="absolute right-2 text-[9px] text-gray-700 font-mono bg-gray-900 border border-white/[0.05] rounded px-1">⌘K</kbd>
             </div>
 
@@ -349,6 +367,9 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
           {children}
         </main>
       </div>
+
+      {/* Global Search Modal — renders above everything */}
+      <GlobalSearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
   );
 };

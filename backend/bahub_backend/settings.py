@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 
 
@@ -20,6 +21,9 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-replace-me-in-production-1
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
+
+if not DEBUG and SECRET_KEY.startswith("django-insecure-replace-me"):
+    raise ImproperlyConfigured("SECRET_KEY must be configured in production.")
 
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if host.strip()]
 # Ensure Render host is always allowed
@@ -113,11 +117,29 @@ LOGGING = {
 WSGI_APPLICATION = "bahub_backend.wsgi.application"
 ASGI_APPLICATION = "bahub_backend.asgi.application"
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-}
+REDIS_URL = os.getenv("REDIS_URL", "")
+if REDIS_URL:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [REDIS_URL],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
+
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "False").lower() in ("true", "1", "yes")
+SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0" if DEBUG else "31536000"))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
 
 
 # Database
@@ -402,6 +424,28 @@ STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", None)
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", None)
 STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", None)
 STRIPE_PRICE_ENTERPRISE = os.getenv("STRIPE_PRICE_ENTERPRISE", None)
+
+
+# ─── Email Configuration ──────────────────────────────────────────────────
+# During automated tests Django overrides EMAIL_BACKEND to locmem automatically.
+# In development: uses console backend so all emails print to terminal.
+# In production:  set EMAIL_HOST / EMAIL_HOST_USER / EMAIL_HOST_PASSWORD in .env
+#                 and remove EMAIL_BACKEND to default to SMTP.
+
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "1025"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "yes")
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").lower() in ("true", "1", "yes")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@bahub.com")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
 
 
 # Enterprise SAML2 / SSO Configuration

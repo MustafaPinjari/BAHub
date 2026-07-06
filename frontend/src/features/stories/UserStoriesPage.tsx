@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
+import { useProject } from "../projects/ProjectContext";
 import { 
   Plus, 
   Trash2, 
@@ -13,10 +14,6 @@ import {
   CheckSquare
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  name: string;
-}
 
 interface Requirement {
   id: string;
@@ -41,16 +38,7 @@ interface UserStory {
 
 export const UserStoriesPage: React.FC = () => {
   const { user } = useAuth();
-  
-  // Project context from localStorage
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   // States
   const [stories, setStories] = useState<UserStory[]>([]);
@@ -103,22 +91,6 @@ export const UserStoriesPage: React.FC = () => {
     fetchStories();
     fetchRequirements();
   }, [activeProject]);
-
-  // Listen to active project changes from top navbar
-  useEffect(() => {
-    const handleProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleProjectChange);
-    };
-  }, []);
 
   const openCreateModal = () => {
     setEditingStory(null);

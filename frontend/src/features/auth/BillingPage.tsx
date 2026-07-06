@@ -378,11 +378,11 @@ export const BillingPage: React.FC = () => {
                 </div>
                 <div className="flex items-start gap-2 text-xs font-semibold text-foreground/80">
                   <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>Dedicated AI fine-tuning templates</span>
+                  <span>Configurable AI prompt templates</span>
                 </div>
                 <div className="flex items-start gap-2 text-xs font-semibold text-foreground/80">
                   <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span>SSO, custom integrations & Audit trails</span>
+                  <span>SSO integration roadmap, custom integrations & audit trails</span>
                 </div>
               </div>
             </div>

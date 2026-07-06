@@ -1,43 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { DiagramDashboard } from "./DiagramDashboard.tsx";
 import { DiagramCanvas } from "./DiagramCanvas.tsx";
+import { useProject } from "../projects/ProjectContext";
 
 // Route view switcher for dashboard and canvas workspace
-interface Project {
-  id: string;
-  name: string;
-}
 
 export const DiagramsPage: React.FC = () => {
-  const [activeProject, setActiveProject] = useState<Project | null>(() => {
-    try {
-      const stored = localStorage.getItem("active_project");
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  const { activeProject } = useProject();
 
   const [view, setView] = useState<"dashboard" | "editor">("dashboard");
   const [selectedDiagramId, setSelectedDiagramId] = useState<string | null>(null);
 
+  // Reset editor when active project changes.
   useEffect(() => {
-    const handleActiveProjectChange = () => {
-      try {
-        const stored = localStorage.getItem("active_project");
-        setActiveProject(stored ? JSON.parse(stored) : null);
-        // Reset view back to dashboard if project changes
-        setView("dashboard");
-        setSelectedDiagramId(null);
-      } catch {
-        setActiveProject(null);
-      }
-    };
-    window.addEventListener("activeProjectChanged", handleActiveProjectChange);
-    return () => {
-      window.removeEventListener("activeProjectChanged", handleActiveProjectChange);
-    };
-  }, []);
+    setView("dashboard");
+    setSelectedDiagramId(null);
+  }, [activeProject?.id]);
+
 
   if (!activeProject) {
     return (
