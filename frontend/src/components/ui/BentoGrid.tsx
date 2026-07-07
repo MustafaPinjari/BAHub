@@ -22,45 +22,56 @@ export const BentoGridItem = ({
   description,
   header,
   icon,
-  accentColor = "purple",
+  accentColor,
 }: {
   className?: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   header?: React.ReactNode;
   icon?: React.ReactNode;
-  accentColor?: "purple" | "blue" | "green" | "amber" | "red" | "cyan" | "indigo";
+  accentColor?: string;
 }) => {
-  const glowMap: Record<string, string> = {
-    purple: "from-purple-500/10 to-transparent",
-    blue:   "from-blue-500/10 to-transparent",
-    green:  "from-green-500/10 to-transparent",
-    amber:  "from-amber-500/10 to-transparent",
-    red:    "from-red-500/10 to-transparent",
-    cyan:   "from-cyan-500/10 to-transparent",
-    indigo: "from-indigo-500/10 to-transparent",
+  const [coords, setCoords] = React.useState({ x: 0, y: 0 });
+  const [hovered, setHovered] = React.useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCoords({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
 
   return (
     <motion.div
       whileHover={{ y: -3, scale: 1.005 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className={clsx(
-        "relative rounded-2xl border border-white/[0.08] bg-[#0a0a0a] overflow-hidden",
-        "hover:border-white/[0.16] hover:shadow-2xl hover:shadow-black/60",
+        "relative rounded-2xl border border-white/[0.08] bg-[#0a0a0a]/80 backdrop-blur-md overflow-hidden",
+        "hover:border-white/[0.18] hover:shadow-2xl hover:shadow-black/70",
         "flex flex-col group/card transition-colors duration-300 cursor-default",
         className
       )}
     >
-      {/* Top accent glow on hover */}
-      <div className={clsx(
-        "absolute inset-0 bg-gradient-to-br opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 pointer-events-none z-0",
-        glowMap[accentColor]
-      )} />
+      {/* Dynamic Cursor Spotlight Overlay */}
+      {hovered && (
+        <div
+          className="absolute pointer-events-none transition-opacity duration-300 z-0"
+          style={{
+            width: "350px",
+            height: "350px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(255,255,255,0.035) 0%, transparent 70%)",
+            left: `${coords.x - 175}px`,
+            top: `${coords.y - 175}px`,
+            filter: "blur(30px)",
+          }}
+        />
+      )}
 
       {/* Live preview area — fixed height, dark bg */}
       {header && (
-        <div className="relative w-full h-[140px] shrink-0 overflow-hidden border-b border-white/[0.06] bg-gradient-to-b from-[#0d0d0d] to-[#070707]">
+        <div className="relative w-full h-[140px] shrink-0 overflow-hidden border-b border-white/[0.06] bg-gradient-to-b from-[#0d0d0d] to-[#070707] z-10">
           {header}
           {/* Bottom fade so it blends into card */}
           <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#0a0a0a] to-transparent pointer-events-none" />

@@ -210,17 +210,68 @@ const BeamDiagram: React.FC = () => {
         </BeamNode>
       </div>
       <div className="flex flex-col gap-8 z-10">
-        <BeamNode ref={brdRef}     label="BRD / FRD"><FileText  className="w-4 h-4 text-purple-400" /></BeamNode>
-        <BeamNode ref={backlogRef} label="Backlog"  ><GitBranch className="w-4 h-4 text-blue-400"   /></BeamNode>
+        <BeamNode ref={brdRef}     label="BRD / FRD"><FileText  className="w-4 h-4 text-white/70" /></BeamNode>
+        <BeamNode ref={backlogRef} label="Backlog"  ><GitBranch className="w-4 h-4 text-white/70"   /></BeamNode>
       </div>
       {sources.map(({ ref, label }, i) => (
         <AnimatedBeam key={label} containerRef={containerRef} fromRef={ref} toRef={centerRef}
           curvature={[30,15,0,-15,-30][i]} duration={2.5} delay={i*0.4}
-          gradientStartColor="#6366f1" gradientStopColor="#a78bfa" />
+          gradientStartColor="rgba(255,255,255,0.18)" gradientStopColor="rgba(255,255,255,0.03)" />
       ))}
-      <AnimatedBeam containerRef={containerRef} fromRef={centerRef} toRef={brdRef}     curvature={-20} duration={2.5} delay={0.2} gradientStartColor="#a78bfa" gradientStopColor="#60a5fa" />
-      <AnimatedBeam containerRef={containerRef} fromRef={centerRef} toRef={backlogRef} curvature={20}  duration={2.5} delay={0.9} gradientStartColor="#a78bfa" gradientStopColor="#34d399" />
+      <AnimatedBeam containerRef={containerRef} fromRef={centerRef} toRef={brdRef}     curvature={-20} duration={2.5} delay={0.2} gradientStartColor="rgba(255,255,255,0.18)" gradientStopColor="rgba(255,255,255,0.03)" />
+      <AnimatedBeam containerRef={containerRef} fromRef={centerRef} toRef={backlogRef} curvature={20}  duration={2.5} delay={0.9} gradientStartColor="rgba(255,255,255,0.18)" gradientStopColor="rgba(255,255,255,0.03)" />
     </div>
+  );
+};
+
+// ─── Premium Glass Card with Cursor Glow ─────────────────────────────────────────
+interface PremiumGlassCardProps extends React.ComponentPropsWithoutRef<typeof motion.div> {
+  children: React.ReactNode;
+  accentColor?: string;
+}
+
+export const PremiumGlassCard: React.FC<PremiumGlassCardProps> = ({
+  children,
+  className,
+  accentColor,
+  ...props
+}) => {
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [hovered, setHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setCoords({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  return (
+    <motion.div
+      whileHover={{ y: -3, scale: 1.002 }}
+      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={`relative rounded-2xl border border-white/[0.08] bg-[#0a0a0a]/80 backdrop-blur-md overflow-hidden hover:border-white/[0.18] hover:shadow-2xl hover:shadow-black/70 transition-colors duration-300 ${className || ""}`}
+      {...props}
+    >
+      {hovered && (
+        <div
+          className="absolute pointer-events-none transition-opacity duration-300 z-0"
+          style={{
+            width: "350px",
+            height: "350px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(255,255,255,0.035) 0%, transparent 70%)",
+            left: `${coords.x - 175}px`,
+            top: `${coords.y - 175}px`,
+            filter: "blur(30px)",
+          }}
+        />
+      )}
+      <div className="relative z-10 w-full h-full flex flex-col">
+        {children}
+      </div>
+    </motion.div>
   );
 };
 
@@ -228,6 +279,66 @@ const BeamDiagram: React.FC = () => {
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigateToRegister }) => {
   const [openFaq, setOpenFaq]       = useState<number | null>(null);
   const [yearly, setYearly]         = useState(false);
+
+  // Tagline rotating state
+  const [taglineIndex, setTaglineIndex] = useState(0);
+  const taglines = [
+    "Business Requirements (BRD)",
+    "Functional Specifications (FRD)",
+    "BPMN Process Diagrams",
+    "Jira-Ready User Stories",
+    "Compliance Audit Trails",
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTaglineIndex((prev) => (prev + 1) % taglines.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Cursor radial glow tracking
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  // Interactive Workspace Simulator state
+  const [simTab, setSimTab] = useState<"chat" | "canvas" | "trace" | "doc">("chat");
+  const [typedPrompt, setTypedPrompt] = useState("");
+  const [aiReplyVisible, setAiReplyVisible] = useState(false);
+  const [hoveredReq, setHoveredReq] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (simTab !== "chat") {
+      setTypedPrompt("");
+      setAiReplyVisible(false);
+      return;
+    }
+    
+    const text = "Extract a process flow diagram and user stories from checkout meeting notes...";
+    let i = 0;
+    setTypedPrompt("");
+    setAiReplyVisible(false);
+
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        setTypedPrompt((prev) => prev + text.charAt(i));
+        i++;
+      } else {
+        clearInterval(timer);
+        const replyTimer = setTimeout(() => setAiReplyVisible(true), 600);
+        return () => clearTimeout(replyTimer);
+      }
+    }, 30);
+
+    return () => clearInterval(timer);
+  }, [simTab]);
+
   const col1 = TESTIMONIALS.slice(0, 4);
   const col2 = TESTIMONIALS.slice(2, 7);
   const col3 = TESTIMONIALS.slice(5, 10);
@@ -269,26 +380,57 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </div>
 
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section className="relative pt-24 pb-8 px-6 md:px-12 max-w-6xl mx-auto z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <section 
+        onMouseMove={handleMouseMove}
+        className="relative pt-24 pb-8 px-6 md:px-12 max-w-6xl mx-auto z-10 group overflow-visible"
+      >
+        {/* Cursor tracking radial glow */}
+        <div
+          className="absolute pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100 z-0"
+          style={{
+            width: "500px",
+            height: "500px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)",
+            left: `${mousePos.x - 250}px`,
+            top: `${mousePos.y - 250}px`,
+            filter: "blur(50px)",
+          }}
+        />
+
+        <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
           {/* Left */}
           <div>
             <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.08] bg-gray-950/60 text-[10px] font-bold uppercase tracking-wider mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-gray-400">BAHub V2.0</span>
-              <span className="text-gray-700">·</span>
-              <span className="text-purple-400">AI-Powered BA Workspace</span>
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[10px] font-bold uppercase tracking-wider mb-8">
+              <span className="w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" />
+              <span className="text-white/60">BAHub V2.0</span>
+              <span className="text-white/20">·</span>
+              <span className="text-white/80">AI-Powered BA Workspace</span>
             </motion.div>
 
             <motion.h1 initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.0] mb-6">
-              Ship your first BRD<br />
-              <span className="text-gradient-blue-purple">in under 10 minutes.</span>
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6 flex flex-col">
+              <span>Ship traceable</span>
+              <span className="h-[48px] sm:h-[60px] lg:h-[72px] relative overflow-hidden text-gradient-blue-purple block w-full text-left">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={taglineIndex}
+                    initial={{ y: 35, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -35, opacity: 0 }}
+                    transition={{ duration: 0.35, ease: "easeInOut" }}
+                    className="absolute inset-0 block truncate"
+                  >
+                    {taglines[taglineIndex]}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+              <span>in under 10 minutes.</span>
             </motion.h1>
 
             <motion.p initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.2 }}
-              className="text-gray-500 text-base leading-relaxed mb-8 max-w-lg">
+              className="text-white/60 text-base leading-relaxed mb-8 max-w-lg">
               Paste meeting notes. Get requirements, diagrams, BRDs, risk registers, and a Jira-ready backlog — all linked, all traceable.
             </motion.p>
 
@@ -299,7 +441,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 Start Free — No Card <ArrowRight className="w-4 h-4" />
               </button>
               <button onClick={onNavigateToLogin}
-                className="px-7 py-3.5 rounded-xl text-sm font-semibold border border-white/[0.12] text-gray-400 hover:text-white hover:border-white/25 transition-all cursor-pointer">
+                className="px-7 py-3.5 rounded-xl text-sm font-semibold border border-white/15 text-white/80 hover:text-white hover:border-white/30 transition-all cursor-pointer">
                 View Live Demo
               </button>
             </motion.div>
@@ -307,14 +449,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.5, delay:0.5 }}
               className="flex flex-wrap gap-5">
               {[
-                { icon:<Shield className="w-3 h-3 text-green-500"/>, bg:"bg-green-500/10 border-green-500/20",  text:"Audit Trails"       },
-                { icon:<Zap    className="w-3 h-3 text-blue-400"/>,  bg:"bg-blue-500/10 border-blue-500/20",   text:"Real-time Sync"     },
-                { icon:<Users  className="w-3 h-3 text-purple-400"/>,bg:"bg-purple-500/10 border-purple-500/20",text:"Team Workspaces"   },
-                { icon:<Clock  className="w-3 h-3 text-amber-400"/>, bg:"bg-amber-500/10 border-amber-500/20", text:"SOC 2 Audit Logs"  },
+                { icon:<Shield className="w-3 h-3 text-white/80"/>, bg:"bg-white/[0.03] border-white/10",  text:"Audit Trails"       },
+                { icon:<Zap    className="w-3 h-3 text-white/80"/>,  bg:"bg-white/[0.03] border-white/10",   text:"Real-time Sync"     },
+                { icon:<Users  className="w-3 h-3 text-white/80"/>,  bg:"bg-white/[0.03] border-white/10",   text:"Team Workspaces"   },
+                { icon:<Clock  className="w-3 h-3 text-white/80"/>,  bg:"bg-white/[0.03] border-white/10",   text:"SOC 2 Audit Logs"  },
               ].map(p => (
                 <div key={p.text} className="flex items-center gap-1.5">
                   <div className={`w-5 h-5 rounded-md border flex items-center justify-center ${p.bg}`}>{p.icon}</div>
-                  <span className="text-[11px] font-medium text-gray-500">{p.text}</span>
+                  <span className="text-[11px] font-medium text-white/60">{p.text}</span>
                 </div>
               ))}
             </motion.div>
@@ -402,30 +544,280 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       <section id="sandbox" className="py-8 px-6 md:px-12 max-w-6xl mx-auto z-10 relative">
         <div className="text-center mb-10 flex flex-col items-center gap-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-purple-400">
-            Live Workspace Preview
+            Interactive Workspace Preview
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-            See the <span className="text-gradient-blue-purple">full workspace</span>
+            See the <span className="text-gradient-blue-purple">full workspace</span> in action
           </h2>
+          <p className="text-gray-500 text-[12px] max-w-md">Toggle between the platform modules to preview how BAHub connects AI, diagrams, matrices, and specs.</p>
         </div>
-        <div className="w-full rounded-2xl overflow-hidden shadow-2xl border relative group" style={{ background:'#0a0a0a', borderColor:'rgba(255,255,255,0.07)' }}>
-          <div className="absolute inset-0 rounded-2xl pointer-events-none z-20 overflow-hidden">
-            <div className="absolute -inset-[200%] animate-border-beam [background:linear-gradient(to_right,transparent_50%,rgba(168,85,247,0.35)_70%,rgba(168,85,247,0.6)_80%,transparent_100%)] [mask-image:linear-gradient(transparent_0%,#000_100%)]" />
-          </div>
+
+        {/* Tabs navigation */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-6 max-w-xl mx-auto relative z-10">
+          {[
+            { id: "chat",   label: "AI Chat Assistant", icon: <Sparkles className="w-3.5 h-3.5" /> },
+            { id: "canvas", label: "Workflow Canvas",   icon: <Workflow className="w-3.5 h-3.5" /> },
+            { id: "trace",  label: "Traceability Map",  icon: <GitBranch className="w-3.5 h-3.5" /> },
+            { id: "doc",    label: "BRD Spec Sheet",    icon: <FileText className="w-3.5 h-3.5" /> },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setSimTab(tab.id as any)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                simTab === tab.id
+                  ? "bg-white/[0.08] border border-white/25 text-white"
+                  : "bg-white/[0.03] border border-white/[0.06] text-gray-500 hover:text-white hover:bg-white/[0.08]"
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="w-full rounded-2xl overflow-hidden shadow-2xl border relative" style={{ background:'#0a0a0a', borderColor:'rgba(255,255,255,0.07)' }}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-black/70 relative z-10">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
               <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
               <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-              <span className="text-[9px] font-mono ml-3 text-gray-600">bahub.app — Interactive Workspace</span>
+              <span className="text-[9px] font-mono ml-3 text-gray-600">
+                bahub.app — {simTab === "chat" ? "AI Chat" : simTab === "canvas" ? "Process Canvas" : simTab === "trace" ? "Trace Matrix" : "Compiled BRD"}
+              </span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[8px] font-bold text-gray-700 uppercase tracking-widest">Active</span>
+              <span className="text-[8px] font-bold text-gray-700 uppercase tracking-widest">Active Simulator</span>
             </div>
           </div>
-          <div className="relative w-full overflow-hidden bg-black">
-            <img src={sandboxPng} alt="BAHub Workspace" className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.01]" />
+          
+          <div className="relative w-full overflow-hidden bg-[#050505]">
+            <AnimatePresence mode="wait">
+              {simTab === "chat" && (
+                <motion.div
+                  key="chat"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="p-6 flex flex-col gap-4 font-sans h-[350px] overflow-y-auto"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center text-[10px] text-gray-400 font-bold shrink-0">U</div>
+                    <div className="bg-[#111] border border-white/[0.06] rounded-2xl rounded-tl-none px-4 py-2.5 text-xs text-white max-w-[80%]">
+                      <span className="font-mono">{typedPrompt}</span>
+                      {typedPrompt.length < 75 && (
+                        <span className="w-1.5 h-3.5 bg-purple-400 inline-block animate-pulse ml-0.5" />
+                      )}
+                    </div>
+                  </div>
+                  
+                  {aiReplyVisible && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }} 
+                      animate={{ opacity: 1, y: 0 }} 
+                      className="flex items-start gap-3"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-purple-600/15 border border-purple-500/30 flex items-center justify-center text-[10px] text-purple-400 font-bold shrink-0">AI</div>
+                      <div className="bg-purple-950/20 border border-purple-500/15 rounded-2xl rounded-tl-none px-4 py-3 text-xs text-gray-300 max-w-[85%] flex flex-col gap-2">
+                        <p className="font-semibold text-[11px] text-purple-300">✨ Generated Specification Summary</p>
+                        <div className="bg-black/40 border border-white/[0.04] p-3 rounded-lg flex flex-col gap-1.5 font-mono text-[10px] text-left">
+                          <p><span className="text-purple-400">1. Requirement</span> REQ-001: Stripe Subscription Management</p>
+                          <p><span className="text-purple-400">2. User Story</span> US-010: As an admin I want to purchase...</p>
+                          <p><span className="text-purple-400">3. Process Flow</span> BPMN checkout generated and traced.</p>
+                        </div>
+                        <p className="text-[10px] text-gray-500">I have also populated the traceability matrix and linked the corresponding risk profile (RSK-04).</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+
+              {simTab === "canvas" && (
+                <motion.div
+                  key="canvas"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="p-4 flex items-center justify-center h-[350px] overflow-hidden bg-[#050505]"
+                >
+                  <svg className="w-full max-w-[550px] h-[300px] border border-white/[0.04] rounded-xl p-4 bg-[#0a0a0a]" viewBox="0 0 600 300">
+                    <defs>
+                      <pattern id="svg-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                      </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#svg-grid)" />
+                    
+                    {/* Flow nodes */}
+                    <g transform="translate(30, 120)">
+                      <rect width="100" height="40" rx="8" fill="#111" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+                      <text x="50" y="24" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold" fontFamily="monospace">1. Client Call</text>
+                    </g>
+                    <g transform="translate(190, 120)">
+                      <rect width="110" height="40" rx="8" fill="#1b122b" stroke="rgba(168,85,247,0.4)" strokeWidth="1.5" />
+                      <text x="55" y="24" textAnchor="middle" fill="#c084fc" fontSize="9" fontWeight="bold" fontFamily="monospace">2. AI Synthesizer</text>
+                    </g>
+                    <g transform="translate(360, 60)">
+                      <rect width="100" height="40" rx="8" fill="#111" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+                      <text x="50" y="24" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold" fontFamily="monospace">3a. BPMN Flow</text>
+                    </g>
+                    <g transform="translate(360, 180)">
+                      <rect width="100" height="40" rx="8" fill="#111" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+                      <text x="50" y="24" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="bold" fontFamily="monospace">3b. User Stories</text>
+                    </g>
+                    <g transform="translate(500, 120)">
+                      <rect width="90" height="40" rx="8" fill="#0b1b17" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" />
+                      <text x="45" y="24" textAnchor="middle" fill="#34d399" fontSize="9" fontWeight="bold" fontFamily="monospace">4. Push to Jira</text>
+                    </g>
+
+                    {/* Connectors */}
+                    <path d="M 130 140 L 190 140" fill="none" stroke="rgba(168,85,247,0.4)" strokeWidth="1.5" strokeDasharray="5,5" className="animate-flow-dash" />
+                    <path d="M 300 140 L 330 140 L 330 80 L 360 80" fill="none" stroke="rgba(168,85,247,0.4)" strokeWidth="1.5" strokeDasharray="5,5" className="animate-flow-dash" />
+                    <path d="M 300 140 L 330 140 L 330 200 L 360 200" fill="none" stroke="rgba(168,85,247,0.4)" strokeWidth="1.5" strokeDasharray="5,5" className="animate-flow-dash" />
+                    <path d="M 460 80 L 485 80 L 485 140 L 500 140" fill="none" stroke="rgba(52,211,153,0.4)" strokeWidth="1.5" strokeDasharray="5,5" className="animate-flow-dash" />
+                    <path d="M 460 200 L 485 200 L 485 140 L 500 140" fill="none" stroke="rgba(52,211,153,0.4)" strokeWidth="1.5" strokeDasharray="5,5" className="animate-flow-dash" />
+                  </svg>
+                </motion.div>
+              )}
+
+              {simTab === "trace" && (
+                <motion.div
+                  key="trace"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="p-6 flex flex-col justify-between h-[350px] bg-[#070707] font-sans text-left"
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Hover a Requirement to view linked objects</span>
+                    <span className="text-[9px] bg-purple-600/10 border border-purple-500/20 text-purple-400 font-bold px-2 py-0.5 rounded">Trace Map</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 flex-1">
+                    {/* Requirements side */}
+                    <div className="flex flex-col gap-2">
+                      <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Requirements</h4>
+                      {[
+                        { id: "req-1", code: "REQ-001", title: "OAuth Authentication Setup" },
+                        { id: "req-2", code: "REQ-002", title: "Stripe Payment Gateway" },
+                        { id: "req-3", code: "REQ-003", title: "Workspace Activity Auditing" },
+                      ].map((r) => (
+                        <div
+                          key={r.id}
+                          onMouseEnter={() => setHoveredReq(r.id)}
+                          onMouseLeave={() => setHoveredReq(null)}
+                          className={`p-3 rounded-xl border text-[11px] transition-all duration-300 cursor-pointer ${
+                            hoveredReq === r.id
+                              ? "bg-purple-950/20 border-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+                              : "bg-white/[0.02] border-white/[0.06] text-gray-400 hover:border-white/10"
+                          }`}
+                        >
+                          <span className="font-mono font-bold text-[10px] text-purple-400 mr-2">{r.code}</span>
+                          {r.title}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Linked Objects side */}
+                    <div className="flex flex-col gap-2">
+                      <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Linked Backlog & Risks</h4>
+                      {[
+                        { id: "us-1", linkedTo: "req-1", code: "US-010", type: "STORY", title: "As a user, I want to login with GitHub" },
+                        { id: "us-2", linkedTo: "req-2", code: "US-011", type: "STORY", title: "As an admin, I want to choose a plan" },
+                        { id: "rsk-1", linkedTo: "req-3", code: "RSK-04", type: "RISK", title: "Failure to log critical config mutations" },
+                      ].map((item) => {
+                        const isLinked = hoveredReq === item.linkedTo;
+                        return (
+                          <div
+                            key={item.id}
+                            className={`p-3 rounded-xl border text-[11px] transition-all duration-300 ${
+                              isLinked
+                                ? "bg-blue-950/20 border-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)] scale-[1.02]"
+                                : "bg-white/[0.01] border-white/[0.04] text-gray-600"
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 mb-1">
+                              <span className={`font-mono font-bold text-[9px] ${isLinked ? "text-blue-400" : "text-gray-500"}`}>{item.code}</span>
+                              <span className={`text-[8px] font-black tracking-widest ${item.type === "RISK" ? "text-red-400/80" : "text-green-400/80"}`}>{item.type}</span>
+                            </div>
+                            <p className="line-clamp-1">{item.title}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {simTab === "doc" && (
+                <motion.div
+                  key="doc"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="p-6 flex flex-col h-[350px] overflow-y-auto bg-white text-gray-900 text-left font-serif"
+                >
+                  {/* Page Header */}
+                  <div className="text-center border-b-2 border-gray-900 pb-2 mb-3">
+                    <h1 className="text-[14px] font-bold uppercase tracking-wider font-sans text-gray-900 leading-tight">Software Requirements Specification (SRS)</h1>
+                    <p className="text-[9px] font-mono text-gray-500 uppercase tracking-widest mt-0.5">Project: BAHub Checkout Engine</p>
+                  </div>
+                  
+                  {/* Document Details Grid */}
+                  <div className="grid grid-cols-2 gap-2 text-[9px] mb-4 font-sans text-gray-600">
+                    <div>
+                      <p><span className="font-bold text-gray-800">Author:</span> Senior AI Analyst</p>
+                      <p><span className="font-bold text-gray-800">Created Date:</span> July 2026</p>
+                    </div>
+                    <div className="text-right">
+                      <p><span className="font-bold text-gray-800">Version:</span> v1.2.0-approved</p>
+                      <p><span className="font-bold text-gray-800">Status:</span> APPROVED & SIGNED-OFF</p>
+                    </div>
+                  </div>
+                  
+                  {/* Section Title */}
+                  <h3 className="text-[10px] font-bold font-sans uppercase border-b border-gray-300 pb-1 mb-2 text-gray-850">1. Functional Specifications</h3>
+                  <table className="w-full text-left border-collapse text-[9px] font-sans mb-3 text-gray-800">
+                    <thead>
+                      <tr className="border-b border-gray-900 bg-gray-50 text-gray-700">
+                        <th className="py-1 px-1 font-bold">ID</th>
+                        <th className="py-1 px-1 font-bold">Req Description</th>
+                        <th className="py-1 px-1 font-bold">Priority</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-gray-200">
+                        <td className="py-1 px-1 font-mono text-purple-700 font-bold">REQ-001</td>
+                        <td className="py-1 px-1">Organization-based auth boundaries.</td>
+                        <td className="py-1 px-1 font-bold text-red-600 text-[8px] uppercase">CRITICAL</td>
+                      </tr>
+                      <tr className="border-b border-gray-200">
+                        <td className="py-1 px-1 font-mono text-purple-700 font-bold">REQ-002</td>
+                        <td className="py-1 px-1">Interactive credit validation and webhook processing.</td>
+                        <td className="py-1 px-1 font-bold text-amber-600 text-[8px] uppercase">HIGH</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  
+                  {/* Sign-off Authorization */}
+                  <h3 className="text-[10px] font-bold font-sans uppercase border-b border-gray-300 pb-1 mb-2 text-gray-850">2. Sign-off Authorization</h3>
+                  <div className="grid grid-cols-2 gap-4 text-[8px] font-sans pt-1">
+                    <div className="border border-dashed border-gray-300 p-2 rounded bg-gray-50">
+                      <p className="font-bold text-gray-800">Priya Sharma (Lead BA)</p>
+                      <p className="text-[7.5px] text-gray-500">Sign-off: APPROVED · 2026-07-06</p>
+                    </div>
+                    <div className="border border-dashed border-gray-300 p-2 rounded bg-gray-50">
+                      <p className="font-bold text-gray-850">Alex Chen (Product Manager)</p>
+                      <p className="text-[7.5px] text-gray-500">Sign-off: APPROVED · 2026-07-07</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </section>
@@ -498,8 +890,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
           {/* Stakeholder Power/Interest Matrix */}
-          <motion.div whileHover={{ y:-3 }} transition={{ type:"spring", stiffness:260, damping:20 }}
-            className="rounded-2xl border border-white/[0.08] bg-[#0a0a0a] overflow-hidden hover:border-white/[0.16] transition-colors">
+          <PremiumGlassCard accentColor="rose" className="h-full">
             <div className="p-5 border-b border-white/[0.06]">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
@@ -532,11 +923,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 </div>
               ))}
             </div>
-          </motion.div>
+          </PremiumGlassCard>
 
           {/* Reports & Analytics */}
-          <motion.div whileHover={{ y:-3 }} transition={{ type:"spring", stiffness:260, damping:20 }}
-            className="rounded-2xl border border-white/[0.08] bg-[#0a0a0a] overflow-hidden hover:border-white/[0.16] transition-colors">
+          <PremiumGlassCard accentColor="amber" className="h-full">
             <div className="p-5 border-b border-white/[0.06]">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-9 h-9 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
@@ -569,15 +959,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 </div>
               ))}
             </div>
-          </motion.div>
+          </PremiumGlassCard>
         </div>
 
         {/* Row 2 — Diagram Templates + RBAC + Projects/Teams */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {/* 16 Sector Templates */}
-          <motion.div whileHover={{ y:-3 }} transition={{ type:"spring", stiffness:260, damping:20 }}
-            className="rounded-2xl border border-white/[0.08] bg-[#0a0a0a] p-5 hover:border-white/[0.16] transition-colors">
+          <PremiumGlassCard accentColor="cyan" className="p-5 h-full">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                 <Workflow className="w-4 h-4 text-cyan-400" />
@@ -592,11 +981,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 <span key={t} className="text-[8px] font-bold bg-white/[0.04] border border-white/[0.06] text-gray-500 px-2 py-0.5 rounded-full uppercase tracking-wide">{t}</span>
               ))}
             </div>
-          </motion.div>
+          </PremiumGlassCard>
 
           {/* RBAC */}
-          <motion.div whileHover={{ y:-3 }} transition={{ type:"spring", stiffness:260, damping:20 }}
-            className="rounded-2xl border border-white/[0.08] bg-[#0a0a0a] p-5 hover:border-white/[0.16] transition-colors">
+          <PremiumGlassCard accentColor="orange" className="p-5 h-full">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
                 <Shield className="w-4 h-4 text-orange-400" />
@@ -619,11 +1007,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 </div>
               ))}
             </div>
-          </motion.div>
+          </PremiumGlassCard>
 
           {/* Projects & Teams */}
-          <motion.div whileHover={{ y:-3 }} transition={{ type:"spring", stiffness:260, damping:20 }}
-            className="rounded-2xl border border-white/[0.08] bg-[#0a0a0a] p-5 hover:border-white/[0.16] transition-colors">
+          <PremiumGlassCard accentColor="indigo" className="p-5 h-full">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
                 <FolderGit className="w-4 h-4 text-indigo-400" />
@@ -647,7 +1034,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 </div>
               ))}
             </div>
-          </motion.div>
+          </PremiumGlassCard>
         </div>
       </section>
 
