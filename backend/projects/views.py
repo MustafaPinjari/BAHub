@@ -33,6 +33,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if not user.organization:
             raise ValidationError("You must belong to an organization to create a project.")
         
+        # Check plan limits
+        from billing.models import TenantSubscription
+        sub, _ = TenantSubscription.objects.get_or_create(
+            organization=user.organization,
+            defaults={
+                "plan_tier": "FREE",
+                "seats_limit": 5,
+                "is_active": True,
+                "ai_credits_limit": 100
+            }
+        )
+        if sub.plan_tier == "FREE":
+            existing_count = Project.objects.filter(organization=user.organization).count()
+            if existing_count >= 1:
+                raise ValidationError("Under the Free plan, you are limited to 1 active project. Please upgrade to Pro or Enterprise.")
+
         project = serializer.save(organization=user.organization)
         ProjectMember.objects.get_or_create(
             project=project,

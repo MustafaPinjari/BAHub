@@ -34,6 +34,7 @@ import {
   Network,
   Zap,
   GitMerge,
+  Lock,
 } from "lucide-react";
 
 interface SidebarItem {
@@ -41,6 +42,7 @@ interface SidebarItem {
   icon: React.ComponentType<any>;
   path: string;
   category?: string;
+  requiredTier?: "PRO" | "ENTERPRISE";
 }
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
@@ -52,8 +54,8 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Traceability", icon: GitMerge, path: "traceability", category: "workspace" },
   { name: "Analysis Models", icon: Network, path: "diagrams", category: "workspace" },
   { name: "User Stories", icon: ClipboardList, path: "stories", category: "workspace" },
-  { name: "BRD Generator", icon: FileText, path: "brd", category: "documents" },
-  { name: "FRD Generator", icon: FileCheck, path: "frd", category: "documents" },
+  { name: "BRD Generator", icon: FileText, path: "brd", category: "documents", requiredTier: "PRO" },
+  { name: "FRD Generator", icon: FileCheck, path: "frd", category: "documents", requiredTier: "PRO" },
   { name: "Meetings", icon: Calendar, path: "meetings", category: "documents" },
   { name: "Risks", icon: ShieldAlert, path: "risks", category: "governance" },
   { name: "Change Requests", icon: RefreshCw, path: "changes", category: "governance" },
@@ -61,9 +63,9 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "SWOT Analysis", icon: Grid, path: "swot", category: "governance" },
   { name: "Reports", icon: BarChart2, path: "reports", category: "intelligence" },
   { name: "AI Assistant", icon: Bot, path: "ai", category: "intelligence" },
-  { name: "Integrations", icon: Link2, path: "integrations", category: "settings" },
+  { name: "Integrations", icon: Link2, path: "integrations", category: "settings", requiredTier: "ENTERPRISE" },
   { name: "Billing", icon: CreditCard, path: "billing", category: "settings" },
-  { name: "Audit Logs", icon: History, path: "audit", category: "settings" },
+  { name: "Audit Logs", icon: History, path: "audit", category: "settings", requiredTier: "ENTERPRISE" },
 ];
 
 interface DashboardShellProps {
@@ -115,6 +117,18 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
 
   const toggleSidebar = () => {
     setSidebarExpanded((prev) => !prev);
+  };
+
+  const isLocked = (item: SidebarItem) => {
+    if (!item.requiredTier) return false;
+    const tier = user?.plan_tier || "FREE";
+    if (item.requiredTier === "PRO") {
+      return tier === "FREE";
+    }
+    if (item.requiredTier === "ENTERPRISE") {
+      return tier !== "ENTERPRISE";
+    }
+    return false;
   };
 
 
@@ -178,13 +192,16 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
                     ? "bg-white/[0.08] text-white"
                     : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]"
                 }`}
-                title={!sidebarExpanded ? item.name : undefined}
+                title={!sidebarExpanded ? (isLocked(item) ? `${item.name} 🔒 (Locked)` : item.name) : undefined}
               >
                 <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? "text-white" : "text-gray-600"}`} />
                 {sidebarExpanded && (
                   <span className="truncate">{item.name}</span>
                 )}
-                {isActive && sidebarExpanded && (
+                {isLocked(item) && sidebarExpanded && (
+                  <Lock className="w-3 h-3 text-purple-400/80 ml-auto shrink-0" />
+                )}
+                {isActive && !isLocked(item) && sidebarExpanded && (
                   <span className="ml-auto w-1 h-1 rounded-full bg-purple-500 shrink-0" />
                 )}
               </button>

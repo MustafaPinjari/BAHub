@@ -162,9 +162,10 @@ else:
     try:
         if not db_url:
             raise ValueError("Empty DATABASE_URL")
+        conn_max_age = int(os.getenv("CONN_MAX_AGE", "600"))
         parsed_db = dj_database_url.parse(
             db_url,
-            conn_max_age=0,
+            conn_max_age=conn_max_age,
             ssl_require=True if db_url.startswith("postgres") else False
         )
     except ValueError:

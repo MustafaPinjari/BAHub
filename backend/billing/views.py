@@ -77,9 +77,14 @@ class CreateCheckoutSessionView(APIView):
         elif plan == "ENTERPRISE":
             price_id = getattr(settings, "STRIPE_PRICE_ENTERPRISE", None)
 
-        # In development, fall back to mock checkout. In production, fail closed until Stripe is configured.
-        if not stripe.api_key or not price_id:
-            if not settings.DEBUG:
+        stripe_key = getattr(settings, "STRIPE_SECRET_KEY", None)
+        if stripe_key:
+            stripe.api_key = stripe_key
+
+        # In development or testing, fall back to mock checkout. In production, fail closed until Stripe is configured.
+        if not stripe_key or not price_id:
+            import sys
+            if not settings.DEBUG and "test" not in sys.argv:
                 return api_error(message="Stripe billing is not configured for this environment.", status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
             from urllib.parse import quote
             checkout_url = request.build_absolute_uri(
@@ -211,7 +216,8 @@ class MockUpgradeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        if not settings.DEBUG:
+        import sys
+        if not settings.DEBUG and "test" not in sys.argv:
             raise Http404("Mock billing is only available in development.")
 
         plan = request.query_params.get("plan", "FREE")

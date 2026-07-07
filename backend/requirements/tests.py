@@ -15,6 +15,13 @@ class RequirementManagementTests(APITestCase):
         self.org_a = Organization.objects.create(name="Org A")
         self.org_b = Organization.objects.create(name="Org B")
 
+        # Upgrade test orgs to PRO to bypass FREE tier limits during other logic validation
+        from billing.models import TenantSubscription
+        for org in [self.org_a, self.org_b]:
+            sub = TenantSubscription.objects.get(organization=org)
+            sub.plan_tier = "PRO"
+            sub.save()
+
         # Create Users
         self.analyst_a = User.objects.create_user(
             username="analyst_a", password="Password123!", role=User.BUSINESS_ANALYST, organization=self.org_a

@@ -43,7 +43,27 @@ class RequirementViewSet(viewsets.ModelViewSet):
             )
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        user = self.request.user
+        if not user.organization:
+            raise ValidationError("You must belong to an organization to create a requirement.")
+        
+        # Check plan limits
+        from billing.models import TenantSubscription
+        sub, _ = TenantSubscription.objects.get_or_create(
+            organization=user.organization,
+            defaults={
+                "plan_tier": "FREE",
+                "seats_limit": 5,
+                "is_active": True,
+                "ai_credits_limit": 100
+            }
+        )
+        if sub.plan_tier == "FREE":
+            existing_count = Requirement.objects.filter(project__organization_id=user.organization_id).count()
+            if existing_count >= 3:
+                raise ValidationError("Under the Free plan, you are limited to 3 requirements across your workspace. Please upgrade to Pro or Enterprise.")
+
+        serializer.save(created_by=user)
         self._broadcast_change(serializer.instance, "create")
         from projects.models import log_activity
         log_activity(

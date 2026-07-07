@@ -289,6 +289,7 @@ class FeatureGatingTests(APITestCase):
 # 5. BILLING UPGRADE FLOW
 # ═══════════════════════════════════════════════════════════════════════════
 
+@override_settings(STRIPE_SECRET_KEY=None, STRIPE_PRICE_PRO=None, STRIPE_PRICE_ENTERPRISE=None)
 class BillingUpgradeTests(APITestCase):
 
     def setUp(self):

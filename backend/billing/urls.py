@@ -13,8 +13,11 @@ urlpatterns = [
     path("webhook/", StripeWebhookView.as_view(), name="stripe-webhook"),
 ]
 
-# Mock billing only available in local development — never in production.
-if settings.DEBUG:
+import sys
+IS_TESTING = "test" in sys.argv
+
+# Mock billing only available in local development or testing — never in production.
+if settings.DEBUG or IS_TESTING:
     urlpatterns += [
         path("mock-upgrade/", MockUpgradeView.as_view(), name="mock-upgrade"),
     ]

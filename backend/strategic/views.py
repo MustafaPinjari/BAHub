@@ -108,6 +108,28 @@ class GapAnalysisViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         return api_success(data=serializer.data, message="Gap analysis details loaded.")
 
+    def perform_create(self, serializer):
+        user = self.request.user
+        if not user.organization:
+            raise ValidationError("You must belong to an organization to log a Gap Analysis.")
+        
+        # Check plan limits
+        from billing.models import TenantSubscription
+        sub, _ = TenantSubscription.objects.get_or_create(
+            organization=user.organization,
+            defaults={
+                "plan_tier": "FREE",
+                "seats_limit": 5,
+                "is_active": True,
+                "ai_credits_limit": 100
+            }
+        )
+        if sub.plan_tier == "FREE":
+            existing_count = GapAnalysis.objects.filter(project__organization_id=user.organization_id).count()
+            if existing_count >= 1:
+                raise ValidationError("Under the Free plan, you are limited to 1 Gap Analysis record. Please upgrade to Pro or Enterprise.")
+        serializer.save()
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
