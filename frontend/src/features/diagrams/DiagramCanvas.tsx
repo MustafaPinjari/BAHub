@@ -85,6 +85,13 @@ const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [selectedElement, setSelectedElement] = useState<any>(null);
   const [copiedNode, setCopiedNode] = useState<any>(null);
+  const [floatingEditor, setFloatingEditor] = useState<{
+    x: number;
+    y: number;
+    elementId: string;
+    value: string;
+    isEdge: boolean;
+  } | null>(null);
 
   // Documentation Pane State
   const [documentation, setDocumentation] = useState("");
@@ -260,6 +267,33 @@ const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({
     },
     [pushToHistory, setEdges]
   );
+
+  // Double click inline editors for nodes and edges
+  const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
+    event.stopPropagation();
+    const rect = reactFlowWrapper.current?.getBoundingClientRect();
+    if (!rect) return;
+    setFloatingEditor({
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+      elementId: node.id,
+      value: String((node.data as any).label || ""),
+      isEdge: false
+    });
+  }, []);
+
+  const onEdgeDoubleClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+    event.stopPropagation();
+    const rect = reactFlowWrapper.current?.getBoundingClientRect();
+    if (!rect) return;
+    setFloatingEditor({
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+      elementId: edge.id,
+      value: typeof edge.label === "string" ? edge.label : "",
+      isEdge: true
+    });
+  }, []);
 
   // Selected item node settings update callback
   const handleUpdateElement = (id: string, updatedData: any) => {
@@ -627,6 +661,8 @@ const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({
             nodeTypes={nodeTypes}
             onNodeClick={(_, node) => setSelectedElement(node)}
             onEdgeClick={(_, edge) => setSelectedElement(edge)}
+            onNodeDoubleClick={onNodeDoubleClick}
+            onEdgeDoubleClick={onEdgeDoubleClick}
             onPaneClick={() => setSelectedElement(null)}
             fitView
             snapToGrid={true}
@@ -640,6 +676,67 @@ const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({
             />
             <Background gap={12} size={1} />
           </ReactFlow>
+
+          {/* Floating Inline Editor Overlay */}
+          {floatingEditor && (
+            <div 
+              className="absolute z-50 bg-card/95 border border-primary/45 rounded-xl shadow-2xl p-2 flex items-center gap-1.5 backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
+              style={{ 
+                left: Math.max(10, Math.min(floatingEditor.x - 120, (reactFlowWrapper.current?.clientWidth || 0) - 250)),
+                top: Math.max(10, Math.min(floatingEditor.y - 20, (reactFlowWrapper.current?.clientHeight || 0) - 60)),
+                width: "240px"
+              }}
+            >
+              <input
+                type="text"
+                value={floatingEditor.value}
+                onChange={(e) => setFloatingEditor({ ...floatingEditor, value: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    pushToHistory();
+                    if (floatingEditor.isEdge) {
+                      setEdges((eds) => eds.map((edge) => edge.id === floatingEditor.elementId ? { ...edge, label: floatingEditor.value } : edge));
+                    } else {
+                      setNodes((nds) => nds.map((node) => node.id === floatingEditor.elementId ? { ...node, data: { ...node.data, label: floatingEditor.value } } : node));
+                    }
+                    if (selectedElement && selectedElement.id === floatingEditor.elementId) {
+                      setSelectedElement((prev: any) => {
+                        if (floatingEditor.isEdge) {
+                          return { ...prev, label: floatingEditor.value };
+                        } else {
+                          return { ...prev, data: { ...prev.data, label: floatingEditor.value } };
+                        }
+                      });
+                    }
+                    setFloatingEditor(null);
+                  } else if (e.key === "Escape") {
+                    setFloatingEditor(null);
+                  }
+                }}
+                onBlur={() => {
+                  pushToHistory();
+                  if (floatingEditor.isEdge) {
+                    setEdges((eds) => eds.map((edge) => edge.id === floatingEditor.elementId ? { ...edge, label: floatingEditor.value } : edge));
+                  } else {
+                    setNodes((nds) => nds.map((node) => node.id === floatingEditor.elementId ? { ...node, data: { ...node.data, label: floatingEditor.value } } : node));
+                  }
+                  if (selectedElement && selectedElement.id === floatingEditor.elementId) {
+                    setSelectedElement((prev: any) => {
+                      if (floatingEditor.isEdge) {
+                        return { ...prev, label: floatingEditor.value };
+                      } else {
+                        return { ...prev, data: { ...prev.data, label: floatingEditor.value } };
+                      }
+                    });
+                  }
+                  setFloatingEditor(null);
+                }}
+                className="w-full bg-secondary/55 text-xs font-bold text-foreground px-2 py-1.5 rounded-lg border border-border outline-none focus:border-primary"
+                autoFocus
+              />
+            </div>
+          )}
           
           {/* Documentation Panel Toggle Button */}
           <button

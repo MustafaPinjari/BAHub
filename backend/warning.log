@@ -415,3 +415,17 @@ ERROR 2026-07-06 14:55:27,401 log 9788 16356 Internal Server Error: /api/v1/diag
 ERROR 2026-07-06 14:55:27,403 runserver 9788 17416 [35;1mHTTP GET /api/v1/diagrams/approvals/?diagram=new-ai 500 [0.06, 127.0.0.1:53019][0m
 ERROR 2026-07-06 14:55:27,407 log 9788 16356 Internal Server Error: /api/v1/diagrams/comments/
 ERROR 2026-07-06 14:55:27,409 runserver 9788 17416 [35;1mHTTP GET /api/v1/diagrams/comments/?diagram=new-ai 500 [0.06, 127.0.0.1:54487][0m
+ERROR 2026-07-07 17:50:42,909 exceptions 4216 4552 Unhandled Server Error: <Table@0x2051F28BE10 9 rows x 0 cols>... must have at least a row and column
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\documents\views.py"[0m, line [35m217[0m, in [35mexport_pdf[0m
+    [31mself._generate_pdf_reportlab[0m[1;31m(document, pdf_io)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\documents\views.py"[0m, line [35m487[0m, in [35m_generate_pdf_reportlab[0m
+    t = Table(formatted_flow, colWidths=[175, 100, 175])
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\reportlab\platypus\tables.py"[0m, line [35m292[0m, in [35m__init__[0m
+    raise ValueError(f'{self.identity()} must have at least a row and column')
+[1;35mValueError[0m: [35m<Table@0x2051F28BE10 9 rows x 0 cols>... must have at least a row and column[0m
+ERROR 2026-07-07 17:50:42,965 log 4216 9724 Internal Server Error: /api/v1/documents/3f56f158-150c-4062-a537-fa4efcf96541/export-pdf/
+ERROR 2026-07-07 17:50:42,967 runserver 4216 7728 [35;1mHTTP GET /api/v1/documents/3f56f158-150c-4062-a537-fa4efcf96541/export-pdf/ 500 [0.10, 127.0.0.1:54666][0m

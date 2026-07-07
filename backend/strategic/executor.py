@@ -14,11 +14,12 @@ ai_executor = ThreadPoolExecutor(max_workers=4)
 
 
 def call_llm(prompt, system_instruction=""):
+    import time
     gemini_key = os.environ.get("GEMINI_API_KEY")
     openai_key = os.environ.get("OPENAI_API_KEY")
     
     if gemini_key:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={gemini_key}"
         headers = {"Content-Type": "application/json"}
         full_text = f"{system_instruction}\n\nUser request: {prompt}"
         data = {
@@ -28,13 +29,27 @@ def call_llm(prompt, system_instruction=""):
                 }]
             }]
         }
-        req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
-        try:
-            with urllib.request.urlopen(req, timeout=15) as response:
-                res_body = json.loads(response.read().decode("utf-8"))
-                return res_body["candidates"][0]["content"]["parts"][0]["text"]
-        except urllib.error.URLError as e:
-            raise Exception(f"Gemini API failure: {e}")
+        
+        retries = 3
+        timeout = 45
+        for attempt in range(retries):
+            req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
+            try:
+                with urllib.request.urlopen(req, timeout=timeout) as response:
+                    res_body = json.loads(response.read().decode("utf-8"))
+                    return res_body["candidates"][0]["content"]["parts"][0]["text"]
+            except urllib.error.HTTPError as e:
+                logger.warning(f"Gemini API HTTP {e.code} on attempt {attempt + 1}: {e.reason}")
+                if e.code in [429, 503] and attempt < retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                raise Exception(f"Gemini API failure (HTTP {e.code}): {e.reason}")
+            except Exception as e:
+                logger.warning(f"Gemini API exception on attempt {attempt + 1}: {e}")
+                if attempt < retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
+                raise Exception(f"Gemini API failure: {e}")
             
     elif openai_key:
         url = "https://api.openai.com/v1/chat/completions"

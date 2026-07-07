@@ -119,7 +119,29 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ id: _id, data, selected 
       )}
 
       {/* Shapes Content Layouts */}
-      {shape === "DECISION" || shape === "GATEWAY" ? (
+      {/* ── UseCase oval ── */}
+      {shape === "USECASE" ? (
+        <div className={`${activeColor.bg} ${borderState} border-2 rounded-[50%] px-5 py-3 min-w-[140px] text-center shadow-md flex items-center justify-center`}>
+          <span className="text-[11px] font-bold text-foreground leading-tight text-center">{data.label}</span>
+        </div>
+      ) : shape === "ACTOR" ? (
+        /* ── Actor stick-figure ── */
+        <div className="flex flex-col items-center gap-1 min-w-[70px]">
+          {/* Head */}
+          <div className={`w-9 h-9 rounded-full border-2 ${borderState} ${activeColor.bg} flex items-center justify-center`}>
+            <IconComponent className={`w-4 h-4 ${activeColor.text}`} />
+          </div>
+          {/* Name label */}
+          <span className={`text-[10px] font-bold text-center leading-tight max-w-[80px] ${activeColor.text}`}>
+            {data.label}
+          </span>
+          {data.description && (
+            <span className="text-[8px] text-muted-foreground text-center leading-snug max-w-[80px]">
+              {data.description}
+            </span>
+          )}
+        </div>
+      ) : shape === "DECISION" || shape === "GATEWAY" ? (
         <div className={`${activeColor.bg} ${borderState} ${shapeClass}`}>
           <div className="-rotate-45 text-center flex flex-col items-center">
             <span className="text-[10px] font-extrabold leading-tight text-heading truncate max-w-[80px]">

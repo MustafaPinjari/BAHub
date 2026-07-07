@@ -7,6 +7,7 @@ import {
   Settings, 
   Link
 } from "lucide-react";
+import { MarkerType } from "@xyflow/react";
 
 interface PropertiesPanelProps {
   projectId: string;
@@ -71,6 +72,13 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   const [version, setVersion] = useState("1.0");
   const [notes, setNotes] = useState("");
 
+  // Edge Style States
+  const [routing, setRouting] = useState("smoothstep");
+  const [lineStyle, setLineStyle] = useState("solid");
+  const [lineWidth, setLineWidth] = useState("2");
+  const [lineColor, setLineColor] = useState("indigo");
+  const [arrowhead, setArrowhead] = useState("target");
+
   // Mapping selection states
   const [requirementId, setRequirementId] = useState("");
   const [stakeholderId, setStakeholderId] = useState("");
@@ -123,55 +131,131 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
   // Sync state with selected node change
   useEffect(() => {
-    setLabel(elementData.label || selectedElement.label || "");
-    setDescription(elementData.description || "");
-    setColor(elementData.color || "indigo");
-    setShape(elementData.shape || "Process");
-    setPriority(elementData.priority || "MEDIUM");
-    setStatus(elementData.status || "DRAFT");
-    setOwner(elementData.owner || "");
-    setVersion(elementData.version || "1.0");
-    setNotes(elementData.notes || "");
+    setLabel(selectedElement.label || elementData.label || "");
+    
+    if (isEdge) {
+      const data = selectedElement.data || {};
+      setRouting(selectedElement.type || data.routing || "smoothstep");
+      setLineStyle(data.lineStyle || "solid");
+      setLineWidth(String(data.lineWidth || "2"));
+      setLineColor(data.lineColor || "indigo");
+      setArrowhead(data.arrowhead || "target");
+    } else {
+      setDescription(elementData.description || "");
+      setColor(elementData.color || "indigo");
+      setShape(elementData.shape || "Process");
+      setPriority(elementData.priority || "MEDIUM");
+      setStatus(elementData.status || "DRAFT");
+      setOwner(elementData.owner || "");
+      setVersion(elementData.version || "1.0");
+      setNotes(elementData.notes || "");
 
-    setRequirementId(elementData.requirementId || elementData.requirement_id || "");
-    setStakeholderId(elementData.stakeholderId || elementData.stakeholder_id || "");
-    setUserStoryId(elementData.userStoryId || elementData.user_story_id || "");
-    setRiskId(elementData.riskId || elementData.risk_id || "");
-    setMeetingId(elementData.meetingId || elementData.meeting_id || "");
-    setChangeRequestId(elementData.changeRequestId || elementData.change_request_id || "");
+      setRequirementId(elementData.requirementId || elementData.requirement_id || "");
+      setStakeholderId(elementData.stakeholderId || elementData.stakeholder_id || "");
+      setUserStoryId(elementData.userStoryId || elementData.user_story_id || "");
+      setRiskId(elementData.riskId || elementData.risk_id || "");
+      setMeetingId(elementData.meetingId || elementData.meeting_id || "");
+      setChangeRequestId(elementData.changeRequestId || elementData.change_request_id || "");
 
-    setTask(elementData.task || "");
-    setBusinessGoal(elementData.business_goal || elementData.businessGoal || "");
-    setBusinessRule(elementData.business_rule || elementData.businessRule || "");
-    setAcceptanceCriteria(elementData.acceptance_criteria || elementData.acceptanceCriteria || "");
+      setTask(elementData.task || "");
+      setBusinessGoal(elementData.business_goal || elementData.businessGoal || "");
+      setBusinessRule(elementData.business_rule || elementData.businessRule || "");
+      setAcceptanceCriteria(elementData.acceptance_criteria || elementData.acceptanceCriteria || "");
+    }
   }, [selectedElement.id]);
 
-  const handleSave = () => {
-    const updatedData = isEdge 
-      ? { label } 
-      : {
-          label,
-          description,
-          color,
-          shape,
-          priority,
-          status,
-          owner,
-          version,
-          notes,
-          requirementId,
-          stakeholderId,
-          userStoryId,
-          riskId,
-          meetingId,
-          changeRequestId,
-          task,
-          businessGoal,
-          businessRule,
-          acceptanceCriteria
-        };
+  const updateEdgeStyle = (newParams: {
+    label?: string;
+    routing?: string;
+    lineStyle?: string;
+    lineWidth?: string;
+    lineColor?: string;
+    arrowhead?: string;
+  }) => {
+    if (!isEdge) return;
 
-    onUpdateElement(elementId, updatedData);
+    const finalLabel = newParams.label !== undefined ? newParams.label : label;
+    const finalRouting = newParams.routing !== undefined ? newParams.routing : routing;
+    const finalLineStyle = newParams.lineStyle !== undefined ? newParams.lineStyle : lineStyle;
+    const finalLineWidth = newParams.lineWidth !== undefined ? newParams.lineWidth : lineWidth;
+    const finalLineColor = newParams.lineColor !== undefined ? newParams.lineColor : lineColor;
+    const finalArrowhead = newParams.arrowhead !== undefined ? newParams.arrowhead : arrowhead;
+
+    const colorHexMap: Record<string, string> = {
+      indigo: "#6366F1",
+      purple: "#8B5CF6",
+      emerald: "#10B981",
+      rose: "#F43F5E",
+      amber: "#F59E0B",
+      slate: "#6B7280",
+    };
+    const strokeColor = colorHexMap[finalLineColor] || finalLineColor || "#6366F1";
+    const strokeWidthVal = parseInt(finalLineWidth) || 2;
+
+    const edgeStyle: any = {
+      stroke: strokeColor,
+      strokeWidth: strokeWidthVal,
+    };
+    if (finalLineStyle === "dashed") {
+      edgeStyle.strokeDasharray = "6 6";
+    } else if (finalLineStyle === "dotted") {
+      edgeStyle.strokeDasharray = "2 2";
+    }
+
+    let markerEnd: any = undefined;
+    if (finalArrowhead === "target" || finalArrowhead === "both") {
+      markerEnd = { type: MarkerType.ArrowClosed, color: strokeColor };
+    }
+
+    let markerStart: any = undefined;
+    if (finalArrowhead === "source" || finalArrowhead === "both") {
+      markerStart = { type: MarkerType.ArrowClosed, color: strokeColor };
+    }
+
+    onUpdateElement(elementId, {
+      label: finalLabel,
+      type: finalRouting,
+      style: edgeStyle,
+      markerEnd,
+      markerStart,
+      data: {
+        label: finalLabel,
+        routing: finalRouting,
+        lineStyle: finalLineStyle,
+        lineWidth: finalLineWidth,
+        lineColor: finalLineColor,
+        arrowhead: finalArrowhead,
+      },
+    });
+  };
+
+  const handleSave = () => {
+    if (isEdge) {
+      updateEdgeStyle({});
+    } else {
+      const updatedData = {
+        label,
+        description,
+        color,
+        shape,
+        priority,
+        status,
+        owner,
+        version,
+        notes,
+        requirementId,
+        stakeholderId,
+        userStoryId,
+        riskId,
+        meetingId,
+        changeRequestId,
+        task,
+        businessGoal,
+        businessRule,
+        acceptanceCriteria
+      };
+      onUpdateElement(elementId, updatedData);
+    }
   };
 
   return (
@@ -196,10 +280,86 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             onChange={(e) => {
               setLabel(e.target.value);
               // Save live on text change to prevent lag
-              onUpdateElement(elementId, isEdge ? { label: e.target.value } : { ...elementData, label: e.target.value });
+              if (isEdge) {
+                updateEdgeStyle({ label: e.target.value });
+              } else {
+                onUpdateElement(elementId, { ...elementData, label: e.target.value });
+              }
             }}
             placeholder="Name or action"
           />
+
+          {isEdge && (
+            <>
+              <Select
+                label="Connection Routing"
+                value={routing}
+                onChange={(e) => {
+                  setRouting(e.target.value);
+                  updateEdgeStyle({ routing: e.target.value });
+                }}
+                options={[
+                  { value: "smoothstep", label: "Orthogonal (Smooth)" },
+                  { value: "step", label: "Orthogonal (Corner)" },
+                  { value: "straight", label: "Straight Line" },
+                  { value: "default", label: "Bezier Curve" }
+                ]}
+              />
+
+              <Select
+                label="Line Style"
+                value={lineStyle}
+                onChange={(e) => {
+                  setLineStyle(e.target.value);
+                  updateEdgeStyle({ lineStyle: e.target.value });
+                }}
+                options={[
+                  { value: "solid", label: "Solid Line" },
+                  { value: "dashed", label: "Dashed (e.g. «extends»)" },
+                  { value: "dotted", label: "Dotted (e.g. Reference)" }
+                ]}
+              />
+
+              <Select
+                label="Line Width"
+                value={lineWidth}
+                onChange={(e) => {
+                  setLineWidth(e.target.value);
+                  updateEdgeStyle({ lineWidth: e.target.value });
+                }}
+                options={[
+                  { value: "1", label: "Thin (1px)" },
+                  { value: "2", label: "Medium (2px)" },
+                  { value: "4", label: "Thick (4px)" }
+                ]}
+              />
+
+              <Select
+                label="Line Color"
+                value={lineColor}
+                onChange={(e) => {
+                  setLineColor(e.target.value);
+                  updateEdgeStyle({ lineColor: e.target.value });
+                }}
+                options={COLOR_OPTIONS}
+              />
+
+              <Select
+                label="Arrowheads"
+                value={arrowhead}
+                onChange={(e) => {
+                  setArrowhead(e.target.value);
+                  updateEdgeStyle({ arrowhead: e.target.value });
+                }}
+                options={[
+                  { value: "none", label: "None (Association)" },
+                  { value: "target", label: "Target Arrow (Direct)" },
+                  { value: "source", label: "Source Arrow" },
+                  { value: "both", label: "Bidirectional" }
+                ]}
+              />
+            </>
+          )}
 
           {!isEdge && (
             <>
@@ -421,7 +581,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
           className="w-full font-bold text-xs"
         >
           <Trash2 className="w-3.5 h-3.5 mr-1" />
-          Delete Shape
+          {isEdge ? "Delete Connection" : "Delete Shape"}
         </Button>
       </div>
     </aside>

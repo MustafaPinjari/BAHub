@@ -272,6 +272,24 @@
   }
 }
 
+@keyframes beam-travel {
+  0% {
+    stroke-dashoffset: var(--path-length);
+    opacity: 0;
+  }
+  5% { opacity: 1; }
+  90% { opacity: 1; }
+  100% {
+    stroke-dashoffset: calc(var(--path-length) * -1);
+    opacity: 0;
+  }
+}
+
+@keyframes beamSlide {
+  0%   { stroke-dashoffset: 300; }
+  100% { stroke-dashoffset: -300; }
+}
+
 /* ============================================================
    ANIMATION UTILITY CLASSES
    ============================================================ */
@@ -293,15 +311,15 @@
   }
 
   .animate-marquee-left {
-    animation: marquee-left linear infinite;
+    animation: marquee-left var(--duration, 20s) linear infinite;
   }
 
   .animate-marquee-down {
-    animation: marquee-down linear infinite;
+    animation: marquee-down var(--duration, 20s) linear infinite;
   }
 
   .animate-marquee-up {
-    animation: marquee-up linear infinite;
+    animation: marquee-up var(--duration, 20s) linear infinite;
   }
 
   .animate-spin-slow {

@@ -255,68 +255,275 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
   // Basic Markdown-to-HTML parser rendering for reader panel
   const renderMarkdown = (text: string) => {
     if (!text) return null;
+
+    // Helper interfaces
+    interface MarkdownBlock {
+      type: "h1" | "h2" | "h3" | "list" | "table" | "code" | "paragraph";
+      lines: string[];
+    }
+
+    // Segment markdown text into blocks
     const lines = text.split("\n");
-    return lines.map((line, idx) => {
-      // Headers
-      if (line.startsWith("# ")) {
-        return (
-          <h1 key={idx} className="text-lg font-bold text-foreground border-b border-border pb-1 mt-5 mb-2.5">
-            {line.replace("# ", "")}
-          </h1>
-        );
-      }
-      if (line.startsWith("## ")) {
-        return (
-          <h2 key={idx} className="text-sm font-bold text-foreground mt-4 mb-2">
-            {line.replace("## ", "")}
-          </h2>
-        );
-      }
-      // Bullet lists
-      if (line.startsWith("- ")) {
-        return (
-          <li key={idx} className="text-xs text-muted-foreground ml-4 list-disc mt-1 leading-relaxed">
-            {line.replace("- ", "")}
-          </li>
-        );
-      }
-      if (line.startsWith("*") && line.endsWith("*")) {
-        return (
-          <p key={idx} className="text-xs italic text-muted-foreground/75 mt-1">
-            {line.replace(/\*/g, "")}
-          </p>
-        );
-      }
-      // Tables formatting
-      if (line.startsWith("|")) {
-        const cells = line.split("|").map((c) => c.trim()).filter((c) => c !== "");
-        if (cells[0] && cells[0].startsWith("---")) return null;
-        return (
-          <div key={idx} className="overflow-x-auto my-1.5">
-            <table className="min-w-full divide-y divide-border border border-border rounded-lg text-[10px]">
-              <tbody className="bg-card divide-y divide-border">
-                <tr className="hover:bg-secondary/20">
-                  {cells.map((cell, cIdx) => (
-                    <td 
-                      key={cIdx} 
-                      className="px-2.5 py-1.5 font-semibold text-foreground border-r border-border last:border-0"
-                    >
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        );
+    const blocks: MarkdownBlock[] = [];
+    let currentBlock: MarkdownBlock | null = null;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+
+      // Handle code block
+      if (trimmed.startsWith("```")) {
+        if (currentBlock && currentBlock.type === "code") {
+          // End of code block
+          blocks.push(currentBlock);
+          currentBlock = null;
+        } else {
+          // Start of code block
+          if (currentBlock) blocks.push(currentBlock);
+          currentBlock = { type: "code", lines: [line] };
+        }
+        continue;
       }
 
-      if (line.trim() === "") return <div key={idx} className="h-1.5" />;
-      return (
-        <p key={idx} className="text-xs text-muted-foreground leading-relaxed my-0.5">
-          {line}
-        </p>
-      );
+      if (currentBlock && currentBlock.type === "code") {
+        currentBlock.lines.push(line);
+        continue;
+      }
+
+      // Handle empty line
+      if (trimmed === "") {
+        if (currentBlock) {
+          blocks.push(currentBlock);
+          currentBlock = null;
+        }
+        continue;
+      }
+
+      // Handle headings
+      if (trimmed.startsWith("# ")) {
+        if (currentBlock) blocks.push(currentBlock);
+        blocks.push({ type: "h1", lines: [trimmed] });
+        currentBlock = null;
+        continue;
+      }
+      if (trimmed.startsWith("## ")) {
+        if (currentBlock) blocks.push(currentBlock);
+        blocks.push({ type: "h2", lines: [trimmed] });
+        currentBlock = null;
+        continue;
+      }
+      if (trimmed.startsWith("### ")) {
+        if (currentBlock) blocks.push(currentBlock);
+        blocks.push({ type: "h3", lines: [trimmed] });
+        currentBlock = null;
+        continue;
+      }
+
+      // Handle bullet lists
+      if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+        if (currentBlock && currentBlock.type === "list") {
+          currentBlock.lines.push(trimmed);
+        } else {
+          if (currentBlock) blocks.push(currentBlock);
+          currentBlock = { type: "list", lines: [trimmed] };
+        }
+        continue;
+      }
+
+      // Handle tables
+      if (trimmed.startsWith("|")) {
+        if (currentBlock && currentBlock.type === "table") {
+          currentBlock.lines.push(trimmed);
+        } else {
+          if (currentBlock) blocks.push(currentBlock);
+          currentBlock = { type: "table", lines: [trimmed] };
+        }
+        continue;
+      }
+
+      // Handle normal paragraphs
+      if (currentBlock && currentBlock.type === "paragraph") {
+        currentBlock.lines.push(line);
+      } else {
+        if (currentBlock) blocks.push(currentBlock);
+        currentBlock = { type: "paragraph", lines: [line] };
+      }
+    }
+
+    if (currentBlock) {
+      blocks.push(currentBlock);
+    }
+
+    // Helper to parse mermaid elements and connections
+    const parseMermaid = (mermaidLines: string[]) => {
+      const nodes: { id: string; label: string }[] = [];
+      const edges: { source: string; target: string; label: string }[] = [];
+      
+      mermaidLines.forEach(l => {
+        const trimmedL = l.trim();
+        if (!trimmedL || trimmedL.startsWith("```") || trimmedL.startsWith("graph") || trimmedL.startsWith("subgraph") || trimmedL === "end") {
+          return;
+        }
+        
+        // Node regex: n1["👤 Customer"] or n1("Customer")
+        const nodeMatch = trimmedL.match(/^(\w+)\["([^"]+)"\]/) || trimmedL.match(/^(\w+)\("([^"]+)"\)/) || trimmedL.match(/^(\w+)\[([^\]]+)\]/);
+        if (nodeMatch) {
+          nodes.push({ id: nodeMatch[1], label: nodeMatch[2].trim() });
+          return;
+        }
+        
+        // Edge regex: n1 --> |label| n2 or n1 --> n2
+        const edgeMatch = trimmedL.match(/^(\w+)\s*-->\s*\|([^|]+)\|\s*(\w+)/);
+        if (edgeMatch) {
+          edges.push({ source: edgeMatch[1], label: edgeMatch[2].trim(), target: edgeMatch[3] });
+          return;
+        }
+        
+        const edgeMatchNoLabel = trimmedL.match(/^(\w+)\s*-->\s*(\w+)/);
+        if (edgeMatchNoLabel) {
+          edges.push({ source: edgeMatchNoLabel[1], label: "", target: edgeMatchNoLabel[2] });
+          return;
+        }
+      });
+      
+      return { nodes, edges };
+    };
+
+    // Render blocks to React Components
+    return blocks.map((block, idx) => {
+      switch (block.type) {
+        case "h1":
+          return (
+            <h1 key={idx} className="text-base font-bold text-foreground border-b border-border pb-1 mt-6 mb-3">
+              {block.lines[0].replace("# ", "")}
+            </h1>
+          );
+        case "h2":
+          return (
+            <h2 key={idx} className="text-xs font-bold text-foreground mt-4 mb-2">
+              {block.lines[0].replace("## ", "")}
+            </h2>
+          );
+        case "h3":
+          return (
+            <h3 key={idx} className="text-[11px] font-bold text-foreground mt-3 mb-1">
+              {block.lines[0].replace("### ", "")}
+            </h3>
+          );
+        case "list":
+          return (
+            <ul key={idx} className="list-disc pl-5 my-2">
+              {block.lines.map((line, lIdx) => (
+                <li key={lIdx} className="text-xs text-muted-foreground leading-relaxed my-0.5">
+                  {line.replace(/^[-*]\s+/, "")}
+                </li>
+              ))}
+            </ul>
+          );
+        case "table": {
+          const rows = block.lines.map(line => line.split("|").map(c => c.trim()).filter((_c, i, a) => i > 0 && i < a.length - 1));
+          const header = rows[0];
+          const body = rows.slice(1).filter(r => r.length > 0 && !r[0].startsWith("---"));
+          return (
+            <div key={idx} className="overflow-x-auto my-3 border border-border rounded-xl">
+              <table className="min-w-full divide-y divide-border text-[11px]">
+                {header && (
+                  <thead className="bg-secondary/40">
+                    <tr>
+                      {header.map((cell, cIdx) => (
+                        <th key={cIdx} className="px-3 py-2 font-bold text-foreground text-left border-r border-border last:border-0">
+                          {cell}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                )}
+                <tbody className="bg-card divide-y divide-border">
+                  {body.map((row, rIdx) => (
+                    <tr key={rIdx} className="hover:bg-secondary/15 transition-colors">
+                      {row.map((cell, cIdx) => (
+                        <td key={cIdx} className="px-3 py-2 text-muted-foreground border-r border-border last:border-0 font-medium">
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+        case "code": {
+          const isMermaid = block.lines[0].includes("mermaid");
+          if (isMermaid) {
+            const { nodes, edges } = parseMermaid(block.lines);
+            const nodeMap = new Map(nodes.map(n => [n.id, n.label]));
+            
+            return (
+              <div key={idx} className="my-4 p-4 rounded-2xl bg-secondary/10 border border-border/85 flex flex-col gap-4 text-left">
+                <div className="flex items-center gap-2 border-b border-border/40 pb-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" />
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary">Visual Model Specifications</span>
+                </div>
+                
+                {nodes.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[9px] font-extrabold uppercase text-muted-foreground tracking-wider">Actors & Systems</span>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {nodes.map((node, nIdx) => (
+                        <div key={nIdx} className="px-2.5 py-1.5 rounded-xl border border-border bg-card flex items-center gap-2 shadow-sm">
+                          <span className="text-[11px] font-semibold text-foreground">{node.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {edges.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[9px] font-extrabold uppercase text-muted-foreground tracking-wider">Flows & Interactions</span>
+                    <div className="overflow-hidden border border-border rounded-xl">
+                      <table className="min-w-full divide-y divide-border text-[10px]">
+                        <thead className="bg-secondary/40">
+                          <tr>
+                            <th className="px-3 py-1.5 font-bold text-foreground text-left">Source</th>
+                            <th className="px-3 py-1.5 font-bold text-foreground text-left">Action / Flow</th>
+                            <th className="px-3 py-1.5 font-bold text-foreground text-left">Target</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border bg-card font-medium text-muted-foreground">
+                          {edges.map((edge, eIdx) => (
+                            <tr key={eIdx} className="hover:bg-secondary/10 transition-colors">
+                              <td className="px-3 py-1.5 text-foreground font-bold">{nodeMap.get(edge.source) || edge.source}</td>
+                              <td className="px-3 py-1.5 italic text-primary font-bold">{edge.label || "initiates"}</td>
+                              <td className="px-3 py-1.5 text-foreground font-bold">{nodeMap.get(edge.target) || edge.target}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+          // Normal code block
+          return (
+            <pre key={idx} className="p-3 bg-secondary/45 border border-border rounded-xl font-mono text-[10px] text-muted-foreground overflow-x-auto my-3 leading-relaxed">
+              <code>
+                {block.lines.filter((_, i) => i > 0 && i < block.lines.length - 1).join("\n")}
+              </code>
+            </pre>
+          );
+        }
+        case "paragraph":
+        default:
+          return (
+            <p key={idx} className="text-xs text-muted-foreground leading-relaxed my-1.5">
+              {block.lines.join(" ")}
+            </p>
+          );
+      }
     });
   };
 

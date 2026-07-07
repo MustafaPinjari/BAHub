@@ -1,6 +1,7 @@
 import datetime
 import io
 import markdown
+import re
 from django.http import FileResponse
 from rest_framework import viewsets, permissions, status
 from rest_framework.permissions import IsAuthenticated
@@ -234,6 +235,85 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = f'attachment; filename="{safe_title}.docx"'
         return response
 
+    def _parse_markdown_blocks(self, content):
+        lines = content.split('\n')
+        blocks = []
+        current_block = None
+        
+        for line in lines:
+            stripped = line.strip()
+            
+            # Code block
+            if stripped.startswith('```'):
+                if current_block and current_block['type'] == 'code':
+                    blocks.append(current_block)
+                    current_block = None
+                else:
+                    if current_block:
+                        blocks.append(current_block)
+                    current_block = {'type': 'code', 'lines': [line]}
+                continue
+                
+            if current_block and current_block['type'] == 'code':
+                current_block['lines'].append(line)
+                continue
+                
+            # Empty line
+            if not stripped:
+                if current_block:
+                    blocks.append(current_block)
+                    current_block = None
+                continue
+                
+            if stripped.startswith('# '):
+                if current_block:
+                    blocks.append(current_block)
+                blocks.append({'type': 'h1', 'lines': [stripped]})
+                current_block = None
+                continue
+            elif stripped.startswith('## '):
+                if current_block:
+                    blocks.append(current_block)
+                blocks.append({'type': 'h2', 'lines': [stripped]})
+                current_block = None
+                continue
+            elif stripped.startswith('### '):
+                if current_block:
+                    blocks.append(current_block)
+                blocks.append({'type': 'h3', 'lines': [stripped]})
+                current_block = None
+                continue
+                
+            if stripped.startswith('- ') or stripped.startswith('* '):
+                if current_block and current_block['type'] == 'list':
+                    current_block['lines'].append(stripped)
+                else:
+                    if current_block:
+                        blocks.append(current_block)
+                    current_block = {'type': 'list', 'lines': [stripped]}
+                continue
+                
+            if stripped.startswith('|'):
+                if current_block and current_block['type'] == 'table':
+                    current_block['lines'].append(stripped)
+                else:
+                    if current_block:
+                        blocks.append(current_block)
+                    current_block = {'type': 'table', 'lines': [stripped]}
+                continue
+                
+            if current_block and current_block['type'] == 'paragraph':
+                current_block['lines'].append(line)
+            else:
+                if current_block:
+                    blocks.append(current_block)
+                current_block = {'type': 'paragraph', 'lines': [line]}
+                
+        if current_block:
+            blocks.append(current_block)
+            
+        return blocks
+
     def _generate_pdf_reportlab(self, document, stream):
         doc = SimpleDocTemplate(stream, pagesize=A4, rightMargin=54, leftMargin=54, topMargin=54, bottomMargin=54)
         story = []
@@ -279,147 +359,254 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
             spaceAfter=4
         )
         
-        lines = document.content.split('\n')
-        table_rows = []
-        in_table = False
+        blocks = self._parse_markdown_blocks(document.content)
         
-        for line in lines:
-            stripped = line.strip()
-            
-            if stripped.startswith('|'):
-                in_table = True
-                cells = [c.strip() for c in stripped.split('|')[1:-1]]
-                if cells and all(c.startswith('-') for c in cells):
-                    continue
-                table_rows.append(cells)
-                continue
-            else:
-                if in_table:
-                    if table_rows:
-                        formatted_rows = []
-                        for row_idx, r_data in enumerate(table_rows):
+        for block in blocks:
+            if block['type'] == 'h1':
+                story.append(Paragraph(block['lines'][0][2:], title_style))
+                story.append(Spacer(1, 10))
+            elif block['type'] == 'h2':
+                story.append(Paragraph(block['lines'][0][3:], h2_style))
+                story.append(Spacer(1, 8))
+            elif block['type'] == 'h3':
+                story.append(Paragraph(block['lines'][0][4:], styles['Heading3']))
+                story.append(Spacer(1, 6))
+            elif block['type'] == 'list':
+                for line in block['lines']:
+                    text = line[2:] if (line.startswith('- ') or line.startswith('* ')) else line
+                    story.append(Paragraph(f"&bull; {text}", bullet_style))
+                story.append(Spacer(1, 6))
+            elif block['type'] == 'table':
+                table_rows = []
+                for line in block['lines']:
+                    cells = [c.strip() for c in line.split('|')[1:-1]]
+                    if cells and all(c.startswith('-') for c in cells):
+                        continue
+                    table_rows.append(cells)
+                if table_rows:
+                    formatted_rows = []
+                    for row_idx, r_data in enumerate(table_rows):
+                        formatted_row = []
+                        for cell_val in r_data:
+                            c_style = ParagraphStyle('Cell', parent=body_style, fontSize=8, leading=10)
+                            if row_idx == 0:
+                                c_style = ParagraphStyle('HeaderCell', parent=body_style, fontName='Helvetica-Bold', fontSize=8, leading=10, textColor=colors.white)
+                            formatted_row.append(Paragraph(cell_val, c_style))
+                        formatted_rows.append(formatted_row)
+                    
+                    t = Table(formatted_rows)
+                    t_style = [
+                        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#CBD5E1')),
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1E3A8A')),
+                        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                        ('TOPPADDING', (0, 0), (-1, -1), 5),
+                        ('LEFTPADDING', (0, 0), (-1, -1), 5),
+                        ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+                    ]
+                    for r_idx in range(1, len(table_rows)):
+                        if r_idx % 2 == 0:
+                            t_style.append(('BACKGROUND', (0, r_idx), (-1, r_idx), colors.HexColor('#F8FAFC')))
+                    t.setStyle(TableStyle(t_style))
+                    story.append(t)
+                    story.append(Spacer(1, 10))
+            elif block['type'] == 'code':
+                is_mermaid = any('mermaid' in line for line in block['lines'])
+                if is_mermaid:
+                    nodes = {}
+                    edges = []
+                    for line in block['lines']:
+                        stripped_line = line.strip()
+                        if not stripped_line or 'mermaid' in stripped_line or stripped_line.startswith('```') or stripped_line.startswith('graph') or stripped_line.startswith('subgraph') or stripped_line == 'end':
+                            continue
+                        
+                        node_match = re.match(r'^(\w+)\["([^"]+)"\]', stripped_line) or re.match(r'^(\w+)\("([^"]+)"\)', stripped_line) or re.match(r'^(\w+)\[([^\]]+)\]', stripped_line)
+                        if node_match:
+                            nodes[node_match.group(1)] = node_match.group(2).strip()
+                            continue
+                            
+                        edge_match = re.match(r'^(\w+)\s*-->\s*\|([^|]+)\|\s*(\w+)', stripped_line)
+                        if edge_match:
+                            edges.append((edge_match.group(1), edge_match.group(3), edge_match.group(2).strip()))
+                            continue
+                            
+                        edge_match_no_label = re.match(r'^(\w+)\s*-->\s*(\w+)', stripped_line)
+                        if edge_match_no_label:
+                            edges.append((edge_match_no_label.group(1), edge_match_no_label.group(2), ''))
+                            
+                    story.append(Paragraph("<b>Visual Model Specifications</b>", styles['Heading3']))
+                    story.append(Spacer(1, 6))
+                    
+                    if nodes:
+                        story.append(Paragraph("<b>Model Elements & Actors</b>", body_style))
+                        el_data = [["ID", "Element Name"]]
+                        for k, v in nodes.items():
+                            el_data.append([k, v])
+                        
+                        formatted_el = []
+                        for row_idx, r_data in enumerate(el_data):
                             formatted_row = []
                             for cell_val in r_data:
                                 c_style = ParagraphStyle('Cell', parent=body_style, fontSize=8, leading=10)
                                 if row_idx == 0:
                                     c_style = ParagraphStyle('HeaderCell', parent=body_style, fontName='Helvetica-Bold', fontSize=8, leading=10, textColor=colors.white)
                                 formatted_row.append(Paragraph(cell_val, c_style))
-                            formatted_rows.append(formatted_row)
-                        
-                        t = Table(formatted_rows)
-                        t_style = [
+                            formatted_el.append(formatted_row)
+                            
+                        t = Table(formatted_el, colWidths=[100, 350])
+                        t.setStyle(TableStyle([
                             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#CBD5E1')),
-                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2563EB')),
+                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4B5563')),
                             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
                             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-                            ('TOPPADDING', (0, 0), (-1, -1), 5),
-                            ('LEFTPADDING', (0, 0), (-1, -1), 5),
-                            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
-                        ]
-                        for r_idx in range(1, len(table_rows)):
-                            if r_idx % 2 == 0:
-                                t_style.append(('BACKGROUND', (0, r_idx), (-1, r_idx), colors.HexColor('#F8FAFC')))
-                        t.setStyle(TableStyle(t_style))
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                            ('TOPPADDING', (0, 0), (-1, -1), 4),
+                        ]))
                         story.append(t)
                         story.append(Spacer(1, 8))
-                    table_rows = []
-                    in_table = False
-                    
-            if not stripped:
-                continue
+                        
+                    if edges:
+                        story.append(Paragraph("<b>Flows & Interactions</b>", body_style))
+                        flow_data = [["Source", "Action / Flow", "Target"]]
+                        for src, tgt, label in edges:
+                            src_lbl = nodes.get(src, src)
+                            tgt_lbl = nodes.get(tgt, tgt)
+                            lbl = label if label else "triggers"
+                            flow_data.append([src_lbl, lbl, tgt_lbl])
+                            
+                        formatted_flow = []
+                        for row_idx, r_data in enumerate(flow_data):
+                            formatted_row = []
+                            for cell_val in r_data:
+                                c_style = ParagraphStyle('Cell', parent=body_style, fontSize=8, leading=10)
+                                if row_idx == 0:
+                                    c_style = ParagraphStyle('HeaderCell', parent=body_style, fontName='Helvetica-Bold', fontSize=8, leading=10, textColor=colors.white)
+                                formatted_row.append(Paragraph(cell_val, c_style))
+                            formatted_flow.append(formatted_row)
+                            
+                        t = Table(formatted_flow, colWidths=[175, 100, 175])
+                        t.setStyle(TableStyle([
+                            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#CBD5E1')),
+                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4B5563')),
+                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+                            ('TOPPADDING', (0, 0), (-1, -1), 4),
+                        ]))
+                        story.append(t)
+                        story.append(Spacer(1, 10))
+                else:
+                    code_content = '\n'.join(block['lines'][1:-1])
+                    code_style = ParagraphStyle(
+                        'CodeStyle',
+                        parent=styles['Normal'],
+                        fontName='Courier',
+                        fontSize=8,
+                        leading=10,
+                        textColor=colors.HexColor('#475569'),
+                        leftIndent=10,
+                        spaceAfter=8
+                    )
+                    story.append(Paragraph(code_content.replace('\n', '<br/>'), code_style))
+                    story.append(Spacer(1, 8))
+            elif block['type'] == 'paragraph':
+                story.append(Paragraph('\n'.join(block['lines']), body_style))
+                story.append(Spacer(1, 6))
                 
-            if stripped.startswith('# '):
-                story.append(Paragraph(stripped[2:], title_style))
-            elif stripped.startswith('## '):
-                story.append(Paragraph(stripped[3:], h2_style))
-            elif stripped.startswith('### '):
-                story.append(Paragraph(stripped[4:], styles['Heading3']))
-            elif stripped.startswith('- '):
-                story.append(Paragraph(f"&bull; {stripped[2:]}", bullet_style))
-            elif stripped.startswith('* '):
-                story.append(Paragraph(f"&bull; {stripped[2:]}", bullet_style))
-            else:
-                story.append(Paragraph(stripped, body_style))
-                
-        if in_table and table_rows:
-            formatted_rows = []
-            for row_idx, r_data in enumerate(table_rows):
-                formatted_row = []
-                for cell_val in r_data:
-                    c_style = ParagraphStyle('Cell', parent=body_style, fontSize=8, leading=10)
-                    if row_idx == 0:
-                        c_style = ParagraphStyle('HeaderCell', parent=body_style, fontName='Helvetica-Bold', fontSize=8, leading=10, textColor=colors.white)
-                    formatted_row.append(Paragraph(cell_val, c_style))
-                formatted_rows.append(formatted_row)
-            t = Table(formatted_rows)
-            t_style = [
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#CBD5E1')),
-                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2563EB')),
-            ]
-            for r_idx in range(1, len(table_rows)):
-                if r_idx % 2 == 0:
-                    t_style.append(('BACKGROUND', (0, r_idx), (-1, r_idx), colors.HexColor('#F8FAFC')))
-            t.setStyle(TableStyle(t_style))
-            story.append(t)
-            
         doc.build(story)
 
     def _markdown_to_docx(self, markdown_text):
         doc = Document()
-        lines = markdown_text.split('\n')
+        blocks = self._parse_markdown_blocks(markdown_text)
         
-        table_rows = []
-        in_table = False
-        
-        for line in lines:
-            stripped = line.strip()
-            
-            if stripped.startswith('|'):
-                in_table = True
-                cells = [c.strip() for c in stripped.split('|')[1:-1]]
-                if cells and all(c.startswith('-') for c in cells):
-                    continue
-                table_rows.append(cells)
-                continue
-            else:
-                if in_table:
-                    if table_rows:
-                        num_cols = len(table_rows[0])
-                        table = doc.add_table(rows=0, cols=num_cols)
-                        table.style = 'Table Grid'
-                        for r_data in table_rows:
-                            row_cells = table.add_row().cells
-                            for col_idx, cell_value in enumerate(r_data):
-                                if col_idx < len(row_cells):
-                                    row_cells[col_idx].text = cell_value
-                    table_rows = []
-                    in_table = False
-
-            if not stripped:
-                continue
-                
-            if stripped.startswith('# '):
-                doc.add_heading(stripped[2:], level=1)
-            elif stripped.startswith('## '):
-                doc.add_heading(stripped[3:], level=2)
-            elif stripped.startswith('### '):
-                doc.add_heading(stripped[4:], level=3)
-            elif stripped.startswith('- '):
-                doc.add_paragraph(stripped[2:], style='List Bullet')
-            elif stripped.startswith('* '):
-                doc.add_paragraph(stripped[2:], style='List Bullet')
-            else:
-                doc.add_paragraph(stripped)
-                
-        if in_table and table_rows:
-            num_cols = len(table_rows[0])
-            table = doc.add_table(rows=0, cols=num_cols)
-            table.style = 'Table Grid'
-            for r_data in table_rows:
-                row_cells = table.add_row().cells
-                for col_idx, cell_value in enumerate(r_data):
-                    if col_idx < len(row_cells):
-                        row_cells[col_idx].text = cell_value
+        for block in blocks:
+            if block['type'] == 'h1':
+                doc.add_heading(block['lines'][0][2:], level=1)
+            elif block['type'] == 'h2':
+                doc.add_heading(block['lines'][0][3:], level=2)
+            elif block['type'] == 'h3':
+                doc.add_heading(block['lines'][0][4:], level=3)
+            elif block['type'] == 'list':
+                for line in block['lines']:
+                    text = line[2:] if (line.startswith('- ') or line.startswith('* ')) else line
+                    doc.add_paragraph(text, style='List Bullet')
+            elif block['type'] == 'table':
+                table_rows = []
+                for line in block['lines']:
+                    cells = [c.strip() for c in line.split('|')[1:-1]]
+                    if cells and all(c.startswith('-') for c in cells):
+                        continue
+                    table_rows.append(cells)
+                if table_rows:
+                    num_cols = len(table_rows[0])
+                    table = doc.add_table(rows=0, cols=num_cols)
+                    table.style = 'Table Grid'
+                    for r_data in table_rows:
+                        row_cells = table.add_row().cells
+                        for col_idx, cell_value in enumerate(r_data):
+                            if col_idx < len(row_cells):
+                                row_cells[col_idx].text = cell_value
+            elif block['type'] == 'code':
+                is_mermaid = any('mermaid' in line for line in block['lines'])
+                if is_mermaid:
+                    nodes = {}
+                    edges = []
+                    for line in block['lines']:
+                        stripped_line = line.strip()
+                        if not stripped_line or 'mermaid' in stripped_line or stripped_line.startswith('```') or stripped_line.startswith('graph') or stripped_line.startswith('subgraph') or stripped_line == 'end':
+                            continue
                         
+                        node_match = re.match(r'^(\w+)\["([^"]+)"\]', stripped_line) or re.match(r'^(\w+)\("([^"]+)"\)', stripped_line) or re.match(r'^(\w+)\[([^\]]+)\]', stripped_line)
+                        if node_match:
+                            nodes[node_match.group(1)] = node_match.group(2).strip()
+                            continue
+                            
+                        edge_match = re.match(r'^(\w+)\s*-->\s*\|([^|]+)\|\s*(\w+)', stripped_line)
+                        if edge_match:
+                            edges.append((edge_match.group(1), edge_match.group(3), edge_match.group(2).strip()))
+                            continue
+                            
+                        edge_match_no_label = re.match(r'^(\w+)\s*-->\s*(\w+)', stripped_line)
+                        if edge_match_no_label:
+                            edges.append((edge_match_no_label.group(1), edge_match_no_label.group(2), ''))
+                            
+                    doc.add_heading("Visual Model Specifications", level=3)
+                    
+                    if nodes:
+                        p = doc.add_paragraph()
+                        p.add_run("Model Elements & Actors").bold = True
+                        table = doc.add_table(rows=1, cols=2)
+                        table.style = 'Table Grid'
+                        hdr_cells = table.rows[0].cells
+                        hdr_cells[0].text = 'ID'
+                        hdr_cells[1].text = 'Element Name'
+                        for k, v in nodes.items():
+                            row_cells = table.add_row().cells
+                            row_cells[0].text = k
+                            row_cells[1].text = v
+                            
+                    if edges:
+                        doc.add_paragraph()
+                        p = doc.add_paragraph()
+                        p.add_run("Flows & Interactions").bold = True
+                        table = doc.add_table(rows=1, cols=3)
+                        table.style = 'Table Grid'
+                        hdr_cells = table.rows[0].cells
+                        hdr_cells[0].text = 'Source'
+                        hdr_cells[1].text = 'Action / Flow'
+                        hdr_cells[2].text = 'Target'
+                        for src, tgt, label in edges:
+                            row_cells = table.add_row().cells
+                            row_cells[0].text = nodes.get(src, src)
+                            row_cells[1].text = label if label else "triggers"
+                            row_cells[2].text = nodes.get(tgt, tgt)
+                else:
+                    code_content = '\n'.join(block['lines'][1:-1])
+                    p = doc.add_paragraph()
+                    run = p.add_run(code_content)
+                    run.font.name = 'Courier New'
+            elif block['type'] == 'paragraph':
+                doc.add_paragraph('\n'.join(block['lines']))
+                
         return doc
