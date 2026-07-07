@@ -23,7 +23,7 @@ import { ChangeRequestsPage } from "./features/changes/ChangeRequestsPage";
 import { SwotAnalysisPage } from "./features/strategic/SwotAnalysisPage";
 import { GapAnalysisPage } from "./features/strategic/GapAnalysisPage";
 import { ReportsPage } from "./features/reports/ReportsPage";
-import { AiAssistantPage } from "./features/ai/AiAssistantPage";
+import { AiWorkspacePage } from "./features/ai/AiWorkspacePage";
 import { IntegrationsPage } from "./features/integrations/IntegrationsPage";
 import { BillingPage } from "./features/auth/BillingPage";
 import { AuditLogPage } from "./features/audit/AuditLogPage";
@@ -52,7 +52,7 @@ const AuthenticatedApp: React.FC = () => {
         <Route path="/swot" element={<SwotAnalysisPage />} />
         <Route path="/gap" element={<GapAnalysisPage />} />
         <Route path="/reports" element={<ReportsPage />} />
-        <Route path="/ai" element={<AiAssistantPage />} />
+        <Route path="/ai" element={<AiWorkspacePage />} />
         <Route path="/integrations" element={<IntegrationsPage />} />
         <Route path="/billing" element={<BillingPage />} />
         <Route path="/audit" element={<AuditLogPage />} />

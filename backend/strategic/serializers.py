@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import SWOTAnalysis, GapAnalysis
+from .models import SWOTAnalysis, GapAnalysis, KnowledgeNode, KnowledgeEdge, WorkflowExecution
 
 class SWOTAnalysisSerializer(serializers.ModelSerializer):
     project_name = serializers.CharField(source="project.name", read_only=True)
@@ -71,3 +71,68 @@ class GapAnalysisSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Cannot create or update a Gap analysis for a project outside your organization.")
 
         return attrs
+
+
+class KnowledgeNodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = KnowledgeNode
+        fields = [
+            "id",
+            "project",
+            "node_key",
+            "title",
+            "node_type",
+            "content",
+            "status",
+            "meta_data",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class KnowledgeEdgeSerializer(serializers.ModelSerializer):
+    source_key = serializers.CharField(source="source.node_key", read_only=True)
+    target_key = serializers.CharField(source="target.node_key", read_only=True)
+    source_type = serializers.CharField(source="source.node_type", read_only=True)
+    target_type = serializers.CharField(source="target.node_type", read_only=True)
+
+    class Meta:
+        model = KnowledgeEdge
+        fields = [
+            "id",
+            "project",
+            "source",
+            "target",
+            "source_key",
+            "target_key",
+            "source_type",
+            "target_type",
+            "relation_type",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class WorkflowExecutionSerializer(serializers.ModelSerializer):
+    project_name = serializers.CharField(source="project.name", read_only=True)
+    username = serializers.CharField(source="user.username", read_only=True)
+
+    class Meta:
+        model = WorkflowExecution
+        fields = [
+            "id",
+            "project",
+            "project_name",
+            "user",
+            "username",
+            "status",
+            "current_step",
+            "input_data",
+            "steps_progress",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "user", "created_at", "updated_at"]
+

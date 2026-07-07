@@ -359,7 +359,7 @@ export const BillingPage: React.FC = () => {
                   Enterprise Core <Shield className="w-3.5 h-3.5 text-primary" />
                 </h4>
                 <div className="mt-2 flex items-baseline">
-                  <span className="text-2xl font-black text-foreground">$299</span>
+                  <span className="text-2xl font-black text-foreground">$79</span>
                   <span className="text-xs font-semibold text-muted-foreground ml-1">/ month</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground font-semibold mt-2">
