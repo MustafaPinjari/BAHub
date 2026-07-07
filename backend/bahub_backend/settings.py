@@ -157,6 +157,8 @@ if IS_TESTING:
     }
 else:
     db_url = os.getenv("DATABASE_URL", "").strip()
+    # Strip literal quotes if they were mistakenly configured in the environment settings
+    db_url = db_url.strip('"').strip("'").strip()
     if not db_url:
         db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
     DATABASES = {
