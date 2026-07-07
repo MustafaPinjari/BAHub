@@ -159,14 +159,23 @@ else:
     db_url = os.getenv("DATABASE_URL", "").strip()
     # Strip literal quotes if they were mistakenly configured in the environment settings
     db_url = db_url.strip('"').strip("'").strip()
-    if not db_url:
-        db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
-    DATABASES = {
-        "default": dj_database_url.parse(
+    try:
+        if not db_url:
+            raise ValueError("Empty DATABASE_URL")
+        parsed_db = dj_database_url.parse(
             db_url,
             conn_max_age=0,
             ssl_require=True if db_url.startswith("postgres") else False
         )
+    except ValueError:
+        db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+        parsed_db = dj_database_url.parse(
+            db_url,
+            conn_max_age=0,
+            ssl_require=False
+        )
+    DATABASES = {
+        "default": parsed_db
     }
 
 
