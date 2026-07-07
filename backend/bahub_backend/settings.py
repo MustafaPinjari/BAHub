@@ -156,11 +156,14 @@ if IS_TESTING:
         }
     }
 else:
+    db_url = os.getenv("DATABASE_URL", "").strip()
+    if not db_url:
+        db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
     DATABASES = {
-        "default": dj_database_url.config(
-            default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-            conn_max_age=600,
-            ssl_require=True if os.getenv("DATABASE_URL", "").startswith("postgres") else False
+        "default": dj_database_url.parse(
+            db_url,
+            conn_max_age=0,
+            ssl_require=True if db_url.startswith("postgres") else False
         )
     }
 
@@ -467,5 +470,13 @@ SAML2_AUTH = {
         "CREATE_USER": "billing.sso_auth_utils.provision_user_organization",
     }
 }
+
+
+# Stripe Billing Settings
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", None)
+STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", None)
+STRIPE_PRICE_ENTERPRISE = os.getenv("STRIPE_PRICE_ENTERPRISE", None)
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", None)
+
 
 
