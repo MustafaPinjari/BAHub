@@ -88,3 +88,43 @@ class UserSession(models.Model):
 
     def __str__(self):
         return f"Session {self.id} - {self.user.username} ({self.device})"
+
+
+class EmailOTP(models.Model):
+    """
+    Model storing One-Time Passwords for registration verification.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="otp")
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_verified = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = "email_otps"
+
+    def __str__(self):
+        return f"OTP for {self.user.username} - {self.otp_code}"
+
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+
+    @classmethod
+    def generate_otp_for_user(cls, user):
+        import random
+        from django.utils import timezone
+        from datetime import timedelta
+        # Generate 6 digit code
+        code = f"{random.randint(100000, 999999)}"
+        expires_at = timezone.now() + timedelta(minutes=10) # expires in 10 minutes
+        otp, created = cls.objects.update_or_create(
+            user=user,
+            defaults={
+                "otp_code": code,
+                "expires_at": expires_at,
+                "is_verified": False
+            }
+        )
+        return code
+

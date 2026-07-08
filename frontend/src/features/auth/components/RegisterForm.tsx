@@ -39,12 +39,24 @@ const ROLE_OPTIONS = [
 ];
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigateToLogin }) => {
-  const { register: registerApi } = useAuth();
-  const [step, setStep] = useState<1 | 2>(1);
+  const { register: registerApi, verifyOtp, resendOtp } = useAuth();
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedPlan, setSelectedPlan] = useState<"FREE" | "PRO" | "ENTERPRISE">("FREE");
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [inviteToken, setInviteToken] = useState<string | null>(null);
+  const [registeredUsername, setRegisteredUsername] = useState<string>("");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [resendCountdown, setResendCountdown] = useState(0);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (resendCountdown > 0) {
+      timer = setTimeout(() => setResendCountdown(resendCountdown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendCountdown]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -72,14 +84,19 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
     try {
       // Submit registration along with chosen plan_tier. 
       // AuthContext's register method handles payment redirect internally for paid plans.
-      await registerApi({
+      const res = await registerApi({
         ...data,
         plan_tier: selectedPlan,
         invite_token: inviteToken || undefined,
       });
 
-      localStorage.setItem("show_onboarding_wizard", "true");
-      onSuccess();
+      if (res?.requires_verification) {
+        setRegisteredUsername(res.username || data.username);
+        setStep(3);
+      } else {
+        localStorage.setItem("show_onboarding_wizard", "true");
+        onSuccess();
+      }
     } catch (err: any) {
       console.error(err);
       if (err.errors) {
@@ -89,6 +106,41 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
       } else {
         setFormError(err.message || "Registration failed.");
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otpCode.length !== 6) {
+      setOtpError("Verification code must be 6 digits.");
+      return;
+    }
+    setOtpError(null);
+    setFormError(null);
+    setLoading(true);
+    try {
+      await verifyOtp(registeredUsername, otpCode, selectedPlan);
+      localStorage.setItem("show_onboarding_wizard", "true");
+      onSuccess();
+    } catch (err: any) {
+      console.error(err);
+      setOtpError(err.message || "Invalid or expired verification code.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setFormError(null);
+    setOtpError(null);
+    setLoading(true);
+    try {
+      await resendOtp(registeredUsername);
+      setResendCountdown(60);
+    } catch (err: any) {
+      console.error(err);
+      setOtpError(err.message || "Failed to resend verification code.");
     } finally {
       setLoading(false);
     }
@@ -170,7 +222,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
             </Button>
           </div>
         </>
-      ) : (
+      ) : step === 2 ? (
         <>
           {/* Header */}
           <div className="flex flex-col items-center gap-2 text-center">
@@ -283,18 +335,89 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
             </div>
           </form>
         </>
+      ) : (
+        <>
+          {/* Step 3: OTP Verification Code */}
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20 shrink-0 mb-1">
+              <Mail className="w-4 h-4" />
+            </div>
+            <h1 className="text-xl font-bold text-foreground tracking-tight">Verify Your Email</h1>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              We sent a 6-digit verification code to your email. Enter it below to activate your account.
+            </p>
+          </div>
+
+          {otpError && (
+            <Alert variant="destructive">
+              {otpError}
+            </Alert>
+          )}
+          {formError && (
+            <Alert variant="destructive">
+              {formError}
+            </Alert>
+          )}
+
+          <div className="flex flex-col gap-4 mt-2">
+            <Input
+              label="Verification Code"
+              type="text"
+              placeholder="e.g. 123456"
+              maxLength={6}
+              value={otpCode}
+              onChange={(e) => {
+                setOtpCode(e.target.value.replace(/\D/g, ""));
+                setOtpError(null);
+              }}
+              className="text-center font-mono text-lg tracking-[0.5em] focus:tracking-[0.5em]"
+            />
+
+            <Button
+              onClick={handleVerifyOtp}
+              variant="primary"
+              className="w-full font-bold py-2.5 flex items-center justify-center"
+              isLoading={loading}
+              disabled={otpCode.length !== 6}
+            >
+              Verify & Activate Account
+            </Button>
+
+            <div className="flex justify-between items-center text-xs mt-1">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="text-muted-foreground hover:text-foreground font-semibold cursor-pointer"
+                disabled={loading}
+              >
+                ← Back to Details
+              </button>
+
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                className="text-primary hover:underline font-semibold cursor-pointer disabled:text-muted-foreground disabled:no-underline"
+                disabled={resendCountdown > 0 || loading}
+              >
+                {resendCountdown > 0 ? `Resend Code in ${resendCountdown}s` : "Resend Code"}
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Nav Back */}
-      <div className="text-center text-xs text-muted-foreground mt-1">
-        Already have an account?{" "}
-        <button
-          onClick={onNavigateToLogin}
-          className="text-primary hover:underline font-semibold cursor-pointer"
-        >
-          Sign In
-        </button>
-      </div>
+      {step !== 3 && (
+        <div className="text-center text-xs text-muted-foreground mt-1">
+          Already have an account?{" "}
+          <button
+            onClick={onNavigateToLogin}
+            className="text-primary hover:underline font-semibold cursor-pointer"
+          >
+            Sign In
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from users.models import UserSession, UserPreference
+from users.models import UserSession, UserPreference, EmailOTP
 from users.validators import EnterprisePasswordValidator
 from organizations.models import Organization
 
@@ -81,7 +81,7 @@ class CoreAndAuthTests(APITestCase):
         self.assertIn("special character", str(ctx.exception))
 
     def test_user_registration(self):
-        """Verify registration endpoints create users, preferences, and workspace organizations."""
+        """Verify registration endpoints create users, preferences, and workspace organizations but require verification."""
         url = reverse("auth-register")
         payload = {
             "username": "tester",
@@ -96,19 +96,91 @@ class CoreAndAuthTests(APITestCase):
         self.assertTrue(response.data["success"])
         self.assertEqual(response.data["data"]["user"]["username"], "tester")
         self.assertEqual(response.data["data"]["user"]["organization_name"], "Test Organization")
-        self.assertIn("access", response.data["data"])
-        self.assertIn("refresh", response.data["data"])
+        self.assertTrue(response.data["data"]["requires_verification"])
+        self.assertNotIn("access", response.data["data"])
         
-        # Verify db persistence
+        # Verify db persistence and that user is not active yet
         user = User.objects.get(username="tester")
         self.assertEqual(user.email, "tester@bahub.local")
-        self.assertEqual(user.role, "BUSINESS_ANALYST")
-        self.assertIsNotNone(user.organization)
-        self.assertEqual(user.organization.name, "Test Organization")
+        self.assertFalse(user.is_active)
         
         # Verify nested preferences are created
         self.assertTrue(UserPreference.objects.filter(user=user).exists())
-        self.assertEqual(user.preferences.theme, "system")
+        
+        # Verify OTP is created
+        self.assertTrue(EmailOTP.objects.filter(user=user).exists())
+
+    def test_user_otp_verification_success(self):
+        """Verify verify-otp view activates the user and returns tokens."""
+        url_register = reverse("auth-register")
+        payload = {
+            "username": "tester_verify",
+            "email": "tester_verify@bahub.local",
+            "password": "SecureP@ss123",
+            "role": "BUSINESS_ANALYST",
+            "organization_name": "Verify Org"
+        }
+        self.client.post(url_register, payload)
+        user = User.objects.get(username="tester_verify")
+        otp_record = EmailOTP.objects.get(user=user)
+        
+        url_verify = reverse("auth-verify-otp")
+        response = self.client.post(url_verify, {
+            "username": "tester_verify",
+            "otp_code": otp_record.otp_code
+        })
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["success"])
+        self.assertIn("access", response.data["data"])
+        self.assertIn("refresh", response.data["data"])
+        
+        user.refresh_from_db()
+        self.assertTrue(user.is_active)
+
+    def test_user_otp_verification_failure(self):
+        """Verify verify-otp view rejects invalid/expired codes."""
+        url_register = reverse("auth-register")
+        payload = {
+            "username": "tester_verify_fail",
+            "email": "tester_verify_fail@bahub.local",
+            "password": "SecureP@ss123",
+            "role": "BUSINESS_ANALYST",
+            "organization_name": "Verify Fail Org"
+        }
+        self.client.post(url_register, payload)
+        
+        url_verify = reverse("auth-verify-otp")
+        response = self.client.post(url_verify, {
+            "username": "tester_verify_fail",
+            "otp_code": "000000"  # Invalid code
+        })
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(response.data["success"])
+
+    def test_user_otp_resend(self):
+        """Verify resend-otp updates the OTP code."""
+        url_register = reverse("auth-register")
+        payload = {
+            "username": "tester_resend",
+            "email": "tester_resend@bahub.local",
+            "password": "SecureP@ss123",
+            "role": "BUSINESS_ANALYST",
+            "organization_name": "Resend Org"
+        }
+        self.client.post(url_register, payload)
+        user = User.objects.get(username="tester_resend")
+        old_otp = EmailOTP.objects.get(user=user).otp_code
+        
+        url_resend = reverse("auth-resend-otp")
+        response = self.client.post(url_resend, {
+            "username": "tester_resend"
+        })
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        new_otp = EmailOTP.objects.get(user=user).otp_code
+        self.assertNotEqual(old_otp, new_otp)
 
     def test_user_login_and_session_logging(self):
         """Verify login issues JWT, stores custom claims, and registers a UserSession."""

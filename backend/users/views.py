@@ -110,6 +110,79 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         
+        # Generate and send Email OTP code
+        from users.models import EmailOTP
+        from core.emails import send_registration_otp_email
+
+        otp_code = EmailOTP.generate_otp_for_user(user)
+        send_registration_otp_email(user.username, user.email, otp_code)
+
+        # Serialize created user
+        user_data = UserSerializer(user).data
+        return api_success(
+            data={
+                "user": user_data,
+                "requires_verification": True,
+                "username": user.username,
+            }, 
+            message="User registered successfully. Please verify your email using the OTP sent to you.", 
+            status_code=status.HTTP_201_CREATED
+        )
+
+
+class VerifyOTPView(APIView):
+    """
+    Verify the 6-digit OTP code to activate the user account.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get("username")
+        otp_code = request.data.get("otp_code")
+
+        if not username or not otp_code:
+            return api_error(
+                message="Username and OTP code are required.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return api_error(
+                message="User does not exist.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check if the user is already active
+        if user.is_active:
+            return api_error(
+                message="This account is already verified and active.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        from users.models import EmailOTP
+        try:
+            otp_record = EmailOTP.objects.get(user=user, otp_code=otp_code)
+        except EmailOTP.DoesNotExist:
+            return api_error(
+                message="Invalid verification code.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        if otp_record.is_expired():
+            return api_error(
+                message="Verification code has expired. Please request a new one.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Mark OTP as verified and activate user
+        otp_record.is_verified = True
+        otp_record.save()
+
+        user.is_active = True
+        user.save()
+
         # Generate JWT tokens for auto-login
         from rest_framework_simplejwt.tokens import RefreshToken
         refresh = RefreshToken.for_user(user)
@@ -118,17 +191,56 @@ class RegisterView(APIView):
         refresh["username"] = user.username
         refresh["email"] = user.email
 
-        # Serialize created user
         user_data = UserSerializer(user).data
         return api_success(
             data={
                 "user": user_data,
                 "access": str(refresh.access_token),
                 "refresh": str(refresh),
-            }, 
-            message="User registered successfully. Welcome to BAHub!", 
-            status_code=status.HTTP_201_CREATED
+            },
+            message="Email verified successfully. Welcome to BAHub!"
         )
+
+
+class ResendOTPView(APIView):
+    """
+    Generate and resend a new OTP code to the user's email.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get("username")
+
+        if not username:
+            return api_error(
+                message="Username is required.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return api_error(
+                message="User does not exist.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        if user.is_active:
+            return api_error(
+                message="This account is already verified and active.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        from users.models import EmailOTP
+        from core.emails import send_registration_otp_email
+
+        otp_code = EmailOTP.generate_otp_for_user(user)
+        send_registration_otp_email(user.username, user.email, otp_code)
+
+        return api_success(
+            message="A new verification code has been sent to your email."
+        )
+
 
 
 class ProfileView(APIView):

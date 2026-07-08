@@ -135,3 +135,21 @@ def send_organization_invitation_email(invite, inviter):
         context=context,
         recipient_list=[invite.email]
     )
+
+
+def send_registration_otp_email(username, email, otp_code):
+    """
+    Send email verification OTP.
+    """
+    subject = "BAHub: Verify your email address"
+    context = {
+        "username": username,
+        "otp_code": otp_code,
+    }
+    return send_html_email(
+        subject=subject,
+        template_name="core/registration_otp.html",
+        context=context,
+        recipient_list=[email]
+    )
+

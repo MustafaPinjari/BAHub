@@ -207,7 +207,7 @@ class RegisterSerializer(serializers.Serializer):
                 description=f"Default workspace created for {username}."
             )
 
-        # Create user
+        # Create user (inactive until OTP verification)
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -215,7 +215,8 @@ class RegisterSerializer(serializers.Serializer):
             first_name=first_name,
             last_name=last_name,
             role=role,
-            organization=organization
+            organization=organization,
+            is_active=False
         )
 
         # Initialize default user preferences
@@ -278,8 +279,28 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
+        username = attrs.get(self.username_field)
+        password = attrs.get("password")
+
+        try:
+            user = User.objects.get(**{self.username_field: username})
+        except User.DoesNotExist:
+            user = None
+
+        if user and not user.is_active:
+            from users.models import EmailOTP
+            has_otp = EmailOTP.objects.filter(user=user, is_verified=False).exists()
+            if has_otp:
+                if user.check_password(password):
+                    raise serializers.ValidationError({
+                        "requires_verification": True,
+                        "username": user.username,
+                        "detail": "This account is not verified yet. Please verify your email."
+                    })
+
         data = super().validate(attrs)
         # Attach full user profile data to the response JSON payload
         user_serializer = UserSerializer(self.user)
         data["user"] = user_serializer.data
         return data
+

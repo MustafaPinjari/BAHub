@@ -7,7 +7,9 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;
-  register: (payload: any) => Promise<User>;
+  register: (payload: any) => Promise<any>;
+  verifyOtp: (username: string, otpCode: string, planTier?: string) => Promise<any>;
+  resendOtp: (username: string) => Promise<void>;
   updateProfile: (payload: any) => Promise<User>;
   refreshProfile: () => Promise<User | undefined>;
   logout: () => Promise<void>;
@@ -60,54 +62,89 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (username: string, password: string) => {
-    setLoading(true);
-    try {
-      const response = await api.post<any, { data: { access: string; refresh: string; user: User } }>("/auth/login/", {
-        username,
-        password,
-      });
-      localStorage.setItem("accessToken", response.data.access);
-      localStorage.setItem("refreshToken", response.data.refresh);
-      setUser(response.data.user);
-    } finally {
-      setLoading(false);
-    }
+    const response = await api.post<any, { data: { access: string; refresh: string; user: User } }>("/auth/login/", {
+      username,
+      password,
+    });
+    localStorage.setItem("accessToken", response.data.access);
+    localStorage.setItem("refreshToken", response.data.refresh);
+    setUser(response.data.user);
   };
 
   const register = async (payload: any) => {
-    setLoading(true);
-    try {
-      const response = await api.post<any, { data: { user: User; access: string; refresh: string } }>("/auth/register/", payload);
-      localStorage.setItem("accessToken", response.data.access);
-      localStorage.setItem("refreshToken", response.data.refresh);
-      
-      // Auto-trigger checkout redirect for paid plan tiers before updating state to avoid React unmount race
-      if (payload.plan_tier && payload.plan_tier !== "FREE") {
-        try {
-          const checkoutResponse = await api.post<any, { data: { checkout_url: string; mode: string } }>(
-            "/billing/checkout/",
-            { plan: payload.plan_tier },
-            {
-              headers: {
-                Authorization: `Bearer ${response.data.access}`
-              }
-            }
-          );
-          if (checkoutResponse.data?.checkout_url) {
-            window.location.href = checkoutResponse.data.checkout_url;
-            // Return user but do not set it in state immediately since we are navigating away
-            return response.data.user;
-          }
-        } catch (checkoutErr) {
-          console.error("Auto checkout redirection failed during registration", checkoutErr);
-        }
-      }
-
-      setUser(response.data.user);
-      return response.data.user;
-    } finally {
-      setLoading(false);
+    const response = await api.post<any, { data: { user: User; access?: string; refresh?: string; requires_verification?: boolean; username?: string } }>("/auth/register/", payload);
+    
+    if (response.data?.requires_verification) {
+      return response.data;
     }
+
+    if (response.data?.access) {
+      localStorage.setItem("accessToken", response.data.access);
+    }
+    if (response.data?.refresh) {
+      localStorage.setItem("refreshToken", response.data.refresh);
+    }
+    
+    // Auto-trigger checkout redirect for paid plan tiers before updating state to avoid React unmount race
+    if (payload.plan_tier && payload.plan_tier !== "FREE" && response.data?.access) {
+      try {
+        const checkoutResponse = await api.post<any, { data: { checkout_url: string; mode: string } }>(
+          "/billing/checkout/",
+          { plan: payload.plan_tier },
+          {
+            headers: {
+              Authorization: `Bearer ${response.data.access}`
+            }
+          }
+        );
+        if (checkoutResponse.data?.checkout_url) {
+          window.location.href = checkoutResponse.data.checkout_url;
+          return response.data.user;
+        }
+      } catch (checkoutErr) {
+        console.error("Auto checkout redirection failed during registration", checkoutErr);
+      }
+    }
+
+    setUser(response.data.user);
+    return response.data.user;
+  };
+
+  const verifyOtp = async (username: string, otpCode: string, planTier?: string) => {
+    const response = await api.post<any, { data: { user: User; access: string; refresh: string } }>("/auth/verify-otp/", {
+      username,
+      otp_code: otpCode,
+    });
+    localStorage.setItem("accessToken", response.data.access);
+    localStorage.setItem("refreshToken", response.data.refresh);
+
+    // Auto-trigger checkout redirect for paid plan tiers before updating state to avoid React unmount race
+    if (planTier && planTier !== "FREE") {
+      try {
+        const checkoutResponse = await api.post<any, { data: { checkout_url: string; mode: string } }>(
+          "/billing/checkout/",
+          { plan: planTier },
+          {
+            headers: {
+              Authorization: `Bearer ${response.data.access}`
+            }
+          }
+        );
+        if (checkoutResponse.data?.checkout_url) {
+          window.location.href = checkoutResponse.data.checkout_url;
+          return response.data.user;
+        }
+      } catch (checkoutErr) {
+        console.error("Auto checkout redirection failed during OTP verification", checkoutErr);
+      }
+    }
+
+    setUser(response.data.user);
+    return response.data.user;
+  };
+
+  const resendOtp = async (username: string) => {
+    await api.post("/auth/resend-otp/", { username });
   };
 
   const refreshProfile = async () => {
@@ -143,6 +180,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAuthenticated: !!user,
     login,
     register,
+    verifyOtp,
+    resendOtp,
     updateProfile,
     refreshProfile,
     logout,

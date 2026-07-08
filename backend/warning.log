@@ -745,3 +745,43 @@ WARNING 2026-07-08 18:01:26,315 log 16908 17152 Bad Request: /api/v1/auth/regist
 WARNING 2026-07-08 18:01:32,292 exceptions 16908 17152 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
 WARNING 2026-07-08 18:01:32,292 log 16908 17152 Bad Request: /api/v1/auth/register/
 WARNING 2026-07-08 18:01:34,560 log 16908 17152 Forbidden: /api/v1/organizations/invitations/
+WARNING 2026-07-08 18:57:22,229 log 2976 15588 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-08 18:57:22,820 exceptions 2976 15588 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-08 18:57:22,820 log 2976 15588 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 18:57:22,830 exceptions 2976 15588 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-08 18:57:22,831 log 2976 15588 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 18:57:22,835 exceptions 2976 15588 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-08 18:57:22,835 log 2976 15588 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 18:57:26,639 log 2976 15588 Bad Request: /api/v1/auth/verify-otp/
+WARNING 2026-07-08 18:57:47,887 log 21644 8204 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 18:57:50,922 log 21644 8204 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 18:57:51,720 log 21644 8204 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 18:58:03,532 log 21644 8204 Forbidden: /api/v1/documents/
+WARNING 2026-07-08 18:58:03,965 exceptions 21644 8204 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 18:58:03,965 log 21644 8204 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 18:58:04,461 exceptions 21644 8204 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 18:58:04,462 log 21644 8204 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 18:58:05,841 log 21644 8204 Unauthorized: /api/v1/billing/subscription/
+WARNING 2026-07-08 18:58:07,341 log 21644 8204 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 18:58:07,345 log 21644 8204 Payment Required: /api/v1/diagrams/generate/
+WARNING 2026-07-08 18:58:08,361 log 21644 8204 Bad Request: /api/v1/billing/verify-subscription/
+WARNING 2026-07-08 18:58:11,296 log 21644 8204 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 18:58:18,520 exceptions 21644 8204 API Error (400): {'invite_token': [ErrorDetail(string='The workspace subscription is currently inactive. Please contact your administrator.', code='invalid')]}
+WARNING 2026-07-08 18:58:18,520 log 21644 8204 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 18:58:26,482 exceptions 21644 8204 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-08 18:58:26,482 log 21644 8204 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:01:16,407 log 19652 21416 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-08 19:01:16,410 runserver 19652 16844 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.04, 127.0.0.1:53549][0m
+WARNING 2026-07-08 19:01:16,424 log 19652 21416 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-08 19:01:16,425 runserver 19652 16844 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:53549][0m
+WARNING 2026-07-08 19:01:38,071 exceptions 19652 12640 API Error (400): {'username': [ErrorDetail(string='A user with that username already exists.', code='invalid')]}
+WARNING 2026-07-08 19:01:38,074 log 19652 21416 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:01:38,075 runserver 19652 16844 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.08, 127.0.0.1:58344][0m
+WARNING 2026-07-08 19:08:35,019 log 21032 4256 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-08 19:08:35,618 exceptions 21032 4256 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-08 19:08:35,619 log 21032 4256 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:08:35,627 exceptions 21032 4256 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-08 19:08:35,627 log 21032 4256 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:08:35,631 exceptions 21032 4256 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-08 19:08:35,631 log 21032 4256 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:08:39,508 log 21032 4256 Bad Request: /api/v1/auth/verify-otp/

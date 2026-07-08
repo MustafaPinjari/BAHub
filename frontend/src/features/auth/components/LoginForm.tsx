@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "../AuthContext";
 import { Input, Button, Alert } from "../../../components/common/UIComponents";
-import { Building, Lock, User as UserIcon } from "lucide-react";
+import { Building, Lock, Mail, User as UserIcon } from "lucide-react";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -19,10 +19,23 @@ interface LoginFormProps {
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToRegister }) => {
-  const { login } = useAuth();
+  const { login, verifyOtp, resendOtp } = useAuth();
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [unverifiedUsername, setUnverifiedUsername] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [resendCountdown, setResendCountdown] = useState(0);
+  
   const ssoEnabled = import.meta.env.VITE_ENABLE_SAML_SSO === "true";
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (resendCountdown > 0) {
+      timer = setTimeout(() => setResendCountdown(resendCountdown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [resendCountdown]);
 
   const {
     register,
@@ -40,11 +53,116 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToReg
       onSuccess();
     } catch (err: any) {
       console.error(err);
-      setFormError(err.message || "Invalid username or password.");
+      const isUnverified = err.errors?.requires_verification === true || 
+                           err.errors?.requires_verification?.[0] === true ||
+                           err.errors?.requires_verification?.[0] === "true" ||
+                           err.errors?.requires_verification === "true";
+      
+      if (isUnverified) {
+        const username = err.errors?.username?.[0] || err.errors?.username || data.username;
+        setUnverifiedUsername(username);
+      } else {
+        setFormError(err.message || "Invalid username or password.");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  if (unverifiedUsername) {
+    return (
+      <div className="w-full max-w-[320px] flex flex-col gap-5 select-none bg-background">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center text-primary border border-primary/20 shrink-0 mb-1">
+            <Mail className="w-4 h-4" />
+          </div>
+          <h1 className="text-xl font-bold text-foreground tracking-tight">Verify Your Email</h1>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Enter the 6-digit OTP code sent to your email to verify your account.
+          </p>
+        </div>
+
+        {otpError && (
+          <Alert variant="destructive">
+            {otpError}
+          </Alert>
+        )}
+
+        <div className="flex flex-col gap-4">
+          <Input
+            label="Verification Code"
+            type="text"
+            placeholder="e.g. 123456"
+            maxLength={6}
+            value={otpCode}
+            onChange={(e) => {
+              setOtpCode(e.target.value.replace(/\D/g, ""));
+              setOtpError(null);
+            }}
+            className="text-center font-mono text-lg tracking-[0.5em] focus:tracking-[0.5em]"
+          />
+
+          <Button
+            onClick={async () => {
+              if (otpCode.length !== 6) {
+                setOtpError("Verification code must be 6 digits.");
+                return;
+              }
+              setOtpError(null);
+              setLoading(true);
+              try {
+                await verifyOtp(unverifiedUsername, otpCode);
+                onSuccess();
+              } catch (err: any) {
+                console.error(err);
+                setOtpError(err.message || "Invalid or expired verification code.");
+              } finally {
+                setLoading(false);
+              }
+            }}
+            variant="primary"
+            className="w-full font-bold py-2.5 flex items-center justify-center"
+            isLoading={loading}
+            disabled={otpCode.length !== 6}
+          >
+            Verify & Sign In
+          </Button>
+
+          <div className="flex justify-between items-center text-xs mt-1">
+            <button
+              type="button"
+              onClick={() => setUnverifiedUsername(null)}
+              className="text-muted-foreground hover:text-foreground font-semibold cursor-pointer"
+              disabled={loading}
+            >
+              ← Back to Login
+            </button>
+
+            <button
+              type="button"
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  await resendOtp(unverifiedUsername);
+                  setResendCountdown(60);
+                  setOtpError(null);
+                } catch (err: any) {
+                  console.error(err);
+                  setOtpError(err.message || "Failed to resend verification code.");
+                } finally {
+                  setLoading(false);
+                }
+              }}
+              className="text-primary hover:underline font-semibold cursor-pointer disabled:text-muted-foreground disabled:no-underline"
+              disabled={resendCountdown > 0 || loading}
+            >
+              {resendCountdown > 0 ? `Resend Code in ${resendCountdown}s` : "Resend Code"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-[320px] flex flex-col gap-5 select-none bg-background">
