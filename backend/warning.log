@@ -785,3 +785,33 @@ WARNING 2026-07-08 19:08:35,627 log 21032 4256 Bad Request: /api/v1/auth/registe
 WARNING 2026-07-08 19:08:35,631 exceptions 21032 4256 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
 WARNING 2026-07-08 19:08:35,631 log 21032 4256 Bad Request: /api/v1/auth/register/
 WARNING 2026-07-08 19:08:39,508 log 21032 4256 Bad Request: /api/v1/auth/verify-otp/
+WARNING 2026-07-08 19:13:01,604 exceptions 19652 3360 API Error (400): {'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-08 19:13:01,613 log 19652 21416 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:13:01,615 runserver 19652 16844 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.07, 127.0.0.1:49723][0m
+WARNING 2026-07-08 19:13:44,177 exceptions 19652 3616 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-08 19:13:44,180 log 19652 21416 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:13:44,181 runserver 19652 16844 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.03, 127.0.0.1:49723][0m
+WARNING 2026-07-08 19:14:25,133 log 19652 21416 Bad Request: /api/v1/auth/verify-otp/
+WARNING 2026-07-08 19:14:25,134 runserver 19652 16844 [31;1mHTTP POST /api/v1/auth/verify-otp/ 400 [0.02, 127.0.0.1:49723][0m
+WARNING 2026-07-08 19:15:03,295 log 19652 21416 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 19:15:03,296 runserver 19652 16844 [31;1mHTTP POST /api/v1/billing/checkout/ 400 [0.02, 127.0.0.1:49723][0m
+WARNING 2026-07-08 19:15:44,317 log 19652 21416 Forbidden: /api/v1/integrations/config/by-project/
+WARNING 2026-07-08 19:15:44,318 runserver 19652 16844 [31;1mHTTP GET /api/v1/integrations/config/by-project/?project=b1ff1acc-c577-484f-a187-3ffc099dafa1 403 [0.02, 127.0.0.1:57951][0m
+WARNING 2026-07-08 19:15:44,338 log 19652 21416 Forbidden: /api/v1/integrations/config/by-project/
+WARNING 2026-07-08 19:15:44,339 runserver 19652 16844 [31;1mHTTP GET /api/v1/integrations/config/by-project/?project=b1ff1acc-c577-484f-a187-3ffc099dafa1 403 [0.02, 127.0.0.1:58142][0m
+WARNING 2026-07-08 19:15:50,659 log 19652 21416 Forbidden: /api/v1/audit/logs/
+WARNING 2026-07-08 19:15:50,659 runserver 19652 16844 [31;1mHTTP GET /api/v1/audit/logs/?page=1&project=b1ff1acc-c577-484f-a187-3ffc099dafa1 403 [0.01, 127.0.0.1:57951][0m
+WARNING 2026-07-08 19:15:50,674 log 19652 21416 Forbidden: /api/v1/audit/logs/
+WARNING 2026-07-08 19:15:50,675 runserver 19652 16844 [31;1mHTTP GET /api/v1/audit/logs/?page=1&project=b1ff1acc-c577-484f-a187-3ffc099dafa1 403 [0.01, 127.0.0.1:58142][0m
+WARNING 2026-07-08 19:15:52,707 log 19652 21416 Forbidden: /api/v1/integrations/config/by-project/
+WARNING 2026-07-08 19:15:52,708 runserver 19652 16844 [31;1mHTTP GET /api/v1/integrations/config/by-project/?project=b1ff1acc-c577-484f-a187-3ffc099dafa1 403 [0.03, 127.0.0.1:58142][0m
+WARNING 2026-07-08 19:15:52,724 log 19652 21416 Forbidden: /api/v1/integrations/config/by-project/
+WARNING 2026-07-08 19:15:52,725 runserver 19652 16844 [31;1mHTTP GET /api/v1/integrations/config/by-project/?project=b1ff1acc-c577-484f-a187-3ffc099dafa1 403 [0.01, 127.0.0.1:57951][0m
+WARNING 2026-07-08 19:18:25,981 log 8828 9412 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-08 19:18:26,416 exceptions 8828 9412 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-08 19:18:26,417 log 8828 9412 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:18:26,423 exceptions 8828 9412 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-08 19:18:26,424 log 8828 9412 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:18:26,428 exceptions 8828 9412 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-08 19:18:26,428 log 8828 9412 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 19:18:29,777 log 8828 9412 Bad Request: /api/v1/auth/verify-otp/

@@ -6,16 +6,44 @@
     Hello <strong>{{ username }}</strong>,
 </p>
 <p class="text">
-    Thank you for registering at BAHub. Please use the following One-Time Password (OTP) to verify your email address and activate your account. This code is valid for 10 minutes.
+    Thank you for registering at BAHub! We are excited to welcome you to your new AI-powered Business Analyst workspace. To complete your registration and activate your workspace, please use the following One-Time Password (OTP).
 </p>
 
+<!-- Verification Code Display Box -->
 <div style="text-align: center; margin: 30px 0;">
-    <div style="display: inline-block; background-color: #1B183A; border: 1px solid #232043; border-radius: 8px; padding: 16px 32px; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #FFFFFF; font-family: monospace;">
+    <div style="display: inline-block; background-color: #1B183A; border: 1px solid #232043; border-radius: 8px; padding: 16px 32px; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #FFFFFF; font-family: monospace; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
         {{ otp_code }}
+    </div>
+    <div style="font-size: 11px; color: #818CF8; font-weight: 600; margin-top: 8px; text-transform: uppercase; tracking-width: 0.05em;">
+        Valid for 10 minutes • Do not share this code
     </div>
 </div>
 
-<p class="text" style="font-size: 13px; color: #64748B; text-align: center;">
-    If you did not request this code, you can safely ignore this email.
+<h3 class="heading" style="font-size: 16px; margin-bottom: 12px; color: #818CF8;">What is BAHub?</h3>
+<p class="text" style="font-size: 14px; margin-bottom: 20px;">
+    BAHub is an enterprise-ready environment designed to accelerate your business analysis workflows. By verifying your email, you will gain immediate access to:
+</p>
+<div class="details-box" style="margin-bottom: 24px;">
+    <div class="details-item">
+        <span class="details-label" style="width: 150px;">AI Requirements:</span>
+        <span class="details-value">Automated BRD, FRD, and User Story compiling.</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label" style="width: 150px;">Strategic Models:</span>
+        <span class="details-value">Interactive SWOT, Gap Analysis, and roadmaps.</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label" style="width: 150px;">Collaboration:</span>
+        <span class="details-value">Share projects, trace requirements, and allocate seats.</span>
+    </div>
+</div>
+
+<h3 class="heading" style="font-size: 16px; margin-bottom: 12px; color: #818AF8;">Security Notice</h3>
+<p class="text" style="font-size: 14px; margin-bottom: 20px;">
+    This security verification ensures that only authorized email owners can create workspaces on BAHub. If you did not initiate this registration request, no further action is required and your email remains secure.
+</p>
+
+<p class="text" style="font-size: 13px; color: #64748B; text-align: center; margin-top: 30px;">
+    If you experience any issues during verification, please contact support at <a href="mailto:support@bahub.com" style="color: #818CF8; text-decoration: none;">support@bahub.com</a>.
 </p>
 {% endblock %}
