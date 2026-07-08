@@ -701,3 +701,47 @@ WARNING 2026-07-08 17:55:35,491 log 10876 16428 Bad Request: /api/v1/auth/regist
 WARNING 2026-07-08 17:55:42,676 exceptions 10876 16428 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
 WARNING 2026-07-08 17:55:42,677 log 10876 16428 Bad Request: /api/v1/auth/register/
 WARNING 2026-07-08 17:55:45,341 log 10876 16428 Forbidden: /api/v1/organizations/invitations/
+WARNING 2026-07-08 17:58:39,137 exceptions 4964 11208 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-08 17:58:39,138 log 4964 11208 Bad Request: /api/v1/meetings/
+WARNING 2026-07-08 17:58:40,465 exceptions 4964 11208 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-08 17:58:40,465 log 4964 11208 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-08 17:58:42,077 log 4964 11208 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 17:58:45,204 log 4964 11208 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:58:45,976 log 4964 11208 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:58:54,745 log 4964 11208 Forbidden: /api/v1/documents/
+WARNING 2026-07-08 17:58:55,129 exceptions 4964 11208 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 17:58:55,129 log 4964 11208 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 17:58:55,529 exceptions 4964 11208 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 17:58:55,529 log 4964 11208 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 17:58:56,797 log 4964 11208 Unauthorized: /api/v1/billing/subscription/
+WARNING 2026-07-08 17:58:58,043 log 4964 11208 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 17:58:58,046 log 4964 11208 Payment Required: /api/v1/diagrams/generate/
+WARNING 2026-07-08 17:58:58,874 log 4964 11208 Bad Request: /api/v1/billing/verify-subscription/
+WARNING 2026-07-08 17:59:01,234 log 4964 11208 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:59:07,064 exceptions 4964 11208 API Error (400): {'invite_token': [ErrorDetail(string='The workspace subscription is currently inactive. Please contact your administrator.', code='invalid')]}
+WARNING 2026-07-08 17:59:07,064 log 4964 11208 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:59:13,310 exceptions 4964 11208 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-08 17:59:13,310 log 4964 11208 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:59:15,682 log 4964 11208 Forbidden: /api/v1/organizations/invitations/
+WARNING 2026-07-08 18:01:00,432 exceptions 16908 17152 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-08 18:01:00,433 log 16908 17152 Bad Request: /api/v1/meetings/
+WARNING 2026-07-08 18:01:00,482 exceptions 16908 17152 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-08 18:01:00,482 log 16908 17152 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-08 18:01:02,083 log 16908 17152 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 18:01:05,095 log 16908 17152 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 18:01:05,862 log 16908 17152 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 18:01:14,426 log 16908 17152 Forbidden: /api/v1/documents/
+WARNING 2026-07-08 18:01:14,802 exceptions 16908 17152 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 18:01:14,802 log 16908 17152 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 18:01:15,178 exceptions 16908 17152 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 18:01:15,178 log 16908 17152 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 18:01:16,305 log 16908 17152 Unauthorized: /api/v1/billing/subscription/
+WARNING 2026-07-08 18:01:17,437 log 16908 17152 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 18:01:17,439 log 16908 17152 Payment Required: /api/v1/diagrams/generate/
+WARNING 2026-07-08 18:01:18,248 log 16908 17152 Bad Request: /api/v1/billing/verify-subscription/
+WARNING 2026-07-08 18:01:20,528 log 16908 17152 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 18:01:26,314 exceptions 16908 17152 API Error (400): {'invite_token': [ErrorDetail(string='The workspace subscription is currently inactive. Please contact your administrator.', code='invalid')]}
+WARNING 2026-07-08 18:01:26,315 log 16908 17152 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 18:01:32,292 exceptions 16908 17152 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-08 18:01:32,292 log 16908 17152 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 18:01:34,560 log 16908 17152 Forbidden: /api/v1/organizations/invitations/
