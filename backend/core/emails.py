@@ -9,7 +9,7 @@ from django.conf import settings
 
 logger = logging.getLogger("django")
 
-def send_html_email(subject, template_name, context, recipient_list, from_email=None):
+def send_html_email(subject, template_name, context, recipient_list, from_email=None, attachments=None):
     """
     Utility to send a beautifully styled HTML email with an inline logo/banner attachment.
     """
@@ -32,6 +32,11 @@ def send_html_email(subject, template_name, context, recipient_list, from_email=
         msg = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
         msg.attach_alternative(html_content, "text/html")
         
+        # Attach custom files if provided (like receipt PDFs)
+        if attachments:
+            for attachment in attachments:
+                msg.attach(*attachment)
+        
         # Attach the marketing banner as inline image (CID)
         banner_path = Path(settings.BASE_DIR).parent / "frontend" / "src" / "assets" / "email_banner.png"
         if banner_path.exists():
@@ -47,6 +52,9 @@ def send_html_email(subject, template_name, context, recipient_list, from_email=
             html_content = render_to_string(template_name, context)
             msg = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
             msg.attach_alternative(html_content, "text/html")
+            if attachments:
+                for attachment in attachments:
+                    msg.attach(*attachment)
 
         msg.send(fail_silently=False)
         return True
@@ -151,5 +159,32 @@ def send_registration_otp_email(username, email, otp_code):
         template_name="core/registration_otp.html",
         context=context,
         recipient_list=[email]
+    )
+
+
+def send_payment_receipt_email(username, email, organization_name, plan_name, amount, receipt_number, transaction_id, pdf_content):
+    """
+    Send payment receipt notification email with PDF attachment.
+    """
+    subject = f"BAHub: Payment Receipt for {plan_name.capitalize()} Subscription"
+    from django.utils import timezone
+    context = {
+        "username": username,
+        "organization_name": organization_name,
+        "plan_name": plan_name.upper(),
+        "amount": amount,
+        "date": timezone.now().strftime("%Y-%m-%d"),
+        "receipt_number": receipt_number,
+        "transaction_id": transaction_id or "N/A",
+    }
+    attachments = [
+        (f"receipt_{receipt_number}.pdf", pdf_content, "application/pdf")
+    ]
+    return send_html_email(
+        subject=subject,
+        template_name="core/payment_receipt.html",
+        context=context,
+        recipient_list=[email],
+        attachments=attachments
     )
 

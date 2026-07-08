@@ -81,13 +81,29 @@ const AuthenticatedApp: React.FC = () => {
   );
 };
 
+import { BillingBlockedScreen } from "./features/auth/components/BillingBlockedScreen";
+
 const MainAppContent: React.FC = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const [authView, setAuthView] = useState<"landing" | "login" | "register">("landing");
 
   // Allow explicit preview of landing page via /landing or /welcome route regardless of auth state
   const path = window.location.pathname.toLowerCase();
   const isExplicitLanding = path === "/landing" || path === "/welcome";
+
+  if (path === "/admin" || path === "/admin/") {
+    const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const backendAdminUrl = isLocal 
+      ? "http://127.0.0.1:8000/admin/" 
+      : "https://bahub-backend.onrender.com/admin/";
+    window.location.href = backendAdminUrl;
+    return (
+      <div className="w-screen h-screen flex flex-col items-center justify-center bg-black text-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500 mb-4 animate-pulse" />
+        <span className="text-xs font-bold text-gray-400 tracking-wider">Redirecting to Django Administration...</span>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -158,6 +174,11 @@ const MainAppContent: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  const isBillingBlocked = user && user.plan_tier && user.plan_tier !== "FREE" && !user.plan_verified;
+  if (isBillingBlocked) {
+    return <BillingBlockedScreen />;
   }
 
   return <AuthenticatedApp />;

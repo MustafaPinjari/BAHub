@@ -80,6 +80,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "audit.middleware.AuditThreadLocalMiddleware",
+    "core.middleware.SubscriptionMiddleware",
 ]
 
 ROOT_URLCONF = "bahub_backend.urls"

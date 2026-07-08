@@ -30,6 +30,13 @@ export interface User {
   organization_name: string;
   preferences: UserPreference;
   plan_tier?: "FREE" | "PRO" | "ENTERPRISE";
+  plan_verified?: boolean;
+  is_staff?: boolean;
+  is_superuser?: boolean;
+  payment_status?: string;
+  in_grace_period?: boolean;
+  grace_period_remaining_days?: number;
+  subscription_expires_at?: string | null;
   created_at: string;
 }
 

@@ -5,15 +5,19 @@ from .views import (
     CreateCheckoutSessionView,
     StripeWebhookView,
     MockUpgradeView,
-    MockInvoiceListView,
     VerifySubscriptionView,
+    PaymentHistoryListView,
+    DownloadInvoicePDFView,
+    BillingAdminDashboardView,
 )
 
 urlpatterns = [
     path("subscription/", SubscriptionDetailView.as_view(), name="subscription-detail"),
     path("checkout/", CreateCheckoutSessionView.as_view(), name="create-checkout-session"),
     path("webhook/", StripeWebhookView.as_view(), name="stripe-webhook"),
-    path("invoices/", MockInvoiceListView.as_view(), name="billing-invoices"),
+    path("invoices/", PaymentHistoryListView.as_view(), name="billing-invoices"),
+    path("invoices/<uuid:payment_id>/download/", DownloadInvoicePDFView.as_view(), name="download-invoice"),
+    path("admin-dashboard/", BillingAdminDashboardView.as_view(), name="billing-admin-dashboard"),
     path("verify-subscription/", VerifySubscriptionView.as_view(), name="verify-subscription"),
 ]
 

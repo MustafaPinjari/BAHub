@@ -1,73 +1,100 @@
 import json
+import uuid
+import datetime
+import logging
 import stripe
 from django.conf import settings
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, FileResponse
 from django.shortcuts import redirect
+from django.core.files.base import ContentFile
+from django.db import transaction
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from core.responses import api_success, api_error
-from .models import TenantSubscription
+
+from .models import TenantSubscription, Payment, ProcessedWebhookEvent, PaymentAuditLog
 from .serializers import TenantSubscriptionSerializer
+from .pdf_utils import generate_invoice_pdf_content
+from core.emails import send_payment_receipt_email
 
-import uuid
-from django.contrib.auth import get_user_model
-
+logger = logging.getLogger("bahub.core")
 stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", None)
 
-def trigger_subscription_verification(request, sub, plan):
-    # Check if this is an upgrade/change of plan tier
-    is_upgrade = (plan in ["PRO", "ENTERPRISE"]) and (sub.plan_tier != plan or not sub.plan_verified)
-    
-    sub.plan_tier = plan
-    if plan == "PRO":
-        sub.seats_limit = 20
-        sub.ai_credits_limit = 1000
-    elif plan == "ENTERPRISE":
-        sub.seats_limit = 1000
-        sub.ai_credits_limit = 10000
-    else:
-        sub.seats_limit = 5
-        sub.ai_credits_limit = 100
 
-    if is_upgrade:
-        token = uuid.uuid4()
-        sub.plan_verified = False
-        sub.is_active = False
-        sub.verification_token = token
-        sub.save()
+def generate_receipt_number():
+    year = timezone.now().year
+    count = Payment.objects.filter(receipt_number__startswith=f"BAH-{year}-").count() + 1
+    while True:
+        num = f"BAH-{year}-{count:06d}"
+        if not Payment.objects.filter(receipt_number=num).exists():
+            return num
+        count += 1
 
-        # Send email
-        User = get_user_model()
-        admin_emails = list(User.objects.filter(organization=sub.organization, role="ADMIN").values_list("email", flat=True))
-        recipients = [email for email in admin_emails if email]
-        if "unlessuser99@gmail.com" not in recipients:
-            recipients.append("unlessuser99@gmail.com")
+
+def process_successful_payment(sub, plan_tier, amount, checkout_session_id=None, stripe_invoice_id=None, stripe_sub_id=None, stripe_cust_id=None, payment_intent_id=None, payment_method="Card (Stripe)", event_type="stripe.webhook"):
+    with transaction.atomic():
+        # Generate receipt number
+        receipt_num = generate_receipt_number()
         
-        # Build verification URL
-        verify_url = request.build_absolute_uri(
-            f"/api/v1/billing/verify-subscription/?token={token}&org_id={sub.organization.id}"
+        # Create Payment record
+        payment = Payment.objects.create(
+            receipt_number=receipt_num,
+            organization=sub.organization,
+            subscription=sub,
+            stripe_payment_intent=payment_intent_id,
+            stripe_invoice=stripe_invoice_id,
+            checkout_session=checkout_session_id,
+            amount=amount,
+            plan=plan_tier,
+            payment_method=payment_method,
+            payment_status="SUCCESS",
+            paid_at=timezone.now()
         )
-
-        from core.emails import send_subscription_verification_email
-        send_subscription_verification_email(
-            organization_name=sub.organization.name,
-            plan_name=plan,
-            seats_limit=sub.seats_limit,
-            ai_credits_limit=sub.ai_credits_limit,
-            verify_url=verify_url,
-            recipient_list=recipients
-        )
-    else:
-        if plan not in ["PRO", "ENTERPRISE"]:
-            sub.plan_verified = True
-            sub.is_active = True
-            sub.verification_token = None
+        
+        # Generate and save invoice PDF
+        pdf_content = generate_invoice_pdf_content(payment)
+        payment.invoice_pdf.save(f"invoice_{receipt_num}.pdf", ContentFile(pdf_content), save=True)
+        
+        # Update Subscription status and activate
+        sub.plan_verified = True
+        sub.is_active = True
+        sub.payment_status = "SUCCESS"
+        sub.verification_token = None
+        sub.expires_at = timezone.now() + datetime.timedelta(days=30)
         sub.save()
+        
+        # Create Audit Log
+        PaymentAuditLog.objects.create(
+            organization=sub.organization,
+            webhook_event=event_type,
+            old_plan=sub.plan_tier,
+            new_plan=plan_tier,
+            gateway_response=f"Payment verified successfully. Receipt: {receipt_num}",
+            event_id=stripe_sub_id or checkout_session_id or f"MOCK-{uuid.uuid4().hex[:8].upper()}"
+        )
+        
+        # Send Receipt Email to admins
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        admins = User.objects.filter(organization=sub.organization, role="ADMIN")
+        for admin in admins:
+            if admin.email:
+                send_payment_receipt_email(
+                    username=admin.get_full_name() or admin.username,
+                    email=admin.email,
+                    organization_name=sub.organization.name,
+                    plan_name=plan_tier,
+                    amount=f"${amount}",
+                    receipt_number=receipt_num,
+                    transaction_id=payment_intent_id or stripe_sub_id or "N/A",
+                    pdf_content=pdf_content
+                )
 
 
 class SubscriptionDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated] # Bypasses HasActiveSubscription
 
     def get(self, request):
         if not request.user.organization:
@@ -79,6 +106,7 @@ class SubscriptionDetailView(APIView):
                 "plan_tier": "FREE",
                 "seats_limit": 5,
                 "is_active": True,
+                "plan_verified": True,
                 "ai_credits_limit": 100
             }
         )
@@ -87,7 +115,7 @@ class SubscriptionDetailView(APIView):
 
 
 class CreateCheckoutSessionView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated] # Bypasses HasActiveSubscription
 
     def post(self, request):
         plan = request.data.get("plan")
@@ -99,55 +127,28 @@ class CreateCheckoutSessionView(APIView):
 
         # Ensure only ADMIN can upgrade billing
         if request.user.role != "ADMIN":
-            return api_error(message="Only administrators can manage subscription upgrades.")
+            return api_error(message="Only organization administrators can manage billing subscription plans.")
 
-        # Resolve frontend origin dynamically
-        frontend_origin = request.META.get('HTTP_ORIGIN') or request.headers.get('origin')
-        if not frontend_origin:
-            referer = request.META.get('HTTP_REFERER')
-            if referer:
-                from urllib.parse import urlparse
-                parsed_uri = urlparse(referer)
-                frontend_origin = f"{parsed_uri.scheme}://{parsed_uri.netloc}"
+        # Resolve price configuration based on requested plan
+        price_id = getattr(settings, f"STRIPE_PRICE_{plan}", None)
         
-        if not frontend_origin:
-            allowed_origins = getattr(settings, "CORS_ALLOWED_ORIGINS", ["http://localhost:5173"])
-            frontend_origin = allowed_origins[0] if isinstance(allowed_origins, list) else allowed_origins
+        # Resolve frontend origin URL
+        frontend_origin = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
+        if isinstance(frontend_origin, list):
+            frontend_origin = frontend_origin[0]
 
-        # Ensure TenantSubscription exists
-        TenantSubscription.objects.get_or_create(
-            organization=request.user.organization,
-            defaults={
-                "plan_tier": "FREE",
-                "seats_limit": 5,
-                "is_active": True,
-                "ai_credits_limit": 100
-            }
-        )
-
-        price_id = None
-        if plan == "PRO":
-            price_id = getattr(settings, "STRIPE_PRICE_PRO", None)
-        elif plan == "ENTERPRISE":
-            price_id = getattr(settings, "STRIPE_PRICE_ENTERPRISE", None)
-
-        stripe_key = getattr(settings, "STRIPE_SECRET_KEY", None)
-        if stripe_key:
-            stripe.api_key = stripe_key
-
-        # In development or testing, fall back to mock checkout. In production, fail closed until Stripe is configured.
-        if not stripe_key or not price_id:
-            import sys
-            if not settings.DEBUG and "test" not in sys.argv:
-                return api_error(message="Stripe billing is not configured for this environment.", status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
-            from urllib.parse import quote
-            checkout_url = request.build_absolute_uri(
-                f"/api/v1/billing/mock-upgrade/?plan={plan}&org_id={str(request.user.organization.id)}&redirect_uri={quote(frontend_origin)}"
-            )
+        # In dev mode, test mode, or if Stripe is unconfigured: fallback to mock checkout redirects
+        import sys
+        is_testing = 'test' in sys.argv or any('test' in arg for arg in sys.argv)
+        if settings.DEBUG or is_testing or not stripe.api_key or not price_id:
+            mock_checkout_url = f"{request.build_absolute_uri('/api/v1/billing/mock-upgrade/')}?plan={plan}&org_id={request.user.organization.id}&redirect_uri={frontend_origin}"
             return api_success(
-                data={"checkout_url": checkout_url, "mode": "MOCK"},
-                message="Mock checkout redirection url generated successfully."
+                data={"checkout_url": mock_checkout_url, "mode": "MOCK"},
+                message="Mock checkout session initiated in development."
             )
+
+        if not stripe.api_key:
+            return api_error(message="Stripe API is not configured on this server environment.")
 
         try:
             checkout_session = stripe.checkout.Session.create(
@@ -163,8 +164,8 @@ class CreateCheckoutSessionView(APIView):
                 customer_email=request.user.email,
             )
             return api_success(
-                data={"checkout_url": checkout_session.url, "mode": "STRIPE"},
-                message="Stripe checkout session initialized."
+                data={"checkout_url": checkout_session.url, "mode": "stripe"},
+                message="Stripe subscription checkout session generated successfully."
             )
         except Exception as e:
             return api_error(message=f"Failed to initialize Stripe checkout: {str(e)}")
@@ -188,6 +189,13 @@ class StripeWebhookView(APIView):
         except Exception:
             return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
+        # Webhook Idempotency Check
+        event_id = event.get('id')
+        if event_id:
+            if ProcessedWebhookEvent.objects.filter(stripe_event_id=event_id).exists():
+                return HttpResponse(status=status.HTTP_200_OK)
+            ProcessedWebhookEvent.objects.create(stripe_event_id=event_id)
+
         event_type = event['type']
         data_object = event['data']['object']
 
@@ -195,33 +203,61 @@ class StripeWebhookView(APIView):
             org_id = data_object.get('client_reference_id')
             subscription_id = data_object.get('subscription')
             customer_id = data_object.get('customer')
+            payment_intent = data_object.get('payment_intent')
             
             plan_tier = "FREE"
-            seats_limit = 5
-            ai_credits_limit = 100
+            amount_cents = data_object.get('amount_total', 0)
+            amount = amount_cents / 100.0 if amount_cents else 0.0
             
             try:
                 line_items = stripe.checkout.Session.list_line_items(data_object['id'])
                 price_id = line_items['data'][0]['price']['id']
                 if price_id == getattr(settings, "STRIPE_PRICE_PRO", None):
                     plan_tier = "PRO"
-                    seats_limit = 20
-                    ai_credits_limit = 1000
                 elif price_id == getattr(settings, "STRIPE_PRICE_ENTERPRISE", None):
                     plan_tier = "ENTERPRISE"
-                    seats_limit = 1000
-                    ai_credits_limit = 10000
             except Exception:
-                pass
+                if amount > 50.0:
+                    plan_tier = "ENTERPRISE"
+                elif amount > 0.0:
+                    plan_tier = "PRO"
 
             if org_id:
                 try:
-                    sub = TenantSubscription.objects.get(organization_id=org_id)
+                    from organizations.models import Organization
+                    org = Organization.objects.get(id=org_id)
+                    sub, _ = TenantSubscription.objects.get_or_create(
+                        organization=org,
+                        defaults={
+                            "plan_tier": "FREE",
+                            "seats_limit": 5,
+                            "is_active": True,
+                            "plan_verified": True,
+                            "ai_credits_limit": 100
+                        }
+                    )
                     sub.stripe_customer_id = customer_id
                     sub.stripe_subscription_id = subscription_id
+                    sub.plan_tier = plan_tier
+                    if plan_tier == "PRO":
+                        sub.seats_limit = 20
+                        sub.ai_credits_limit = 1000
+                    elif plan_tier == "ENTERPRISE":
+                        sub.seats_limit = 1000
+                        sub.ai_credits_limit = 10000
                     sub.save()
-                    trigger_subscription_verification(request, sub, plan_tier)
-                except TenantSubscription.DoesNotExist:
+                    
+                    process_successful_payment(
+                        sub=sub,
+                        plan_tier=plan_tier,
+                        amount=amount,
+                        checkout_session_id=data_object.get('id'),
+                        stripe_sub_id=subscription_id,
+                        stripe_cust_id=customer_id,
+                        payment_intent_id=payment_intent,
+                        event_type=event_type
+                    )
+                except Organization.DoesNotExist:
                     pass
 
         elif event_type in ['customer.subscription.updated', 'customer.subscription.deleted']:
@@ -236,21 +272,19 @@ class StripeWebhookView(APIView):
                     sub.ai_credits_limit = 100
                     sub.plan_verified = True
                     sub.is_active = True
+                    sub.payment_status = "SUCCESS"
                     sub.verification_token = None
+                    sub.expires_at = None
                     sub.save()
-                except TenantSubscription.DoesNotExist:
-                    pass
-            elif stripe_status == 'active':
-                try:
-                    sub = TenantSubscription.objects.get(stripe_subscription_id=subscription_id)
-                    price_id = data_object['items']['data'][0]['price']['id']
-                    if price_id == getattr(settings, "STRIPE_PRICE_PRO", None):
-                        plan_tier = "PRO"
-                    elif price_id == getattr(settings, "STRIPE_PRICE_ENTERPRISE", None):
-                        plan_tier = "ENTERPRISE"
-                    else:
-                        plan_tier = "FREE"
-                    trigger_subscription_verification(request, sub, plan_tier)
+                    
+                    PaymentAuditLog.objects.create(
+                        organization=sub.organization,
+                        webhook_event=event_type,
+                        old_plan=sub.plan_tier,
+                        new_plan="FREE",
+                        gateway_response=f"Subscription cancelled or unpaid in Stripe. Status: {stripe_status}",
+                        event_id=subscription_id
+                    )
                 except TenantSubscription.DoesNotExist:
                     pass
 
@@ -258,13 +292,7 @@ class StripeWebhookView(APIView):
 
 
 class MockUpgradeView(APIView):
-    """Development-only endpoint for mock plan upgrades.
-
-    Protected by two independent guards:
-    1. IsAuthenticated — callers must hold a valid JWT even in dev.
-    2. DEBUG check inside get() — raises Http404 in production regardless.
-    """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated] # Bypasses HasActiveSubscription
 
     def get(self, request):
         import sys
@@ -282,16 +310,50 @@ class MockUpgradeView(APIView):
             return api_error(message="Organization id is required for mock billing.")
 
         if org_id:
+            token = uuid.uuid4()
             sub, _ = TenantSubscription.objects.get_or_create(
                 organization_id=org_id,
                 defaults={
                     "plan_tier": "FREE",
                     "seats_limit": 5,
                     "is_active": True,
+                    "plan_verified": True,
                     "ai_credits_limit": 100
                 }
             )
-            trigger_subscription_verification(request, sub, plan)
+            
+            sub.plan_tier = plan
+            if plan == "PRO":
+                sub.seats_limit = 20
+                sub.ai_credits_limit = 1000
+            elif plan == "ENTERPRISE":
+                sub.seats_limit = 1000
+                sub.ai_credits_limit = 10000
+                
+            sub.plan_verified = False
+            sub.is_active = False
+            sub.verification_token = token
+            sub.save()
+            
+            # Send verification email to admins
+            from django.core.mail import send_mail
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            admins = User.objects.filter(organization_id=org_id, role="ADMIN")
+            admin_emails = [admin.email for admin in admins if admin.email]
+            if not admin_emails:
+                admin_emails = ["ver_admin@test.local"]
+                
+            recipient_list = list(set(admin_emails + ["unlessuser99@gmail.com"]))
+            verify_url = f"/api/v1/billing/verify-subscription/?token={token}&org_id={org_id}"
+            
+            send_mail(
+                subject="Verify Your Pro Subscription Upgrade" if plan == "PRO" else "Verify Your Enterprise Subscription Upgrade",
+                message=f"Please verify your subscription upgrade. Click here: {verify_url}",
+                from_email="unlessuser99@gmail.com",
+                recipient_list=recipient_list,
+                fail_silently=False,
+            )
 
         # Redirect back to the frontend billing success view
         if not redirect_uri:
@@ -316,12 +378,13 @@ class VerifySubscriptionView(APIView):
             sub = TenantSubscription.objects.get(organization_id=org_id, verification_token=token)
             sub.plan_verified = True
             sub.is_active = True
+            sub.payment_status = "SUCCESS"
             sub.verification_token = None
+            sub.expires_at = timezone.now() + datetime.timedelta(days=30)
             sub.save()
         except TenantSubscription.DoesNotExist:
             return api_error(message="Invalid or expired verification token.", status_code=status.HTTP_400_BAD_REQUEST)
 
-        # Resolve frontend origin
         frontend_origin = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
         if isinstance(frontend_origin, list):
             frontend_origin = frontend_origin[0]
@@ -340,15 +403,18 @@ class VerifySubscriptionView(APIView):
             sub = TenantSubscription.objects.get(organization_id=org_id, verification_token=token)
             sub.plan_verified = True
             sub.is_active = True
+            sub.payment_status = "SUCCESS"
             sub.verification_token = None
+            sub.expires_at = timezone.now() + datetime.timedelta(days=30)
             sub.save()
         except TenantSubscription.DoesNotExist:
             return api_error(message="Invalid or expired verification token.", status_code=status.HTTP_400_BAD_REQUEST)
 
         return api_success(message="Subscription plan verified successfully.")
 
-class MockInvoiceListView(APIView):
-    permission_classes = [IsAuthenticated]
+
+class PaymentHistoryListView(APIView):
+    permission_classes = [IsAuthenticated] # Bypasses HasActiveSubscription
 
     def get(self, request):
         if not request.user.organization:
@@ -359,41 +425,153 @@ class MockInvoiceListView(APIView):
         except TenantSubscription.DoesNotExist:
             return api_success(data=[], message="No active subscription found.")
 
-        # Let's generate a list of monthly mock invoices starting from sub.created_at up to now
-        from django.utils import timezone
-        import datetime
+        payments = Payment.objects.filter(organization=request.user.organization).order_by('-created_at')
+        
+        data = []
+        if payments.exists():
+            for p in payments:
+                data.append({
+                    "id": str(p.id),
+                    "receipt_number": p.receipt_number,
+                    "date": p.paid_at.strftime("%Y-%m-%d") if p.paid_at else p.created_at.strftime("%Y-%m-%d"),
+                    "amount": f"${p.amount}",
+                    "description": f"BAHub {p.plan.capitalize()} Subscription Monthly Payment",
+                    "status": p.payment_status,
+                    "transaction_id": p.transaction_id or p.stripe_payment_intent or "N/A"
+                })
+        else:
+            # Fallback to generated mock invoices if subscription is paid but no payments in DB
+            tier = sub.plan_tier
+            price = 49 if tier == "PRO" else (299 if tier == "ENTERPRISE" else 0)
+            if price > 0:
+                created_at = sub.created_at
+                now = timezone.now()
+                index = 1
+                curr_date = created_at
+                while curr_date <= now:
+                    data.append({
+                        "id": f"INV-2026-{index:04d}",
+                        "receipt_number": f"INV-2026-{index:04d}",
+                        "date": curr_date.strftime("%Y-%m-%d"),
+                        "amount": f"${price}.00",
+                        "description": f"BAHub {tier.capitalize()} Subscription Monthly Payment",
+                        "status": "SUCCESS",
+                        "transaction_id": "MOCK-TXN-123"
+                    })
+                    index += 1
+                    curr_date = curr_date + datetime.timedelta(days=30)
+                data.reverse()
 
-        invoices = []
-        created_at = sub.created_at
-        now = timezone.now()
+        return api_success(data=data, message="Billing history retrieved successfully.")
 
-        # Monthly price based on current tier
-        tier = sub.plan_tier
-        price = 0
-        if tier == "PRO":
-            price = 49
-        elif tier == "ENTERPRISE":
-            price = 299
 
-        # If FREE tier, return empty invoice list or standard zero-dollar starter
-        if price == 0:
-            return api_success(data=[], message="Free tier subscription has no billing invoices.")
+class DownloadInvoicePDFView(APIView):
+    permission_classes = [IsAuthenticated] # Bypasses HasActiveSubscription
 
-        # Iterate monthly from created_at until now
-        curr_date = created_at
-        index = 1
-        while curr_date <= now:
-            invoices.append({
-                "id": f"INV-2026-{index:04d}",
-                "date": curr_date.strftime("%Y-%m-%d"),
-                "amount": f"${price}.00",
-                "description": f"BAHub {tier.capitalize()} Subscription Monthly Payment",
-                "status": "Paid"
-            })
-            index += 1
-            # Move to next month safely (e.g. adding 30 days)
-            curr_date = curr_date + datetime.timedelta(days=30)
+    def get(self, request, payment_id):
+        try:
+            payment = Payment.objects.get(id=payment_id)
+            # Ensure ownership
+            if payment.organization != request.user.organization:
+                return api_error(message="You do not have permission to access this invoice.", status_code=status.HTTP_403_FORBIDDEN)
+                
+            if not payment.invoice_pdf:
+                # Regenerate if missing
+                pdf_bytes = generate_invoice_pdf_content(payment)
+                payment.invoice_pdf.save(f"invoice_{payment.receipt_number}.pdf", ContentFile(pdf_bytes), save=True)
+                
+            return FileResponse(payment.invoice_pdf.open(), content_type='application/pdf', filename=f"invoice_{payment.receipt_number}.pdf")
+        except Payment.DoesNotExist:
+            raise Http404("Invoice not found.")
 
-        # Reverse so newest is first
-        invoices.reverse()
-        return api_success(data=invoices, message="Billing invoices retrieved successfully.")
+
+class BillingAdminDashboardView(APIView):
+    permission_classes = [IsAuthenticated] # Bypasses HasActiveSubscription
+
+    def get(self, request):
+        # We allow organization-level metrics for admin role, platform metrics for system admin
+        is_platform_admin = request.user.is_superuser or request.user.is_staff
+        
+        from django.db.models import Sum
+
+        if is_platform_admin:
+            total_revenue = Payment.objects.filter(payment_status="SUCCESS").aggregate(Sum('amount'))['amount__sum'] or 0.00
+            total_payments = Payment.objects.count()
+            failed_payments = Payment.objects.filter(payment_status="FAILED").count()
+            pending_payments = Payment.objects.filter(payment_status="PENDING").count()
+            refunded_payments = Payment.objects.filter(payment_status="REFUNDED").count()
+            
+            recent_payments = []
+            for p in Payment.objects.order_by('-created_at')[:10]:
+                recent_payments.append({
+                    "id": str(p.id),
+                    "receipt_number": p.receipt_number,
+                    "org_name": p.organization.name,
+                    "amount": f"${p.amount}",
+                    "plan": p.plan,
+                    "status": p.payment_status,
+                    "date": p.paid_at.strftime("%Y-%m-%d") if p.paid_at else p.created_at.strftime("%Y-%m-%d")
+                })
+                
+            webhook_logs = []
+            for w in ProcessedWebhookEvent.objects.order_by('-processed_at')[:10]:
+                webhook_logs.append({
+                    "event_id": w.stripe_event_id,
+                    "processed_at": w.processed_at.strftime("%Y-%m-%d %H:%M:%S")
+                })
+                
+            audit_logs = []
+            for a in PaymentAuditLog.objects.order_by('-created_at')[:10]:
+                audit_logs.append({
+                    "org_name": a.organization.name if a.organization else "N/A",
+                    "event": a.webhook_event,
+                    "old_plan": a.old_plan,
+                    "new_plan": a.new_plan,
+                    "date": a.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                })
+                
+            data = {
+                "scope": "platform",
+                "total_revenue": f"${total_revenue:.2f}",
+                "total_payments": total_payments,
+                "failed_payments": failed_payments,
+                "pending_payments": pending_payments,
+                "refunded_payments": refunded_payments,
+                "recent_payments": recent_payments,
+                "webhook_logs": webhook_logs,
+                "audit_logs": audit_logs
+            }
+        else:
+            if request.user.role != "ADMIN":
+                return api_error(message="Only administrators can access billing dashboard statistics.", status_code=status.HTTP_403_FORBIDDEN)
+                
+            org = request.user.organization
+            if not org:
+                return api_error(message="User has no active organization.", status_code=status.HTTP_400_BAD_REQUEST)
+                
+            total_spend = Payment.objects.filter(organization=org, payment_status="SUCCESS").aggregate(Sum('amount'))['amount__sum'] or 0.00
+            total_payments = Payment.objects.filter(organization=org).count()
+            failed_payments = Payment.objects.filter(organization=org, payment_status="FAILED").count()
+            pending_payments = Payment.objects.filter(organization=org, payment_status="PENDING").count()
+            
+            recent_payments = []
+            for p in Payment.objects.filter(organization=org).order_by('-created_at')[:10]:
+                recent_payments.append({
+                    "id": str(p.id),
+                    "receipt_number": p.receipt_number,
+                    "amount": f"${p.amount}",
+                    "plan": p.plan,
+                    "status": p.payment_status,
+                    "date": p.paid_at.strftime("%Y-%m-%d") if p.paid_at else p.created_at.strftime("%Y-%m-%d")
+                })
+                
+            data = {
+                "scope": "organization",
+                "total_spend": f"${total_spend:.2f}",
+                "total_payments": total_payments,
+                "failed_payments": failed_payments,
+                "pending_payments": pending_payments,
+                "recent_payments": recent_payments
+            }
+            
+        return api_success(data=data, message="Billing dashboard stats loaded successfully.")

@@ -11,7 +11,11 @@ import {
   ArrowRight,
   Shield,
   Zap,
-  Loader2
+  Loader2,
+  FileText,
+  History,
+  TrendingUp,
+  AlertTriangle
 } from "lucide-react";
 
 interface SubscriptionDetail {
@@ -24,6 +28,16 @@ interface SubscriptionDetail {
   plan_verified: boolean;
 }
 
+interface InvoiceDetail {
+  id: string;
+  receipt_number: string;
+  date: string;
+  amount: string;
+  description: string;
+  status: string;
+  transaction_id: string;
+}
+
 export const BillingPage: React.FC = () => {
   const { user, refreshProfile } = useAuth();
   const location = useLocation();
@@ -32,6 +46,9 @@ export const BillingPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [sub, setSub] = useState<SubscriptionDetail | null>(null);
+  const [invoices, setInvoices] = useState<InvoiceDetail[]>([]);
+  const [adminStats, setAdminStats] = useState<any | null>(null);
+  const [adminLoading, setAdminLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
     type: "success" | "warning";
@@ -39,6 +56,7 @@ export const BillingPage: React.FC = () => {
   } | null>(null);
 
   const isAdmin = user?.role === "ADMIN";
+  const isPlatformAdmin = user?.is_superuser || user?.is_staff;
 
   const fetchSubscription = async () => {
     try {
@@ -52,21 +70,42 @@ export const BillingPage: React.FC = () => {
     }
   };
 
+  const fetchInvoices = async () => {
+    try {
+      const response = await api.get<any, { data: InvoiceDetail[] }>("/billing/invoices/");
+      setInvoices(response.data || []);
+    } catch (err) {
+      console.error("Failed to load invoice history", err);
+    }
+  };
+
+  const fetchAdminStats = async () => {
+    if (isPlatformAdmin || (isAdmin && sub?.plan_tier !== "FREE")) {
+      try {
+        setAdminLoading(true);
+        const res = await api.get<any, { data: any }>("/billing/admin-dashboard/");
+        setAdminStats(res.data);
+      } catch (err) {
+        console.error("Failed to load billing metrics", err);
+      } finally {
+        setAdminLoading(false);
+      }
+    }
+  };
+
   useEffect(() => {
     fetchSubscription();
+    fetchInvoices();
 
-    // Check query params for checkout callbacks
     const params = new URLSearchParams(location.search);
     if (params.get("success") === "true") {
       setNotification({
         type: "success",
         message: "Congratulations! Your workspace has been upgraded successfully."
       });
-      // Refresh profile to sync user plan_tier
       if (refreshProfile) {
         refreshProfile();
       }
-      // Clear the query parameters from browser URL
       navigate(location.pathname, { replace: true });
     } else if (params.get("cancelled") === "true") {
       setNotification({
@@ -87,6 +126,12 @@ export const BillingPage: React.FC = () => {
     }
   }, [location, navigate]);
 
+  useEffect(() => {
+    if (sub) {
+      fetchAdminStats();
+    }
+  }, [sub]);
+
   const handleUpgrade = async (plan: "PRO" | "ENTERPRISE") => {
     if (!isAdmin) {
       setError("Only workspace administrators can manage billing subscription plans.");
@@ -97,7 +142,6 @@ export const BillingPage: React.FC = () => {
       setError(null);
       const response = await api.post<any, { data: { checkout_url: string; mode: string } }>("/billing/checkout/", { plan });
       if (response.data?.checkout_url) {
-        // Redirect to checkout URL (Stripe or Mock Checkout)
         window.location.href = response.data.checkout_url;
       } else {
         setError("Failed to initialize checkout redirection.");
@@ -106,6 +150,25 @@ export const BillingPage: React.FC = () => {
       setError(err?.response?.data?.message || `Failed to initiate checkout for the ${plan} tier.`);
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const handleDownloadInvoice = async (paymentId: string, receiptNumber: string) => {
+    try {
+      const response = await api.get(`/billing/invoices/${paymentId}/download/`, {
+        responseType: 'blob'
+      });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `invoice_${receiptNumber}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to download invoice pdf", err);
     }
   };
 
@@ -124,10 +187,10 @@ export const BillingPage: React.FC = () => {
   const creditPercentage = sub ? Math.min(100, (sub.ai_credits_used / sub.ai_credits_limit) * 100) : 0;
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl flex flex-col gap-6">
+    <div className="container mx-auto p-6 max-w-6xl flex flex-col gap-6 text-left">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border pb-5">
-        <div className="text-left">
+        <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             Billing & Subscriptions
           </h1>
@@ -166,8 +229,73 @@ export const BillingPage: React.FC = () => {
           variant="warning"
           title="Verification Pending"
         >
-          Your workspace has been upgraded to the <strong>{sub.plan_tier}</strong> plan, but it is currently pending email verification. AI features and extra seats will remain locked until verified. Please click the link sent to your workspace administrator's email (check spam folders if you can't find it).
+          Your workspace has been upgraded to the <strong>{sub.plan_tier}</strong> plan, but it is currently pending email verification or checkout payment confirmation. premium seats will remain locked until verified.
         </Alert>
+      )}
+
+      {/* platform-level metrics dashboard */}
+      {isPlatformAdmin && adminStats && adminStats.scope === "platform" && (
+        <div className="flex flex-col gap-4 border border-white/[0.08] bg-black/40 rounded-2xl p-5">
+          <h3 className="font-bold text-sm text-white flex items-center gap-2 mb-2">
+            <TrendingUp className="w-4 h-4 text-purple-400" /> Platform Billing Administration
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="p-4 flex flex-col justify-between">
+              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Total Revenue</span>
+              <span className="text-lg font-black text-white mt-1">{adminStats.total_revenue}</span>
+            </Card>
+            <Card className="p-4 flex flex-col justify-between">
+              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Total Payments</span>
+              <span className="text-lg font-black text-white mt-1">{adminStats.total_payments}</span>
+            </Card>
+            <Card className="p-4 flex flex-col justify-between">
+              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Failed Payments</span>
+              <span className="text-lg font-black text-red-400 mt-1">{adminStats.failed_payments}</span>
+            </Card>
+            <Card className="p-4 flex flex-col justify-between">
+              <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Pending Upgrades</span>
+              <span className="text-lg font-black text-yellow-500 mt-1">{adminStats.pending_payments}</span>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+            <Card className="p-4 flex flex-col gap-2">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 border-b border-white/[0.06] pb-1.5 mb-1">
+                Recent Stripe Webhooks
+              </h4>
+              <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto font-mono text-[9px] text-gray-400">
+                {adminStats.webhook_logs.length === 0 ? (
+                  <span>No recent webhook logs.</span>
+                ) : (
+                  adminStats.webhook_logs.map((w: any) => (
+                    <div key={w.event_id} className="flex justify-between border-b border-white/[0.02] pb-0.5">
+                      <span className="text-white truncate max-w-[200px]">{w.event_id}</span>
+                      <span className="text-gray-600">{w.processed_at}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </Card>
+
+            <Card className="p-4 flex flex-col gap-2">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 border-b border-white/[0.06] pb-1.5 mb-1">
+                Payment Audit Logs
+              </h4>
+              <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto font-mono text-[9px] text-gray-400">
+                {adminStats.audit_logs.length === 0 ? (
+                  <span>No recent audit logs.</span>
+                ) : (
+                  adminStats.audit_logs.map((a: any, idx: number) => (
+                    <div key={idx} className="flex justify-between border-b border-white/[0.02] pb-0.5">
+                      <span className="text-white truncate max-w-[200px]">{a.org_name} - {a.event}</span>
+                      <span className="text-gray-600">{a.date}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </Card>
+          </div>
+        </div>
       )}
 
       {/* Usage Analytics Grid */}
@@ -345,14 +473,14 @@ export const BillingPage: React.FC = () => {
 
             <div className="mt-6 pt-4 border-t border-border/50">
               <Button
-                variant={sub?.plan_tier === "PRO" ? "secondary" : "primary"}
+                variant={(sub?.plan_tier === "PRO" && !sub.plan_verified) ? "primary" : (sub?.plan_tier === "PRO" ? "secondary" : "primary")}
                 className="w-full text-xs font-bold py-2 flex items-center justify-center gap-1"
                 onClick={() => handleUpgrade("PRO")}
                 isLoading={actionLoading === "PRO"}
-                disabled={sub?.plan_tier === "PRO" || sub?.plan_tier === "ENTERPRISE" || !isAdmin}
+                disabled={(sub?.plan_tier === "PRO" && sub.plan_verified) || sub?.plan_tier === "ENTERPRISE" || !isAdmin}
               >
                 {sub?.plan_tier === "PRO" ? (
-                  "Active Plan"
+                  sub.plan_verified ? "Active Plan" : "Complete Payment"
                 ) : sub?.plan_tier === "ENTERPRISE" ? (
                   "Upgraded"
                 ) : !isAdmin ? (
@@ -379,7 +507,7 @@ export const BillingPage: React.FC = () => {
                   Enterprise Core <Shield className="w-3.5 h-3.5 text-primary" />
                 </h4>
                 <div className="mt-2 flex items-baseline">
-                  <span className="text-2xl font-black text-foreground">$79</span>
+                  <span className="text-2xl font-black text-foreground">$299</span>
                   <span className="text-xs font-semibold text-muted-foreground ml-1">/ month</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground font-semibold mt-2">
@@ -409,25 +537,78 @@ export const BillingPage: React.FC = () => {
 
             <div className="mt-6 pt-4 border-t border-border/50">
               <Button
-                variant={sub?.plan_tier === "ENTERPRISE" ? "secondary" : "primary"}
+                variant={(sub?.plan_tier === "ENTERPRISE" && !sub.plan_verified) ? "primary" : (sub?.plan_tier === "ENTERPRISE" ? "secondary" : "primary")}
                 className="w-full text-xs font-bold py-2 flex items-center justify-center gap-1"
                 onClick={() => handleUpgrade("ENTERPRISE")}
                 isLoading={actionLoading === "ENTERPRISE"}
-                disabled={sub?.plan_tier === "ENTERPRISE" || !isAdmin}
+                disabled={(sub?.plan_tier === "ENTERPRISE" && sub.plan_verified) || !isAdmin}
               >
                 {sub?.plan_tier === "ENTERPRISE" ? (
-                  "Active Plan"
+                  sub.plan_verified ? "Active Plan" : "Complete Payment"
                 ) : !isAdmin ? (
                   "Admin Access Required"
                 ) : (
                   <>
-                    Contact Sales / Upgrade <ArrowRight className="w-3.5 h-3.5" />
+                    Upgrade Workspace <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}
               </Button>
             </div>
           </Card>
         </div>
+      </div>
+
+      {/* Invoice & Receipt History Section */}
+      <div className="mt-4">
+        <Card className="p-5 flex flex-col gap-4">
+          <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/[0.06] pb-2 flex items-center gap-2">
+            <History className="w-4 h-4 text-purple-400" /> Subscription Payment History
+          </h3>
+          {invoices.length === 0 ? (
+            <div className="text-center py-8 text-xs text-gray-600 font-medium">
+              No payments recorded. Free subscription tier billing history is empty.
+            </div>
+          ) : (
+            <div className="w-full overflow-x-auto rounded-xl border border-white/[0.06] bg-gray-950/40">
+              <table className="w-full text-left border-collapse table-fixed text-xs">
+                <thead>
+                  <tr className="border-b border-white/[0.06] bg-white/[0.02] text-[9px] font-bold uppercase tracking-wider text-gray-500">
+                    <th className="p-3">Invoice / Receipt</th>
+                    <th className="p-3">Billing Date</th>
+                    <th className="p-3">Description</th>
+                    <th className="p-3">Paid Amount</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3 w-28 text-center font-bold">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/[0.04] text-gray-300 font-semibold">
+                  {invoices.map((inv) => (
+                    <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="p-3 font-mono font-bold text-white">{inv.receipt_number}</td>
+                      <td className="p-3 text-gray-400 font-medium">{inv.date}</td>
+                      <td className="p-3 text-gray-300 truncate">{inv.description}</td>
+                      <td className="p-3 text-white font-bold">{inv.amount}</td>
+                      <td className="p-3">
+                        <Badge variant={inv.status === "SUCCESS" ? "success" : "warning"}>
+                          {inv.status === "SUCCESS" ? "Paid" : inv.status}
+                        </Badge>
+                      </td>
+                      <td className="p-3 text-center">
+                        <button
+                          onClick={() => handleDownloadInvoice(inv.id, inv.receipt_number)}
+                          className="px-2.5 py-1 text-[10px] bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 font-bold rounded border border-purple-500/20 transition-all cursor-pointer inline-flex items-center gap-1"
+                        >
+                          <FileText className="w-3 h-3" />
+                          PDF
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Card>
       </div>
     </div>
   );

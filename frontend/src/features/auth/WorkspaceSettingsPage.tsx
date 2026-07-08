@@ -10,7 +10,8 @@ import {
   Lock,
   CreditCard,
   Mail,
-  Copy
+  Copy,
+  FileText
 } from "lucide-react";
 
 interface Organization {
@@ -152,6 +153,25 @@ export const WorkspaceSettingsPage: React.FC = () => {
       setInvoices(res.data || []);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleDownloadInvoice = async (paymentId: string, receiptNumber: string) => {
+    try {
+      const response = await api.get(`/billing/invoices/${paymentId}/download/`, {
+        responseType: 'blob'
+      });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `invoice_${receiptNumber}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to download invoice pdf", err);
     }
   };
 
@@ -835,22 +855,34 @@ export const WorkspaceSettingsPage: React.FC = () => {
                 <table className="w-full text-left border-collapse table-fixed text-xs">
                   <thead>
                     <tr className="border-b border-white/[0.06] bg-white/[0.02] text-[9px] font-bold uppercase tracking-wider text-gray-500">
-                      <th className="p-3">Invoice ID</th>
+                      <th className="p-3">Invoice / Receipt</th>
                       <th className="p-3">Billing Date</th>
                       <th className="p-3">Description</th>
                       <th className="p-3">Paid Amount</th>
                       <th className="p-3">Status</th>
+                      <th className="p-3 w-28 text-center font-bold">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/[0.04] text-gray-300 font-semibold">
                     {invoices.map((inv) => (
                       <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors">
-                        <td className="p-3 font-mono font-bold text-white">{inv.id}</td>
+                        <td className="p-3 font-mono font-bold text-white">{inv.receipt_number}</td>
                         <td className="p-3 text-gray-400 font-medium">{inv.date}</td>
                         <td className="p-3 text-gray-300 truncate">{inv.description}</td>
                         <td className="p-3 text-white font-bold">{inv.amount}</td>
                         <td className="p-3">
-                          <Badge variant="success">Paid</Badge>
+                          <Badge variant={inv.status === "SUCCESS" ? "success" : "warning"}>
+                            {inv.status === "SUCCESS" ? "Paid" : inv.status}
+                          </Badge>
+                        </td>
+                        <td className="p-3 text-center">
+                          <button
+                            onClick={() => handleDownloadInvoice(inv.id, inv.receipt_number)}
+                            className="px-2.5 py-1 text-[10px] bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 font-bold rounded border border-purple-500/20 transition-all cursor-pointer inline-flex items-center gap-1"
+                          >
+                            <FileText className="w-3 h-3" />
+                            PDF
+                          </button>
                         </td>
                       </tr>
                     ))}

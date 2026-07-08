@@ -1,0 +1,42 @@
+{% extends "core/email_base.html" %}
+
+{% block content %}
+<h2 class="heading" style="color: #1E1B4B; font-size: 20px; font-weight: bold; margin-bottom: 15px;">Payment Receipt & Confirmation</h2>
+<p class="text" style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 15px;">
+    Hello {{ username }},
+</p>
+<p class="text" style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">
+    Thank you for your payment! Here is the receipt for your subscription to the <strong>{{ plan_name }}</strong> plan. A copy of the formal invoice PDF is attached to this email.
+</p>
+
+<div class="details-box" style="background-color: #F8FAFC; border: 1px border #E2E8F0; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+    <div class="details-item" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+        <span class="details-label" style="color: #64748B; font-weight: 500;">Receipt Number:</span>
+        <span class="details-value" style="color: #0F172A; font-weight: bold;">{{ receipt_number }}</span>
+    </div>
+    <div class="details-item" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+        <span class="details-label" style="color: #64748B; font-weight: 500;">Transaction ID:</span>
+        <span class="details-value" style="color: #0F172A; font-weight: bold;">{{ transaction_id }}</span>
+    </div>
+    <div class="details-item" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+        <span class="details-label" style="color: #64748B; font-weight: 500;">Date:</span>
+        <span class="details-value" style="color: #0F172A; font-weight: bold;">{{ date }}</span>
+    </div>
+    <div class="details-item" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+        <span class="details-label" style="color: #64748B; font-weight: 500;">Organization:</span>
+        <span class="details-value" style="color: #0F172A; font-weight: bold;">{{ organization_name }}</span>
+    </div>
+    <div class="details-item" style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;">
+        <span class="details-label" style="color: #64748B; font-weight: 500;">Subscribed Plan:</span>
+        <span class="details-value" style="color: #0F172A; font-weight: bold;">{{ plan_name }}</span>
+    </div>
+    <div class="details-item" style="display: flex; justify-content: space-between; border-t border-white; pt-2; font-size: 14px;">
+        <span class="details-label" style="color: #64748B; font-weight: bold;">Amount Paid:</span>
+        <span class="details-value" style="color: #1E1B4B; font-weight: 900;">{{ amount }}</span>
+    </div>
+</div>
+
+<p class="text" style="font-size: 12px; color: #64748B; text-align: center; margin-top: 25px;">
+    Your subscription is active. If you did not make this purchase, please contact support@bahub.com immediately.
+</p>
+{% endblock %}

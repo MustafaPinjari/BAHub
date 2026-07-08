@@ -29,6 +29,11 @@ class UserSerializer(serializers.ModelSerializer):
     preferences = UserPreferenceSerializer(read_only=True)
     organization_name = serializers.CharField(source="organization.name", read_only=True)
     plan_tier = serializers.SerializerMethodField()
+    plan_verified = serializers.SerializerMethodField()
+    payment_status = serializers.SerializerMethodField()
+    in_grace_period = serializers.SerializerMethodField()
+    grace_period_remaining_days = serializers.SerializerMethodField()
+    subscription_expires_at = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -46,24 +51,77 @@ class UserSerializer(serializers.ModelSerializer):
             "organization_name",
             "preferences",
             "plan_tier",
+            "plan_verified",
+            "payment_status",
+            "in_grace_period",
+            "grace_period_remaining_days",
+            "subscription_expires_at",
+            "is_staff",
+            "is_superuser",
             "created_at",
         ]
-        read_only_fields = ["id", "username", "email", "role", "organization", "plan_tier", "created_at"]
+        read_only_fields = [
+            "id", "username", "email", "role", "organization", "plan_tier", 
+            "plan_verified", "payment_status", "in_grace_period", 
+            "grace_period_remaining_days", "subscription_expires_at", 
+            "is_staff", "is_superuser", "created_at"
+        ]
+
+    def get_subscription_obj(self, obj):
+        if not obj.organization:
+            return None
+        from billing.models import TenantSubscription
+        sub, _ = TenantSubscription.objects.get_or_create(
+            organization=obj.organization,
+            defaults={
+                "plan_tier": "FREE",
+                "seats_limit": 5,
+                "is_active": True,
+                "plan_verified": True,
+                "ai_credits_limit": 100
+            }
+        )
+        return sub
 
     def get_plan_tier(self, obj):
-        if obj.organization:
-            from billing.models import TenantSubscription
-            sub, _ = TenantSubscription.objects.get_or_create(
-                organization=obj.organization,
-                defaults={
-                    "plan_tier": "FREE",
-                    "seats_limit": 5,
-                    "is_active": True,
-                    "ai_credits_limit": 100
-                }
-            )
-            return sub.plan_tier
-        return "FREE"
+        sub = self.get_subscription_obj(obj)
+        return sub.plan_tier if sub else "FREE"
+
+    def get_plan_verified(self, obj):
+        sub = self.get_subscription_obj(obj)
+        return sub.plan_verified if sub else True
+
+    def get_payment_status(self, obj):
+        sub = self.get_subscription_obj(obj)
+        return sub.payment_status if sub else "SUCCESS"
+
+    def get_in_grace_period(self, obj):
+        sub = self.get_subscription_obj(obj)
+        if sub and sub.plan_tier != "FREE" and sub.expires_at:
+            from django.utils import timezone
+            import datetime
+            now = timezone.now()
+            grace_ends = sub.expires_at + datetime.timedelta(days=7)
+            return sub.expires_at < now < grace_ends
+        return False
+
+    def get_grace_period_remaining_days(self, obj):
+        sub = self.get_subscription_obj(obj)
+        if sub and sub.plan_tier != "FREE" and sub.expires_at:
+            from django.utils import timezone
+            import datetime
+            now = timezone.now()
+            grace_ends = sub.expires_at + datetime.timedelta(days=7)
+            if sub.expires_at < now < grace_ends:
+                diff = grace_ends - now
+                return max(0, diff.days)
+        return 0
+
+    def get_subscription_expires_at(self, obj):
+        sub = self.get_subscription_obj(obj)
+        if sub and sub.expires_at:
+            return sub.expires_at.strftime("%Y-%m-%d")
+        return None
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
@@ -232,10 +290,14 @@ class RegisterSerializer(serializers.Serializer):
                     "plan_tier": "FREE",
                     "seats_limit": 5,
                     "is_active": True,
+                    "plan_verified": True,
                     "ai_credits_limit": 100
                 }
             )
             sub.plan_tier = plan_tier
+            sub.plan_verified = False  # Set to False until they pay!
+            sub.is_active = False  # Set to False until they pay!
+            sub.payment_status = "PENDING"
             if plan_tier == "PRO":
                 sub.seats_limit = 20
                 sub.ai_credits_limit = 1000

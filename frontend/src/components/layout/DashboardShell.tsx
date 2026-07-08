@@ -269,6 +269,17 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
           MAIN CONTENT AREA
           ========================================== */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {user?.in_grace_period && (
+          <div className="bg-amber-500 text-black py-1.5 px-4 text-center font-bold text-xs select-none flex items-center justify-center gap-2 z-50 shrink-0 border-b border-amber-600">
+            <span>⚠️ Subscription renewal failed. Your grace period expires in {user.grace_period_remaining_days} days. Please complete payment to avoid disruption.</span>
+            <button 
+              onClick={() => navigate('/billing')} 
+              className="ml-3 px-3 py-0.5 bg-black text-white rounded text-[9px] font-extrabold uppercase hover:bg-black/80 transition-colors cursor-pointer"
+            >
+              Pay Now
+            </button>
+          </div>
+        )}
         {/* Top Navbar — DNA glass blur */}
         <header className="h-12 border-b border-white/[0.07] bg-black/70 backdrop-blur-xl flex items-center justify-between px-5 shrink-0 z-20">
           {/* Left: Breadcrumbs & Project Context */}
