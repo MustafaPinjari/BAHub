@@ -1,3 +1,4 @@
+{% autoescape off %}
 Hello,
 
 Your organization '{{ organization_name }}' has requested an upgrade to the {{ plan_name }} plan.
@@ -8,3 +9,4 @@ Please verify this subscription upgrade to activate your plan and unlock Gemini 
 
 Best regards,
 The BAHub Billing Team
+{% endautoescape %}

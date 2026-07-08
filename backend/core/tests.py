@@ -46,8 +46,8 @@ class EmailServiceTests(TestCase):
         self.meeting = Meeting.objects.create(
             project=self.project,
             title="Design Sync",
-            date="2026-07-10",
-            time="11:00:00",
+            date=datetime.date(2026, 7, 10),
+            time=datetime.time(11, 0, 0),
             objective="Align design requirements."
         )
 
