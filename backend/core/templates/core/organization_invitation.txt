@@ -1,0 +1,12 @@
+Hello,
+
+You have been invited by {{ inviter_name }} to join the {{ organization_name }} workspace on BAHub as a {{ role }}.
+
+Accept the invitation and sign up by clicking the link below:
+
+{{ invite_url }}
+
+This invitation is valid for 7 days (expires on {{ expires_at }}).
+
+Best regards,
+The BAHub Team

@@ -11,7 +11,6 @@ from .models import TenantSubscription
 from .serializers import TenantSubscriptionSerializer
 
 import uuid
-from django.core.mail import send_mail
 from django.contrib.auth import get_user_model
 
 stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", None)
@@ -50,21 +49,14 @@ def trigger_subscription_verification(request, sub, plan):
             f"/api/v1/billing/verify-subscription/?token={token}&org_id={sub.organization.id}"
         )
 
-        subject = f"BAHub: Verify Your {plan.capitalize()} Subscription Upgrade"
-        message = (
-            f"Hello,\n\n"
-            f"Your organization '{sub.organization.name}' has requested an upgrade to the {plan.capitalize()} plan.\n\n"
-            f"Please verify this subscription upgrade to activate your plan and unlock Gemini AI features by clicking the link below:\n\n"
-            f"{verify_url}\n\n"
-            f"Best regards,\nThe BAHub Billing Team"
-        )
-
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email="unlessuser99@gmail.com",
-            recipient_list=recipients,
-            fail_silently=False
+        from core.emails import send_subscription_verification_email
+        send_subscription_verification_email(
+            organization_name=sub.organization.name,
+            plan_name=plan,
+            seats_limit=sub.seats_limit,
+            ai_credits_limit=sub.ai_credits_limit,
+            verify_url=verify_url,
+            recipient_list=recipients
         )
     else:
         if plan not in ["PRO", "ENTERPRISE"]:

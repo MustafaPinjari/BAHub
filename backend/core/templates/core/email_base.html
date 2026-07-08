@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #090816;
+            color: #E2E8F0;
+            -webkit-font-smoothing: antialiased;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .wrapper {
+            background-color: #090816;
+            width: 100%;
+            padding: 40px 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #121026;
+            border: 1px solid #232043;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .banner-img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-bottom: 1px solid #232043;
+        }
+        .content {
+            padding: 32px 28px;
+        }
+        .heading {
+            font-size: 22px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-top: 0;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+        .text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #CBD5E1;
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+        .btn-container {
+            margin-bottom: 28px;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+            color: #FFFFFF !important;
+            text-decoration: none;
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .details-box {
+            background-color: #1B183A;
+            border-left: 4px solid #6366F1;
+            border-radius: 0 8px 8px 0;
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+        .details-item {
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #E2E8F0;
+        }
+        .details-item:last-child {
+            margin-bottom: 0;
+        }
+        .details-label {
+            font-weight: 600;
+            color: #818CF8;
+            display: inline-block;
+            width: 130px;
+        }
+        .details-value {
+            color: #FFFFFF;
+        }
+        .divider {
+            border: 0;
+            border-top: 1px solid #232043;
+            margin: 28px 0;
+        }
+        .footer {
+            padding: 24px;
+            text-align: center;
+            background-color: #0E0D21;
+            border-top: 1px solid #1D1B36;
+        }
+        .footer-logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+        .footer-logo span {
+            color: #6366F1;
+        }
+        .footer-tagline {
+            font-size: 12px;
+            color: #64748B;
+            margin-bottom: 16px;
+        }
+        .footer-text {
+            font-size: 11px;
+            color: #475569;
+            line-height: 1.5;
+            margin: 0;
+        }
+        .footer-links {
+            margin-top: 12px;
+        }
+        .footer-link {
+            color: #818CF8;
+            text-decoration: none;
+            font-size: 11px;
+            margin: 0 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <table border="0" cellpadding="0" cellspacing="0" align="center" style="max-width: 600px;">
+            <tr>
+                <td>
+                    <div class="container">
+                        <!-- Header Banner -->
+                        {% if has_banner %}
+                        <img src="cid:email_banner" alt="BAHub Banner" class="banner-img" />
+                        {% endif %}
+                        
+                        <!-- Content Body -->
+                        <div class="content">
+                            {% block content %}
+                            {% endblock %}
+                        </div>
+                        
+                        <!-- Footer Section -->
+                        <div class="footer">
+                            <div class="footer-logo">BA<span>Hub</span></div>
+                            <div class="footer-tagline">AI-Powered Business Analyst Workspace</div>
+                            <p class="footer-text">
+                                This email was sent to you as a notification regarding your activity on BAHub.<br>
+                                Please do not reply directly to this automated message.
+                            </p>
+                            <div class="footer-links">
+                                <a href="https://bahub-beta.netlify.app" class="footer-link">Visit BAHub</a>
+                                <a href="mailto:unlessuser99@gmail.com" class="footer-link">Contact Support</a>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

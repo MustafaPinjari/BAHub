@@ -69,7 +69,10 @@ class OrganizationInvitationViewSet(viewsets.ModelViewSet):
         if user.role != "ADMIN":
             raise PermissionDenied("Only administrators can create workspace invitations.")
 
-        serializer.save(
+        invite = serializer.save(
             organization=user.organization,
             expires_at=timezone.now() + datetime.timedelta(days=7)
         )
+
+        from core.emails import send_organization_invitation_email
+        send_organization_invitation_email(invite, user)

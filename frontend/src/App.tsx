@@ -5,7 +5,6 @@ import { ProjectProvider } from "./features/projects/ProjectContext";
 import { LoginForm } from "./features/auth/components/LoginForm";
 import { RegisterForm } from "./features/auth/components/RegisterForm";
 import { DashboardShell } from "./components/layout/DashboardShell";
-import logo from "./assets/logo.png";
 import banner from "./assets/banner.png";
 import { LandingPage } from "./features/landing/LandingPage.tsx";
 

@@ -492,3 +492,212 @@ WARNING 2026-07-08 16:20:07,443 log 21824 12616 Unauthorized: /api/v1/auth/profi
 WARNING 2026-07-08 16:20:07,444 runserver 21824 1620 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.04, 127.0.0.1:63240][0m
 WARNING 2026-07-08 16:20:07,461 log 21824 12616 Unauthorized: /api/v1/auth/profile/
 WARNING 2026-07-08 16:20:07,462 runserver 21824 1620 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:63240][0m
+WARNING 2026-07-08 16:41:02,371 log 20388 8968 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 16:41:05,466 log 20388 8968 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 16:41:06,226 log 20388 8968 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 16:41:15,928 log 20388 8968 Forbidden: /api/v1/documents/
+WARNING 2026-07-08 16:41:16,307 exceptions 20388 8968 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 16:41:16,307 log 20388 8968 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 16:41:16,683 exceptions 20388 8968 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 16:41:16,683 log 20388 8968 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 16:41:17,849 log 20388 8968 Unauthorized: /api/v1/billing/subscription/
+WARNING 2026-07-08 16:41:18,997 log 20388 8968 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 16:41:19,000 log 20388 8968 Payment Required: /api/v1/diagrams/generate/
+WARNING 2026-07-08 16:41:19,783 log 20388 8968 Bad Request: /api/v1/billing/verify-subscription/
+WARNING 2026-07-08 16:41:22,082 log 20388 8968 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 16:41:27,778 exceptions 20388 8968 API Error (400): {'invite_token': [ErrorDetail(string='The workspace subscription is currently inactive. Please contact your administrator.', code='invalid')]}
+WARNING 2026-07-08 16:41:27,778 log 20388 8968 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 16:41:33,824 exceptions 20388 8968 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-08 16:41:33,824 log 20388 8968 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 16:41:36,598 log 20388 8968 Not Found: /api/v1/documents/7fe909c8-f787-41b3-866c-9ab0b9ed1bd1/export-pdf/
+WARNING 2026-07-08 16:41:37,763 log 20388 8968 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-08 16:41:37,777 log 20388 8968 Bad Request: /api/v1/documents/a2893231-f476-4c70-9ddd-133794dd6540/sign-off/
+WARNING 2026-07-08 16:41:38,952 log 20388 8968 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-08 16:41:39,003 log 20388 8968 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-08 16:41:40,173 log 20388 8968 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-08 16:41:42,561 log 20388 8968 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-08 16:41:43,348 exceptions 20388 8968 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-08 16:41:43,348 log 20388 8968 Bad Request: /api/v1/meetings/
+WARNING 2026-07-08 16:41:43,362 exceptions 20388 8968 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-08 16:41:43,362 log 20388 8968 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-08 16:41:46,477 log 20388 8968 Forbidden: /api/v1/organizations/invitations/
+WARNING 2026-07-08 16:41:55,659 exceptions 20388 8968 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-08 16:41:55,659 log 20388 8968 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-08 16:42:02,238 exceptions 20388 8968 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 16:42:02,239 log 20388 8968 Bad Request: /api/v1/requirements/
+WARNING 2026-07-08 16:42:02,242 exceptions 20388 8968 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-08 16:42:02,242 log 20388 8968 Bad Request: /api/v1/requirements/
+WARNING 2026-07-08 16:42:03,830 log 20388 8968 Bad Request: /api/v1/risks/change-requests/248fb6b9-4f76-4948-b4f4-a780269e78dd/review/
+WARNING 2026-07-08 16:42:05,024 exceptions 20388 8968 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 16:42:05,024 log 20388 8968 Bad Request: /api/v1/risks/
+WARNING 2026-07-08 16:42:05,827 exceptions 20388 8968 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-08 16:42:05,828 log 20388 8968 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-08 16:42:05,830 exceptions 20388 8968 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-08 16:42:05,830 log 20388 8968 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-08 16:42:08,567 exceptions 20388 8968 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-08 16:42:08,567 log 20388 8968 Bad Request: /api/v1/stories/
+WARNING 2026-07-08 16:42:13,201 exceptions 20388 8968 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 16:42:13,201 log 20388 8968 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-08 16:42:14,113 log 20388 8968 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-08 16:42:15,788 exceptions 20388 8968 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-08 16:42:15,789 log 20388 8968 Bad Request: /api/v1/teams/
+WARNING 2026-07-08 16:42:15,791 exceptions 20388 8968 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-08 16:42:15,791 log 20388 8968 Bad Request: /api/v1/teams/
+WARNING 2026-07-08 16:42:19,396 log 20388 8968 Forbidden: /api/v1/teams/
+WARNING 2026-07-08 16:42:23,314 exceptions 20388 8968 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot link to a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 16:42:23,315 log 20388 8968 Bad Request: /api/v1/uat/test-cases/
+WARNING 2026-07-08 16:42:24,889 log 20388 8968 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-08 16:42:25,283 exceptions 20388 8968 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-08 16:42:25,283 log 20388 8968 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 16:42:25,288 exceptions 20388 8968 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-08 16:42:25,288 log 20388 8968 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 16:42:25,291 exceptions 20388 8968 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-08 16:42:25,291 log 20388 8968 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:01:07,335 log 22248 16576 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 17:01:10,422 log 22248 16576 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:01:11,214 log 22248 16576 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:01:21,233 log 22248 16576 Forbidden: /api/v1/documents/
+WARNING 2026-07-08 17:01:21,631 exceptions 22248 16576 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 17:01:21,631 log 22248 16576 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 17:01:22,042 exceptions 22248 16576 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 17:01:22,042 log 22248 16576 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 17:01:23,211 log 22248 16576 Unauthorized: /api/v1/billing/subscription/
+WARNING 2026-07-08 17:01:24,372 log 22248 16576 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 17:01:24,375 log 22248 16576 Payment Required: /api/v1/diagrams/generate/
+WARNING 2026-07-08 17:01:25,166 log 22248 16576 Bad Request: /api/v1/billing/verify-subscription/
+WARNING 2026-07-08 17:01:27,526 log 22248 16576 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:01:35,022 exceptions 22248 16576 API Error (400): {'invite_token': [ErrorDetail(string='The workspace subscription is currently inactive. Please contact your administrator.', code='invalid')]}
+WARNING 2026-07-08 17:01:35,022 log 22248 16576 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:01:43,486 exceptions 22248 16576 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-08 17:01:43,486 log 22248 16576 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:01:46,733 log 22248 16576 Not Found: /api/v1/documents/867c4c3a-6d5d-40bd-9c9e-7fe0830a3cc5/export-pdf/
+WARNING 2026-07-08 17:01:48,019 log 22248 16576 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-08 17:01:48,031 log 22248 16576 Bad Request: /api/v1/documents/d9dbac1d-e5b1-4699-a3b3-ba0f55dfc325/sign-off/
+WARNING 2026-07-08 17:01:49,328 log 22248 16576 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-08 17:01:49,380 log 22248 16576 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-08 17:01:50,640 log 22248 16576 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-08 17:01:53,390 log 22248 16576 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-08 17:01:54,240 exceptions 22248 16576 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-08 17:01:54,240 log 22248 16576 Bad Request: /api/v1/meetings/
+WARNING 2026-07-08 17:01:54,261 exceptions 22248 16576 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-08 17:01:54,261 log 22248 16576 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-08 17:01:57,652 log 22248 16576 Forbidden: /api/v1/organizations/invitations/
+WARNING 2026-07-08 17:02:09,626 exceptions 22248 16576 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-08 17:02:09,626 log 22248 16576 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-08 17:02:18,037 exceptions 22248 16576 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:02:18,037 log 22248 16576 Bad Request: /api/v1/requirements/
+WARNING 2026-07-08 17:02:18,043 exceptions 22248 16576 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-08 17:02:18,043 log 22248 16576 Bad Request: /api/v1/requirements/
+WARNING 2026-07-08 17:02:20,221 log 22248 16576 Bad Request: /api/v1/risks/change-requests/2c6a3b39-444b-428b-a37b-5586091bf310/review/
+WARNING 2026-07-08 17:02:21,791 exceptions 22248 16576 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:02:21,792 log 22248 16576 Bad Request: /api/v1/risks/
+WARNING 2026-07-08 17:02:22,798 exceptions 22248 16576 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-08 17:02:22,798 log 22248 16576 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-08 17:02:22,801 exceptions 22248 16576 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-08 17:02:22,801 log 22248 16576 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-08 17:02:25,899 exceptions 22248 16576 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:02:25,900 log 22248 16576 Bad Request: /api/v1/stories/
+WARNING 2026-07-08 17:02:30,259 exceptions 22248 16576 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:02:30,259 log 22248 16576 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-08 17:02:31,170 log 22248 16576 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-08 17:02:32,943 exceptions 22248 16576 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-08 17:02:32,944 log 22248 16576 Bad Request: /api/v1/teams/
+WARNING 2026-07-08 17:02:32,947 exceptions 22248 16576 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-08 17:02:32,948 log 22248 16576 Bad Request: /api/v1/teams/
+WARNING 2026-07-08 17:02:36,427 log 22248 16576 Forbidden: /api/v1/teams/
+WARNING 2026-07-08 17:02:41,023 exceptions 22248 16576 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot link to a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:02:41,023 log 22248 16576 Bad Request: /api/v1/uat/test-cases/
+WARNING 2026-07-08 17:02:42,849 log 22248 16576 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-08 17:02:43,260 exceptions 22248 16576 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-08 17:02:43,260 log 22248 16576 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:02:43,264 exceptions 22248 16576 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-08 17:02:43,264 log 22248 16576 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:02:43,266 exceptions 22248 16576 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-08 17:02:43,267 log 22248 16576 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:04:22,396 log 12788 17500 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 17:04:25,482 log 12788 17500 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:04:26,242 log 12788 17500 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:04:35,978 log 12788 17500 Forbidden: /api/v1/documents/
+WARNING 2026-07-08 17:04:36,368 exceptions 12788 17500 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 17:04:36,368 log 12788 17500 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 17:04:36,743 exceptions 12788 17500 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 17:04:36,743 log 12788 17500 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 17:04:37,863 log 12788 17500 Unauthorized: /api/v1/billing/subscription/
+WARNING 2026-07-08 17:04:39,040 log 12788 17500 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 17:04:39,042 log 12788 17500 Payment Required: /api/v1/diagrams/generate/
+WARNING 2026-07-08 17:04:39,800 log 12788 17500 Bad Request: /api/v1/billing/verify-subscription/
+WARNING 2026-07-08 17:04:42,149 log 12788 17500 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:04:48,167 exceptions 12788 17500 API Error (400): {'invite_token': [ErrorDetail(string='The workspace subscription is currently inactive. Please contact your administrator.', code='invalid')]}
+WARNING 2026-07-08 17:04:48,167 log 12788 17500 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:04:54,422 exceptions 12788 17500 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-08 17:04:54,422 log 12788 17500 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:04:57,192 log 12788 17500 Not Found: /api/v1/documents/fb124cb4-ac59-45c0-bd85-784e72a843e3/export-pdf/
+WARNING 2026-07-08 17:04:58,359 log 12788 17500 Bad Request: /api/v1/documents/generate/
+WARNING 2026-07-08 17:04:58,369 log 12788 17500 Bad Request: /api/v1/documents/45b7da15-eeae-42b4-9183-2122bf86c474/sign-off/
+WARNING 2026-07-08 17:04:59,586 log 12788 17500 Bad Request: /api/v1/integrations/config/by-project/
+WARNING 2026-07-08 17:04:59,620 log 12788 17500 Bad Request: /api/v1/integrations/config/save-config/
+WARNING 2026-07-08 17:05:00,855 log 12788 17500 Bad Request: /api/v1/integrations/test-connection/
+WARNING 2026-07-08 17:05:03,236 log 12788 17500 Bad Request: /api/v1/integrations/jira/sync-stories/
+WARNING 2026-07-08 17:05:04,026 exceptions 12788 17500 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-08 17:05:04,027 log 12788 17500 Bad Request: /api/v1/meetings/
+WARNING 2026-07-08 17:05:04,043 exceptions 12788 17500 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-08 17:05:04,043 log 12788 17500 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-08 17:05:07,277 log 12788 17500 Forbidden: /api/v1/organizations/invitations/
+WARNING 2026-07-08 17:05:16,323 exceptions 12788 17500 API Error (400): {'non_field_errors': [ErrorDetail(string="Cannot assign a member from outside the project's organization.", code='invalid')]}
+WARNING 2026-07-08 17:05:16,323 log 12788 17500 Bad Request: /api/v1/projects/memberships/
+WARNING 2026-07-08 17:05:22,809 exceptions 12788 17500 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a requirement for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:05:22,809 log 12788 17500 Bad Request: /api/v1/requirements/
+WARNING 2026-07-08 17:05:22,813 exceptions 12788 17500 API Error (400): {'source_stakeholder': [ErrorDetail(string="Assigned stakeholder must belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-08 17:05:22,813 log 12788 17500 Bad Request: /api/v1/requirements/
+WARNING 2026-07-08 17:05:24,400 log 12788 17500 Bad Request: /api/v1/risks/change-requests/9a0705ce-5fe6-4303-9e2f-8531f7432657/review/
+WARNING 2026-07-08 17:05:25,588 exceptions 12788 17500 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a risk for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:05:25,588 log 12788 17500 Bad Request: /api/v1/risks/
+WARNING 2026-07-08 17:05:26,385 exceptions 12788 17500 API Error (400): {'influence': [ErrorDetail(string='Influence rating must be between 1 and 5.', code='invalid')]}
+WARNING 2026-07-08 17:05:26,385 log 12788 17500 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-08 17:05:26,388 exceptions 12788 17500 API Error (400): {'project': [ErrorDetail(string="Assigned project must belong to the stakeholder's organization.", code='invalid')]}
+WARNING 2026-07-08 17:05:26,388 log 12788 17500 Bad Request: /api/v1/stakeholders/
+WARNING 2026-07-08 17:05:28,843 exceptions 12788 17500 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot map a user story to a requirement outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:05:28,844 log 12788 17500 Bad Request: /api/v1/stories/
+WARNING 2026-07-08 17:05:32,176 exceptions 12788 17500 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot create or update a Gap analysis for a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:05:32,177 log 12788 17500 Bad Request: /api/v1/strategic/gap/
+WARNING 2026-07-08 17:05:33,015 log 12788 17500 Bad Request: /api/v1/strategic/swot/
+WARNING 2026-07-08 17:05:34,667 exceptions 12788 17500 API Error (400): {'lead': [ErrorDetail(string="The team lead must belong to the team's organization.", code='invalid')]}
+WARNING 2026-07-08 17:05:34,668 log 12788 17500 Bad Request: /api/v1/teams/
+WARNING 2026-07-08 17:05:34,670 exceptions 12788 17500 API Error (400): {'members': [ErrorDetail(string='Member analyst_b does not belong to this organization.', code='invalid')]}
+WARNING 2026-07-08 17:05:34,670 log 12788 17500 Bad Request: /api/v1/teams/
+WARNING 2026-07-08 17:05:37,982 log 12788 17500 Forbidden: /api/v1/teams/
+WARNING 2026-07-08 17:05:42,085 exceptions 12788 17500 API Error (400): {'non_field_errors': [ErrorDetail(string='Cannot link to a project outside your organization.', code='invalid')]}
+WARNING 2026-07-08 17:05:42,086 log 12788 17500 Bad Request: /api/v1/uat/test-cases/
+WARNING 2026-07-08 17:05:43,675 log 12788 17500 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-08 17:05:44,084 exceptions 12788 17500 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-08 17:05:44,085 log 12788 17500 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:05:44,089 exceptions 12788 17500 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-08 17:05:44,089 log 12788 17500 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:05:44,091 exceptions 12788 17500 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-08 17:05:44,092 log 12788 17500 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:55:04,542 exceptions 10876 16428 API Error (400): {'attendees': [ErrorDetail(string="Attendee @analyst_b does not belong to the project's organization.", code='invalid')]}
+WARNING 2026-07-08 17:55:04,544 log 10876 16428 Bad Request: /api/v1/meetings/
+WARNING 2026-07-08 17:55:06,200 exceptions 10876 16428 API Error (400): {'assignee': [ErrorDetail(string="Assigned user must belong to the meeting's organization.", code='invalid')]}
+WARNING 2026-07-08 17:55:06,200 log 10876 16428 Bad Request: /api/v1/meetings/action-items/
+WARNING 2026-07-08 17:55:07,817 log 10876 16428 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 17:55:10,960 log 10876 16428 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:55:11,698 log 10876 16428 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:55:21,101 log 10876 16428 Forbidden: /api/v1/documents/
+WARNING 2026-07-08 17:55:21,524 exceptions 10876 16428 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 17:55:21,524 log 10876 16428 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 17:55:21,935 exceptions 10876 16428 API Error (400): {'content': [ErrorDetail(string='This field is required.', code='required')]}
+WARNING 2026-07-08 17:55:21,935 log 10876 16428 Bad Request: /api/v1/documents/
+WARNING 2026-07-08 17:55:23,151 log 10876 16428 Unauthorized: /api/v1/billing/subscription/
+WARNING 2026-07-08 17:55:24,331 log 10876 16428 Payment Required: /api/v1/strategic/ai/chat/
+WARNING 2026-07-08 17:55:24,334 log 10876 16428 Payment Required: /api/v1/diagrams/generate/
+WARNING 2026-07-08 17:55:25,159 log 10876 16428 Bad Request: /api/v1/billing/verify-subscription/
+WARNING 2026-07-08 17:55:28,114 log 10876 16428 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-08 17:55:28,152 log 17088 2832 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-08 17:55:28,154 runserver 17088 15236 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.02, 127.0.0.1:56147][0m
+WARNING 2026-07-08 17:55:28,167 log 17088 2832 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-08 17:55:28,168 runserver 17088 15236 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:56147][0m
+WARNING 2026-07-08 17:55:35,490 exceptions 10876 16428 API Error (400): {'invite_token': [ErrorDetail(string='The workspace subscription is currently inactive. Please contact your administrator.', code='invalid')]}
+WARNING 2026-07-08 17:55:35,491 log 10876 16428 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:55:42,676 exceptions 10876 16428 API Error (400): {'invite_token': [ErrorDetail(string='This workspace has reached its member seat limit. The administrator must upgrade the subscription to add more seats.', code='invalid')]}
+WARNING 2026-07-08 17:55:42,677 log 10876 16428 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 17:55:45,341 log 10876 16428 Forbidden: /api/v1/organizations/invitations/

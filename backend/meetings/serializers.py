@@ -3,6 +3,7 @@ from .models import Meeting, ActionItem
 from django.contrib.auth import get_user_model
 from users.serializers import UserSerializer
 from projects.models import Project
+from stakeholders.serializers import StakeholderSerializer
 
 User = get_user_model()
 
@@ -44,6 +45,7 @@ class ActionItemSerializer(serializers.ModelSerializer):
 
 class MeetingSerializer(serializers.ModelSerializer):
     attendees_detail = UserSerializer(source="attendees", many=True, read_only=True)
+    stakeholder_attendees_detail = StakeholderSerializer(source="stakeholder_attendees", many=True, read_only=True)
     action_items = ActionItemSerializer(many=True, read_only=True)
     project_name = serializers.CharField(source="project.name", read_only=True)
 
@@ -60,6 +62,8 @@ class MeetingSerializer(serializers.ModelSerializer):
             "notes",
             "attendees",
             "attendees_detail",
+            "stakeholder_attendees",
+            "stakeholder_attendees_detail",
             "action_items",
             "created_at",
             "updated_at",
@@ -101,6 +105,26 @@ class MeetingSerializer(serializers.ModelSerializer):
             if attendee.organization != project.organization:
                 raise serializers.ValidationError(
                     f"Attendee @{attendee.username} does not belong to the project's organization."
+                )
+
+        return value
+
+    def validate_stakeholder_attendees(self, value):
+        project_id = self.initial_data.get("project")
+        if not project_id and self.instance:
+            project = self.instance.project
+        elif project_id:
+            try:
+                project = Project.objects.get(id=project_id)
+            except Project.DoesNotExist:
+                return value
+        else:
+            return value
+
+        for stakeholder in value:
+            if stakeholder.organization != project.organization:
+                raise serializers.ValidationError(
+                    f"Stakeholder {stakeholder.name} does not belong to the project's organization."
                 )
 
         return value

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
-import { Card, Badge, Button, Input, Select, Alert } from "../../components/common/UIComponents";
+import { Card, Badge, Button, Input, Select, Alert, Textarea } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
 import { 
@@ -26,6 +26,13 @@ interface User {
   last_name: string;
 }
 
+interface Stakeholder {
+  id: string;
+  name: string;
+  title: string;
+  department: string;
+}
+
 interface ActionItem {
   id: string;
   meeting: string;
@@ -48,6 +55,8 @@ interface Meeting {
   notes: string;
   attendees: string[];
   attendees_detail: User[];
+  stakeholder_attendees?: string[];
+  stakeholder_attendees_detail?: Stakeholder[];
   action_items: ActionItem[];
 }
 
@@ -69,6 +78,9 @@ export const MeetingsPage: React.FC = () => {
   const [formTime, setFormTime] = useState("");
   const [formObjective, setFormObjective] = useState("");
   const [formAttendees, setFormAttendees] = useState<string[]>([]);
+  const [formStakeholders, setFormStakeholders] = useState<string[]>([]);
+  const [stakeholders, setStakeholders] = useState<Stakeholder[]>([]);
+  const [attendeeSearch, setAttendeeSearch] = useState("");
 
   // MoM text state
   const [isEditingNotes, setIsEditingNotes] = useState(false);
@@ -116,9 +128,20 @@ export const MeetingsPage: React.FC = () => {
     }
   };
 
+  const fetchStakeholders = async () => {
+    if (!activeProject) return;
+    try {
+      const res = await api.get<any, { data: Stakeholder[] }>(`/stakeholders/?project=${activeProject.id}`);
+      setStakeholders(res.data);
+    } catch (err) {
+      console.error("Failed to load stakeholders:", err);
+    }
+  };
+
   useEffect(() => {
     fetchMeetings();
     fetchOrgUsers();
+    fetchStakeholders();
   }, [activeProject]);
 
 
@@ -138,9 +161,17 @@ export const MeetingsPage: React.FC = () => {
     setFormTime("10:00");
     setFormObjective("");
     setFormAttendees([]);
+    setFormStakeholders([]);
+    setAttendeeSearch("");
     setFormError(null);
     setSuccessMessage(null);
     setModalOpen(true);
+  };
+
+  const handleToggleStakeholder = (id: string) => {
+    setFormStakeholders((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
   };
 
   const handleScheduleMeeting = async (e: React.FormEvent) => {
@@ -156,6 +187,7 @@ export const MeetingsPage: React.FC = () => {
       time: formTime,
       objective: formObjective,
       attendees: formAttendees,
+      stakeholder_attendees: formStakeholders,
     };
 
     try {
@@ -425,18 +457,26 @@ export const MeetingsPage: React.FC = () => {
               {/* Attendees list map */}
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Attendees ({selectedMeeting.attendees_detail.length})
+                  Attendees ({selectedMeeting.attendees_detail.length + (selectedMeeting.stakeholder_attendees_detail?.length ?? 0)})
                 </span>
                 <div className="flex flex-wrap gap-1.5 mt-0.5">
-                  {selectedMeeting.attendees_detail.length === 0 ? (
+                  {selectedMeeting.attendees_detail.length === 0 && (!selectedMeeting.stakeholder_attendees_detail || selectedMeeting.stakeholder_attendees_detail.length === 0) ? (
                     <span className="text-xs text-muted-foreground/60 italic">No attendees registered</span>
                   ) : (
-                    selectedMeeting.attendees_detail.map((att) => (
-                      <Badge key={att.id} variant="secondary" className="text-[9px] font-bold py-0.5 px-2 flex items-center gap-1 bg-secondary border border-border text-foreground">
-                        <UserCheck className="w-2.5 h-2.5 text-primary shrink-0" />
-                        {att.first_name} {att.last_name} (@{att.username})
-                      </Badge>
-                    ))
+                    <>
+                      {selectedMeeting.attendees_detail.map((att) => (
+                        <Badge key={att.id} variant="secondary" className="text-[9px] font-bold py-0.5 px-2 flex items-center gap-1 bg-secondary border border-border text-foreground">
+                          <UserCheck className="w-2.5 h-2.5 text-primary shrink-0" />
+                          {att.first_name} {att.last_name} (@{att.username})
+                        </Badge>
+                      ))}
+                      {selectedMeeting.stakeholder_attendees_detail?.map((s) => (
+                        <Badge key={s.id} variant="secondary" className="text-[9px] font-bold py-0.5 px-2 flex items-center gap-1 bg-secondary border border-border text-purple-400">
+                          <UserCheck className="w-2.5 h-2.5 text-purple-500 shrink-0" />
+                          {s.name} (Stakeholder | {s.title})
+                        </Badge>
+                      ))}
+                    </>
                   )}
                 </div>
               </div>
@@ -468,11 +508,11 @@ export const MeetingsPage: React.FC = () => {
                 </div>
 
                 {isEditingNotes ? (
-                  <textarea
+                  <Textarea
                     value={editNotes}
                     onChange={(e) => setEditNotes(e.target.value)}
                     rows={4}
-                    className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-3 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
+                    className="resize-none font-semibold leading-relaxed border-white/[0.06] focus:border-primary/40 bg-black/40"
                     placeholder="Document decisions, questions, and agendas discussed..."
                   />
                 ) : (
@@ -599,16 +639,16 @@ export const MeetingsPage: React.FC = () => {
 
       {/* SCHEDULE MEETING MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-lg p-6 flex flex-col gap-5 bg-card border border-border relative select-none">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <Card className="w-full max-w-lg p-8 flex flex-col gap-6 bg-gray-950 border border-white/[0.08] rounded-3xl relative select-none shadow-2xl animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setModalOpen(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="flex flex-col gap-1 border-b border-border pb-3">
+            <div className="flex flex-col gap-1 border-b border-white/[0.06] pb-3 text-left">
               <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">
                 Schedule Project Meeting
               </h2>
@@ -619,12 +659,13 @@ export const MeetingsPage: React.FC = () => {
 
             {formError && <Alert variant="destructive">{formError}</Alert>}
 
-            <form onSubmit={handleScheduleMeeting} className="flex flex-col gap-4 overflow-y-auto max-h-[70vh] pr-1">
+            <form onSubmit={handleScheduleMeeting} className="flex flex-col gap-4 overflow-y-auto max-h-[70vh] pr-1 text-left">
               <Input
                 label="Meeting Title"
                 placeholder="e.g. Scope Alignment session"
                 value={formTitle}
                 required
+                className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                 onChange={(e) => setFormTitle(e.target.value)}
               />
 
@@ -634,6 +675,7 @@ export const MeetingsPage: React.FC = () => {
                   type="date"
                   value={formDate}
                   required
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40 text-xs px-2.5"
                   onChange={(e) => setFormDate(e.target.value)}
                 />
                 <Input
@@ -641,52 +683,102 @@ export const MeetingsPage: React.FC = () => {
                   type="time"
                   value={formTime}
                   required
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40 text-xs px-2.5"
                   onChange={(e) => setFormTime(e.target.value)}
                 />
               </div>
 
-              <div className="flex flex-col gap-1 text-left">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Meeting Objective
-                </label>
-                <textarea
-                  placeholder="Define agendas and topics to resolve..."
-                  value={formObjective}
-                  required
-                  rows={3}
-                  onChange={(e) => setFormObjective(e.target.value)}
-                  className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-2.5 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
-                />
-              </div>
+              <Textarea
+                label="Meeting Objective"
+                placeholder="Define agendas and topics to resolve..."
+                value={formObjective}
+                required
+                rows={3}
+                className="resize-none font-semibold leading-relaxed border-white/[0.06] focus:border-purple-500/40 bg-black/40"
+                onChange={(e) => setFormObjective(e.target.value)}
+              />
 
-              {/* Invite Attendees list */}
-              <div className="flex flex-col gap-1 text-left">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5" />
-                  Invite Attendees
+              {/* Invite Attendees list with Search Filter */}
+              <div className="flex flex-col gap-1.5 text-left">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between gap-1 mb-0.5 select-none">
+                  <span className="flex items-center gap-1">
+                    <Users className="w-3.5 h-3.5" />
+                    Invite Attendees
+                  </span>
                 </label>
-                <div className="max-h-32 overflow-y-auto border border-border bg-background rounded-lg p-2 flex flex-col gap-1.5 mt-0.5">
-                  {orgUsers.map((u) => {
-                    const checked = formAttendees.includes(u.id);
-                    return (
-                      <label 
-                        key={u.id}
-                        className="flex items-center gap-2 px-1 py-0.5 text-xs font-semibold text-foreground cursor-pointer hover:bg-secondary/40 rounded"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => handleToggleAttendee(u.id)}
-                          className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
-                        />
-                        <span>{u.first_name} {u.last_name} (@{u.username})</span>
-                      </label>
-                    );
-                  })}
+
+                <input
+                  type="text"
+                  placeholder="Filter attendees by name..."
+                  value={attendeeSearch}
+                  onChange={(e) => setAttendeeSearch(e.target.value)}
+                  className="w-full px-3 py-1.5 text-xs bg-black/40 border border-white/[0.06] rounded-lg focus:border-primary/40 outline-none text-foreground mb-1.5"
+                />
+
+                <div className="max-h-40 overflow-y-auto border border-white/[0.08] bg-black/40 rounded-xl p-3 flex flex-col gap-3">
+                  {/* Workspace Members Section */}
+                  {orgUsers.filter(u => `${u.first_name} ${u.last_name} @${u.username}`.toLowerCase().includes(attendeeSearch.toLowerCase())).length > 0 && (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest block mb-1">Workspace Members</span>
+                      {orgUsers
+                        .filter(u => `${u.first_name} ${u.last_name} @${u.username}`.toLowerCase().includes(attendeeSearch.toLowerCase()))
+                        .map((u) => {
+                          const checked = formAttendees.includes(u.id);
+                          return (
+                            <label 
+                              key={u.id}
+                              className="flex items-center gap-2 p-2 rounded-lg hover:bg-secondary/40 text-xs font-semibold text-foreground cursor-pointer border border-transparent hover:border-white/[0.06] transition-all"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => handleToggleAttendee(u.id)}
+                                className="rounded border-white/[0.2] bg-black/60 text-primary focus:ring-primary/20 cursor-pointer"
+                              />
+                              <span>{u.first_name} {u.last_name} (@{u.username})</span>
+                            </label>
+                          );
+                        })}
+                    </div>
+                  )}
+
+                  {/* Project Stakeholders Section */}
+                  {stakeholders.filter(s => `${s.name} ${s.title} ${s.department}`.toLowerCase().includes(attendeeSearch.toLowerCase())).length > 0 && (
+                    <div className="flex flex-col gap-1.5 border-t border-white/[0.04] pt-2">
+                      <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest block mb-1">Project Stakeholders</span>
+                      {stakeholders
+                        .filter(s => `${s.name} ${s.title} ${s.department}`.toLowerCase().includes(attendeeSearch.toLowerCase()))
+                        .map((s) => {
+                          const checked = formStakeholders.includes(s.id);
+                          return (
+                            <label 
+                              key={s.id}
+                              className="flex items-center gap-2 p-2 rounded-lg hover:bg-secondary/40 text-xs font-semibold text-foreground cursor-pointer border border-transparent hover:border-white/[0.06] transition-all"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => handleToggleStakeholder(s.id)}
+                                className="rounded border-white/[0.2] bg-black/60 text-primary focus:ring-primary/20 cursor-pointer"
+                              />
+                              <div className="flex flex-col text-left leading-tight">
+                                <span>{s.name}</span>
+                                <span className="text-[8px] text-muted-foreground font-medium">{s.title} | {s.department || "No Department"}</span>
+                              </div>
+                            </label>
+                          );
+                        })}
+                    </div>
+                  )}
+
+                  {orgUsers.filter(u => `${u.first_name} ${u.last_name} @${u.username}`.toLowerCase().includes(attendeeSearch.toLowerCase())).length === 0 &&
+                   stakeholders.filter(s => `${s.name} ${s.title} ${s.department}`.toLowerCase().includes(attendeeSearch.toLowerCase())).length === 0 && (
+                    <span className="text-xs text-muted-foreground p-3 text-center">No matching attendees found.</span>
+                  )}
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 border-t border-border pt-4 mt-2">
+              <div className="flex items-center justify-end gap-2 border-t border-white/[0.06] pt-4 mt-2">
                 <Button
                   type="button"
                   variant="secondary"

@@ -1,0 +1,45 @@
+{% extends "core/email_base.html" %}
+
+{% block content %}
+<h2 class="heading">{{ title }}</h2>
+<p class="text">
+    Hello,
+</p>
+<p class="text">
+    {{ message_intro }}
+</p>
+
+<!-- Meeting details box -->
+<div class="details-box">
+    <div class="details-item">
+        <span class="details-label">Title:</span>
+        <span class="details-value">{{ meeting.title }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Date:</span>
+        <span class="details-value">{{ meeting.date }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Time:</span>
+        <span class="details-value">{{ meeting.time }}</span>
+    </div>
+    {% if meeting.objective %}
+    <div class="details-item">
+        <span class="details-label">Objective:</span>
+        <span class="details-value">{{ meeting.objective }}</span>
+    </div>
+    {% endif %}
+    <div class="details-item">
+        <span class="details-label">Project:</span>
+        <span class="details-value">{{ meeting.project.name }}</span>
+    </div>
+</div>
+
+<div class="btn-container">
+    <a href="{{ meeting_room_url }}" class="btn">Join Video Call Room</a>
+</div>
+
+<p class="text" style="font-size: 13px; color: #64748B; text-align: center;">
+    Or view details in your <a href="{{ dashboard_url }}" style="color: #818CF8; text-decoration: underline;">BAHub Dashboard</a>
+</p>
+{% endblock %}

@@ -472,16 +472,16 @@ export const ProjectsPage: React.FC = () => {
 
       {/* CREATE/EDIT MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-md p-6 flex flex-col gap-5 bg-card border border-border relative select-none">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <Card className="w-full max-w-md p-8 flex flex-col gap-6 bg-gray-950 border border-white/[0.08] rounded-3xl relative select-none shadow-2xl animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setModalOpen(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="flex flex-col gap-1 border-b border-border pb-3">
+            <div className="flex flex-col gap-1 border-b border-white/[0.06] pb-3 text-left">
               <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">
                 {editingProject ? "Edit Project Details" : "Create Project Environment"}
               </h2>
@@ -497,6 +497,7 @@ export const ProjectsPage: React.FC = () => {
                 label="Project Name"
                 placeholder="e.g. Core SaaS Redesign"
                 error={errors.name?.message}
+                className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                 {...register("name")}
               />
 
@@ -504,6 +505,7 @@ export const ProjectsPage: React.FC = () => {
                 label="Description"
                 placeholder="Redesigning standard components to fit professional themes..."
                 error={errors.description?.message}
+                className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                 {...register("description")}
               />
 
@@ -515,6 +517,7 @@ export const ProjectsPage: React.FC = () => {
                   { value: "ARCHIVED", label: "Archived" },
                 ]}
                 error={errors.status?.message}
+                className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                 {...register("status")}
               />
 
@@ -523,17 +526,19 @@ export const ProjectsPage: React.FC = () => {
                   label="Start Date"
                   type="date"
                   error={errors.start_date?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40 text-xs px-2.5"
                   {...register("start_date")}
                 />
                 <Input
                   label="End Date"
                   type="date"
                   error={errors.end_date?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40 text-xs px-2.5"
                   {...register("end_date")}
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 border-t border-border pt-4 mt-2">
+              <div className="flex items-center justify-end gap-2 border-t border-white/[0.06] pt-4 mt-2">
                 <Button
                   type="button"
                   variant="secondary"
@@ -560,16 +565,16 @@ export const ProjectsPage: React.FC = () => {
 
       {/* MANAGE MEMBERS MODAL */}
       {membersModalOpen && selectedProjectForMembers && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-lg p-6 flex flex-col gap-5 bg-card border border-border relative select-none">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <Card className="w-full max-w-lg p-8 flex flex-col gap-6 bg-gray-950 border border-white/[0.08] rounded-3xl relative select-none shadow-2xl animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setMembersModalOpen(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="flex flex-col gap-1 border-b border-border pb-3">
+            <div className="flex flex-col gap-1 border-b border-white/[0.06] pb-3 text-left">
               <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">
                 Manage Collaborators
               </h2>
@@ -582,7 +587,7 @@ export const ProjectsPage: React.FC = () => {
 
             {/* Add member form */}
             {canManageProjects && (
-              <form onSubmit={handleAddMember} className="flex flex-col sm:flex-row gap-3 items-end border-b border-border pb-5 mt-1">
+              <form onSubmit={handleAddMember} className="flex flex-col sm:flex-row gap-3 items-end border-b border-white/[0.06] pb-5 mt-1 text-left">
                 <div className="flex-1 min-w-0">
                   <Select
                     label="Add Collaborator"
@@ -597,6 +602,7 @@ export const ProjectsPage: React.FC = () => {
                     ]}
                     value={selectedUserId}
                     onChange={(e) => setSelectedUserId(e.target.value)}
+                    className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   />
                 </div>
                 <div className="w-full sm:w-44">
@@ -609,6 +615,7 @@ export const ProjectsPage: React.FC = () => {
                     ]}
                     value={selectedProjectRole}
                     onChange={(e) => setSelectedProjectRole(e.target.value)}
+                    className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   />
                 </div>
                 <Button
@@ -625,18 +632,18 @@ export const ProjectsPage: React.FC = () => {
             )}
 
             {/* List active project members */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2.5 text-left">
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                 Active Project Members ({selectedProjectForMembers.members_detail.length})
               </span>
-              <div className="max-h-48 overflow-y-auto border border-border bg-background rounded-lg p-2 flex flex-col gap-1.5">
+              <div className="max-h-48 overflow-y-auto border border-white/[0.08] bg-black/40 rounded-xl p-3 flex flex-col gap-2">
                 {selectedProjectForMembers.members_detail.length === 0 ? (
                   <span className="text-xs text-muted-foreground p-3 text-center">No members assigned yet.</span>
                 ) : (
                   selectedProjectForMembers.members_detail.map((pm) => (
                     <div 
                       key={pm.id} 
-                      className="flex items-center justify-between p-2 rounded-md hover:bg-secondary/40 text-xs font-semibold border border-transparent hover:border-border transition-all"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/40 text-xs font-semibold border border-transparent hover:border-white/[0.06] transition-all"
                     >
                       <div className="flex flex-col text-left">
                         <span className="text-foreground">{pm.user_detail.first_name} {pm.user_detail.last_name}</span>
@@ -652,7 +659,7 @@ export const ProjectsPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleRemoveMember(pm.id)}
-                            className="text-muted-foreground hover:text-destructive cursor-pointer p-1"
+                            className="text-muted-foreground hover:text-destructive cursor-pointer p-1 transition-colors"
                             title="Remove Member"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -665,7 +672,7 @@ export const ProjectsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-end border-t border-border pt-4 mt-2">
+            <div className="flex items-center justify-end border-t border-white/[0.06] pt-4 mt-2">
               <Button
                 type="button"
                 variant="secondary"

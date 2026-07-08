@@ -1,0 +1,41 @@
+{% extends "core/email_base.html" %}
+
+{% block content %}
+<h2 class="heading">Verify Your Subscription Upgrade</h2>
+<p class="text">
+    Hello,
+</p>
+<p class="text">
+    Your organization <strong>{{ organization_name }}</strong> has requested an upgrade to the <strong>{{ plan_name }}</strong> plan.
+</p>
+<p class="text">
+    Please verify this subscription upgrade to activate your plan and unlock premium Gemini AI features:
+</p>
+
+<div class="details-box">
+    <div class="details-item">
+        <span class="details-label">Organization:</span>
+        <span class="details-value">{{ organization_name }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Requested Plan:</span>
+        <span class="details-value">{{ plan_name }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Seats Limit:</span>
+        <span class="details-value">{{ seats_limit }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">AI Credits Limit:</span>
+        <span class="details-value">{{ ai_credits_limit }}</span>
+    </div>
+</div>
+
+<div class="btn-container">
+    <a href="{{ verify_url }}" class="btn">Verify Upgrade</a>
+</div>
+
+<p class="text" style="font-size: 13px; color: #64748B; text-align: center;">
+    If you did not initiate this request, please contact support.
+</p>
+{% endblock %}

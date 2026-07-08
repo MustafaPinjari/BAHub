@@ -543,16 +543,16 @@ export const StakeholdersPage: React.FC = () => {
 
       {/* CREATE/EDIT MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-lg p-6 flex flex-col gap-5 bg-card border border-border relative select-none">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <Card className="w-full max-w-lg p-8 flex flex-col gap-6 bg-gray-950 border border-white/[0.08] rounded-3xl relative select-none shadow-2xl animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setModalOpen(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="flex flex-col gap-1 border-b border-border pb-3">
+            <div className="flex flex-col gap-1 border-b border-white/[0.06] pb-3 text-left">
               <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">
                 {editingStakeholder ? "Edit Stakeholder Profile" : "Register New Stakeholder"}
               </h2>
@@ -563,18 +563,20 @@ export const StakeholdersPage: React.FC = () => {
 
             {formError && <Alert variant="destructive">{formError}</Alert>}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 overflow-y-auto max-h-[70vh] pr-1">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 overflow-y-auto max-h-[70vh] pr-1 text-left">
               <div className="grid grid-cols-2 gap-4">
                 <Input
                   label="Full Name"
                   placeholder="John Doe"
                   error={errors.name?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("name")}
                 />
                 <Input
                   label="Role/Title"
                   placeholder="Sponsor / SME"
                   error={errors.title?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("title")}
                 />
               </div>
@@ -584,6 +586,7 @@ export const StakeholdersPage: React.FC = () => {
                   label="Department"
                   placeholder="e.g. Sales, Finance"
                   error={errors.department?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("department")}
                 />
                 <Select
@@ -596,6 +599,7 @@ export const StakeholdersPage: React.FC = () => {
                     })),
                   ]}
                   error={errors.project?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("project")}
                 />
               </div>
@@ -605,12 +609,14 @@ export const StakeholdersPage: React.FC = () => {
                   label="Email"
                   placeholder="john.doe@company.com"
                   error={errors.email?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("email")}
                 />
                 <Input
                   label="Phone"
                   placeholder="+1 555-0100"
                   error={errors.phone?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("phone")}
                 />
               </div>
@@ -624,6 +630,7 @@ export const StakeholdersPage: React.FC = () => {
                     { value: "LOW", label: "Low" },
                   ]}
                   error={errors.power?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("power")}
                 />
                 <Select
@@ -633,6 +640,7 @@ export const StakeholdersPage: React.FC = () => {
                     { value: "LOW", label: "Low" },
                   ]}
                   error={errors.interest?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("interest")}
                 />
               </div>
@@ -649,6 +657,7 @@ export const StakeholdersPage: React.FC = () => {
                     { value: "5", label: "5 (Very High)" },
                   ]}
                   error={errors.influence?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("influence")}
                 />
                 <Select
@@ -661,6 +670,7 @@ export const StakeholdersPage: React.FC = () => {
                     { value: "5", label: "5 (Very High)" },
                   ]}
                   error={errors.impact?.message}
+                  className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("impact")}
                 />
               </div>
@@ -669,10 +679,11 @@ export const StakeholdersPage: React.FC = () => {
                 label="Notes / Engagement Guidelines"
                 placeholder="Preferred channel: Slack. Needs weekly reports on project timeline..."
                 error={errors.notes?.message}
+                className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                 {...register("notes")}
               />
 
-              <div className="flex items-center justify-end gap-2 border-t border-border pt-4 mt-2">
+              <div className="flex items-center justify-end gap-2 border-t border-white/[0.06] pt-4 mt-2">
                 <Button
                   type="button"
                   variant="secondary"

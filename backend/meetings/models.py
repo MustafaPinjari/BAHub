@@ -22,6 +22,11 @@ class Meeting(BaseModel):
         related_name="attended_meetings",
         blank=True
     )
+    stakeholder_attendees = models.ManyToManyField(
+        "stakeholders.Stakeholder",
+        related_name="meetings",
+        blank=True
+    )
 
     class Meta:
         db_table = "meetings"

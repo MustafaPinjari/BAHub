@@ -202,23 +202,23 @@ export const DashboardOverview: React.FC = () => {
 
       {/* ==========================================
           ROLE-BASED WELCOME HEADER CARD
-          ========================================== */}
-      {isAdmin ? (
+          ========================================== */}      {isAdmin ? (
         // Admin Welcome Card
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-950 p-6 text-white flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="absolute top-[-50%] right-[-10%] w-[300px] h-[300px] rounded-full bg-primary/20 blur-[85px] pointer-events-none" />
-          <div className="flex flex-col text-left gap-1 z-10">
+        <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-secondary/30 p-8 text-white flex flex-col md:flex-row md:items-center md:justify-between gap-6 select-none shadow-2xl">
+          {/* Subtle Ambient Light */}
+          <div className="absolute top-[-100px] right-[-100px] w-64 h-64 rounded-full bg-primary/10 blur-[80px] pointer-events-none" />
+          <div className="flex flex-col text-left gap-1.5 z-10">
             <div className="flex items-center gap-2">
-              <Badge variant="default" className="bg-primary/25 text-primary border border-primary/30 font-bold uppercase tracking-wider text-[9px]">
+              <Badge variant="default" className="bg-primary/15 text-primary border border-primary/25 font-bold uppercase tracking-wider text-[9px] px-2 py-0.5">
                 Administrator Portal
               </Badge>
             </div>
-            <h1 className="text-lg font-bold tracking-tight">Welcome, {user?.first_name || user?.username}!</h1>
-            <p className="text-xs text-white/70 max-w-xl">
+            <h1 className="text-xl font-bold tracking-tight text-white mt-1">Welcome, {user?.first_name || user?.username}!</h1>
+            <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
               Manage organization compliance, authorize spec sign-offs, and audit system activities. Currently viewing stats for <strong>{user?.organization_name || "Apex Business Solutions"}</strong>.
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0 z-10">
+          <div className="flex items-center gap-2.5 shrink-0 z-10">
             <Button size="sm" variant="outline" onClick={() => navigate("/settings")} className="text-[10px] bg-slate-900/50 hover:bg-slate-900 border-white/10 hover:border-white/20 text-white font-bold">
               Organization Directory
             </Button>
@@ -229,20 +229,21 @@ export const DashboardOverview: React.FC = () => {
         </div>
       ) : (
         // Business Analyst Welcome Card
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-950 p-6 text-white flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="absolute top-[-50%] right-[-10%] w-[300px] h-[300px] rounded-full bg-emerald-500/10 blur-[85px] pointer-events-none" />
-          <div className="flex flex-col text-left gap-1 z-10">
+        <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-secondary/30 p-8 text-white flex flex-col md:flex-row md:items-center md:justify-between gap-6 select-none shadow-2xl">
+          {/* Subtle Ambient Light */}
+          <div className="absolute top-[-100px] right-[-100px] w-64 h-64 rounded-full bg-emerald-500/10 blur-[80px] pointer-events-none" />
+          <div className="flex flex-col text-left gap-1.5 z-10">
             <div className="flex items-center gap-2">
-              <Badge variant="default" className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold uppercase tracking-wider text-[9px]">
+              <Badge variant="default" className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-bold uppercase tracking-wider text-[9px] px-2 py-0.5">
                 Business Analyst Portal
               </Badge>
             </div>
-            <h1 className="text-lg font-bold tracking-tight">Welcome, {user?.first_name || user?.username}!</h1>
-            <p className="text-xs text-white/70 max-w-xl">
+            <h1 className="text-xl font-bold tracking-tight text-white mt-1">Welcome, {user?.first_name || user?.username}!</h1>
+            <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
               Author and compile requirements, refine specifications, and manage related project assets. Your live synchronization channel is active.
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0 z-10">
+          <div className="flex items-center gap-2.5 shrink-0 z-10">
             <Button size="sm" variant="outline" onClick={() => navigate("/brd")} className="text-[10px] bg-slate-900/50 hover:bg-slate-900 border-white/10 hover:border-white/20 text-white font-bold">
               Generate Spec Docs
             </Button>
@@ -259,44 +260,51 @@ export const DashboardOverview: React.FC = () => {
       {isAdmin ? (
         // Admin Statistics
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 select-none">
-          <Card className="flex flex-col p-5 gap-2 text-left border-indigo-500/10 bg-gradient-to-b from-indigo-500/[0.02] to-transparent hover:scale-[1.02] hover:border-indigo-500/30 transition-all duration-200 cursor-default">
+          <Card className="flex flex-col p-5 gap-2.5 text-left border-white/[0.06] bg-secondary/30 hover:scale-[1.01] hover:border-indigo-500/30 transition-all duration-200 cursor-default relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-indigo-500/[0.01] blur-xl pointer-events-none group-hover:bg-indigo-500/[0.03] transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Compliance Rate</span>
-              <div className="w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500">
-                <Shield className="w-4 h-4" />
+              <div className="w-7 h-7 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20">
+                <Shield className="w-3.5 h-3.5" />
               </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{complianceRate}%</span>
-            <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden mt-1 border border-border/20">
+            <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden mt-1 border border-white/[0.04]">
               <div className="bg-indigo-500 h-full rounded-full transition-all duration-300" style={{ width: `${complianceRate}%` }} />
             </div>
             <span className="text-[9px] text-muted-foreground font-semibold">Approved requirements count</span>
           </Card>
-          <Card className="flex flex-col p-5 gap-2 text-left border-amber-500/10 bg-gradient-to-b from-amber-500/[0.02] to-transparent hover:scale-[1.02] hover:border-amber-500/30 transition-all duration-200 cursor-default">
+          
+          <Card className="flex flex-col p-5 gap-2.5 text-left border-white/[0.06] bg-secondary/30 hover:scale-[1.01] hover:border-amber-500/30 transition-all duration-200 cursor-default relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-amber-500/[0.01] blur-xl pointer-events-none group-hover:bg-amber-500/[0.03] transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Pending Sign-Off</span>
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center ${pendingDocsCount > 0 ? 'bg-amber-500/15 text-amber-500' : 'bg-amber-500/10 text-amber-500/70'}`}>
-                <UserCheck className="w-4 h-4" />
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center border ${pendingDocsCount > 0 ? 'bg-amber-500/15 border-amber-500/25 text-amber-400' : 'bg-amber-500/10 border-amber-500/15 text-amber-500/70'}`}>
+                <UserCheck className="w-3.5 h-3.5" />
               </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{pendingDocsCount}</span>
             <span className="text-[9px] text-muted-foreground font-semibold">Documents awaiting approval</span>
           </Card>
-          <Card className="flex flex-col p-5 gap-2 text-left border-primary/10 bg-gradient-to-b from-primary/[0.02] to-transparent hover:scale-[1.02] hover:border-primary/30 transition-all duration-200 cursor-default">
+
+          <Card className="flex flex-col p-5 gap-2.5 text-left border-white/[0.06] bg-secondary/30 hover:scale-[1.01] hover:border-purple-500/30 transition-all duration-200 cursor-default relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-purple-500/[0.01] blur-xl pointer-events-none group-hover:bg-purple-500/[0.03] transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Active Teams</span>
-              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <Users className="w-4 h-4" />
+              <div className="w-7 h-7 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                <Users className="w-3.5 h-3.5" />
               </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">2</span>
             <span className="text-[9px] text-muted-foreground font-semibold">Assigned workspace units</span>
           </Card>
-          <Card className="flex flex-col p-5 gap-2 text-left border-rose-500/10 bg-gradient-to-b from-rose-500/[0.02] to-transparent hover:scale-[1.02] hover:border-rose-500/30 transition-all duration-200 cursor-default">
+
+          <Card className="flex flex-col p-5 gap-2.5 text-left border-white/[0.06] bg-secondary/30 hover:scale-[1.01] hover:border-rose-500/30 transition-all duration-200 cursor-default relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-rose-500/[0.01] blur-xl pointer-events-none group-hover:bg-rose-500/[0.03] transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Project Files</span>
-              <div className="w-7 h-7 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-500">
-                <Paperclip className="w-4 h-4" />
+              <div className="w-7 h-7 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                <Paperclip className="w-3.5 h-3.5" />
               </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{attachments.length}</span>
@@ -306,46 +314,53 @@ export const DashboardOverview: React.FC = () => {
       ) : (
         // Analyst Statistics
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 select-none">
-          <Card className="flex flex-col p-5 gap-2 text-left border-emerald-500/10 bg-gradient-to-b from-emerald-500/[0.02] to-transparent hover:scale-[1.02] hover:border-emerald-500/30 transition-all duration-200 cursor-default">
+          <Card className="flex flex-col p-5 gap-2.5 text-left border-white/[0.06] bg-secondary/30 hover:scale-[1.01] hover:border-emerald-500/30 transition-all duration-200 cursor-default relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-emerald-500/[0.01] blur-xl pointer-events-none group-hover:bg-emerald-500/[0.03] transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Backlog Coverage</span>
-              <div className="w-7 h-7 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                <CheckCircle2 className="w-4 h-4" />
+              <div className="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">
               {approvedReqs}/{totalReqs}
             </span>
-            <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden mt-1 border border-border/20">
+            <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden mt-1 border border-white/[0.04]">
               <div className="bg-emerald-500 h-full rounded-full transition-all duration-300" style={{ width: `${totalReqs > 0 ? (approvedReqs / totalReqs) * 100 : 0}%` }} />
             </div>
             <span className="text-[9px] text-muted-foreground font-semibold">Approved vs Total requirements</span>
           </Card>
-          <Card className="flex flex-col p-5 gap-2 text-left border-primary/10 bg-gradient-to-b from-primary/[0.02] to-transparent hover:scale-[1.02] hover:border-primary/30 transition-all duration-200 cursor-default">
+
+          <Card className="flex flex-col p-5 gap-2.5 text-left border-white/[0.06] bg-secondary/30 hover:scale-[1.01] hover:border-primary/30 transition-all duration-200 cursor-default relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-primary/[0.01] blur-xl pointer-events-none group-hover:bg-primary/[0.03] transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Specs Generated</span>
-              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <FileText className="w-4 h-4" />
+              <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                <FileText className="w-3.5 h-3.5" />
               </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{documents.length}</span>
             <span className="text-[9px] text-muted-foreground font-semibold">{brdCount} BRD • {frdCount} FRD compiled</span>
           </Card>
-          <Card className={`flex flex-col p-5 gap-2 text-left border-amber-500/10 hover:scale-[1.02] hover:border-amber-500/30 transition-all duration-200 cursor-default bg-gradient-to-b ${draftReqs > 0 ? 'from-amber-500/[0.04]' : 'from-transparent'}`}>
+
+          <Card className="flex flex-col p-5 gap-2.5 text-left border-white/[0.06] bg-secondary/30 hover:scale-[1.01] hover:border-amber-500/30 transition-all duration-200 cursor-default relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-amber-500/[0.01] blur-xl pointer-events-none group-hover:bg-amber-500/[0.03] transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Draft Items</span>
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center ${draftReqs > 0 ? 'bg-amber-500/15 text-amber-500' : 'bg-amber-500/10 text-amber-500/70'}`}>
-                <AlertCircle className="w-4 h-4" />
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center border ${draftReqs > 0 ? 'bg-amber-500/15 border-amber-500/25 text-amber-400' : 'bg-amber-500/10 border-amber-500/15 text-amber-500/70'}`}>
+                <AlertCircle className="w-3.5 h-3.5" />
               </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{draftReqs}</span>
             <span className="text-[9px] text-muted-foreground font-semibold">{draftReqs > 0 ? "Awaiting review & submission" : "All specifications approved!"}</span>
           </Card>
-          <Card className="flex flex-col p-5 gap-2 text-left border-purple-500/10 bg-gradient-to-b from-purple-500/[0.02] to-transparent hover:scale-[1.02] hover:border-purple-500/30 transition-all duration-200 cursor-default">
+
+          <Card className="flex flex-col p-5 gap-2.5 text-left border-white/[0.06] bg-secondary/30 hover:scale-[1.01] hover:border-purple-500/30 transition-all duration-200 cursor-default relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-purple-500/[0.01] blur-xl pointer-events-none group-hover:bg-purple-500/[0.03] transition-colors" />
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Actions</span>
-              <div className="w-7 h-7 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
-                <Activity className="w-4 h-4" />
+              <div className="w-7 h-7 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                <Activity className="w-3.5 h-3.5" />
               </div>
             </div>
             <span className="text-2xl font-black text-foreground leading-none">{activities.length}</span>

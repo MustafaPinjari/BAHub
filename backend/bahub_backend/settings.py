@@ -500,5 +500,5 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "yes")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "notifications@bahub.com")
 
-
-
+# Frontend URL
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://bahub-beta.netlify.app")

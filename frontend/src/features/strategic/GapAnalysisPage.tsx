@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { api } from "../../services/api";
-import { Card, Badge, Button, Input, Select, Alert } from "../../components/common/UIComponents";
+import { Card, Badge, Button, Input, Select, Alert, Textarea } from "../../components/common/UIComponents";
 import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
@@ -321,16 +321,16 @@ export const GapAnalysisPage: React.FC = () => {
 
       {/* CREATE/EDIT MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-lg p-6 flex flex-col gap-5 bg-card border border-border relative select-none">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <Card className="w-full max-w-xl p-8 flex flex-col gap-6 bg-gray-950 border border-white/[0.08] rounded-3xl relative select-none shadow-2xl animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setModalOpen(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="flex flex-col gap-1 border-b border-border pb-3">
+            <div className="flex flex-col gap-1 border-b border-white/[0.06] pb-3 text-left">
               <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">
                 {editingGap ? "Edit Gap Analysis" : "Log Strategic Gap"}
               </h2>
@@ -349,73 +349,43 @@ export const GapAnalysisPage: React.FC = () => {
                 {...register("title")}
               />
 
-              <div className="flex flex-col gap-1 text-left">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Current State (As-Is)
-                </label>
-                <textarea
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Textarea
+                  label="Current State (As-Is)"
                   placeholder="Describe the current operational process or limitation..."
-                  rows={2.5}
-                  className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-2.5 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
+                  rows={3}
+                  error={errors.current_state?.message}
+                  className="resize-none font-semibold leading-relaxed border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("current_state")}
                 />
-                {errors.current_state && (
-                  <span className="text-xs text-[#DC2626] font-medium mt-0.5">
-                    {errors.current_state.message}
-                  </span>
-                )}
-              </div>
 
-              <div className="flex flex-col gap-1 text-left">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Target Future State (To-Be)
-                </label>
-                <textarea
+                <Textarea
+                  label="Target Future State (To-Be)"
                   placeholder="Describe the desired objective after implementation..."
-                  rows={2.5}
-                  className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-2.5 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
+                  rows={3}
+                  error={errors.future_state?.message}
+                  className="resize-none font-semibold leading-relaxed border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                   {...register("future_state")}
                 />
-                {errors.future_state && (
-                  <span className="text-xs text-[#DC2626] font-medium mt-0.5">
-                    {errors.future_state.message}
-                  </span>
-                )}
               </div>
 
-              <div className="flex flex-col gap-1 text-left">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Gap Assessment Description
-                </label>
-                <textarea
-                  placeholder="What specific components or technologies are missing?"
-                  rows={2.5}
-                  className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-2.5 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
-                  {...register("gap_description")}
-                />
-                {errors.gap_description && (
-                  <span className="text-xs text-[#DC2626] font-medium mt-0.5">
-                    {errors.gap_description.message}
-                  </span>
-                )}
-              </div>
+              <Textarea
+                label="Gap Assessment Description"
+                placeholder="What specific components or technologies are missing?"
+                rows={2.5}
+                error={errors.gap_description?.message}
+                className="resize-none font-semibold leading-relaxed border-white/[0.06] focus:border-purple-500/40 bg-black/40"
+                {...register("gap_description")}
+              />
 
-              <div className="flex flex-col gap-1 text-left">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Action Plan Bridge
-                </label>
-                <textarea
-                  placeholder="Detail the steps, scripts, or APIs required to resolve this gap..."
-                  rows={3}
-                  className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-2.5 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
-                  {...register("action_plan")}
-                />
-                {errors.action_plan && (
-                  <span className="text-xs text-[#DC2626] font-medium mt-0.5">
-                    {errors.action_plan.message}
-                  </span>
-                )}
-              </div>
+              <Textarea
+                label="Action Plan Bridge"
+                placeholder="Detail the steps, scripts, or APIs required to resolve this gap..."
+                rows={3}
+                error={errors.action_plan?.message}
+                className="resize-none font-semibold leading-relaxed border-white/[0.06] focus:border-purple-500/40 bg-black/40"
+                {...register("action_plan")}
+              />
 
               <Select
                 label="Resolution Status"
@@ -428,7 +398,7 @@ export const GapAnalysisPage: React.FC = () => {
                 {...register("status")}
               />
 
-              <div className="flex items-center justify-end gap-2 border-t border-border pt-4 mt-2">
+              <div className="flex items-center justify-end gap-2 border-t border-white/[0.06] pt-4 mt-2">
                 <Button
                   type="button"
                   variant="secondary"

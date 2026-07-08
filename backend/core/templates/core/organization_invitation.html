@@ -1,0 +1,22 @@
+{% extends "core/email_base.html" %}
+
+{% block content %}
+<h2 class="heading">You've Been Invited to Join {{ organization_name }}</h2>
+<p class="text">
+    Hello,
+</p>
+<p class="text">
+    You have been invited by <strong>{{ inviter_name }}</strong> to join the <strong>{{ organization_name }}</strong> workspace on BAHub.
+</p>
+<p class="text">
+    As a member of this workspace, you'll be assigned the role of <strong>{{ role }}</strong>. You can collaborate on projects, plan requirements, manage stakeholders, write user stories, and leverage AI power to generate documentations.
+</p>
+
+<div class="btn-container">
+    <a href="{{ invite_url }}" class="btn">Accept Invitation & Sign Up</a>
+</div>
+
+<p class="text" style="font-size: 13px; color: #64748B; text-align: center;">
+    This invitation is valid for 7 days (expires on {{ expires_at }}).
+</p>
+{% endblock %}

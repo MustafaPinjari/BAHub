@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { api, API_BASE_URL } from "../../services/api";
-import { Card, Badge, Button, Input, Select, Alert } from "../../components/common/UIComponents";
+import { Card, Badge, Button, Input, Select, Alert, Textarea } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
 import { 
@@ -485,16 +485,17 @@ export const RequirementsPage: React.FC = () => {
           )}
 
           {activeUsers.length > 0 && (
-            <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-500 ml-3">
-              <span>Collaborators:</span>
-              <div className="flex gap-1">
+            <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 ml-3 select-none">
+              <span className="uppercase tracking-wider">Active:</span>
+              <div className="flex -space-x-1.5 overflow-hidden">
                 {activeUsers.map((username) => (
-                  <span
+                  <div
                     key={username}
-                    className="bg-primary/10 border border-primary/20 text-primary px-1.5 py-0.5 rounded font-bold"
+                    title={`@${username} (active)`}
+                    className="inline-flex items-center justify-center w-5 h-5 rounded-full border border-black bg-purple-500/10 text-[9px] font-extrabold text-purple-400 uppercase ring-1 ring-white/10"
                   >
-                    @{username}
-                  </span>
+                    {username[0]}
+                  </div>
                 ))}
               </div>
             </div>
@@ -589,10 +590,10 @@ export const RequirementsPage: React.FC = () => {
                     <div
                       key={req.id}
                       onClick={() => loadReqInEditor(req)}
-                      className={`p-3 border rounded-xl flex items-start justify-between gap-3 cursor-pointer text-left transition-all ${
+                      className={`p-3.5 border rounded-xl flex items-start justify-between gap-3 cursor-pointer text-left transition-all duration-200 select-none ${
                         isSelected
-                          ? "border-primary bg-primary/5 shadow-sm"
-                          : "border-border bg-card hover:border-primary/20"
+                          ? "border-primary bg-primary/[0.03] shadow-md shadow-primary/5 scale-[1.01]"
+                          : "border-white/[0.06] bg-secondary/10 hover:border-white/[0.14] hover:bg-secondary/20"
                       }`}
                     >
                       <div className="flex flex-col gap-0.5 overflow-hidden w-full">
@@ -769,21 +770,17 @@ export const RequirementsPage: React.FC = () => {
                 </div>
 
                 {/* Requirement Description text body */}
-                <div className="flex flex-col gap-1 text-left mt-2">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Requirement Specification
-                  </label>
-                  <textarea
-                    value={editDesc}
-                    onChange={(e) => setEditDesc(e.target.value)}
-                    onFocus={() => broadcastTyping(selectedReq.id, true)}
-                    onBlur={() => broadcastTyping(selectedReq.id, false)}
-                    placeholder="Provide requirement definitions, schemas, and details..."
-                    rows={8}
-                    disabled={!canManage}
-                    className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-3 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
-                  />
-                </div>
+                <Textarea
+                  label="Requirement Specification"
+                  value={editDesc}
+                  onChange={(e) => setEditDesc(e.target.value)}
+                  onFocus={() => broadcastTyping(selectedReq.id, true)}
+                  onBlur={() => broadcastTyping(selectedReq.id, false)}
+                  placeholder="Provide requirement definitions, schemas, and details..."
+                  rows={8}
+                  disabled={!canManage}
+                  className="resize-none font-semibold leading-relaxed mt-1 border-white/[0.06] focus:border-primary/40 bg-black/40"
+                />
               </div>
 
               {/* Persistent/Sticky Action Bar */}

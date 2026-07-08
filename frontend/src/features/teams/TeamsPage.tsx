@@ -327,16 +327,16 @@ export const TeamsPage: React.FC = () => {
 
       {/* CREATE/EDIT MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-lg p-6 flex flex-col gap-5 bg-card border border-border relative select-none">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <Card className="w-full max-w-lg p-8 flex flex-col gap-6 bg-gray-950 border border-white/[0.08] rounded-3xl relative select-none shadow-2xl animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setModalOpen(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground cursor-pointer"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="flex flex-col gap-1 border-b border-border pb-3">
+            <div className="flex flex-col gap-1 border-b border-white/[0.06] pb-3 text-left">
               <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">
                 {editingTeam ? "Edit Team Profile" : "Create Team Profile"}
               </h2>
@@ -347,11 +347,12 @@ export const TeamsPage: React.FC = () => {
 
             {formError && <Alert variant="destructive">{formError}</Alert>}
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 text-left">
               <Input
                 label="Team Name"
                 placeholder="e.g. Frontend Core Team"
                 error={errors.name?.message}
+                className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                 {...register("name")}
               />
 
@@ -359,6 +360,7 @@ export const TeamsPage: React.FC = () => {
                 label="Description"
                 placeholder="Collaborates on UI design systems and layouts..."
                 error={errors.description?.message}
+                className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                 {...register("description")}
               />
 
@@ -373,6 +375,7 @@ export const TeamsPage: React.FC = () => {
                   })),
                 ]}
                 error={errors.lead?.message}
+                className="border-white/[0.06] focus:border-purple-500/40 bg-black/40"
                 {...register("lead")}
               />
 
@@ -381,7 +384,7 @@ export const TeamsPage: React.FC = () => {
                 <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Select Team Members
                 </label>
-                <div className="max-h-40 overflow-y-auto border border-border bg-background rounded-lg p-2 flex flex-col gap-1">
+                <div className="max-h-40 overflow-y-auto border border-white/[0.08] bg-black/40 rounded-xl p-3 flex flex-col gap-2">
                   {membersLoading ? (
                     <span className="text-xs text-muted-foreground p-2">Loading workspace members...</span>
                   ) : members.length === 0 ? (
@@ -392,14 +395,14 @@ export const TeamsPage: React.FC = () => {
                       return (
                         <label
                           key={m.id}
-                          className="flex items-center justify-between p-2 rounded-md hover:bg-secondary text-xs font-semibold cursor-pointer text-foreground"
+                          className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/40 text-xs font-semibold cursor-pointer text-foreground border border-transparent hover:border-white/[0.06] transition-all"
                         >
                           <div className="flex items-center gap-2">
                             <input
                               type="checkbox"
                               checked={isChecked}
                               onChange={() => handleMemberToggle(m.id)}
-                              className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
+                              className="rounded border-white/[0.2] bg-black/60 text-primary focus:ring-primary/20 cursor-pointer"
                             />
                             <span>{m.first_name} {m.last_name}</span>
                           </div>
@@ -413,7 +416,7 @@ export const TeamsPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 border-t border-border pt-4 mt-2">
+              <div className="flex items-center justify-end gap-2 border-t border-white/[0.06] pt-4 mt-2">
                 <Button
                   type="button"
                   variant="secondary"

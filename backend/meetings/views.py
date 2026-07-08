@@ -69,8 +69,7 @@ class MeetingViewSet(viewsets.ModelViewSet):
         self._send_meeting_notifications(meeting, is_update=True, serializer=serializer)
 
     def _send_meeting_notifications(self, meeting, is_update=False, serializer=None):
-        from django.core.mail import send_mail
-        from django.conf import settings
+        from core.emails import send_meeting_email
         
         # Build recipient email list from attendees
         attendees = list(meeting.attendees.all())
@@ -78,47 +77,20 @@ class MeetingViewSet(viewsets.ModelViewSet):
             attendees = serializer.validated_data["attendees"]
             
         recipients = [user.email for user in attendees if user.email]
+
+        # Add stakeholder attendees
+        stakeholders = list(meeting.stakeholder_attendees.all())
+        if not stakeholders and serializer and "stakeholder_attendees" in serializer.validated_data:
+            stakeholders = serializer.validated_data["stakeholder_attendees"]
+            
+        for sh in stakeholders:
+            if sh.email:
+                recipients.append(sh.email)
+                
         if not recipients:
             return
             
-        subject = f"{'Updated: ' if is_update else ''}Meeting Scheduled: {meeting.title}"
-        
-        frontend_url = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
-        if isinstance(frontend_url, list):
-            frontend_url = frontend_url[0]
-        frontend_url = frontend_url.rstrip("/")
-        
-        meeting_room_url = f"https://meet.jit.si/bahub-{meeting.id}"
-        dashboard_url = f"{frontend_url}/meetings"
-        
-        message = (
-            f"Hello,\n\n"
-            f"You have been invited to a meeting in BAHub.\n\n"
-            f"Meeting Details:\n"
-            f"----------------------------------------\n"
-            f"Title: {meeting.title}\n"
-            f"Date: {meeting.date}\n"
-            f"Time: {meeting.time}\n"
-            f"Objective: {meeting.objective}\n"
-            f"Workspace Project: {meeting.project.name}\n"
-            f"----------------------------------------\n\n"
-            f"Join Video Call Room: {meeting_room_url}\n\n"
-            f"View in BAHub Dashboard: {dashboard_url}\n\n"
-            f"Best regards,\nThe BAHub Team"
-        )
-        
-        try:
-            send_mail(
-                subject=subject,
-                message=message,
-                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "notifications@bahub.com"),
-                recipient_list=recipients,
-                fail_silently=True
-            )
-        except Exception as e:
-            import logging
-            logger = logging.getLogger("django")
-            logger.error(f"Failed to send meeting emails: {e}")
+        send_meeting_email(meeting, is_update=is_update, recipient_list=recipients)
 
 
 class ActionItemViewSet(viewsets.ModelViewSet):

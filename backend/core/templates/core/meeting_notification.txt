@@ -1,0 +1,19 @@
+Hello,
+
+{{ message_intro }}
+
+Meeting Details:
+----------------------------------------
+Title: {{ meeting.title }}
+Date: {{ meeting.date }}
+Time: {{ meeting.time }}
+{% if meeting.objective %}Objective: {{ meeting.objective }}{% endif %}
+Workspace Project: {{ meeting.project.name }}
+----------------------------------------
+
+Join Video Call Room: {{ meeting_room_url }}
+
+View in BAHub Dashboard: {{ dashboard_url }}
+
+Best regards,
+The BAHub Team
