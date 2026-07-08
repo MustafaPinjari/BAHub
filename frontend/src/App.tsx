@@ -1,5 +1,5 @@
-import React, { useState, Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import React, { useState, Suspense, lazy, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./features/auth/AuthContext";
 import { ProjectProvider } from "./features/projects/ProjectContext";
 import { LoginForm } from "./features/auth/components/LoginForm";
@@ -163,9 +163,125 @@ const MainAppContent: React.FC = () => {
   return <AuthenticatedApp />;
 };
 
+const SEOMetadataHandler: React.FC = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname.toLowerCase();
+    let title = "BAHub — AI-Powered Business Analyst Workspace";
+    let description = "BAHub — The AI-Powered Business Analyst Workspace. Synthesize requirements, generate compliant BRDs, manage stakeholders, and run AI-assisted analyses.";
+
+    switch (path) {
+      case "/dashboard":
+        title = "Dashboard | BAHub — Workspace Overview";
+        description = "View your active project metrics, quick actions, recent requirements, generated documents, and system audit logs in one central hub.";
+        break;
+      case "/profile":
+        title = "My Profile | BAHub";
+        description = "Manage your BAHub profile settings, personal information, authentication credentials, and user preferences.";
+        break;
+      case "/teams":
+        title = "Team Management | BAHub";
+        description = "Coordinate with project stakeholders, manage workspace permissions, and assign organization member roles.";
+        break;
+      case "/projects":
+        title = "Projects Directory | BAHub";
+        description = "View, create, and customize all business analysis projects and organizational workspaces.";
+        break;
+      case "/stakeholders":
+        title = "Stakeholders Register | BAHub";
+        description = "Register key stakeholders, track their interest and influence level, and link them to system requirements.";
+        break;
+      case "/settings":
+        title = "Workspace Settings | BAHub";
+        description = "Configure organization settings, subscription tiers, member seats, and project policies.";
+        break;
+      case "/requirements":
+        title = "Requirements Management | BAHub";
+        description = "Draft, refine, tag, and trace functional and non-functional requirements in your workspace backlog.";
+        break;
+      case "/diagrams":
+        title = "Process Canvas & Diagrams | BAHub";
+        description = "Generate and edit BPMN process diagrams, UML sequence flows, and use case maps directly in your browser.";
+        break;
+      case "/stories":
+        title = "User Stories & Backlog Sync | BAHub";
+        description = "Convert requirements into agile user stories, specify acceptance criteria, and sync directly with Jira.";
+        break;
+      case "/brd":
+        title = "Business Requirements Document (BRD) Compiler | BAHub";
+        description = "Generate standardized, client-ready BRD specifications with full traceability and formatting exports.";
+        break;
+      case "/frd":
+        title = "Functional Requirements Document (FRD) Compiler | BAHub";
+        description = "Compile system-level functional details, data models, and architectural specs into a comprehensive FRD.";
+        break;
+      case "/meetings":
+        title = "Meeting Briefings & Action Items | BAHub";
+        description = "Document meeting minutes, capture transcripts, track action items, and link resolutions to requirements.";
+        break;
+      case "/risks":
+        title = "Risk Register & Governance | BAHub";
+        description = "Identify business risks, assign owners, outline mitigation strategies, and review compliance requirements.";
+        break;
+      case "/changes":
+        title = "Change Request Control | BAHub";
+        description = "Submit, review, audit, and approve formal scope adjustments and project change requests.";
+        break;
+      case "/swot":
+        title = "SWOT Analysis Modeler | BAHub";
+        description = "Map organization strengths, weaknesses, opportunities, and threats using interactive matrix canvases.";
+        break;
+      case "/gap":
+        title = "Gap Analysis Planner | BAHub";
+        description = "Analyze the differences between current and future state systems, mapping out clear action items.";
+        break;
+      case "/reports":
+        title = "Reports & Analytics | BAHub";
+        description = "Visualize project health, requirement trace maps, coverage metrics, and stakeholder engagement stats.";
+        break;
+      case "/ai":
+        title = "AI Strategic Assistant | BAHub";
+        description = "Consult the BAHub AI assistant to refine briefs, audit compliance, brainstorm strategies, and generate specs.";
+        break;
+      case "/integrations":
+        title = "Integrations & API Sync | BAHub";
+        description = "Connect your workspace with Jira, Confluence, Slack, GitHub, and custom B2B developer APIs.";
+        break;
+      case "/billing":
+        title = "Billing & Subscriptions | BAHub";
+        description = "Manage subscription plans, workspace seat limits, payment methods, and premium Gemini AI credits.";
+        break;
+      case "/audit":
+        title = "Audit Logs & Traceability | BAHub";
+        description = "Inspect immutable history logs of user actions, updates, and configuration revisions for SOC 2 compliance.";
+        break;
+      case "/traceability":
+        title = "Traceability Matrix | BAHub";
+        description = "Trace requirements backwards to stakeholders and meetings, and forwards to diagrams, stories, and UAT cases.";
+        break;
+      case "/uat":
+        title = "User Acceptance Testing (UAT) | BAHub";
+        description = "Manage validation criteria, execute test scenarios, track test results, and collect business sign-offs.";
+        break;
+      default:
+        break;
+    }
+
+    document.title = title;
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute("content", description);
+    }
+  }, [location]);
+
+  return null;
+};
+
 function App() {
   return (
     <BrowserRouter>
+      <SEOMetadataHandler />
       <AuthProvider>
         <ProjectProvider>
           <MainAppContent />

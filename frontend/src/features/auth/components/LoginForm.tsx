@@ -30,7 +30,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToReg
   const ssoEnabled = import.meta.env.VITE_ENABLE_SAML_SSO === "true";
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
     if (resendCountdown > 0) {
       timer = setTimeout(() => setResendCountdown(resendCountdown - 1), 1000);
     }
