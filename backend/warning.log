@@ -224,3 +224,10 @@ WARNING 2026-07-08 10:10:29,126 exceptions 18648 16596 API Error (400): {'invite
 WARNING 2026-07-08 10:10:29,126 log 18648 16596 Bad Request: /api/v1/auth/register/
 WARNING 2026-07-08 10:10:29,130 exceptions 18648 16596 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
 WARNING 2026-07-08 10:10:29,131 log 18648 16596 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 10:15:31,374 log 18416 18064 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-08 10:15:31,846 exceptions 18416 18064 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please join via invitation token.', code='invalid')]}
+WARNING 2026-07-08 10:15:31,846 log 18416 18064 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 10:15:31,852 exceptions 18416 18064 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-08 10:15:31,852 log 18416 18064 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-08 10:15:31,855 exceptions 18416 18064 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-08 10:15:31,856 log 18416 18064 Bad Request: /api/v1/auth/register/
