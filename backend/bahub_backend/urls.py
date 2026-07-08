@@ -9,10 +9,15 @@ django.utils.http.is_safe_url = url_has_allowed_host_and_scheme
 
 from django.contrib import admin
 from rest_framework_simplejwt.views import TokenRefreshView
-from core.views import health_check
+from core.views import health_check, HealthCheckView, RootView
 from users.views import CustomTokenObtainPairView
 
 urlpatterns = [
+    # Root status and lightweight health checks
+    path("", RootView.as_view(), name="backend-root"),
+    path("health/", HealthCheckView.as_view(), name="backend-health"),
+    path("health", HealthCheckView.as_view()),
+    
     path("admin/", admin.site.urls),
     
     # Global health check

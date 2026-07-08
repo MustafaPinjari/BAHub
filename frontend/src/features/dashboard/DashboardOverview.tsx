@@ -36,24 +36,20 @@ export const DashboardOverview: React.FC = () => {
   const [activities, setActivities] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
 
-  // Fetch all dashboard data for active project
+  // Fetch all dashboard data for active project in parallel
   const fetchDashboardData = async () => {
     if (!activeProject?.id) return;
     try {
-      // 1. Requirements
-      const reqsRes = await api.get<any, { data: any[] }>(`/requirements/?project=${activeProject.id}`);
+      const [reqsRes, docsRes, attachRes, actRes] = await Promise.all([
+        api.get<any, { data: any[] }>(`/requirements/?project=${activeProject.id}`),
+        api.get<any, { data: any[] }>(`/documents/?project=${activeProject.id}`),
+        api.get<any, { data: any[] }>(`/projects/attachments/?project=${activeProject.id}`),
+        api.get<any, { data: any[] }>(`/projects/activities/?project=${activeProject.id}`)
+      ]);
+
       setBacklogData(reqsRes.data || []);
-
-      // 2. Documents
-      const docsRes = await api.get<any, { data: any[] }>(`/documents/?project=${activeProject.id}`);
       setDocuments(docsRes.data || []);
-
-      // 3. Attachments
-      const attachRes = await api.get<any, { data: any[] }>(`/projects/attachments/?project=${activeProject.id}`);
       setAttachments(attachRes.data || []);
-
-      // 4. Activities
-      const actRes = await api.get<any, { data: any[] }>(`/projects/activities/?project=${activeProject.id}`);
       setActivities(actRes.data || []);
     } catch (e) {
       console.error("Failed to load dashboard statistics:", e);

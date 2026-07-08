@@ -23,6 +23,28 @@ class CoreAndAuthTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {"status": "healthy"})
 
+    def test_new_health_check(self):
+        """Verify the new unauthenticated /health/ check returns 200 with the correct metadata."""
+        url = reverse("backend-health")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["status"], "ok")
+        self.assertEqual(response.data["service"], "BAHub Backend")
+        self.assertIn("timestamp", response.data)
+        self.assertEqual(response.data["version"], "1.0")
+
+    def test_root_check(self):
+        """Verify the root URL / returns 200 with a friendly running status."""
+        url = reverse("backend-root")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {
+            "service": "BAHub Backend",
+            "status": "running",
+            "health": "/health/",
+            "docs": "/api/docs/"
+        })
+
     def test_password_policy(self):
         """Verify custom EnterprisePasswordValidator filters weak passwords."""
         validator = EnterprisePasswordValidator()

@@ -1,64 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./features/auth/AuthContext";
 import { ProjectProvider } from "./features/projects/ProjectContext";
 import { LoginForm } from "./features/auth/components/LoginForm";
 import { RegisterForm } from "./features/auth/components/RegisterForm";
 import { DashboardShell } from "./components/layout/DashboardShell";
-import { DashboardOverview } from "./features/dashboard/DashboardOverview";
-import { ProfilePage } from "./features/auth/ProfilePage";
 import logo from "./assets/logo.png";
 import banner from "./assets/banner.png";
-import { TeamsPage } from "./features/teams/TeamsPage";
-import { WorkspaceSettingsPage } from "./features/auth/WorkspaceSettingsPage";
-import { ProjectsPage } from "./features/projects/ProjectsPage";
-import { StakeholdersPage } from "./features/stakeholders/StakeholdersPage";
-import { RequirementsPage } from "./features/requirements/RequirementsPage";
-import { DiagramsPage } from "./features/diagrams/DiagramsPage";
-import { UserStoriesPage } from "./features/stories/UserStoriesPage";
-import { DocumentGeneratorPage } from "./features/documents/DocumentGeneratorPage";
-import { MeetingsPage } from "./features/meetings/MeetingsPage";
-import { RisksPage } from "./features/risks/RisksPage";
-import { ChangeRequestsPage } from "./features/changes/ChangeRequestsPage";
-import { SwotAnalysisPage } from "./features/strategic/SwotAnalysisPage";
-import { GapAnalysisPage } from "./features/strategic/GapAnalysisPage";
-import { ReportsPage } from "./features/reports/ReportsPage";
-import { AiWorkspacePage } from "./features/ai/AiWorkspacePage";
-import { IntegrationsPage } from "./features/integrations/IntegrationsPage";
-import { BillingPage } from "./features/auth/BillingPage";
-import { AuditLogPage } from "./features/audit/AuditLogPage";
 import { LandingPage } from "./features/landing/LandingPage.tsx";
-import { TraceabilityPage } from "./features/traceability/TraceabilityPage";
+
+// Lazy-loaded page components for code-splitting
+const DashboardOverview = lazy(() => import("./features/dashboard/DashboardOverview").then(m => ({ default: m.DashboardOverview })));
+const ProfilePage = lazy(() => import("./features/auth/ProfilePage").then(m => ({ default: m.ProfilePage })));
+const TeamsPage = lazy(() => import("./features/teams/TeamsPage").then(m => ({ default: m.TeamsPage })));
+const WorkspaceSettingsPage = lazy(() => import("./features/auth/WorkspaceSettingsPage").then(m => ({ default: m.WorkspaceSettingsPage })));
+const ProjectsPage = lazy(() => import("./features/projects/ProjectsPage").then(m => ({ default: m.ProjectsPage })));
+const StakeholdersPage = lazy(() => import("./features/stakeholders/StakeholdersPage").then(m => ({ default: m.StakeholdersPage })));
+const RequirementsPage = lazy(() => import("./features/requirements/RequirementsPage").then(m => ({ default: m.RequirementsPage })));
+const DiagramsPage = lazy(() => import("./features/diagrams/DiagramsPage").then(m => ({ default: m.DiagramsPage })));
+const UserStoriesPage = lazy(() => import("./features/stories/UserStoriesPage").then(m => ({ default: m.UserStoriesPage })));
+const DocumentGeneratorPage = lazy(() => import("./features/documents/DocumentGeneratorPage").then(m => ({ default: m.DocumentGeneratorPage })));
+const MeetingsPage = lazy(() => import("./features/meetings/MeetingsPage").then(m => ({ default: m.MeetingsPage })));
+const RisksPage = lazy(() => import("./features/risks/RisksPage").then(m => ({ default: m.RisksPage })));
+const ChangeRequestsPage = lazy(() => import("./features/changes/ChangeRequestsPage").then(m => ({ default: m.ChangeRequestsPage })));
+const SwotAnalysisPage = lazy(() => import("./features/strategic/SwotAnalysisPage").then(m => ({ default: m.SwotAnalysisPage })));
+const GapAnalysisPage = lazy(() => import("./features/strategic/GapAnalysisPage").then(m => ({ default: m.GapAnalysisPage })));
+const ReportsPage = lazy(() => import("./features/reports/ReportsPage").then(m => ({ default: m.ReportsPage })));
+const AiWorkspacePage = lazy(() => import("./features/ai/AiWorkspacePage").then(m => ({ default: m.AiWorkspacePage })));
+const IntegrationsPage = lazy(() => import("./features/integrations/IntegrationsPage").then(m => ({ default: m.IntegrationsPage })));
+const BillingPage = lazy(() => import("./features/auth/BillingPage").then(m => ({ default: m.BillingPage })));
+const AuditLogPage = lazy(() => import("./features/audit/AuditLogPage").then(m => ({ default: m.AuditLogPage })));
+const TraceabilityPage = lazy(() => import("./features/traceability/TraceabilityPage").then(m => ({ default: m.TraceabilityPage })));
+
+// Loading spinner fallback for lazy routing
+const PageLoader: React.FC = () => (
+  <div className="w-full h-[60vh] flex flex-col items-center justify-center bg-transparent">
+    <div className="relative w-10 h-10 mb-4">
+      <div className="absolute inset-0 rounded-full border-2 border-white/5" />
+      <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-purple-500 animate-spin" />
+    </div>
+    <p className="text-[10px] font-bold text-gray-600 tracking-[0.2em] uppercase">
+      Loading Page
+    </p>
+  </div>
+);
 
 const AuthenticatedApp: React.FC = () => {
   return (
     <DashboardShell>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<DashboardOverview />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/teams" element={<TeamsPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/stakeholders" element={<StakeholdersPage />} />
-        <Route path="/settings" element={<WorkspaceSettingsPage />} />
-        <Route path="/requirements" element={<RequirementsPage />} />
-        <Route path="/diagrams" element={<DiagramsPage />} />
-        <Route path="/stories" element={<UserStoriesPage />} />
-        <Route path="/brd" element={<DocumentGeneratorPage docType="BRD" />} />
-        <Route path="/frd" element={<DocumentGeneratorPage docType="FRD" />} />
-        <Route path="/meetings" element={<MeetingsPage />} />
-        <Route path="/risks" element={<RisksPage />} />
-        <Route path="/changes" element={<ChangeRequestsPage />} />
-        <Route path="/swot" element={<SwotAnalysisPage />} />
-        <Route path="/gap" element={<GapAnalysisPage />} />
-        <Route path="/reports" element={<ReportsPage />} />
-        <Route path="/ai" element={<AiWorkspacePage />} />
-        <Route path="/integrations" element={<IntegrationsPage />} />
-        <Route path="/billing" element={<BillingPage />} />
-        <Route path="/audit" element={<AuditLogPage />} />
-        <Route path="/traceability" element={<TraceabilityPage />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardOverview />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/teams" element={<TeamsPage />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/stakeholders" element={<StakeholdersPage />} />
+          <Route path="/settings" element={<WorkspaceSettingsPage />} />
+          <Route path="/requirements" element={<RequirementsPage />} />
+          <Route path="/diagrams" element={<DiagramsPage />} />
+          <Route path="/stories" element={<UserStoriesPage />} />
+          <Route path="/brd" element={<DocumentGeneratorPage docType="BRD" />} />
+          <Route path="/frd" element={<DocumentGeneratorPage docType="FRD" />} />
+          <Route path="/meetings" element={<MeetingsPage />} />
+          <Route path="/risks" element={<RisksPage />} />
+          <Route path="/changes" element={<ChangeRequestsPage />} />
+          <Route path="/swot" element={<SwotAnalysisPage />} />
+          <Route path="/gap" element={<GapAnalysisPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/ai" element={<AiWorkspacePage />} />
+          <Route path="/integrations" element={<IntegrationsPage />} />
+          <Route path="/billing" element={<BillingPage />} />
+          <Route path="/audit" element={<AuditLogPage />} />
+          <Route path="/traceability" element={<TraceabilityPage />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Suspense>
     </DashboardShell>
   );
 };

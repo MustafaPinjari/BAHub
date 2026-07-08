@@ -105,8 +105,8 @@ export const AiWorkspacePage: React.FC = () => {
   // Traceability Graph State
   const [rawNodes, setRawNodes] = useState<GraphNode[]>([]);
   const [rawEdges, setRawEdges] = useState<GraphEdge[]>([]);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const [editingTitle, setEditingTitle] = useState("");
