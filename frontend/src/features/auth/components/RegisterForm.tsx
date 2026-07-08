@@ -148,6 +148,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
 
   return (
     <div className="w-full max-w-[380px] flex flex-col gap-5 select-none bg-background">
+      {formError && (
+        <Alert variant="destructive">
+          {formError}
+        </Alert>
+      )}
       {step === 1 ? (
         <>
           {/* Header */}
@@ -234,12 +239,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
               Register your profile and workspace details for the <strong className="text-primary">{selectedPlan}</strong> plan.
             </p>
           </div>
-
-          {formError && (
-            <Alert variant="destructive">
-              {formError}
-            </Alert>
-          )}
 
           {/* Form fields */}
           <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -351,11 +350,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
           {otpError && (
             <Alert variant="destructive">
               {otpError}
-            </Alert>
-          )}
-          {formError && (
-            <Alert variant="destructive">
-              {formError}
             </Alert>
           )}
 

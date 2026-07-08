@@ -242,10 +242,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = [
     origin.strip().rstrip("/") for origin in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",") if origin.strip()
 ]
-# Ensure production Netlify host is always allowed
-production_origin = "https://ba-assistant.netlify.app"
-if production_origin not in CORS_ALLOWED_ORIGINS:
-    CORS_ALLOWED_ORIGINS.append(production_origin)
+# Ensure standard production and beta Netlify hosts are always allowed
+production_origins = ["https://ba-assistant.netlify.app", "https://bahub-beta.netlify.app"]
+for origin in production_origins:
+    if origin not in CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS.append(origin)
+
+# Ensure FRONTEND_URL is allowed
+frontend_url_env = os.getenv("FRONTEND_URL", "https://bahub-beta.netlify.app")
+if frontend_url_env:
+    cleaned_frontend = frontend_url_env.strip().rstrip("/")
+    if cleaned_frontend not in CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS.append(cleaned_frontend)
 
 # Ensure other standard local dev ports are allowed in DEBUG mode to prevent port-conflict CORS errors
 if DEBUG:
@@ -256,6 +264,11 @@ if DEBUG:
                 CORS_ALLOWED_ORIGINS.append(local_origin)
 
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [
+    origin for origin in CORS_ALLOWED_ORIGINS if origin.startswith("http")
+]
 
 
 # REST Framework Settings
