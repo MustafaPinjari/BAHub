@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.renderers import JSONRenderer
 import logging
 import datetime
 
@@ -26,6 +27,7 @@ class HealthCheckView(APIView):
     """
     permission_classes = [AllowAny]
     authentication_classes = []  # Bypass SimpleJWT/session overhead
+    renderer_classes = [JSONRenderer]  # Return raw JSON without triggering static asset loading
 
     def get(self, request, *args, **kwargs):
         # Resolve client IP address behind proxy/Render
@@ -51,6 +53,7 @@ class RootView(APIView):
     """
     permission_classes = [AllowAny]
     authentication_classes = []
+    renderer_classes = [JSONRenderer]  # Return raw JSON without triggering static asset loading
 
     def get(self, request, *args, **kwargs):
         return Response({
