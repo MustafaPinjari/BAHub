@@ -40,3 +40,36 @@ class OrganizationViewSet(mixins.RetrieveModelMixin,
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return api_success(data=serializer.data, message="Organization profile updated successfully.")
+
+from .models import OrganizationInvitation
+from .serializers import OrganizationInvitationSerializer
+from django.utils import timezone
+import datetime
+from rest_framework.exceptions import PermissionDenied
+
+class OrganizationInvitationViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for OrganizationInvitation operations.
+    Allows Admins to invite users, view pending invites, and cancel invitations.
+    """
+    serializer_class = OrganizationInvitationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated and user.organization_id:
+            return OrganizationInvitation.objects.filter(
+                organization_id=user.organization_id,
+                is_used=False
+            )
+        return OrganizationInvitation.objects.none()
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if user.role != "ADMIN":
+            raise PermissionDenied("Only administrators can create workspace invitations.")
+
+        serializer.save(
+            organization=user.organization,
+            expires_at=timezone.now() + datetime.timedelta(days=7)
+        )

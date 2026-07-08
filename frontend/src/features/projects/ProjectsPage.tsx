@@ -78,6 +78,25 @@ export const ProjectsPage: React.FC = () => {
 
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [sampleLoading, setSampleLoading] = useState(false);
+
+  const handleLoadSampleProject = async () => {
+    setSampleLoading(true);
+    setFormError(null);
+    setSuccessMessage(null);
+    try {
+      const res = await api.post<any, { data: Project }>("/projects/create-sample/");
+      setSuccessMessage("Sample SwiftPay Mobile Wallet project loaded successfully!");
+      fetchProjects();
+      if (res.data) {
+        setActiveProject({ id: res.data.id, name: res.data.name });
+      }
+    } catch (err: any) {
+      setFormError(err.message || "Failed to load sample project.");
+    } finally {
+      setSampleLoading(false);
+    }
+  };
 
   const canManageProjects = user ? ["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER"].includes(user.role) : false;
 
@@ -398,7 +417,27 @@ export const ProjectsPage: React.FC = () => {
         )}
       </div>
 
+      {/* Example Project Loader Card / Banner */}
+      <div className="bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-purple-500/20 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-left shadow-lg">
+        <div className="flex flex-col">
+          <span className="text-xs font-black uppercase tracking-wider text-purple-400">First time using BAHub?</span>
+          <p className="text-[11px] text-gray-300 font-semibold mt-0.5 leading-relaxed">
+            Click to load a fully populated <strong className="text-white">"SwiftPay Mobile Wallet"</strong> sample project with stakeholders, requirements catalog, sprint user stories, risks, and UAT test coverage!
+          </p>
+        </div>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={handleLoadSampleProject}
+          isLoading={sampleLoading}
+          className="text-xs font-bold py-1.5 px-4 bg-purple-600 hover:bg-purple-500 border-none shrink-0"
+        >
+          Load Example Project
+        </Button>
+      </div>
+
       {successMessage && <Alert variant="success">{successMessage}</Alert>}
+      {formError && <Alert variant="destructive">{formError}</Alert>}
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20">

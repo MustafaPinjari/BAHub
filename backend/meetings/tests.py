@@ -16,10 +16,10 @@ class MeetingManagementTests(APITestCase):
 
         # Create Users
         self.analyst_a = User.objects.create_user(
-            username="analyst_a", password="Password123!", role=User.BUSINESS_ANALYST, organization=self.org_a
+            username="analyst_a", email="analyst_a@test.com", password="Password123!", role=User.BUSINESS_ANALYST, organization=self.org_a
         )
         self.analyst_b = User.objects.create_user(
-            username="analyst_b", password="Password123!", role=User.BUSINESS_ANALYST, organization=self.org_b
+            username="analyst_b", email="analyst_b@test.com", password="Password123!", role=User.BUSINESS_ANALYST, organization=self.org_b
         )
 
         # Create Project
@@ -79,3 +79,32 @@ class MeetingManagementTests(APITestCase):
         res_item_ok = self.client.post(url_item, payload_item_valid, format="json")
         self.assertEqual(res_item_ok.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res_item_ok.data["data"]["description"], "Write project charters.")
+
+    def test_meeting_sends_email_invitation(self):
+        """Verify scheduler emails are dispatched to attendees on meeting creation."""
+        from django.core import mail
+        
+        self.client.force_authenticate(user=self.analyst_a)
+        url_meeting = reverse("meeting-list")
+        
+        # Clear outbox
+        mail.outbox = []
+        
+        payload = {
+            "project": str(self.project_a.id),
+            "title": "Strategy Alignment Sync",
+            "date": "2026-07-02",
+            "time": "14:00:00",
+            "objective": "Review key timelines.",
+            "attendees": [self.analyst_a.id]
+        }
+        
+        response = self.client.post(url_meeting, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        # Verify email is sent
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.subject, "Meeting Scheduled: Strategy Alignment Sync")
+        self.assertIn("Join Video Call Room: https://meet.jit.si/bahub-", email.body)
+        self.assertIn(self.analyst_a.email, email.to)

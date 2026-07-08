@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -44,6 +44,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
   const [selectedPlan, setSelectedPlan] = useState<"FREE" | "PRO" | "ENTERPRISE">("FREE");
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [inviteToken, setInviteToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("invite");
+    if (token) {
+      setInviteToken(token);
+      setStep(2);
+    }
+  }, []);
 
   const {
     register,
@@ -65,8 +75,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
       await registerApi({
         ...data,
         plan_tier: selectedPlan,
+        invite_token: inviteToken || undefined,
       });
 
+      localStorage.setItem("show_onboarding_wizard", "true");
       onSuccess();
     } catch (err: any) {
       console.error(err);
@@ -179,16 +191,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
 
           {/* Form fields */}
           <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div className="sm:col-span-2">
-              <Input
-                label="Organization Name"
-                type="text"
-                placeholder="e.g. Apex Analytics"
-                error={errors.organization_name?.message}
-                icon={<Building className="w-3.5 h-3.5" />}
-                {...register("organization_name")}
-              />
-            </div>
+            {!inviteToken && (
+              <div className="sm:col-span-2">
+                <Input
+                  label="Organization Name"
+                  type="text"
+                  placeholder="e.g. Apex Analytics"
+                  error={errors.organization_name?.message}
+                  icon={<Building className="w-3.5 h-3.5" />}
+                  {...register("organization_name")}
+                />
+              </div>
+            )}
 
             <Input
               label="First Name"

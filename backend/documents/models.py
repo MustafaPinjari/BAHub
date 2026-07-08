@@ -11,6 +11,8 @@ class BusinessDocument(BaseModel):
     TYPE_CHOICES = [
         ("BRD", "Business Requirements Document"),
         ("FRD", "Functional Requirements Document"),
+        ("SWOT", "SWOT Analysis Charter"),
+        ("GAP", "GAP Analysis Framework"),
     ]
 
     STATUS_CHOICES = [
@@ -61,3 +63,48 @@ class BusinessDocument(BaseModel):
 
     def __str__(self):
         return f"{self.doc_type} - {self.title} ({self.project.name})"
+
+class DocumentApprovalHistory(BaseModel):
+    """
+    Tracks review workflow actions and audit logs for Business Documents.
+    """
+    document = models.ForeignKey(
+        BusinessDocument,
+        on_delete=models.CASCADE,
+        related_name="approval_histories"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    action = models.CharField(max_length=50)  # e.g., SUBMIT_REVIEW, APPROVE, REQUEST_REVISIONS, SIGN_OFF
+    comment = models.TextField(blank=True)
+    version = models.CharField(max_length=20)
+
+    class Meta:
+        db_table = "document_approval_histories"
+        ordering = ["-created_at"]
+
+class DocumentVersion(BaseModel):
+    """
+    Stores historical content snapshots of Business Documents.
+    """
+    document = models.ForeignKey(
+        BusinessDocument,
+        on_delete=models.CASCADE,
+        related_name="versions"
+    )
+    version = models.CharField(max_length=20)
+    content = models.TextField()
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        db_table = "document_versions"
+        ordering = ["-created_at"]

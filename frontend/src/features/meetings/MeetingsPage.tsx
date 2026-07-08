@@ -14,7 +14,8 @@ import {
   Loader2,
   FolderGit,
   X,
-  UserCheck
+  UserCheck,
+  ExternalLink
 } from "lucide-react";
 
 
@@ -401,6 +402,24 @@ export const MeetingsPage: React.FC = () => {
                 <p className="text-xs text-foreground font-semibold leading-relaxed bg-secondary/15 p-3 rounded-lg border border-border/40">
                   {selectedMeeting.objective}
                 </p>
+              </div>
+
+              {/* Meeting Video Call Link */}
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Virtual Meeting Link</span>
+                <div className="flex items-center gap-2 bg-primary/5 p-3 rounded-lg border border-primary/20">
+                  <span className="text-xs font-mono text-purple-400 select-all truncate flex-1">
+                    {`https://meet.jit.si/bahub-${selectedMeeting.id}`}
+                  </span>
+                  <a
+                    href={`https://meet.jit.si/bahub-${selectedMeeting.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1 shrink-0"
+                  >
+                    Join Video Call <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
 
               {/* Attendees list map */}

@@ -73,6 +73,9 @@ urlpatterns = [
     # Diagrams endpoints
     path("api/v1/diagrams/", include("diagrams.urls")),
     
+    # UAT endpoints
+    path("api/v1/uat/", include("uat.urls")),
+    
     # SAML2 SSO login endpoints
     path("saml2_auth/", include("django_saml2_auth.urls")),
 ]

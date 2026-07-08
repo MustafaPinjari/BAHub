@@ -31,6 +31,7 @@ const IntegrationsPage = lazy(() => import("./features/integrations/Integrations
 const BillingPage = lazy(() => import("./features/auth/BillingPage").then(m => ({ default: m.BillingPage })));
 const AuditLogPage = lazy(() => import("./features/audit/AuditLogPage").then(m => ({ default: m.AuditLogPage })));
 const TraceabilityPage = lazy(() => import("./features/traceability/TraceabilityPage").then(m => ({ default: m.TraceabilityPage })));
+const UatPage = lazy(() => import("./features/uat/UatPage").then(m => ({ default: m.UatPage })));
 
 // Loading spinner fallback for lazy routing
 const PageLoader: React.FC = () => (
@@ -73,6 +74,7 @@ const AuthenticatedApp: React.FC = () => {
           <Route path="/billing" element={<BillingPage />} />
           <Route path="/audit" element={<AuditLogPage />} />
           <Route path="/traceability" element={<TraceabilityPage />} />
+          <Route path="/uat" element={<UatPage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Suspense>

@@ -61,6 +61,9 @@ export const RequirementsPage: React.FC = () => {
   const [aiGenerating, setAiGenerating] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState("");
 
   // WebSocket Co-authoring States
   const socketRef = useRef<WebSocket | null>(null);
@@ -288,6 +291,127 @@ export const RequirementsPage: React.FC = () => {
     }, 1200);
   };
 
+  const handleCSVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !activeProject) return;
+
+    setImporting(true);
+    setImportProgress("Reading file...");
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const text = event.target?.result as string;
+      if (!text) {
+        setImporting(false);
+        setFormError("Could not read CSV file contents.");
+        return;
+      }
+
+      const lines = text.split(/\r?\n/);
+      if (lines.length <= 1) {
+        setImporting(false);
+        setFormError("CSV file is empty or contains only headers.");
+        return;
+      }
+
+      const parseCSVLine = (line: string) => {
+        const result = [];
+        let current = "";
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = "";
+          } else {
+            current += char;
+          }
+        }
+        result.push(current.trim());
+        return result.map(s => s.replace(/^"|"$/g, '').replace(/""/g, '"'));
+      };
+
+      const headers = parseCSVLine(lines[0]);
+      const titleIdx = headers.findIndex(h => h.toLowerCase().includes("title"));
+      const descIdx = headers.findIndex(h => h.toLowerCase().includes("desc"));
+      const typeIdx = headers.findIndex(h => h.toLowerCase().includes("type"));
+      const priorityIdx = headers.findIndex(h => h.toLowerCase().includes("priority"));
+      const statusIdx = headers.findIndex(h => h.toLowerCase().includes("status"));
+
+      if (titleIdx === -1 || descIdx === -1) {
+        setImporting(false);
+        setFormError("CSV must contain at least 'Title' and 'Description' columns.");
+        return;
+      }
+
+      const rowsToImport = [];
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        const columns = parseCSVLine(line);
+        if (columns.length < 2) continue;
+        rowsToImport.push(columns);
+      }
+
+      let successCount = 0;
+      for (let i = 0; i < rowsToImport.length; i++) {
+        const row = rowsToImport[i];
+        setImportProgress(`Importing row ${i + 1} of ${rowsToImport.length}...`);
+
+        const title = row[titleIdx] || "Untitled Requirement";
+        const description = row[descIdx] || "";
+        
+        let req_type = "FUNCTIONAL";
+        if (typeIdx !== -1 && row[typeIdx]) {
+          const rawType = row[typeIdx].toUpperCase().replace(" ", "_");
+          if (["FUNCTIONAL", "NON_FUNCTIONAL", "TECHNICAL", "UI"].includes(rawType)) {
+            req_type = rawType;
+          }
+        }
+
+        let priority = "MEDIUM";
+        if (priorityIdx !== -1 && row[priorityIdx]) {
+          const rawPriority = row[priorityIdx].toUpperCase();
+          if (["HIGH", "MEDIUM", "LOW"].includes(rawPriority)) {
+            priority = rawPriority;
+          }
+        }
+
+        let status = "DRAFT";
+        if (statusIdx !== -1 && row[statusIdx]) {
+          const rawStatus = row[statusIdx].toUpperCase();
+          if (["DRAFT", "REVIEW", "APPROVED", "REJECTED"].includes(rawStatus)) {
+            status = rawStatus;
+          }
+        }
+
+        try {
+          await api.post("/requirements/", {
+            project: activeProject.id,
+            title,
+            description,
+            req_type,
+            priority,
+            status,
+            version: "1.0",
+          });
+          successCount++;
+        } catch (err) {
+          console.error(`Failed to import row ${i + 1}:`, err);
+        }
+      }
+
+      setImporting(false);
+      setImportModalOpen(false);
+      setSuccessMessage(`Successfully imported ${successCount} requirements.`);
+      fetchRequirements();
+    };
+
+    reader.readAsText(file);
+  };
+
   // Filtered requirements based on search
   const filteredReqs = requirements.filter(
     (r) =>
@@ -396,15 +520,25 @@ export const RequirementsPage: React.FC = () => {
                 </span>
               </div>
               {canManage && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCreateNew}
-                  className="text-[10px] font-bold h-7 py-1 px-2.5 rounded"
-                >
-                  <Plus className="w-3 h-3 mr-1" />
-                  Add Req
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCreateNew}
+                    className="text-[10px] font-bold h-7 py-1 px-2.5 rounded"
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    Add Req
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setImportModalOpen(true)}
+                    className="text-[10px] font-bold h-7 py-1 px-2.5 rounded"
+                  >
+                    Import CSV
+                  </Button>
+                </div>
               )}
             </div>
 
@@ -694,6 +828,46 @@ export const RequirementsPage: React.FC = () => {
           )}
         </div>
       </div>
+      {/* ── CSV Import Modal ── */}
+      {importModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setImportModalOpen(false)} />
+          <div className="relative w-full max-w-md bg-gray-950 border border-white/[0.10] rounded-2xl p-6 shadow-2xl">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2 mb-4">
+              <FileSpreadsheet className="w-4 h-4 text-purple-400" /> Import Requirements CSV
+            </h2>
+            <div className="flex flex-col gap-4 text-left">
+              <Alert variant="info" title="CSV Template Guidelines">
+                File must contain headers: <code className="font-mono bg-white/10 px-1 py-0.5 rounded text-[10px]">Title,Description,Type,Priority,Status</code>.
+              </Alert>
+
+              <div className="flex flex-col gap-2">
+                <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Select CSV File</span>
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={handleCSVUpload}
+                  disabled={importing}
+                  className="w-full text-xs bg-gray-900 border border-white/[0.08] text-gray-200 rounded-md p-2 outline-none file:bg-white/[0.08] file:border-none file:text-white file:text-xs file:font-semibold file:rounded file:px-2 file:py-1 file:mr-2 file:cursor-pointer"
+                />
+              </div>
+
+              {importing && (
+                <div className="flex items-center gap-2 text-xs text-purple-400 font-semibold mt-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>{importProgress}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2 mt-4">
+                <Button variant="ghost" size="sm" onClick={() => setImportModalOpen(false)} disabled={importing}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

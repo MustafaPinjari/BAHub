@@ -14,7 +14,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 
-from .models import BusinessDocument
+from .models import BusinessDocument, DocumentApprovalHistory, DocumentVersion
 from .serializers import BusinessDocumentSerializer
 from projects.models import Project
 from core.responses import api_success, api_error
@@ -55,7 +55,30 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        doc = serializer.save(created_by=self.request.user)
+        # Create a document version snapshot representing the initial version state
+        DocumentVersion.objects.create(
+            document=doc,
+            version=doc.version,
+            content=doc.content,
+            created_by=self.request.user
+        )
+
+    def perform_update(self, serializer):
+        old_doc = self.get_object()
+        old_content = old_doc.content
+        old_version = old_doc.version
+        
+        new_doc = serializer.save()
+        
+        # If content or version changed, create a history snapshot version
+        if new_doc.content != old_content or new_doc.version != old_version:
+            DocumentVersion.objects.create(
+                document=new_doc,
+                version=old_version,
+                content=old_content,
+                created_by=self.request.user
+            )
 
     @action(detail=False, methods=["post"], url_path="generate")
     def generate_document(self, request):
@@ -79,34 +102,87 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
         stakeholders = project.stakeholders.all()
         requirements = project.requirements.all()
 
-        content = f"# Business Document: {doc_type} - {project.name}\n\n"
-        content += "## 1. Document Control & Scope\n"
-        content += f"- **Project Scope**: {project.name}\n"
-        content += f"- **Workspace Organisation**: {project.organization.name}\n"
-        content += f"- **Document Schema Type**: {doc_type}\n"
-        content += f"- **Author**: @{request.user.username}\n"
-        content += "- **Status**: DRAFT\n"
-        content += f"- **Scope Description**: {project.description or 'No scope definition provided.'}\n\n"
-
-        content += "## 2. Key Stakeholder Registry\n"
-        if not stakeholders.exists():
-            content += "*No stakeholders registered in this project.*\n\n"
+        if doc_type == "SWOT":
+            title = f"SWOT Analysis Charter - {project.name} - Version 1.0"
+            content = (
+                f"# SWOT Analysis Charter: {project.name}\n\n"
+                f"## 1. Executive Summary & Goals\n"
+                f"- **Project**: {project.name}\n"
+                f"- **Workspace Organization**: {project.organization.name}\n"
+                f"- **Author**: @{request.user.username}\n"
+                f"- **Status**: DRAFT\n\n"
+                f"## 2. SWOT Matrix & Guided Parameters\n\n"
+                f"### Strengths (Internal & Helpful)\n"
+                f"- **Key advantage 1**: [Describe proprietary tech, experienced team, or strong backing]\n"
+                f"- **Key advantage 2**: [Detail cost efficiency or high product quality factors]\n\n"
+                f"### Weaknesses (Internal & Harmful)\n"
+                f"- **Constraint 1**: [Acknowledge budget limits, resource gaps, or dependencies]\n"
+                f"- **Constraint 2**: [Note tech debt or team velocity blocks]\n\n"
+                f"### Opportunities (External & Helpful)\n"
+                f"- **Market opportunity 1**: [Highlight target niches, gaps in competitor offerings]\n"
+                f"- **Market opportunity 2**: [Specify regulatory shifts or compliance openings]\n\n"
+                f"### Threats (External & Harmful)\n"
+                f"- **Threat 1**: [Identify macro competition or pricing pressures]\n"
+                f"- **Threat 2**: [Examine cyber security risks or supply issues]\n\n"
+                f"## 3. Actionable Mitigation & Growth Strategies\n"
+                f"- **S-O Strategies (Maximize Strengths to Seize Opportunities)**: ...\n"
+                f"- **W-T Strategies (Minimize Weaknesses to Prevent Threats)**: ...\n"
+            )
+        elif doc_type == "GAP":
+            title = f"GAP Analysis Framework - {project.name} - Version 1.0"
+            content = (
+                f"# GAP Analysis Framework Document: {project.name}\n\n"
+                f"## 1. Scope & Objective\n"
+                f"- **Project Scope**: {project.name}\n"
+                f"- **Author**: @{request.user.username}\n"
+                f"- **Status**: DRAFT\n\n"
+                f"## 2. Current State (As-Is) vs. Future State (To-Be)\n\n"
+                f"### Business Area 1: User Onboarding Flow\n"
+                f"- **Current State (As-Is)**: [Describe current manual, slow, or friction-prone setup]\n"
+                f"- **Desired Future State (To-Be)**: [Target automated, biometric login, or rapid invite flow]\n"
+                f"- **Gap Identified**: [State missing APIs, UI pages, or credentials]\n"
+                f"- **Action Plan**: [Assign requirements or stories to resolve the gap]\n\n"
+                f"### Business Area 2: Meeting & Invitations Channels\n"
+                f"- **Current State (As-Is)**: [Manual messaging, no automated invites or virtual link]\n"
+                f"- **Desired Future State (To-Be)**: [Jitsi virtual meeting URLs emailed automatically to invitees]\n"
+                f"- **Gap Identified**: [Need integrated email dispatch hooks]\n"
+                f"- **Action Plan**: [Deploy Django mailer trigger and Jitsi templates]\n\n"
+                f"## 3. Resource & Capability Mapping\n"
+                f"| Gap Reference | Effort Estimate | Priority | Responsible Lead |\n"
+                f"| --- | --- | --- | --- |\n"
+                f"| Biometric Credentials Gap | Medium | High | John Doe |\n"
+                f"| Email dispatch channels | Low | High | Sarah Connor |\n"
+            )
         else:
-            content += "| Name | Title | Department | Power / Interest |\n"
-            content += "| --- | --- | --- | --- |\n"
-            for s in stakeholders:
-                content += f"| {s.name} | {s.title} | {s.department or 'N/A'} | {s.power} / {s.interest} |\n"
-            content += "\n"
+            title = f"{doc_type} - {project.name} - Version 1.0"
+            content = f"# Business Document: {doc_type} - {project.name}\n\n"
+            content += "## 1. Document Control & Scope\n"
+            content += f"- **Project Scope**: {project.name}\n"
+            content += f"- **Workspace Organisation**: {project.organization.name}\n"
+            content += f"- **Document Schema Type**: {doc_type}\n"
+            content += f"- **Author**: @{request.user.username}\n"
+            content += "- **Status**: DRAFT\n"
+            content += f"- **Scope Description**: {project.description or 'No scope definition provided.'}\n\n"
 
-        content += "## 3. Business & Technical Specifications Catalog\n"
-        if not requirements.exists():
-            content += "*No specifications recorded in project backlog.*\n\n"
-        else:
-            content += "| ID | Title | Priority | Type | Status |\n"
-            content += "| --- | --- | --- | --- | --- |\n"
-            for r in requirements:
-                content += f"| {r.req_id} | {r.title} | {r.priority} | {r.req_type} | {r.status} |\n"
-            content += "\n"
+            content += "## 2. Key Stakeholder Registry\n"
+            if not stakeholders.exists():
+                content += "*No stakeholders registered in this project.*\n\n"
+            else:
+                content += "| Name | Title | Department | Power / Interest |\n"
+                content += "| --- | --- | --- | --- |\n"
+                for s in stakeholders:
+                    content += f"| {s.name} | {s.title} | {s.department or 'N/A'} | {s.power} / {s.interest} |\n"
+                content += "\n"
+
+            content += "## 3. Business & Technical Specifications Catalog\n"
+            if not requirements.exists():
+                content += "*No specifications recorded in project backlog.*\n\n"
+            else:
+                content += "| ID | Title | Priority | Type | Status |\n"
+                content += "| --- | --- | --- | --- | --- |\n"
+                for r in requirements:
+                    content += f"| {r.req_id} | {r.title} | {r.priority} | {r.req_type} | {r.status} |\n"
+                content += "\n"
 
         if doc_type == "FRD":
             content += "## 4. Agile Backlog & User Stories Traceability\n"
@@ -157,6 +233,83 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
 
         return api_success(data=data, message="Document synthesized successfully.")
 
+    @action(detail=True, methods=["post"], url_path="submit-for-review")
+    def submit_for_review(self, request, pk=None):
+        """
+        Transitions document status to REVIEW.
+        """
+        doc = self.get_object()
+        doc.status = "REVIEW"
+        doc.save()
+        
+        DocumentApprovalHistory.objects.create(
+            document=doc,
+            user=request.user,
+            action="SUBMIT_REVIEW",
+            comment="Submitted for review & approvals cataloging.",
+            version=doc.version
+        )
+        
+        # Ensure a version snapshot exists representing this version state
+        DocumentVersion.objects.get_or_create(
+            document=doc,
+            version=doc.version,
+            defaults={"content": doc.content, "created_by": request.user}
+        )
+        
+        serializer = self.get_serializer(doc)
+        return api_success(data=serializer.data, message="Document submitted for review successfully.")
+
+    @action(detail=True, methods=["post"], url_path="approve")
+    def approve(self, request, pk=None):
+        """
+        Transitions document status to APPROVED.
+        """
+        doc = self.get_object()
+        if request.user.role not in ["ADMIN", "PRODUCT_OWNER", "PROJECT_MANAGER"]:
+            return api_error(message="Only Product Owners, Project Managers, and Admins can approve documents.")
+            
+        doc.status = "APPROVED"
+        doc.save()
+        
+        DocumentApprovalHistory.objects.create(
+            document=doc,
+            user=request.user,
+            action="APPROVE",
+            comment="Approved business specification draft.",
+            version=doc.version
+        )
+        
+        serializer = self.get_serializer(doc)
+        return api_success(data=serializer.data, message="Document approved successfully.")
+
+    @action(detail=True, methods=["post"], url_path="request-revision")
+    def request_revision(self, request, pk=None):
+        """
+        Transitions document status back to DRAFT with rejection review reasons.
+        """
+        doc = self.get_object()
+        if request.user.role not in ["ADMIN", "PRODUCT_OWNER", "PROJECT_MANAGER"]:
+            return api_error(message="Only Product Owners, Project Managers, and Admins can request document revisions.")
+            
+        comment = request.data.get("comment", "").strip()
+        if not comment:
+            return api_error(message="A revision comment/rejection reason is required.")
+            
+        doc.status = "DRAFT"
+        doc.save()
+        
+        DocumentApprovalHistory.objects.create(
+            document=doc,
+            user=request.user,
+            action="REQUEST_REVISIONS",
+            comment=comment,
+            version=doc.version
+        )
+        
+        serializer = self.get_serializer(doc)
+        return api_success(data=serializer.data, message="Document revisions requested successfully.")
+
     @action(detail=True, methods=["post"], url_path="sign-off")
     def sign_off(self, request, pk=None):
         """
@@ -174,8 +327,38 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
         doc.signed_off_at = timezone.now()
         doc.save()
 
+        DocumentApprovalHistory.objects.create(
+            document=doc,
+            user=request.user,
+            action="SIGN_OFF",
+            comment="Officially signed off and compliance-approved.",
+            version=doc.version
+        )
+
         serializer = self.get_serializer(doc)
         return api_success(data=serializer.data, message="Document signed off successfully.")
+
+    @action(detail=True, methods=["get"], url_path="history")
+    def history(self, request, pk=None):
+        """
+        Retrieves approval audit logs.
+        """
+        doc = self.get_object()
+        histories = doc.approval_histories.all()
+        from .serializers import DocumentApprovalHistorySerializer
+        serializer = DocumentApprovalHistorySerializer(histories, many=True)
+        return api_success(data=serializer.data, message="Approval history retrieved.")
+
+    @action(detail=True, methods=["get"], url_path="versions")
+    def versions(self, request, pk=None):
+        """
+        Retrieves historical snapshots.
+        """
+        doc = self.get_object()
+        versions = doc.versions.all()
+        from .serializers import DocumentVersionSerializer
+        serializer = DocumentVersionSerializer(versions, many=True)
+        return api_success(data=serializer.data, message="Historical versions retrieved.")
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())

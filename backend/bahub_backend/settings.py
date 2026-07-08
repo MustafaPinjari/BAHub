@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "django_saml2_auth",
     "audit",
     "diagrams",
+    "uat",
 ]
 
 MIDDLEWARE = [
@@ -489,6 +490,15 @@ STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", None)
 STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", None)
 STRIPE_PRICE_ENTERPRISE = os.getenv("STRIPE_PRICE_ENTERPRISE", None)
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", None)
+
+# Email Configuration
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 25))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "yes")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "notifications@bahub.com")
 
 
 

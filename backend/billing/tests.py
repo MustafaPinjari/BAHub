@@ -657,3 +657,36 @@ class SSOProvisioningTests(TestCase):
         self.assertEqual(sub.ai_credits_limit, 100)
         self.assertTrue(sub.is_active)
 
+class MockInvoiceListViewTests(APITestCase):
+    def setUp(self):
+        self.org = Organization.objects.create(name="Invoice Test Org")
+        self.user = User.objects.create_user(
+            username="invoiceuser",
+            email="invoice@test.com",
+            password="SecurePassword123!",
+            organization=self.org
+        )
+        self.sub = TenantSubscription.objects.get(organization=self.org)
+
+    def test_mock_invoices_free_tier_empty(self):
+        """Verify FREE tier yields no invoices."""
+        self.client.force_authenticate(user=self.user)
+        url = reverse("billing-invoices")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["data"], [])
+
+    def test_mock_invoices_paid_tier_lists_invoices(self):
+        """Verify PRO tier generates invoices based on created_at timestamp."""
+        self.sub.plan_tier = "PRO"
+        self.sub.save()
+
+        self.client.force_authenticate(user=self.user)
+        url = reverse("billing-invoices")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        invoices = response.data["data"]
+        self.assertTrue(len(invoices) >= 1)
+        self.assertEqual(invoices[0]["amount"], "$49.00")
+        self.assertIn("INV-2026-", invoices[0]["id"])
+

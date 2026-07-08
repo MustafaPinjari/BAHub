@@ -52,3 +52,48 @@ class BusinessDocumentSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Cannot create or update a document for a project outside your organization.")
 
         return attrs
+
+from .models import DocumentApprovalHistory, DocumentVersion
+
+class DocumentApprovalHistorySerializer(serializers.ModelSerializer):
+    user_username = serializers.CharField(source="user.username", read_only=True)
+    user_full_name = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = DocumentApprovalHistory
+        fields = [
+            "id",
+            "document",
+            "user",
+            "user_username",
+            "user_full_name",
+            "action",
+            "comment",
+            "version",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+    def get_user_full_name(self, obj):
+        if obj.user:
+            return f"{obj.user.first_name} {obj.user.last_name}".strip() or obj.user.username
+        return "System"
+
+
+class DocumentVersionSerializer(serializers.ModelSerializer):
+    created_by_username = serializers.CharField(source="created_by.username", read_only=True)
+
+    class Meta:
+        model = DocumentVersion
+        fields = [
+            "id",
+            "document",
+            "version",
+            "content",
+            "created_by",
+            "created_by_username",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]

@@ -17,7 +17,10 @@ import {
   Send,
   X,
   Download,
-  FileDown
+  FileDown,
+  History,
+  Check,
+  XCircle
 } from "lucide-react";
 
 
@@ -62,6 +65,57 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
 
   const canManage = user ? ["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER"].includes(user.role) : false;
   const canSignOff = user ? ["ADMIN", "PRODUCT_OWNER", "PROJECT_MANAGER"].includes(user.role) : false;
+
+  // Approvals & Revisions snapshot comparison states
+  const [histories, setHistories] = useState<any[]>([]);
+  const [versions, setVersions] = useState<any[]>([]);
+  const [comparing, setComparing] = useState(false);
+  const [compareVersionId, setCompareVersionId] = useState("");
+  const [compareContent, setCompareContent] = useState("");
+  const [revisionModalOpen, setRevisionModalOpen] = useState(false);
+  const [revisionComment, setRevisionComment] = useState("");
+
+  const loadDocHistory = async (docId: string) => {
+    try {
+      const res = await api.get<any, { data: any[] }>(`/documents/${docId}/history/`);
+      setHistories(res.data || []);
+    } catch (err) {
+      console.error("Failed to load approval histories:", err);
+    }
+  };
+
+  const loadDocVersions = async (docId: string) => {
+    try {
+      const res = await api.get<any, { data: any[] }>(`/documents/${docId}/versions/`);
+      setVersions(res.data || []);
+    } catch (err) {
+      console.error("Failed to load versions snapshots:", err);
+    }
+  };
+
+  const handleSelectCompareVersion = (vId: string) => {
+    const ver = versions.find((v) => v.id === vId);
+    if (ver) {
+      setCompareVersionId(vId);
+      setCompareContent(ver.content);
+    } else {
+      setCompareVersionId("");
+      setCompareContent("");
+    }
+  };
+
+  useEffect(() => {
+    if (selectedDoc?.id) {
+      loadDocHistory(selectedDoc.id);
+      loadDocVersions(selectedDoc.id);
+      setComparing(false);
+      setCompareVersionId("");
+      setCompareContent("");
+    } else {
+      setHistories([]);
+      setVersions([]);
+    }
+  }, [selectedDoc?.id]);
 
   const fetchDocuments = async () => {
     if (!activeProject) return;
@@ -140,19 +194,49 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
     setSaving(true);
     setFormError(null);
     try {
-      const res = await api.put<any, { data: BusinessDocument }>(`/documents/${selectedDoc.id}/`, {
-        project: selectedDoc.project,
-        doc_type: selectedDoc.doc_type,
-        title: selectedDoc.title,
-        version: selectedDoc.version,
-        content: selectedDoc.content,
-        status: "REVIEW"
-      });
-      setSuccessMessage("Document status updated to 'Under Review'.");
+      const res = await api.post<any, { data: BusinessDocument }>(`/documents/${selectedDoc.id}/submit-for-review/`);
+      setSuccessMessage("Document submitted for review successfully.");
       setSelectedDoc(res.data);
       fetchDocuments();
     } catch (err: any) {
-      setFormError("Failed to update status.");
+      setFormError(err.message || "Failed to submit for review.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!selectedDoc) return;
+    setSaving(true);
+    setFormError(null);
+    try {
+      const res = await api.post<any, { data: BusinessDocument }>(`/documents/${selectedDoc.id}/approve/`);
+      setSuccessMessage("Document approved successfully.");
+      setSelectedDoc(res.data);
+      fetchDocuments();
+    } catch (err: any) {
+      setFormError(err.message || "Failed to approve document.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRequestRevision = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedDoc || !revisionComment) return;
+    setSaving(true);
+    setFormError(null);
+    try {
+      const res = await api.post<any, { data: BusinessDocument }>(`/documents/${selectedDoc.id}/request-revision/`, {
+        comment: revisionComment
+      });
+      setSuccessMessage("Revisions requested successfully.");
+      setRevisionModalOpen(false);
+      setRevisionComment("");
+      setSelectedDoc(res.data);
+      fetchDocuments();
+    } catch (err: any) {
+      setFormError(err.message || "Failed to request revisions.");
     } finally {
       setSaving(false);
     }
@@ -764,6 +848,17 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
                   Word
                 </Button>
 
+                {/* Compare Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setComparing(!comparing)}
+                  className={`text-[10px] font-bold h-7.5 py-1 px-3 rounded flex items-center gap-1.5 ${comparing ? "bg-purple-500/10 border-purple-500 text-purple-400" : ""}`}
+                >
+                  <History className="w-3 h-3" />
+                  {comparing ? "Show Reader" : "Compare Versions"}
+                </Button>
+
                 {selectedDoc.status === "DRAFT" && canManage && (
                   <Button
                     variant="outline"
@@ -776,7 +871,32 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
                     Submit Review
                   </Button>
                 )}
+
                 {selectedDoc.status === "REVIEW" && canSignOff && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleApprove}
+                      isLoading={saving}
+                      className="text-[10px] font-bold h-7.5 py-1 px-3 border-green-500/20 text-green-400 hover:bg-green-500/10 rounded flex items-center gap-1.5"
+                    >
+                      <Check className="w-3 h-3" />
+                      Approve
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRevisionModalOpen(true)}
+                      className="text-[10px] font-bold h-7.5 py-1 px-3 border-red-500/20 text-red-400 hover:bg-red-500/10 rounded flex items-center gap-1.5"
+                    >
+                      <XCircle className="w-3 h-3" />
+                      Request Revision
+                    </Button>
+                  </>
+                )}
+
+                {(selectedDoc.status === "APPROVED" || (selectedDoc.status === "REVIEW" && canSignOff)) && (
                   <Button
                     variant="primary"
                     size="sm"
@@ -785,7 +905,7 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
                     className="text-[10px] font-bold h-7.5 py-1 px-3 rounded flex items-center gap-1.5"
                   >
                     <FileCheck className="w-3.5 h-3.5" />
-                    Approve & Sign Off
+                    Sign Off
                   </Button>
                 )}
               </div>
@@ -794,10 +914,126 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
             {successMessage && <Alert variant="success">{successMessage}</Alert>}
             {formError && <Alert variant="destructive">{formError}</Alert>}
 
-            {/* Document Render Panel */}
-            <div className="border border-border/80 bg-background/50 rounded-xl p-5 text-left overflow-y-auto max-h-[500px] shadow-inner select-text">
-              {renderMarkdown(selectedDoc.content)}
+            {/* Document Render Panel or Version Compare side-by-side */}
+            {comparing ? (
+              <div className="flex flex-col gap-4 text-left">
+                <div className="flex justify-between items-center bg-white/[0.02] border border-white/[0.06] p-3 rounded-xl">
+                  <span className="text-xs font-bold text-white flex items-center gap-1">
+                    <History className="w-4 h-4 text-purple-400" /> Comparing Version Snapshots
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <select
+                      value={compareVersionId}
+                      onChange={(e) => handleSelectCompareVersion(e.target.value)}
+                      className="bg-gray-950 border border-white/[0.08] text-gray-200 text-xs rounded-md p-1.5 outline-none cursor-pointer font-semibold"
+                    >
+                      <option value="">Select Version to Compare...</option>
+                      {versions.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          Version {v.version} ({new Date(v.created_at).toLocaleDateString()})
+                        </option>
+                      ))}
+                    </select>
+                    <Button variant="secondary" size="sm" onClick={() => setComparing(false)} className="text-xs py-1 h-7">
+                      Close Compare
+                    </Button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Left Column: Current */}
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Current Content (Version {selectedDoc.version})</span>
+                    <div className="border border-border/80 bg-background/50 rounded-xl p-4 text-left overflow-y-auto max-h-[400px] text-xs font-semibold whitespace-pre-wrap select-text leading-relaxed text-gray-300">
+                      {selectedDoc.content}
+                    </div>
+                  </div>
+                  {/* Right Column: Historical */}
+                  <div className="flex flex-col gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Historical Snapshot Content</span>
+                    {compareVersionId ? (
+                      <div className="border border-border/80 bg-background/50 rounded-xl p-4 text-left overflow-y-auto max-h-[400px] text-xs font-semibold whitespace-pre-wrap select-text leading-relaxed text-gray-300">
+                        {compareContent}
+                      </div>
+                    ) : (
+                      <div className="border border-border/60 bg-white/[0.01] rounded-xl p-4 text-center text-xs text-gray-500 min-h-[200px] flex items-center justify-center font-bold">
+                        Select a historical version snapshot from the dropdown to start comparing.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="border border-border/80 bg-background/50 rounded-xl p-5 text-left overflow-y-auto max-h-[500px] shadow-inner select-text">
+                {renderMarkdown(selectedDoc.content)}
+              </div>
+            )}
+
+            {/* Timeline History Panel */}
+            <div className="border-t border-border/60 pt-5 mt-4 flex flex-col gap-3">
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <History className="w-4 h-4 text-purple-400" /> Approval Workflow History Timeline
+              </h4>
+              {histories.length === 0 ? (
+                <p className="text-[10px] text-gray-600 font-bold italic text-left">No review activities recorded yet.</p>
+              ) : (
+                <div className="flex flex-col gap-3 border-l-2 border-white/[0.06] pl-4 ml-2 mt-2">
+                  {histories.map((h) => (
+                    <div key={h.id} className="relative flex flex-col gap-1 text-left text-xs font-semibold">
+                      <div className="absolute -left-[22px] top-1 w-2 h-2 rounded-full bg-purple-500 border border-black shadow" />
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white uppercase tracking-wide text-[10px]">
+                          {h.action === "SUBMIT_REVIEW" ? "Submitted for Review" :
+                           h.action === "APPROVE" ? "Approved" :
+                           h.action === "REQUEST_REVISIONS" ? "Revisions Requested" :
+                           h.action === "SIGN_OFF" ? "Signed Off" : h.action}
+                        </span>
+                        <span className="text-[9px] text-gray-500">by @{h.user_username} ({h.user_full_name})</span>
+                        <span className="text-[9px] text-gray-600 ml-auto">{new Date(h.created_at).toLocaleString()}</span>
+                      </div>
+                      {h.comment && (
+                        <p className="text-[11px] text-gray-400 font-medium bg-white/[0.02] border border-white/[0.04] p-2 rounded-lg mt-0.5 whitespace-pre-wrap italic">
+                          "{h.comment}"
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* Revision Request Dialog / Modal */}
+            {revisionModalOpen && (
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <Card className="w-full max-w-md p-5 bg-card border border-border shadow-2xl flex flex-col gap-4 text-left">
+                  <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-border pb-2">
+                    Request Document Revision
+                  </h3>
+                  <form onSubmit={handleRequestRevision} className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+                        Rejection Reason / Requested Changes
+                      </label>
+                      <textarea
+                        value={revisionComment}
+                        onChange={(e) => setRevisionComment(e.target.value)}
+                        rows={4}
+                        required
+                        placeholder="Detail the corrections, additions, or changes requested before approval..."
+                        className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-3 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
+                      />
+                    </div>
+                    <div className="flex justify-end gap-2 border-t border-border pt-4 mt-2">
+                      <Button type="button" variant="secondary" size="sm" onClick={() => { setRevisionModalOpen(false); setRevisionComment(""); }} className="font-bold text-xs">
+                        Cancel
+                      </Button>
+                      <Button type="submit" variant="primary" size="sm" className="font-bold text-xs bg-red-600 hover:bg-red-500 border-none px-4">
+                        Request Revision
+                      </Button>
+                    </div>
+                  </form>
+                </Card>
+              </div>
+            )}
           </Card>
         ) : (
           <Card className="flex-1 flex flex-col items-center justify-center text-center p-8 select-none text-foreground font-semibold">

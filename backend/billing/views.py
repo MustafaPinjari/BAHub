@@ -260,3 +260,54 @@ class MockUpgradeView(APIView):
                 redirect_uri = redirect_uri[0]
         
         return redirect(f"{redirect_uri.rstrip('/')}/billing?success=true")
+
+class MockInvoiceListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if not request.user.organization:
+            return api_error(message="User does not belong to an organization.")
+
+        try:
+            sub = TenantSubscription.objects.get(organization=request.user.organization)
+        except TenantSubscription.DoesNotExist:
+            return api_success(data=[], message="No active subscription found.")
+
+        # Let's generate a list of monthly mock invoices starting from sub.created_at up to now
+        from django.utils import timezone
+        import datetime
+
+        invoices = []
+        created_at = sub.created_at
+        now = timezone.now()
+
+        # Monthly price based on current tier
+        tier = sub.plan_tier
+        price = 0
+        if tier == "PRO":
+            price = 49
+        elif tier == "ENTERPRISE":
+            price = 299
+
+        # If FREE tier, return empty invoice list or standard zero-dollar starter
+        if price == 0:
+            return api_success(data=[], message="Free tier subscription has no billing invoices.")
+
+        # Iterate monthly from created_at until now
+        curr_date = created_at
+        index = 1
+        while curr_date <= now:
+            invoices.append({
+                "id": f"INV-2026-{index:04d}",
+                "date": curr_date.strftime("%Y-%m-%d"),
+                "amount": f"${price}.00",
+                "description": f"BAHub {tier.capitalize()} Subscription Monthly Payment",
+                "status": "Paid"
+            })
+            index += 1
+            # Move to next month safely (e.g. adding 30 days)
+            curr_date = curr_date + datetime.timedelta(days=30)
+
+        # Reverse so newest is first
+        invoices.reverse()
+        return api_success(data=invoices, message="Billing invoices retrieved successfully.")

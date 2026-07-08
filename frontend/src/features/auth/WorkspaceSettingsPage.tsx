@@ -7,7 +7,10 @@ import {
   Plus, 
   Trash2,
   Loader2,
-  Lock
+  Lock,
+  CreditCard,
+  Mail,
+  Copy
 } from "lucide-react";
 
 interface Organization {
@@ -55,8 +58,8 @@ interface UserRoleMapping {
 export const WorkspaceSettingsPage: React.FC = () => {
   const { user } = useAuth();
   
-  // Tabs: "org" | "roles" | "users"
-  const [activeTab, setActiveTab] = useState<"org" | "roles" | "users">("org");
+  // Tabs: "org" | "roles" | "users" | "usage"
+  const [activeTab, setActiveTab] = useState<"org" | "roles" | "users" | "usage">("org");
   
   // States
   const [org, setOrg] = useState<Organization | null>(null);
@@ -67,6 +70,15 @@ export const WorkspaceSettingsPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  
+  // Usage & Subscription states
+  const [sub, setSub] = useState<any | null>(null);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [invitations, setInvitations] = useState<any[]>([]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("BUSINESS_ANALYST");
+  const [inviting, setInviting] = useState(false);
+  const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
   // Custom role creation state
   const [newRoleName, setNewRoleName] = useState("");
@@ -125,17 +137,106 @@ export const WorkspaceSettingsPage: React.FC = () => {
     }
   };
 
+  const loadSubscription = async () => {
+    try {
+      const res = await api.get<any, { data: any }>("/billing/subscription/");
+      setSub(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const loadInvoices = async () => {
+    try {
+      const res = await api.get<any, { data: any[] }>("/billing/invoices/");
+      setInvoices(res.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const loadInvitations = async () => {
+    try {
+      const res = await api.get<any, { data: any[] }>("/organizations/invitations/");
+      setInvitations(res.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const loadAll = async () => {
     await loadOrgDetails();
     await loadPermissionRegistry();
     await loadOrgRoles();
     await loadMembers();
     await loadRoleMappings();
+    await loadSubscription();
+    await loadInvoices();
+    await loadInvitations();
   };
 
   useEffect(() => {
     loadAll();
   }, [user]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "true") {
+      setSuccessMsg("Subscription plan upgraded successfully!");
+      // Clean query params
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  const handleCreateInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail) return;
+    setInviting(true);
+    setFormError(null);
+    setSuccessMsg(null);
+    try {
+      await api.post("/organizations/invitations/", {
+        email: inviteEmail,
+        role: inviteRole,
+      });
+      setSuccessMsg(`Invitation sent to ${inviteEmail} successfully.`);
+      setInviteEmail("");
+      setInviteRole("BUSINESS_ANALYST");
+      loadInvitations();
+    } catch (err: any) {
+      setFormError(err.message || "Failed to create invitation.");
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  const handleCancelInvite = async (inviteId: string) => {
+    if (!window.confirm("Cancel this invitation?")) return;
+    setSuccessMsg(null);
+    try {
+      await api.delete(`/organizations/invitations/${inviteId}/`);
+      setSuccessMsg("Invitation cancelled successfully.");
+      loadInvitations();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleUpgradePlan = async (plan: "PRO" | "ENTERPRISE") => {
+    setLoading(true);
+    setFormError(null);
+    setSuccessMsg(null);
+    try {
+      const res = await api.post<any, { data: { checkout_url: string } }>("/billing/checkout/", { plan });
+      if (res.data.checkout_url) {
+        window.location.href = res.data.checkout_url;
+      }
+    } catch (err: any) {
+      setFormError(err.message || "Failed to initialize plan checkout.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOrgSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -270,6 +371,16 @@ export const WorkspaceSettingsPage: React.FC = () => {
           }`}
         >
           User Role Assignments
+        </button>
+        <button
+          onClick={() => setActiveTab("usage")}
+          className={`px-4 py-2 border-b-2 transition-all cursor-pointer ${
+            activeTab === "usage"
+              ? "border-primary text-primary font-bold"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Usage & Subscription
         </button>
       </div>
 
@@ -528,6 +639,227 @@ export const WorkspaceSettingsPage: React.FC = () => {
             </table>
           </div>
         </Card>
+      )}
+
+      {/* TAB CONTENT 4: USAGE & SUBSCRIPTION */}
+      {activeTab === "usage" && (
+        <div className="flex flex-col gap-6">
+          {/* Subscription Tier Info Card */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="md:col-span-1 p-5 flex flex-col justify-between gap-4">
+              <div className="flex flex-col gap-2">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Active Subscription</h3>
+                <div className="flex items-center gap-2 mt-2">
+                  <CreditCard className="w-5 h-5 text-purple-400" />
+                  <span className="text-base font-black text-white">
+                    {sub?.plan_tier ? `${sub.plan_tier} Plan` : "FREE Plan"}
+                  </span>
+                </div>
+                <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mt-1">
+                  Status: <Badge variant={sub?.is_active ? "success" : "destructive"}>{sub?.is_active ? "Active" : "Inactive"}</Badge>
+                </p>
+              </div>
+
+              {isAdmin && (
+                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-white/[0.06]">
+                  <span className="text-[9px] font-bold text-gray-600 uppercase">Change Subscription:</span>
+                  <div className="flex gap-2">
+                    {sub?.plan_tier !== "PRO" && (
+                      <Button size="sm" variant="minimal" onClick={() => handleUpgradePlan("PRO")} className="flex-1 text-xs">
+                        Upgrade Pro ($49)
+                      </Button>
+                    )}
+                    {sub?.plan_tier !== "ENTERPRISE" && (
+                      <Button size="sm" variant="minimal" onClick={() => handleUpgradePlan("ENTERPRISE")} className="flex-1 text-xs border-purple-500/20 text-purple-400 hover:bg-purple-500/10">
+                        Enterprise ($299)
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </Card>
+
+            {/* Seat limits progress */}
+            <Card className="md:col-span-1 p-5 flex flex-col gap-3">
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between">
+                <span>Seats Utilization</span>
+                <span className="text-[10px] text-purple-400 font-bold">{members.length} / {sub?.seats_limit || 5}</span>
+              </h3>
+              <div className="w-full bg-white/[0.04] rounded-full h-1.5 mt-2">
+                <div
+                  className="bg-purple-500 h-1.5 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(100, (members.length / (sub?.seats_limit || 5)) * 100)}%` }}
+                />
+              </div>
+              <p className="text-[10px] text-gray-500 mt-2 leading-relaxed">
+                Invited and active users inside your workspace organization. Upgrade your plan to increase limits.
+              </p>
+            </Card>
+
+            {/* AI credits progress */}
+            <Card className="md:col-span-1 p-5 flex flex-col gap-3">
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between">
+                <span>AI Assistant Credits</span>
+                <span className="text-[10px] text-purple-400 font-bold">{sub?.ai_credits_used || 0} / {sub?.ai_credits_limit || 100}</span>
+              </h3>
+              <div className="w-full bg-white/[0.04] rounded-full h-1.5 mt-2">
+                <div
+                  className="bg-purple-500 h-1.5 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(100, ((sub?.ai_credits_used || 0) / (sub?.ai_credits_limit || 100)) * 100)}%` }}
+                />
+              </div>
+              <p className="text-[10px] text-gray-500 mt-2 leading-relaxed">
+                Credits reset monthly. Used when querying AI chat assistance, SWOT audits, and auto-compiles.
+              </p>
+            </Card>
+          </div>
+
+          {/* Invitation Logs and Form */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="md:col-span-1 p-5 flex flex-col gap-4">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/[0.06] pb-2 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-purple-400" /> Invite Collaborator
+              </h3>
+              {!isAdmin ? (
+                <div className="flex flex-col items-center gap-2 py-6 text-center text-xs text-gray-500">
+                  <Lock className="w-5 h-5 text-gray-700" />
+                  <span>Admin permission required to invite users.</span>
+                </div>
+              ) : (
+                <form onSubmit={handleCreateInvite} className="flex flex-col gap-4">
+                  <Input
+                    label="Email Address"
+                    type="email"
+                    placeholder="user@company.com"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    required
+                  />
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Select Role</label>
+                    <select
+                      value={inviteRole}
+                      onChange={(e) => setInviteRole(e.target.value)}
+                      className="bg-gray-900 border border-white/[0.08] text-gray-200 text-xs rounded-md p-2 outline-none cursor-pointer focus:border-purple-500"
+                    >
+                      <option value="BUSINESS_ANALYST">Business Analyst</option>
+                      <option value="PRODUCT_OWNER">Product Owner</option>
+                      <option value="DEVELOPER">Developer</option>
+                      <option value="QA_TESTER">QA Tester</option>
+                      <option value="STAKEHOLDER">Stakeholder</option>
+                    </select>
+                  </div>
+                  <Button type="submit" variant="primary" className="w-full text-xs font-bold mt-2" isLoading={inviting}>
+                    Send Invite Code
+                  </Button>
+                </form>
+              )}
+            </Card>
+
+            <Card className="md:col-span-2 p-5 flex flex-col gap-4">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/[0.06] pb-2">
+                Active Invitations Log
+              </h3>
+              {invitations.length === 0 ? (
+                <div className="text-center py-10 text-xs text-gray-600 font-medium">
+                  No active pending invitations found.
+                </div>
+              ) : (
+                <div className="w-full overflow-x-auto rounded-xl border border-white/[0.06] bg-gray-950/40">
+                  <table className="w-full text-left border-collapse table-fixed text-xs">
+                    <thead>
+                      <tr className="border-b border-white/[0.06] bg-white/[0.02] text-[9px] font-bold uppercase tracking-wider text-gray-500">
+                        <th className="p-3">Email Address</th>
+                        <th className="p-3">Allocated Role</th>
+                        <th className="p-3 w-40">Registration Link</th>
+                        <th className="p-3 w-20 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/[0.04] text-gray-300 font-semibold">
+                      {invitations.map((inv) => {
+                        const inviteLink = `${window.location.origin}/register?invite=${inv.token}`;
+                        const isCopied = copiedToken === inv.id;
+                        return (
+                          <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors">
+                            <td className="p-3 truncate font-bold text-white">{inv.email}</td>
+                            <td className="p-3 truncate">
+                              <Badge variant="secondary" className="text-[9px] uppercase">
+                                {inv.role.replace("_", " ")}
+                              </Badge>
+                            </td>
+                            <td className="p-3">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(inviteLink);
+                                  setCopiedToken(inv.id);
+                                  setTimeout(() => setCopiedToken(null), 2000);
+                                }}
+                                className="flex items-center gap-1 text-[10px] text-purple-400 hover:text-purple-300 border-none bg-transparent cursor-pointer font-bold outline-none"
+                              >
+                                {isCopied ? <span className="text-green-500">Copied!</span> : <>Copy Link <Copy className="w-2.5 h-2.5" /></>}
+                              </button>
+                            </td>
+                            <td className="p-3 text-right">
+                              {isAdmin && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleCancelInvite(inv.id)}
+                                  className="text-gray-700 hover:text-red-400 transition-colors border-none bg-transparent cursor-pointer"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
+          </div>
+
+          {/* Billing Invoice History Table */}
+          <Card className="p-5 flex flex-col gap-4">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-white/[0.06] pb-2">
+              Monthly Billing Invoice History
+            </h3>
+            {invoices.length === 0 ? (
+              <div className="text-center py-8 text-xs text-gray-600 font-medium">
+                No invoices found. Free subscription tier billing history is empty.
+              </div>
+            ) : (
+              <div className="w-full overflow-x-auto rounded-xl border border-white/[0.06] bg-gray-950/40">
+                <table className="w-full text-left border-collapse table-fixed text-xs">
+                  <thead>
+                    <tr className="border-b border-white/[0.06] bg-white/[0.02] text-[9px] font-bold uppercase tracking-wider text-gray-500">
+                      <th className="p-3">Invoice ID</th>
+                      <th className="p-3">Billing Date</th>
+                      <th className="p-3">Description</th>
+                      <th className="p-3">Paid Amount</th>
+                      <th className="p-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/[0.04] text-gray-300 font-semibold">
+                    {invoices.map((inv) => (
+                      <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="p-3 font-mono font-bold text-white">{inv.id}</td>
+                        <td className="p-3 text-gray-400 font-medium">{inv.date}</td>
+                        <td className="p-3 text-gray-300 truncate">{inv.description}</td>
+                        <td className="p-3 text-white font-bold">{inv.amount}</td>
+                        <td className="p-3">
+                          <Badge variant="success">Paid</Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        </div>
       )}
     </div>
   );

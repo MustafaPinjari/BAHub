@@ -4,6 +4,7 @@ import { useAuth } from "../../features/auth/AuthContext";
 import { useProject } from "../../features/projects/ProjectContext";
 import { Badge } from "../common/UIComponents";
 import { GlobalSearchModal } from "../common/GlobalSearchModal";
+import { OnboardingWizard } from "../common/OnboardingWizard";
 import logo from "../../assets/logo.png";
 import {
   LayoutDashboard,
@@ -35,6 +36,8 @@ import {
   Zap,
   GitMerge,
   Lock,
+  Bug,
+  HelpCircle,
 } from "lucide-react";
 
 interface SidebarItem {
@@ -54,6 +57,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Traceability", icon: GitMerge, path: "traceability", category: "workspace" },
   { name: "Analysis Models", icon: Network, path: "diagrams", category: "workspace" },
   { name: "User Stories", icon: ClipboardList, path: "stories", category: "workspace" },
+  { name: "UAT & Testing", icon: Bug, path: "uat", category: "workspace" },
   { name: "BRD Generator", icon: FileText, path: "brd", category: "documents", requiredTier: "PRO" },
   { name: "FRD Generator", icon: FileCheck, path: "frd", category: "documents", requiredTier: "PRO" },
   { name: "Meetings", icon: Calendar, path: "meetings", category: "documents" },
@@ -86,6 +90,20 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [activeHelpTab, setActiveHelpTab] = useState<"general" | "requirements" | "uat" | "approvals">("general");
+
+  // Check if onboarding needs to trigger
+  useEffect(() => {
+    if (user?.id) {
+      const showOnboarding = localStorage.getItem("show_onboarding_wizard") === "true";
+      const completed = localStorage.getItem(`bahub_onboarding_completed_${user.id}`);
+      if (showOnboarding && completed !== "true") {
+        setIsOnboardingOpen(true);
+      }
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     if (user?.preferences?.sidebar_state) {
@@ -297,6 +315,15 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
               <kbd className="absolute right-2 text-[9px] text-gray-700 font-mono bg-gray-900 border border-white/[0.05] rounded px-1">⌘K</kbd>
             </div>
 
+            {/* Quick Tour Guide */}
+            <button
+              onClick={() => setIsOnboardingOpen(true)}
+              className="w-8 h-8 rounded-md flex items-center justify-center text-gray-600 hover:text-gray-300 hover:bg-white/[0.05] transition-all relative cursor-pointer"
+              title="Start workspace guide tour"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
+
             {/* Notifications */}
             <div className="relative">
               <button
@@ -327,6 +354,15 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Help & Guides Trigger Button */}
+            <button
+              onClick={() => setIsHelpOpen(!isHelpOpen)}
+              className={`p-1.5 rounded-lg border border-white/[0.07] hover:bg-white/[0.04] transition-all cursor-pointer text-gray-500 hover:text-white shrink-0 ${isHelpOpen ? "bg-white/[0.08] text-white border-white/20" : ""}`}
+              title="Help & Guides"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+            </button>
 
             {/* Profile Dropdown */}
             <div className="relative">
@@ -387,6 +423,107 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
 
       {/* Global Search Modal — renders above everything */}
       <GlobalSearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      {/* Onboarding Wizard — guide overlay */}
+      <OnboardingWizard 
+        isOpen={isOnboardingOpen} 
+        onClose={() => {
+          setIsOnboardingOpen(false);
+          localStorage.removeItem("show_onboarding_wizard");
+        }}
+      />
+
+      {/* Contextual Help Slide-out Panel */}
+      {isHelpOpen && (
+        <div className="fixed inset-y-0 right-0 w-80 bg-gray-950 border-l border-white/[0.08] shadow-2xl z-40 flex flex-col select-none text-left">
+          {/* Drawer Header */}
+          <div className="px-4 py-3.5 border-b border-white/[0.08] flex justify-between items-center bg-white/[0.01]">
+            <span className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-1.5">
+              <HelpCircle className="w-4 h-4 text-purple-400" /> Guidance Center
+            </span>
+            <button onClick={() => setIsHelpOpen(false)} className="text-gray-500 hover:text-white cursor-pointer transition-colors p-1">
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Guide Tabs */}
+          <div className="grid grid-cols-4 border-b border-white/[0.06] text-[9px] font-bold text-center uppercase tracking-wider text-gray-500">
+            {(["general", "requirements", "uat", "approvals"] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveHelpTab(tab)}
+                className={`py-2 hover:text-white transition-colors cursor-pointer border-b-2 ${activeHelpTab === tab ? "border-purple-500 text-white bg-white/[0.02]" : "border-transparent"}`}
+              >
+                {tab === "uat" ? "UAT" : tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Help Content */}
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 text-xs font-semibold text-gray-400 select-text leading-relaxed">
+            {activeHelpTab === "general" && (
+              <>
+                <div className="flex flex-col gap-1.5">
+                  <h4 className="text-white text-xs font-extrabold uppercase tracking-wide">Overview Checklist</h4>
+                  <p>Welcome to BAHub, your agile business analysis backlog. You can navigate the lifecycle modules via the sidebar:</p>
+                </div>
+                <div className="bg-white/[0.02] border border-white/[0.04] p-3 rounded-xl flex flex-col gap-2">
+                  <p className="text-[11px]"><strong className="text-white">1. Requirements Backlog:</strong> Log functional or compliance constraints.</p>
+                  <p className="text-[11px]"><strong className="text-white">2. User Stories:</strong> Expand requirements into agile sprint story cards.</p>
+                  <p className="text-[11px]"><strong className="text-white">3. Traceability Matrix:</strong> Audits test execution status and active defects against requirements.</p>
+                </div>
+              </>
+            )}
+
+            {activeHelpTab === "requirements" && (
+              <>
+                <div className="flex flex-col gap-1.5">
+                  <h4 className="text-white text-xs font-extrabold uppercase tracking-wide">Writing Great Specs</h4>
+                  <p>Requirements cataloged in the backlog should follow the SMART goals and INVEST criteria:</p>
+                </div>
+                <div className="bg-white/[0.02] border border-white/[0.04] p-3 rounded-xl flex flex-col gap-2 text-[11px]">
+                  <p><strong className="text-white">I - Independent:</strong> Minimize inter-requirement dependencies.</p>
+                  <p><strong className="text-white">N - Negotiable:</strong> Co-created with developers/stakeholders.</p>
+                  <p><strong className="text-white">V - Valuable:</strong> Direct contribution to business outcome.</p>
+                  <p><strong className="text-white">E - Estimable:</strong> Understood well enough to points estimate.</p>
+                  <p><strong className="text-white">S - Small:</strong> Sized to fit comfortably in a single iteration.</p>
+                  <p><strong className="text-white">T - Testable:</strong> Measurable criteria exist to verify state.</p>
+                </div>
+              </>
+            )}
+
+            {activeHelpTab === "uat" && (
+              <>
+                <div className="flex flex-col gap-1.5">
+                  <h4 className="text-white text-xs font-extrabold uppercase tracking-wide">UAT & Defects Audit</h4>
+                  <p>UAT test plans verify requirement acceptance criteria. Track defect severity standards:</p>
+                </div>
+                <div className="bg-white/[0.02] border border-white/[0.04] p-3 rounded-xl flex flex-col gap-2 text-[11px]">
+                  <p><strong className="text-rose-500">CRITICAL:</strong> System crashes, data corruption, security breaches, zero functional workarounds.</p>
+                  <p><strong className="text-orange-500">HIGH:</strong> Major feature broken with no viable workaround.</p>
+                  <p><strong className="text-yellow-500">MEDIUM:</strong> Feature issues that have standard manual overrides.</p>
+                  <p><strong className="text-gray-400">LOW:</strong> Cosmetic style anomalies, text typo corrections.</p>
+                </div>
+              </>
+            )}
+
+            {activeHelpTab === "approvals" && (
+              <>
+                <div className="flex flex-col gap-1.5">
+                  <h4 className="text-white text-xs font-extrabold uppercase tracking-wide">Review Workflows</h4>
+                  <p>Business documents follow structured lifecycle tracks before engineering implementation begins:</p>
+                </div>
+                <div className="bg-white/[0.02] border border-white/[0.04] p-3 rounded-xl flex flex-col gap-2 text-[11px]">
+                  <p><strong className="text-purple-400">Draft:</strong> Document is compiled. Revisions can be saved.</p>
+                  <p><strong className="text-blue-400">Under Review:</strong> Document is submitted to project managers or product owners for validation.</p>
+                  <p><strong className="text-yellow-400">Revision Requested:</strong> Comment logs describe required fixes.</p>
+                  <p><strong className="text-green-500">Approved & Sign-off:</strong> Compliance checkmarks passed. Content snaps are frozen.</p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

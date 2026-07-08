@@ -21,3 +21,21 @@ class OrganizationSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
+
+from .models import OrganizationInvitation
+
+class OrganizationInvitationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrganizationInvitation
+        fields = [
+            "id",
+            "organization",
+            "email",
+            "token",
+            "role",
+            "is_used",
+            "expires_at",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "organization", "token", "is_used", "expires_at", "created_at", "updated_at"]

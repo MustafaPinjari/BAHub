@@ -16,6 +16,8 @@ import {
   Download,
   Loader2,
   AlertTriangle,
+  Bug,
+  Activity
 } from "lucide-react";
 
 // ──────────────────────────────────────────────────────────────────────
@@ -55,11 +57,31 @@ interface BusinessDocument {
   status: string;
 }
 
+interface TestCase {
+  id: string;
+  title: string;
+  scenario: string;
+  acceptance_criteria: string;
+  status: "PENDING" | "PASSED" | "FAILED";
+  requirement?: string;
+}
+
+interface Defect {
+  id: string;
+  title: string;
+  description: string;
+  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  status: "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
+  test_case?: string;
+}
+
 interface TraceRow {
   req: Requirement;
   stories: Story[];
   risks: Risk[];
   docs: BusinessDocument[];
+  testCases: TestCase[];
+  defects: Defect[];
 }
 
 // ──────────────────────────────────────────────────────────────────────
@@ -126,25 +148,36 @@ export const TraceabilityPage: React.FC = () => {
     setError(null);
     try {
       const pid = activeProject.id;
-      const [reqRes, storyRes, riskRes, docRes] = await Promise.all([
+      const [reqRes, storyRes, riskRes, docRes, testCaseRes, defectRes] = await Promise.all([
         api.get<any, { data: Requirement[] }>(`/requirements/?project=${pid}`),
         api.get<any, { data: Story[] }>(`/stories/?project=${pid}`),
         api.get<any, { data: Risk[] }>(`/risks/?project=${pid}`),
         api.get<any, { data: BusinessDocument[] }>(`/documents/?project=${pid}`),
+        api.get<any, { data: TestCase[] }>(`/uat/test-cases/?project=${pid}`),
+        api.get<any, { data: Defect[] }>(`/uat/defects/?project=${pid}`),
       ]);
 
       const reqs: Requirement[] = Array.isArray(reqRes.data) ? reqRes.data : [];
       const stories: Story[] = Array.isArray(storyRes.data) ? storyRes.data : [];
       const risks: Risk[] = Array.isArray(riskRes.data) ? riskRes.data : [];
       const docs: BusinessDocument[] = Array.isArray(docRes.data) ? docRes.data : [];
+      const testCases: TestCase[] = Array.isArray(testCaseRes.data) ? testCaseRes.data : [];
+      const defects: Defect[] = Array.isArray(defectRes.data) ? defectRes.data : [];
 
-      // Build trace rows — link stories/risks to requirements by requirement field
-      const built: TraceRow[] = reqs.map((req) => ({
-        req,
-        stories: stories.filter((s) => s.requirement === req.id),
-        risks: risks.filter((r) => r.requirement === req.id),
-        docs,  // documents cover the whole project, not individual reqs
-      }));
+      // Build trace rows — link stories/risks/testCases/defects to requirements
+      const built: TraceRow[] = reqs.map((req) => {
+        const reqTestCases = testCases.filter((tc) => tc.requirement === req.id);
+        const tcIds = reqTestCases.map((tc) => tc.id);
+        const reqDefects = defects.filter((d) => d.test_case && tcIds.includes(d.test_case));
+        return {
+          req,
+          stories: stories.filter((s) => s.requirement === req.id),
+          risks: risks.filter((r) => r.requirement === req.id),
+          docs,
+          testCases: reqTestCases,
+          defects: reqDefects,
+        };
+      });
 
       setRows(built);
     } catch (err: any) {
@@ -243,6 +276,8 @@ export const TraceabilityPage: React.FC = () => {
         <div className="flex items-center gap-1.5"><FileSpreadsheet className="w-3 h-3 text-blue-400" /> Requirements</div>
         <div className="flex items-center gap-1.5"><ClipboardList className="w-3 h-3 text-violet-400" /> User Stories</div>
         <div className="flex items-center gap-1.5"><ShieldAlert className="w-3 h-3 text-red-400" /> Risks</div>
+        <div className="flex items-center gap-1.5"><Activity className="w-3 h-3 text-emerald-400" /> Test Cases</div>
+        <div className="flex items-center gap-1.5"><Bug className="w-3 h-3 text-rose-400" /> Defects</div>
         <div className="flex items-center gap-1.5"><FileText className="w-3 h-3 text-amber-400" /> Documents</div>
         <div className="flex items-center gap-1.5"><CheckCircle className="w-3 h-3 text-green-400" /> Approval Status</div>
       </div>
@@ -280,11 +315,13 @@ export const TraceabilityPage: React.FC = () => {
       {!loading && filtered.length > 0 && (
         <Card className="overflow-hidden p-0">
           {/* Table Header */}
-          <div className="grid grid-cols-[180px_1fr_80px_80px_80px_100px] gap-3 px-4 py-2.5 border-b border-white/[0.06] bg-white/[0.01] text-[9px] font-black uppercase tracking-widest text-gray-600 select-none">
+          <div className="grid grid-cols-[160px_1fr_60px_60px_60px_60px_60px_80px] gap-3 px-4 py-2.5 border-b border-white/[0.06] bg-white/[0.01] text-[9px] font-black uppercase tracking-widest text-gray-600 select-none">
             <span>Requirement</span>
             <span>Title</span>
             <span className="text-center flex items-center justify-center gap-1"><ClipboardList className="w-2.5 h-2.5" /> Stories</span>
             <span className="text-center flex items-center justify-center gap-1"><ShieldAlert className="w-2.5 h-2.5" /> Risks</span>
+            <span className="text-center flex items-center justify-center gap-1"><Activity className="w-2.5 h-2.5" /> Tests</span>
+            <span className="text-center flex items-center justify-center gap-1"><Bug className="w-2.5 h-2.5" /> Defects</span>
             <span className="text-center flex items-center justify-center gap-1"><FileText className="w-2.5 h-2.5" /> Docs</span>
             <span className="text-center">Approval</span>
           </div>
@@ -300,7 +337,7 @@ export const TraceabilityPage: React.FC = () => {
                   {/* Summary Row */}
                   <button
                     onClick={() => setExpandedRow(isExpanded ? null : row.req.id)}
-                    className="w-full grid grid-cols-[180px_1fr_80px_80px_80px_100px] gap-3 px-4 py-3 text-left hover:bg-white/[0.025] transition-colors cursor-pointer items-center"
+                    className="w-full grid grid-cols-[160px_1fr_60px_60px_60px_60px_60px_80px] gap-3 px-4 py-3 text-left hover:bg-white/[0.025] transition-colors cursor-pointer items-center"
                   >
                     {/* Req ID */}
                     <div className="flex items-center gap-2 min-w-0">
@@ -332,6 +369,16 @@ export const TraceabilityPage: React.FC = () => {
                       </span>
                     </div>
                     <div className="text-center">
+                      <span className={`text-[11px] font-black ${row.testCases.length > 0 ? "text-emerald-400" : "text-gray-700"}`}>
+                        {row.testCases.length}
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      <span className={`text-[11px] font-black ${row.defects.length > 0 ? "text-rose-400" : "text-gray-700"}`}>
+                        {row.defects.length}
+                      </span>
+                    </div>
+                    <div className="text-center">
                       <span className={`text-[11px] font-black ${row.docs.length > 0 ? "text-amber-400" : "text-gray-700"}`}>
                         {row.docs.length}
                       </span>
@@ -347,7 +394,7 @@ export const TraceabilityPage: React.FC = () => {
 
                   {/* Expanded Detail Row */}
                   {isExpanded && (
-                    <div className="px-10 py-3 bg-white/[0.015] border-t border-white/[0.04] grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="px-10 py-4 bg-white/[0.015] border-t border-white/[0.04] grid grid-cols-1 md:grid-cols-5 gap-4">
                       {/* Stories */}
                       <div>
                         <p className="text-[9px] font-black uppercase tracking-widest text-violet-400 mb-2 flex items-center gap-1">
@@ -394,6 +441,50 @@ export const TraceabilityPage: React.FC = () => {
                         )}
                       </div>
 
+                      {/* Test Cases */}
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-emerald-400 mb-2 flex items-center gap-1">
+                          <Activity className="w-2.5 h-2.5" /> Test Cases
+                        </p>
+                        {row.testCases.length === 0 ? (
+                          <p className="text-[10px] text-gray-700 font-medium">No test cases linked</p>
+                        ) : (
+                          <div className="flex flex-col gap-1.5">
+                            {row.testCases.map((tc) => (
+                              <div key={tc.id} className="flex items-center gap-2">
+                                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${tc.status === "PASSED" ? "bg-green-500" : tc.status === "FAILED" ? "bg-red-500" : "bg-gray-500"}`} />
+                                <span className="text-[10px] text-gray-400 font-medium truncate">{tc.title}</span>
+                                <span className={`ml-auto text-[8px] font-bold px-1 py-0.5 rounded border shrink-0 ${tc.status === "PASSED" ? "text-green-400 border-green-500/20 bg-green-500/5" : tc.status === "FAILED" ? "text-red-400 border-red-500/20 bg-red-500/5" : "text-gray-400 border-gray-500/20 bg-gray-500/5"}`}>
+                                  {tc.status}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Defects */}
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-rose-400 mb-2 flex items-center gap-1">
+                          <Bug className="w-2.5 h-2.5" /> Defects
+                        </p>
+                        {row.defects.length === 0 ? (
+                          <p className="text-[10px] text-gray-700 font-medium">No defects linked</p>
+                        ) : (
+                          <div className="flex flex-col gap-1.5">
+                            {row.defects.map((d) => (
+                              <div key={d.id} className="flex items-center gap-2">
+                                <Bug className="w-2.5 h-2.5 shrink-0 text-red-500" />
+                                <span className="text-[10px] text-gray-400 font-medium truncate">{d.title}</span>
+                                <span className={`ml-auto text-[8px] font-bold px-1 py-0.5 rounded border shrink-0 ${d.status === "RESOLVED" || d.status === "CLOSED" ? "text-green-400 border-green-500/20 bg-green-500/5" : "text-rose-400 border-rose-500/20 bg-rose-500/5"}`}>
+                                  {d.status}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
                       {/* Documents */}
                       <div>
                         <p className="text-[9px] font-black uppercase tracking-widest text-amber-400 mb-2 flex items-center gap-1">
@@ -431,6 +522,8 @@ export const TraceabilityPage: React.FC = () => {
             <span>{filtered.length} requirements</span>
             <span>{filtered.reduce((a, r) => a + r.stories.length, 0)} stories linked</span>
             <span>{filtered.reduce((a, r) => a + r.risks.length, 0)} risks linked</span>
+            <span>{filtered.reduce((a, r) => a + r.testCases.length, 0)} tests linked</span>
+            <span>{filtered.reduce((a, r) => a + r.defects.length, 0)} defects tracked</span>
             <span className="ml-auto">
               {filtered.filter((r) => r.docs.some((d) => d.status === "SIGNED_OFF" || d.status === "APPROVED")).length} approved
             </span>
