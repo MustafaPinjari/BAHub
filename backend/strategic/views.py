@@ -189,6 +189,11 @@ class AIChatView(APIView):
                 "ai_credits_limit": 100
             }
         )
+        if sub.plan_tier != "FREE" and not sub.plan_verified:
+            return api_error(
+                message="Your subscription is pending verification. Please verify it via the email sent to your administrator.",
+                status_code=status.HTTP_402_PAYMENT_REQUIRED
+            )
         if not sub.is_active:
             return api_error(
                 message="Your workspace subscription is inactive. Please update billing.",

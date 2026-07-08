@@ -281,6 +281,28 @@ class DiagramViewSet(viewsets.ModelViewSet):
         except Project.DoesNotExist:
             return api_error(message="Project not found.")
 
+        # Check subscription status
+        from billing.models import TenantSubscription
+        sub, _ = TenantSubscription.objects.get_or_create(
+            organization=project.organization,
+            defaults={
+                "plan_tier": "FREE",
+                "seats_limit": 5,
+                "is_active": True,
+                "ai_credits_limit": 100
+            }
+        )
+        if sub.plan_tier != "FREE" and not sub.plan_verified:
+            return api_error(
+                message="Your subscription is pending verification. Please verify it via the email sent to your administrator.",
+                status_code=status.HTTP_402_PAYMENT_REQUIRED
+            )
+        if not sub.is_active:
+            return api_error(
+                message="Your workspace subscription is inactive. Please update billing.",
+                status_code=status.HTTP_402_PAYMENT_REQUIRED
+            )
+
         # Resolve text if linked to standard models
         if source_id:
             resolved_text = ""

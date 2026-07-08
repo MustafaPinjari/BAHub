@@ -690,3 +690,133 @@ class MockInvoiceListViewTests(APITestCase):
         self.assertEqual(invoices[0]["amount"], "$49.00")
         self.assertIn("INV-2026-", invoices[0]["id"])
 
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 12. PLAN VERIFICATION VIA EMAIL
+# ═══════════════════════════════════════════════════════════════════════════
+
+@override_settings(
+    EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+    CORS_ALLOWED_ORIGINS=["http://localhost:5173"]
+)
+class PlanVerificationTests(APITestCase):
+
+    def setUp(self):
+        self.org, self.sub = make_org_with_plan("VerificationOrg", plan="FREE")
+        self.admin = make_admin(self.org, "ver_admin", "ver_admin@test.local")
+        self.client.force_authenticate(user=self.admin)
+        self.project = Project.objects.create(name="Ver Project", organization=self.org)
+
+    def test_mock_upgrade_to_pro_requires_email_verification(self):
+        """Upgrading to PRO tier sets plan_verified to False, generates token, and sends verification email."""
+        # Check starting state
+        self.assertEqual(self.sub.plan_tier, "FREE")
+        self.assertTrue(self.sub.plan_verified)
+        self.assertTrue(self.sub.is_active)
+
+        # Upgrade to PRO
+        mail.outbox.clear()
+        resp = self.client.get(reverse("mock-upgrade"), {
+            "plan": "PRO", "org_id": str(self.org.id)
+        })
+        self.assertEqual(resp.status_code, status.HTTP_302_FOUND)
+
+        # Verify DB updates
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.plan_tier, "PRO")
+        self.assertFalse(self.sub.plan_verified)
+        self.assertFalse(self.sub.is_active)
+        self.assertIsNotNone(self.sub.verification_token)
+
+        # Verify email was sent
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.from_email, "unlessuser99@gmail.com")
+        self.assertIn("ver_admin@test.local", email.to)
+        self.assertIn("unlessuser99@gmail.com", email.to)
+        self.assertIn("Verify Your Pro Subscription Upgrade", email.subject)
+        
+        # Verify URL is in the email body
+        verify_url = f"/api/v1/billing/verify-subscription/?token={self.sub.verification_token}&org_id={self.org.id}"
+        self.assertIn(verify_url, email.body)
+
+    def test_ai_features_blocked_when_unverified(self):
+        """Unverified paid subscription blocks AI features (chat & diagram generate) with 402."""
+        # Check chat blocked
+        self.sub.plan_tier = "PRO"
+        self.sub.plan_verified = False
+        self.sub.is_active = False
+        self.sub.verification_token = uuid.uuid4()
+        self.sub.save()
+
+        resp = self.client.post(reverse("ai-chat"), {
+            "project_id": str(self.project.id),
+            "message": "Hello AI",
+            "action_type": "CHAT"
+        })
+        self.assertEqual(resp.status_code, status.HTTP_402_PAYMENT_REQUIRED)
+        self.assertIn("pending verification", resp.data["message"])
+
+        # Check diagram generate blocked
+        resp_diag = self.client.post(reverse("diagram-generate"), {
+            "project": str(self.project.id),
+            "diagram_type": "USE_CASE",
+            "source_type": "FREE_TEXT",
+            "source_text": "Sample details"
+        })
+        self.assertEqual(resp_diag.status_code, status.HTTP_402_PAYMENT_REQUIRED)
+        self.assertIn("pending verification", resp_diag.data["message"])
+
+    def test_verify_subscription_success_get_redirects(self):
+        """Clicking the verification link via GET activates the subscription and redirects to frontend."""
+        token = uuid.uuid4()
+        self.sub.plan_tier = "PRO"
+        self.sub.plan_verified = False
+        self.sub.is_active = False
+        self.sub.verification_token = token
+        self.sub.save()
+
+        url = reverse("verify-subscription")
+        resp = self.client.get(url, {"token": str(token), "org_id": str(self.org.id)})
+        self.assertEqual(resp.status_code, status.HTTP_302_FOUND)
+        self.assertIn("http://localhost:5173/billing?verified=true", resp.url)
+
+        self.sub.refresh_from_db()
+        self.assertTrue(self.sub.plan_verified)
+        self.assertTrue(self.sub.is_active)
+        self.assertIsNone(self.sub.verification_token)
+
+    def test_verify_subscription_success_post_json(self):
+        """Calling the verification endpoint via POST activates the subscription and returns success JSON."""
+        token = uuid.uuid4()
+        self.sub.plan_tier = "PRO"
+        self.sub.plan_verified = False
+        self.sub.is_active = False
+        self.sub.verification_token = token
+        self.sub.save()
+
+        url = reverse("verify-subscription")
+        resp = self.client.post(url, {"token": str(token), "org_id": str(self.org.id)})
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertIn("verified successfully", resp.data["message"])
+
+        self.sub.refresh_from_db()
+        self.assertTrue(self.sub.plan_verified)
+        self.assertTrue(self.sub.is_active)
+        self.assertIsNone(self.sub.verification_token)
+
+    def test_verify_subscription_bad_token_fails(self):
+        """Calling verification with an invalid token returns 400 Bad Request."""
+        token = uuid.uuid4()
+        self.sub.plan_tier = "PRO"
+        self.sub.plan_verified = False
+        self.sub.is_active = False
+        self.sub.verification_token = token
+        self.sub.save()
+
+        url = reverse("verify-subscription")
+        resp = self.client.get(url, {"token": str(uuid.uuid4()), "org_id": str(self.org.id)})
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("Invalid or expired", resp.data["message"])
+
+

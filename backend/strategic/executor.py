@@ -88,6 +88,22 @@ def run_ai_job_task(job_id):
             logger.error(f"AIJob {job_id} not found in background task.")
             return
 
+        # Verify subscription is active and verified
+        from billing.models import TenantSubscription
+        sub, _ = TenantSubscription.objects.get_or_create(
+            organization=job.project.organization,
+            defaults={
+                "plan_tier": "FREE",
+                "seats_limit": 5,
+                "is_active": True,
+                "ai_credits_limit": 100
+            }
+        )
+        if sub.plan_tier != "FREE" and not sub.plan_verified:
+            raise Exception("Your subscription is pending verification. Please verify it via the email sent to your administrator.")
+        if not sub.is_active:
+            raise Exception("Your workspace subscription is inactive. Please update billing.")
+
         # Update status to PROCESSING
         job.status = "PROCESSING"
         job.save()

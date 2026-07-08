@@ -22,6 +22,8 @@ class TenantSubscription(BaseModel):
     )
     seats_limit = models.IntegerField(default=5) # 5 users limit for FREE tier
     is_active = models.BooleanField(default=True)
+    plan_verified = models.BooleanField(default=True)
+    verification_token = models.UUIDField(null=True, blank=True)
     ai_credits_used = models.IntegerField(default=0)
     ai_credits_limit = models.IntegerField(default=100)
 

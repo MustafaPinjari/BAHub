@@ -21,6 +21,7 @@ interface SubscriptionDetail {
   ai_credits_used: number;
   ai_credits_limit: number;
   active_seats_count: number;
+  plan_verified: boolean;
 }
 
 export const BillingPage: React.FC = () => {
@@ -72,6 +73,16 @@ export const BillingPage: React.FC = () => {
         type: "warning",
         message: "Subscription checkout flow was cancelled."
       });
+      navigate(location.pathname, { replace: true });
+    } else if (params.get("verified") === "true") {
+      setNotification({
+        type: "success",
+        message: "Your subscription upgrade has been verified successfully! AI features are now unlocked."
+      });
+      if (refreshProfile) {
+        refreshProfile();
+      }
+      fetchSubscription();
       navigate(location.pathname, { replace: true });
     }
   }, [location, navigate]);
@@ -129,7 +140,7 @@ export const BillingPage: React.FC = () => {
             variant={sub.plan_tier === "FREE" ? "secondary" : sub.plan_tier === "PRO" ? "default" : "success"}
             className="text-[11px] px-3 py-1 uppercase tracking-wider font-bold"
           >
-            {sub.plan_tier} Tier Active
+            {sub.plan_tier} Tier {sub.plan_verified ? "Active" : "Unverified"}
           </Badge>
         )}
       </div>
@@ -147,6 +158,15 @@ export const BillingPage: React.FC = () => {
       {error && (
         <Alert variant="destructive" title="Billing Operation Error">
           {error}
+        </Alert>
+      )}
+
+      {sub && sub.plan_tier !== "FREE" && !sub.plan_verified && (
+        <Alert
+          variant="warning"
+          title="Verification Pending"
+        >
+          Your workspace has been upgraded to the <strong>{sub.plan_tier}</strong> plan, but it is currently pending email verification. AI features and extra seats will remain locked until verified. Please click the link sent to your workspace administrator's email (check spam folders if you can't find it).
         </Alert>
       )}
 

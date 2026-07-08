@@ -125,7 +125,7 @@ const MainAppContent: React.FC = () => {
     return (
       <div className="w-screen h-screen flex bg-black text-white overflow-hidden">
         {/* Left Side: Form Container */}
-        <div className="w-full md:w-[50%] h-full flex items-center justify-center p-8 overflow-y-auto bg-black relative">
+        <div className="w-full md:w-[40%] h-full flex items-center justify-center p-8 overflow-y-auto bg-black relative">
           {/* Subtle glow orb */}
           <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-purple-600/5 blur-3xl pointer-events-none" />
           <div className="absolute top-4 left-4 z-10">
@@ -149,85 +149,13 @@ const MainAppContent: React.FC = () => {
           )}
         </div>
 
-        {/* Right Side: Dracula Showcase Panel */}
-        <div className="hidden md:flex md:w-[50%] h-full flex-col justify-between bg-black border-l border-white/[0.06] p-12 text-white relative overflow-hidden select-none">
-          {/* Glow orbs */}
-          <div className="absolute top-[-80px] right-[-80px] w-72 h-72 rounded-full bg-purple-600/10 blur-[100px] pointer-events-none" />
-          <div className="absolute bottom-[-80px] left-[-80px] w-72 h-72 rounded-full bg-blue-600/8 blur-[120px] pointer-events-none" />
-          <div className="absolute top-[40%] right-[10%] w-40 h-40 rounded-full bg-violet-500/5 blur-[60px] pointer-events-none" />
-
-          {/* Logo */}
-          <div className="flex items-center gap-2.5 z-10">
-            <div className="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center border border-white/10">
-              <img src={logo} alt="BAHub Logo" className="w-4 h-4 object-contain" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-[11px] tracking-widest uppercase text-white/80">BAHub</span>
-              <span className="text-[8px] font-semibold text-purple-400 uppercase tracking-widest leading-none">Workspace Platform</span>
-            </div>
-          </div>
-
-          {/* Dracula Terminal Preview */}
-          <div className="flex-1 flex items-center justify-center my-6 z-10">
-            <div className="w-full max-w-[480px] rounded-2xl overflow-hidden shadow-2xl" style={{ background: '#282a36', border: '1px solid #44475a' }}>
-              {/* macOS dots */}
-              <div className="h-9 px-4 flex items-center gap-2 border-b" style={{ borderColor: '#44475a', background: 'rgba(40,42,54,0.8)' }}>
-                <span className="w-3 h-3 rounded-full" style={{ background: '#ff5555' }} />
-                <span className="w-3 h-3 rounded-full" style={{ background: '#f1fa8c' }} />
-                <span className="w-3 h-3 rounded-full" style={{ background: '#50fa7b' }} />
-                <span className="ml-3 text-[11px] font-mono" style={{ color: '#6272a4' }}>bahub_workspace.app</span>
-              </div>
-              {/* Terminal content */}
-              <div className="p-5 font-mono text-[11px] leading-relaxed space-y-1">
-                <div>
-                  <span style={{ color: '#ff79c6' }}>~/bahub</span>
-                  <span style={{ color: '#6272a4' }}> on main</span>
-                </div>
-                <div>
-                  <span style={{ color: '#8be9fd' }}>$ </span>
-                  <span style={{ color: '#50fa7b' }}>bahub generate</span>
-                  <span style={{ color: '#8be9fd' }}> --type brd --project checkout-v2</span>
-                </div>
-                <div style={{ color: '#6272a4' }}>✓ Synthesizing 42 requirements...</div>
-                <div style={{ color: '#6272a4' }}>✓ Running AI compliance scan...</div>
-                <div style={{ color: '#50fa7b' }}>✓ BRD-2026-92 generated (18 pages)</div>
-                <div style={{ color: '#8be9fd' }}>$ </div>
-              </div>
-              {/* Banner image below terminal */}
-              <div className="px-5 pb-5">
-                <img
-                  src={banner}
-                  alt="BAHub Workspace Banner"
-                  className="w-full h-auto max-h-[22vh] object-contain rounded-lg opacity-80"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Tagline */}
-          <div className="flex flex-col gap-3 max-w-md text-left z-10">
-            <h2 className="text-xl font-bold tracking-tight leading-tight">
-              The AI-Powered{" "}
-              <span className="text-gradient-blue-purple">Business Analyst</span>{" "}Workspace
-            </h2>
-            <p className="text-xs text-gray-500 leading-relaxed">
-              Synthesize conversations into compliant specs, manage stakeholders, register risks, and run AI-assisted analyses — all in one platform.
-            </p>
-            <div className="flex items-center gap-4 mt-1">
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                <span className="text-[10px] text-gray-500 font-medium">Audit trail ready</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                <span className="text-[10px] text-gray-500 font-medium">Data controls planned</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                <span className="text-[10px] text-gray-500 font-medium">Status monitoring planned</span>
-              </div>
-            </div>
-          </div>
+        {/* Right Side: Banner Showcase Panel */}
+        <div className="hidden md:flex md:w-[60%] h-full items-center justify-center bg-black border-l border-white/[0.06] select-none">
+          <img
+            src={banner}
+            alt="BAHub Workspace Banner"
+            className="w-full h-full object-contain"
+          />
         </div>
       </div>
     );

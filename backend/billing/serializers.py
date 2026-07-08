@@ -17,6 +17,7 @@ class TenantSubscriptionSerializer(serializers.ModelSerializer):
             "plan_tier",
             "seats_limit",
             "is_active",
+            "plan_verified",
             "ai_credits_used",
             "ai_credits_limit",
             "active_seats_count",

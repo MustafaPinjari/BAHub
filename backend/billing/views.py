@@ -10,7 +10,69 @@ from core.responses import api_success, api_error
 from .models import TenantSubscription
 from .serializers import TenantSubscriptionSerializer
 
+import uuid
+from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
+
 stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", None)
+
+def trigger_subscription_verification(request, sub, plan):
+    # Check if this is an upgrade/change of plan tier
+    is_upgrade = (plan in ["PRO", "ENTERPRISE"]) and (sub.plan_tier != plan or not sub.plan_verified)
+    
+    sub.plan_tier = plan
+    if plan == "PRO":
+        sub.seats_limit = 20
+        sub.ai_credits_limit = 1000
+    elif plan == "ENTERPRISE":
+        sub.seats_limit = 1000
+        sub.ai_credits_limit = 10000
+    else:
+        sub.seats_limit = 5
+        sub.ai_credits_limit = 100
+
+    if is_upgrade:
+        token = uuid.uuid4()
+        sub.plan_verified = False
+        sub.is_active = False
+        sub.verification_token = token
+        sub.save()
+
+        # Send email
+        User = get_user_model()
+        admin_emails = list(User.objects.filter(organization=sub.organization, role="ADMIN").values_list("email", flat=True))
+        recipients = [email for email in admin_emails if email]
+        if "unlessuser99@gmail.com" not in recipients:
+            recipients.append("unlessuser99@gmail.com")
+        
+        # Build verification URL
+        verify_url = request.build_absolute_uri(
+            f"/api/v1/billing/verify-subscription/?token={token}&org_id={sub.organization.id}"
+        )
+
+        subject = f"BAHub: Verify Your {plan.capitalize()} Subscription Upgrade"
+        message = (
+            f"Hello,\n\n"
+            f"Your organization '{sub.organization.name}' has requested an upgrade to the {plan.capitalize()} plan.\n\n"
+            f"Please verify this subscription upgrade to activate your plan and unlock Gemini AI features by clicking the link below:\n\n"
+            f"{verify_url}\n\n"
+            f"Best regards,\nThe BAHub Billing Team"
+        )
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email="unlessuser99@gmail.com",
+            recipient_list=recipients,
+            fail_silently=False
+        )
+    else:
+        if plan not in ["PRO", "ENTERPRISE"]:
+            sub.plan_verified = True
+            sub.is_active = True
+            sub.verification_token = None
+        sub.save()
+
 
 class SubscriptionDetailView(APIView):
     permission_classes = [IsAuthenticated]
@@ -165,11 +227,8 @@ class StripeWebhookView(APIView):
                     sub = TenantSubscription.objects.get(organization_id=org_id)
                     sub.stripe_customer_id = customer_id
                     sub.stripe_subscription_id = subscription_id
-                    sub.plan_tier = plan_tier
-                    sub.seats_limit = seats_limit
-                    sub.ai_credits_limit = ai_credits_limit
-                    sub.is_active = True
                     sub.save()
+                    trigger_subscription_verification(request, sub, plan_tier)
                 except TenantSubscription.DoesNotExist:
                     pass
 
@@ -183,6 +242,9 @@ class StripeWebhookView(APIView):
                     sub.plan_tier = "FREE"
                     sub.seats_limit = 5
                     sub.ai_credits_limit = 100
+                    sub.plan_verified = True
+                    sub.is_active = True
+                    sub.verification_token = None
                     sub.save()
                 except TenantSubscription.DoesNotExist:
                     pass
@@ -191,15 +253,12 @@ class StripeWebhookView(APIView):
                     sub = TenantSubscription.objects.get(stripe_subscription_id=subscription_id)
                     price_id = data_object['items']['data'][0]['price']['id']
                     if price_id == getattr(settings, "STRIPE_PRICE_PRO", None):
-                        sub.plan_tier = "PRO"
-                        sub.seats_limit = 20
-                        sub.ai_credits_limit = 1000
+                        plan_tier = "PRO"
                     elif price_id == getattr(settings, "STRIPE_PRICE_ENTERPRISE", None):
-                        sub.plan_tier = "ENTERPRISE"
-                        sub.seats_limit = 1000
-                        sub.ai_credits_limit = 10000
-                    sub.is_active = True
-                    sub.save()
+                        plan_tier = "ENTERPRISE"
+                    else:
+                        plan_tier = "FREE"
+                    trigger_subscription_verification(request, sub, plan_tier)
                 except TenantSubscription.DoesNotExist:
                     pass
 
@@ -240,18 +299,7 @@ class MockUpgradeView(APIView):
                     "ai_credits_limit": 100
                 }
             )
-            sub.plan_tier = plan
-            if plan == "PRO":
-                sub.seats_limit = 20
-                sub.ai_credits_limit = 1000
-            elif plan == "ENTERPRISE":
-                sub.seats_limit = 1000
-                sub.ai_credits_limit = 10000
-            else:
-                sub.seats_limit = 5
-                sub.ai_credits_limit = 100
-            sub.is_active = True
-            sub.save()
+            trigger_subscription_verification(request, sub, plan)
 
         # Redirect back to the frontend billing success view
         if not redirect_uri:
@@ -260,6 +308,52 @@ class MockUpgradeView(APIView):
                 redirect_uri = redirect_uri[0]
         
         return redirect(f"{redirect_uri.rstrip('/')}/billing?success=true")
+
+
+class VerifySubscriptionView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        token = request.query_params.get("token")
+        org_id = request.query_params.get("org_id")
+
+        if not token or not org_id:
+            return api_error(message="Missing verification token or organization id.", status_code=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            sub = TenantSubscription.objects.get(organization_id=org_id, verification_token=token)
+            sub.plan_verified = True
+            sub.is_active = True
+            sub.verification_token = None
+            sub.save()
+        except TenantSubscription.DoesNotExist:
+            return api_error(message="Invalid or expired verification token.", status_code=status.HTTP_400_BAD_REQUEST)
+
+        # Resolve frontend origin
+        frontend_origin = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
+        if isinstance(frontend_origin, list):
+            frontend_origin = frontend_origin[0]
+        frontend_origin = frontend_origin.rstrip("/")
+
+        return redirect(f"{frontend_origin}/billing?verified=true")
+
+    def post(self, request):
+        token = request.data.get("token")
+        org_id = request.data.get("org_id")
+
+        if not token or not org_id:
+            return api_error(message="Missing verification token or organization id.", status_code=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            sub = TenantSubscription.objects.get(organization_id=org_id, verification_token=token)
+            sub.plan_verified = True
+            sub.is_active = True
+            sub.verification_token = None
+            sub.save()
+        except TenantSubscription.DoesNotExist:
+            return api_error(message="Invalid or expired verification token.", status_code=status.HTTP_400_BAD_REQUEST)
+
+        return api_success(message="Subscription plan verified successfully.")
 
 class MockInvoiceListView(APIView):
     permission_classes = [IsAuthenticated]

@@ -6,6 +6,7 @@ from .views import (
     StripeWebhookView,
     MockUpgradeView,
     MockInvoiceListView,
+    VerifySubscriptionView,
 )
 
 urlpatterns = [
@@ -13,6 +14,7 @@ urlpatterns = [
     path("checkout/", CreateCheckoutSessionView.as_view(), name="create-checkout-session"),
     path("webhook/", StripeWebhookView.as_view(), name="stripe-webhook"),
     path("invoices/", MockInvoiceListView.as_view(), name="billing-invoices"),
+    path("verify-subscription/", VerifySubscriptionView.as_view(), name="verify-subscription"),
 ]
 
 import sys
