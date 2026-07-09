@@ -358,7 +358,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
 
       {/* ── NAVBAR ───────────────────────────────────────────────────────────── */}
       <div className="sticky top-0 z-50 px-4 pt-4">
-        <nav className="max-w-6xl mx-auto bg-black/50 backdrop-blur-2xl border border-white/[0.08] rounded-2xl px-5 py-3 flex items-center justify-between shadow-2xl shadow-black/60">
+        <nav className="max-w-[1380px] w-full mx-auto bg-black/50 backdrop-blur-2xl border border-white/[0.08] rounded-2xl px-6 md:px-10 lg:px-16 py-4 flex items-center justify-between shadow-2xl shadow-black/60">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 bg-white/[0.06] rounded-lg flex items-center justify-center border border-white/[0.10]">
               <img src={logo} alt="BAHub" className="w-4 h-4 object-contain" />
@@ -385,7 +385,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
       <section 
         onMouseMove={handleMouseMove}
-        className="relative pt-24 pb-8 px-6 md:px-12 max-w-6xl mx-auto z-10 group overflow-visible"
+        className="relative min-h-[90vh] lg:min-h-[95vh] flex items-center justify-center pt-32 pb-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 group overflow-visible"
       >
         {/* Cursor tracking radial glow */}
         <div
@@ -401,11 +401,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           }}
         />
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 items-center relative z-10 w-full">
           {/* Left */}
-          <div>
+          <div className="flex flex-col items-start text-left">
             <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[10px] font-bold uppercase tracking-wider mb-8">
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[10px] font-bold uppercase tracking-wider mb-12">
               <span className="w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" />
               <span className="text-white/60">BAHub V2.0</span>
               <span className="text-white/20">·</span>
@@ -413,7 +413,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             </motion.div>
 
             <motion.h1 initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6 flex flex-col">
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-8 flex flex-col">
               <span>Ship traceable</span>
               <span className="h-[48px] sm:h-[60px] lg:h-[72px] relative overflow-hidden text-gradient-blue-purple block w-full text-left">
                 <AnimatePresence mode="wait">
@@ -433,18 +433,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             </motion.h1>
 
             <motion.p initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.2 }}
-              className="text-white/60 text-base leading-relaxed mb-8 max-w-lg">
+              className="text-white/60 text-base leading-relaxed mb-12 max-w-[650px]">
               Paste meeting notes. Get requirements, diagrams, BRDs, risk registers, and a Jira-ready backlog — all linked, all traceable.
             </motion.p>
 
             <motion.div initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.3 }}
-              className="flex flex-wrap items-center gap-3 mb-10">
+              className="flex flex-wrap items-center gap-4 mb-16">
               <button onClick={onNavigateToRegister}
-                className="px-7 py-3.5 rounded-xl text-sm font-bold bg-white text-black hover:bg-gray-100 transition-all cursor-pointer flex items-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                className="px-8 py-4 rounded-xl text-sm font-bold bg-white text-black hover:bg-gray-100 transition-all cursor-pointer flex items-center gap-2 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                 Start Free — No Card <ArrowRight className="w-4 h-4" />
               </button>
               <button onClick={onNavigateToLogin}
-                className="px-7 py-3.5 rounded-xl text-sm font-semibold border border-white/15 text-white/80 hover:text-white hover:border-white/30 transition-all cursor-pointer">
+                className="px-8 py-4 rounded-xl text-sm font-semibold border border-white/15 text-white/80 hover:text-white hover:border-white/30 transition-all cursor-pointer">
                 View Live Demo
               </button>
             </motion.div>
@@ -467,7 +467,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
 
           {/* Right — Dashboard preview card */}
           <motion.div initial={{ opacity:0, x:32 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.6, delay:0.25 }}
-            className="relative hidden lg:block">
+            className="relative hidden lg:block my-[80px]">
             <div className="absolute -inset-4 bg-purple-600/10 rounded-3xl blur-3xl pointer-events-none" />
             <div className="relative rounded-2xl border border-white/[0.08] overflow-hidden shadow-2xl" style={{ background:'#0a0a0a' }}>
               <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/[0.06] bg-black/60">
@@ -500,18 +500,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       {waitlist_countdown_enabled && <LaunchCountdown />}
 
       {/* ── SOCIAL PROOF BAR ─────────────────────────────────────────────────── */}
-      <section className="py-10 border-t border-b border-white/[0.05] mt-16">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col items-center gap-6">
+      <section className="py-[120px] border-t border-b border-white/[0.05]">
+        <div className="max-w-[1380px] w-full mx-auto px-6 md:px-10 lg:px-16 flex flex-col items-center gap-8">
           <p className="text-[9px] font-bold text-gray-700 uppercase tracking-[0.2em]">Trusted by teams across</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center w-full">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center w-full">
             {[
               { value:"2,400+",   label:"Active Workspaces",    color:"text-purple-400" },
               { value:"180K+",    label:"Requirements Traced",  color:"text-blue-400"   },
               { value:"4× faster",label:"BRD vs. Manual",       color:"text-green-400"  },
               { value:"17",       label:"Integrated Modules",   color:"text-amber-400"  },
             ].map(s => (
-              <div key={s.label} className="flex flex-col gap-1">
-                <span className={`text-2xl md:text-3xl font-extrabold tracking-tight ${s.color}`}>{s.value}</span>
+              <div key={s.label} className="flex flex-col gap-2">
+                <span className={`text-3xl md:text-4xl font-extrabold tracking-tight ${s.color}`}>{s.value}</span>
                 <span className="text-[10px] font-medium text-gray-600">{s.label}</span>
               </div>
             ))}
@@ -520,17 +520,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────────── */}
-      <section id="workflow" className="py-28 px-6 md:px-12 max-w-6xl mx-auto z-10 relative">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-blue-400 mb-5">
+      <section id="workflow" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-blue-400 mb-6">
             Workflow
           </div>
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-6">
             From conversation to<br /><span className="text-gradient-blue-purple">shipped spec in minutes</span>
           </h2>
-          <p className="text-gray-500 text-sm mt-4 max-w-md mx-auto">BAHub collapses the typical 3-week BA cycle into a single traceable workflow.</p>
+          <p className="text-gray-500 text-sm max-w-[650px] mx-auto leading-relaxed">BAHub collapses the typical 3-week BA cycle into a single traceable workflow.</p>
         </div>
-        <div className="relative grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="relative grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Connector */}
           <div className="hidden md:block absolute top-10 left-[14%] right-[14%] h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent pointer-events-none" />
           {HOW_IT_WORKS.map((item, i) => (
@@ -539,26 +539,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
               <div className={`w-16 h-16 rounded-2xl border flex items-center justify-center ${item.bg}`}>{item.icon}</div>
               <span className="text-[9px] font-black text-gray-700 tracking-[0.2em]">{item.step}</span>
               <h4 className="font-extrabold text-[13px] text-white">{item.title}</h4>
-              <p className="text-[11px] text-gray-500 leading-relaxed">{item.desc}</p>
+              <p className="text-[11px] text-gray-500 leading-relaxed max-w-[280px]">{item.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* ── SANDBOX ──────────────────────────────────────────────────────────── */}
-      <section id="sandbox" className="py-8 px-6 md:px-12 max-w-6xl mx-auto z-10 relative">
-        <div className="text-center mb-10 flex flex-col items-center gap-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-purple-400">
+      <section id="sandbox" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-[#030209]/40 border-t border-b border-white/[0.02]">
+        <div className="text-center mb-20 flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-6">
             Interactive Workspace Preview
           </div>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-6">
             See the <span className="text-gradient-blue-purple">full workspace</span> in action
           </h2>
-          <p className="text-gray-500 text-[12px] max-w-md">Toggle between the platform modules to preview how BAHub connects AI, diagrams, matrices, and specs.</p>
+          <p className="text-gray-500 text-sm max-w-[650px] mx-auto leading-relaxed">Toggle between the platform modules to preview how BAHub connects AI, diagrams, matrices, and specs.</p>
         </div>
 
         {/* Tabs navigation */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-6 max-w-xl mx-auto relative z-10">
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-12 max-w-xl mx-auto relative z-10">
           {[
             { id: "chat",   label: "AI Chat Assistant", icon: <Sparkles className="w-3.5 h-3.5" /> },
             { id: "canvas", label: "Workflow Canvas",   icon: <Workflow className="w-3.5 h-3.5" /> },
@@ -568,7 +568,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             <button
               key={tab.id}
               onClick={() => setSimTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 simTab === tab.id
                   ? "bg-white/[0.08] border border-white/25 text-white"
                   : "bg-white/[0.03] border border-white/[0.06] text-gray-500 hover:text-white hover:bg-white/[0.08]"
@@ -580,7 +580,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           ))}
         </div>
 
-        <div className="w-full rounded-2xl overflow-hidden shadow-2xl border relative" style={{ background:'#0a0a0a', borderColor:'rgba(255,255,255,0.07)' }}>
+        <div className="w-full rounded-3xl overflow-hidden shadow-2xl border relative my-[80px]" style={{ background:'#0a0a0a', borderColor:'rgba(255,255,255,0.07)' }}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-black/70 relative z-10">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
@@ -828,17 +828,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── FEATURES BENTO ───────────────────────────────────────────────────── */}
-      <section id="features" className="py-28 px-6 md:px-12 max-w-7xl mx-auto z-10 relative">
-        <div className="flex flex-col md:flex-row items-baseline justify-between mb-16 gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-4 self-start">
-              17 Integrated Modules
-            </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
-              Designed for<br /><span className="text-gradient-blue-purple">Analysts & PMs</span>
-            </h2>
+      <section id="features" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-black">
+        <div className="text-center mb-20 max-w-3xl mx-auto flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-6">
+            17 Integrated Modules
           </div>
-          <p className="text-gray-500 text-sm max-w-sm leading-relaxed">
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-6">
+            Designed for <span className="text-gradient-blue-purple">Analysts & PMs</span>
+          </h2>
+          <p className="text-gray-500 text-sm max-w-[650px] leading-relaxed">
             Every module is interconnected — change a requirement and its diagrams, stories, and documents update automatically.
           </p>
         </div>
@@ -856,16 +854,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── INTEGRATIONS ─────────────────────────────────────────────────────── */}
-      <section id="integrations" className="py-24 px-6 md:px-12 border-t border-b border-white/[0.05]">
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-16 text-left">
-          <div className="flex-1 flex flex-col gap-5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-blue-400 self-start">
+      <section id="integrations" className="py-[160px] border-t border-b border-white/[0.04] bg-[#020205]">
+        <div className="max-w-[1380px] w-full mx-auto px-6 md:px-10 lg:px-16 flex flex-col lg:flex-row items-center gap-24 text-left">
+          <div className="flex-1 flex flex-col gap-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-blue-400 self-start mb-2">
               Engineering Sync
             </div>
-            <h2 className="text-3xl font-extrabold text-white tracking-tight leading-tight">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
               Bi-directional sync with<br /><span className="text-gradient-blue-purple">your existing stack</span>
             </h2>
-            <p className="text-gray-500 text-sm leading-relaxed">
+            <p className="text-gray-500 text-sm leading-relaxed max-w-[650px] mb-4">
               Write specs, draw process diagrams, and watch everything sync to Jira, Confluence, and GitHub automatically — no disruption to your engineering team.
             </p>
             <div className="flex flex-wrap gap-2 mt-1">
@@ -881,34 +879,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── MORE PLATFORM CAPABILITIES ───────────────────────────────────────── */}
-      <section className="py-28 px-6 md:px-12 max-w-7xl mx-auto z-10 relative">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-violet-400 mb-5">
+      <section className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-black">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-violet-400 mb-6">
             Also in the platform
           </div>
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-6">
             Everything else you need<br /><span className="text-gradient-blue-purple">in one workspace</span>
           </h2>
         </div>
 
         {/* Row 1 — Stakeholder Matrix + Reports */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 
           {/* Stakeholder Power/Interest Matrix */}
           <PremiumGlassCard accentColor="rose" className="h-full">
-            <div className="p-5 border-b border-white/[0.06]">
+            <div className="p-[36px] border-b border-white/[0.06]">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
                   <Users className="w-4 h-4 text-rose-400" />
                 </div>
                 <div>
                   <h3 className="font-bold text-[13px] text-white">Stakeholder Power / Interest Matrix</h3>
-                  <p className="text-[11px] text-gray-500">Map every stakeholder into 4 strategic quadrants</p>
+                  <p className="text-[11px] text-gray-500 mt-1">Map every stakeholder into 4 strategic quadrants</p>
                 </div>
               </div>
             </div>
             {/* Matrix visual */}
-            <div className="p-4 grid grid-cols-2 gap-2">
+            <div className="p-[36px] grid grid-cols-2 gap-4">
               {[
                 { q:"High Power · High Interest", s:"Manage Closely",  c:"border-green-500/30 bg-green-500/5",  tc:"text-green-400",  names:["CEO","Product Owner"]           },
                 { q:"High Power · Low Interest",  s:"Keep Satisfied",  c:"border-blue-500/30 bg-blue-500/5",   tc:"text-blue-400",   names:["Legal Dept","Board Sponsor"]     },
@@ -932,19 +930,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
 
           {/* Reports & Analytics */}
           <PremiumGlassCard accentColor="amber" className="h-full">
-            <div className="p-5 border-b border-white/[0.06]">
+            <div className="p-[36px] border-b border-white/[0.06]">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-9 h-9 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
                   <BarChart2 className="w-4 h-4 text-yellow-400" />
                 </div>
                 <div>
                   <h3 className="font-bold text-[13px] text-white">Reports & Analytics Dashboard</h3>
-                  <p className="text-[11px] text-gray-500">Live metrics across all project modules</p>
+                  <p className="text-[11px] text-gray-500 mt-1">Live metrics across all project modules</p>
                 </div>
               </div>
             </div>
             {/* Mini bar charts */}
-            <div className="p-4 flex flex-col gap-3">
+            <div className="p-[36px] flex flex-col gap-4">
               {[
                 { label:"Requirements Pipeline", approved:72, review:18, draft:10, color:"bg-green-500" },
                 { label:"User Stories Sprint",   done:58,    progress:24, todo:18, color:"bg-blue-500" },
@@ -968,20 +966,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
         </div>
 
         {/* Row 2 — Diagram Templates + RBAC + Projects/Teams */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
           {/* 16 Sector Templates */}
-          <PremiumGlassCard accentColor="cyan" className="p-5 h-full">
-            <div className="flex items-center gap-3 mb-4">
+          <PremiumGlassCard accentColor="cyan" className="p-[36px] h-full">
+            <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
                 <Workflow className="w-4 h-4 text-cyan-400" />
               </div>
               <div>
                 <h3 className="font-bold text-[13px] text-white">16 Sector Templates</h3>
-                <p className="text-[10px] text-gray-500">Pre-built industry starter canvases</p>
+                <p className="text-[10px] text-gray-500 mt-1">Pre-built industry starter canvases</p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {["E-Commerce","Banking","Healthcare","ERP","CRM","HRMS","Insurance","Education","Government","Inventory","Payment Gateway","Loyalty","Supply Chain","Hotel Mgmt","Hospital","Custom"].map(t => (
                 <span key={t} className="text-[8px] font-bold bg-white/[0.04] border border-white/[0.06] text-gray-500 px-2 py-0.5 rounded-full uppercase tracking-wide">{t}</span>
               ))}
@@ -989,17 +987,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </PremiumGlassCard>
 
           {/* RBAC */}
-          <PremiumGlassCard accentColor="orange" className="p-5 h-full">
-            <div className="flex items-center gap-3 mb-4">
+          <PremiumGlassCard accentColor="orange" className="p-[36px] h-full">
+            <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
                 <Shield className="w-4 h-4 text-orange-400" />
               </div>
               <div>
                 <h3 className="font-bold text-[13px] text-white">Role-Based Access Control</h3>
-                <p className="text-[10px] text-gray-500">Custom roles with granular permissions</p>
+                <p className="text-[10px] text-gray-500 mt-1">Custom roles with granular permissions</p>
               </div>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               {[
                 { role:"Admin",            perms:["Full Access","Billing","Audit Logs"],     color:"text-purple-400" },
                 { role:"Business Analyst", perms:["Create Reqs","Generate BRD","AI Chat"],  color:"text-blue-400"   },
@@ -1015,17 +1013,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </PremiumGlassCard>
 
           {/* Projects & Teams */}
-          <PremiumGlassCard accentColor="indigo" className="p-5 h-full">
-            <div className="flex items-center gap-3 mb-4">
+          <PremiumGlassCard accentColor="indigo" className="p-[36px] h-full">
+            <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
                 <FolderGit className="w-4 h-4 text-indigo-400" />
               </div>
               <div>
                 <h3 className="font-bold text-[13px] text-white">Projects & Teams</h3>
-                <p className="text-[10px] text-gray-500">Multi-project workspace with member roles</p>
+                <p className="text-[10px] text-gray-500 mt-1">Multi-project workspace with member roles</p>
               </div>
             </div>
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-3">
               {[
                 { icon:"🗂️", label:"Unlimited projects per workspace"    },
                 { icon:"👥", label:"Teams with assigned leads & members"  },
@@ -1044,15 +1042,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── TESTIMONIALS ─────────────────────────────────────────────────────── */}
-      <section id="testimonials" className="py-28 relative overflow-hidden">
-        <div className="text-center mb-14 px-6 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-amber-400 mb-5">
+      <section id="testimonials" className="py-[160px] relative overflow-hidden bg-black">
+        <div className="max-w-[1380px] w-full mx-auto px-6 md:px-10 lg:px-16 text-center mb-20 relative z-10 flex flex-col items-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-amber-400 mb-6">
             <Star className="w-3 h-3 fill-amber-400" /> Customer Reviews
           </div>
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-6">
             Loved by <span className="text-gradient-blue-purple">Business Analysts</span>
           </h2>
-          <p className="text-gray-500 text-sm mt-3 max-w-md mx-auto">Join thousands of BAs replacing fragmented tools with one traceable workspace.</p>
+          <p className="text-gray-500 text-sm max-w-[650px] mx-auto leading-relaxed">Join thousands of BAs replacing fragmented tools with one traceable workspace.</p>
         </div>
         <div className="relative flex h-[560px] w-full flex-row items-center justify-center gap-4 overflow-hidden [perspective:300px]">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-24 z-10" style={{ background:"linear-gradient(to bottom,#000,transparent)" }} />
@@ -1079,17 +1077,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── PRICING ──────────────────────────────────────────────────────────── */}
-      <section id="pricing" className="py-28 px-6 md:px-12 max-w-6xl mx-auto text-center z-10 relative">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-green-400 mb-5">
+      <section id="pricing" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto text-center z-10 relative bg-[#020205]">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-green-400 mb-6">
           Pricing
         </div>
-        <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
+        <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-6">
           Simple, transparent <span className="text-gradient-blue-purple">pricing</span>
         </h2>
-        <p className="text-gray-500 text-sm max-w-md mx-auto mb-8">No hidden fees. Upgrade or downgrade any time.</p>
+        <p className="text-gray-500 text-sm max-w-[650px] mx-auto mb-16 leading-relaxed">No hidden fees. Upgrade or downgrade any time.</p>
 
         {/* Toggle */}
-        <div className="flex items-center justify-center gap-3 mb-12">
+        <div className="flex items-center justify-center gap-3 mb-20">
           <span className={`text-[11px] font-semibold transition-colors ${!yearly ? "text-white" : "text-gray-600"}`}>Monthly</span>
           <button onClick={() => setYearly(v => !v)}
             className="w-12 h-6 rounded-full relative border border-white/[0.10] cursor-pointer transition-colors"
@@ -1102,13 +1100,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {PRICING.map((plan) => {
             const price = yearly ? plan.yearlyPrice : plan.monthlyPrice;
             const isPopular = plan.badge === "Most Popular";
             return (
               <motion.div key={plan.name} whileHover={{ y:-4 }} transition={{ type:"spring", stiffness:260, damping:20 }}
-                className={`relative rounded-2xl border ${plan.color} p-7 flex flex-col justify-between text-left overflow-hidden ${isPopular ? "" : "bg-[#0a0a0a]"}`}
+                className={`relative rounded-3xl border ${plan.color} p-[36px] flex flex-col justify-between text-left overflow-hidden ${isPopular ? "" : "bg-[#0a0a0a]"}`}
                 style={isPopular ? { background:"linear-gradient(135deg,rgba(124,58,237,0.15) 0%,rgba(109,40,217,0.20) 100%)" } : {}}>
                 {isPopular && <Meteors number={10} />}
                 {plan.badge && (
@@ -1150,20 +1148,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────────────────── */}
-      <section id="faq" className="py-28 px-6 md:px-12 border-t border-white/[0.05]">
-        <div className="max-w-5xl mx-auto grid lg:grid-cols-[1fr_1.6fr] gap-16 items-start">
+      <section id="faq" className="py-[140px] px-6 md:px-10 lg:px-16 border-t border-white/[0.05] bg-black">
+        <div className="max-w-[1380px] w-full mx-auto grid lg:grid-cols-[1fr_1.6fr] gap-24 items-start">
           {/* Left panel */}
-          <div className="flex flex-col gap-6 lg:sticky lg:top-28">
+          <div className="flex flex-col gap-8 lg:sticky lg:top-28">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-gray-400 self-start">FAQ</div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
               Frequently asked<br /><span className="text-gradient-blue-purple">questions</span>
             </h2>
-            <p className="text-gray-500 text-sm leading-relaxed">Can't find what you're looking for? Reach out directly.</p>
-            <a href="mailto:support@bahub.app" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.10] bg-white/[0.03] text-[11px] font-semibold text-gray-400 hover:text-white hover:border-white/20 transition-all w-fit">
+            <p className="text-gray-500 text-sm leading-relaxed max-w-[650px]">Can't find what you're looking for? Reach out directly.</p>
+            <a href="mailto:support@bahub.app" className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl border border-white/[0.10] bg-white/[0.03] text-[11px] font-semibold text-gray-400 hover:text-white hover:border-white/20 transition-all w-fit">
               support@bahub.app <ArrowRight className="w-3.5 h-3.5" />
             </a>
             {/* Mini stats */}
-            <div className="flex flex-col gap-3 mt-2">
+            <div className="flex flex-col gap-3 mt-4">
               {[
                 { label:"Modules", value:"17" },
                 { label:"Export formats", value:"6" },
@@ -1178,7 +1176,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </div>
 
           {/* Accordion */}
-          <div className="rounded-2xl border border-white/[0.08] overflow-hidden bg-[#0a0a0a]">
+          <div className="rounded-3xl border border-white/[0.08] overflow-hidden bg-[#0a0a0a]">
             {FAQS.map((faq, idx) => (
               <div key={idx} className="border-b border-white/[0.06] last:border-0">
                 <button onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
@@ -1202,9 +1200,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── CTA ──────────────────────────────────────────────────────────────── */}
-      <section className="py-16 px-6 md:px-12 max-w-6xl mx-auto">
+      <section className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto relative z-10">
         <motion.div whileHover={{ scale:1.005 }} transition={{ duration:0.4 }}
-          className="rounded-3xl p-12 text-center relative overflow-hidden"
+          className="rounded-[32px] p-[64px] py-[120px] text-center relative overflow-hidden"
           style={{ background:"linear-gradient(135deg,#7c3aed 0%,#6d28d9 55%,#5b21b6 100%)" }}>
           <div className="absolute inset-0 opacity-[0.12]" style={{ backgroundImage:"radial-gradient(circle,rgba(255,255,255,0.5) 1px,transparent 1px)", backgroundSize:"22px 22px" }} />
           <div className="absolute top-[-60px] left-[38%] w-96 h-96 rounded-full blur-[100px] pointer-events-none" style={{ background:"rgba(196,139,252,0.2)" }} />
@@ -1213,19 +1211,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/20 bg-white/10 text-[10px] font-bold uppercase tracking-wider text-white/80 mb-6">
               <Zap className="w-3 h-3 fill-white" /> Ship your first BRD in 10 minutes
             </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-6">
               2,400+ BA teams switched.<br />Your turn.
             </h2>
-            <p className="text-purple-200/80 text-sm max-w-lg mx-auto mb-8 leading-relaxed">
+            <p className="text-purple-200/80 text-sm max-w-[650px] mx-auto mb-12 leading-relaxed">
               Free tier. No credit card. Full access to Requirements, SWOT, Gap Analysis, and the AI Assistant from day one.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-4">
               <button onClick={onNavigateToRegister}
-                className="px-8 py-3.5 rounded-xl text-sm font-bold bg-white text-purple-900 hover:bg-gray-100 transition-all cursor-pointer flex items-center gap-2 shadow-xl">
+                className="px-8 py-4 rounded-xl text-sm font-bold bg-white text-purple-900 hover:bg-gray-100 transition-all cursor-pointer flex items-center gap-2 shadow-xl">
                 Get Started Free <ArrowRight className="w-4 h-4" />
               </button>
               <button onClick={onNavigateToLogin}
-                className="px-8 py-3.5 rounded-xl text-sm font-semibold bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all cursor-pointer">
+                className="px-8 py-4 rounded-xl text-sm font-semibold bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all cursor-pointer">
                 Sign In
               </button>
             </div>
@@ -1234,9 +1232,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/[0.06] py-16 px-6 md:px-12 bg-black">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+      <footer className="border-t border-white/[0.06] py-[120px] px-6 md:px-10 lg:px-16 bg-black relative z-10">
+        <div className="max-w-[1380px] w-full mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-16 mb-16">
             <div className="col-span-2 flex flex-col gap-4">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl border border-white/[0.08] bg-white/[0.04] flex items-center justify-center">

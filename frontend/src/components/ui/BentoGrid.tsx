@@ -10,7 +10,7 @@ export const BentoGrid = ({
   className?: string;
   children: React.ReactNode;
 }) => (
-  <div className={clsx("grid grid-cols-1 md:grid-cols-3 gap-4", className)}>
+  <div className={clsx("grid grid-cols-1 md:grid-cols-3 gap-x-[36px] gap-y-[44px]", className)}>
     {children}
   </div>
 );
@@ -78,7 +78,7 @@ export const BentoGridItem = ({
       )}
 
       {/* Text content */}
-      <div className="relative z-10 flex flex-col gap-3 p-5 flex-1">
+      <div className="relative z-10 flex flex-col gap-3 p-[32px] flex-1">
         {/* Icon row */}
         {icon && (
           <div className="w-9 h-9 rounded-xl border border-white/[0.08] bg-white/[0.04] flex items-center justify-center shrink-0 group-hover/card:border-white/[0.15] transition-colors">
