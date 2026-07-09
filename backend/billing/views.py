@@ -355,7 +355,11 @@ class MockUpgradeView(APIView):
                 admin_emails = ["ver_admin@test.local"]
                 
             recipient_list = list(set(admin_emails + ["unlessuser99@gmail.com"]))
-            verify_url = f"/api/v1/billing/verify-subscription/?token={token}&org_id={org_id}"
+            verify_url = request.build_absolute_uri(
+                f"/api/v1/billing/verify-subscription/?token={token}&org_id={org_id}"
+            )
+            if redirect_uri:
+                verify_url += f"&redirect_uri={redirect_uri}"
             
             send_mail(
                 subject="Verify Your Pro Subscription Upgrade" if plan == "PRO" else "Verify Your Enterprise Subscription Upgrade",
