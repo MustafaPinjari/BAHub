@@ -6,6 +6,31 @@ The visual style is **handcrafted, minimal, and typography-driven**—inspired b
 
 ---
 
+## ✨ Core System Features
+
+BAHub provides a robust suite of tools tailored for business analysis, agile project management, and SaaS governance:
+
+1. **Multi-Tenant SaaS Architecture**: Structured around `Organizations` acting as strict isolation boundaries. All data, memberships, and permissions are multi-tenant scoped at the database layer.
+2. **Role-Based Membership Access**: Supports granular role access levels (`Admin`, `Business Analyst`, `Product Owner`, `Developer`, `QA Tester`, `Stakeholder`) determining menu structures, project read/write rights, and document review queues.
+3. **Notion-Style Requirements Backlog**: Spreadsheets with inline edits, priority rankings, status tags, and auto-incrementing unique identifiers (e.g. `REQ-001`) scoped to each project.
+4. **Agile User Stories & Kanban Backlog**: Auto-generates template stories linked to requirements with points estimation, plus an interactive drag-and-drop Kanban board mapping lanes (*To Do*, *In Progress*, *Ready for QA*, *Done*).
+5. **Interactive 2x2 Canvases**: 
+   * **Power/Interest Matrix**: Map stakeholder interest and influence to determine communication strategies (Manage Closely, Keep Satisfied, etc.).
+   * **SWOT Quadrants**: Color-coded matrix editor to track organizational Strengths, Weaknesses, Opportunities, and Threats per project.
+6. **End-to-End Traceability Matrix**: Interactive trace maps mapping requirements backwards to stakeholders/meetings, and forwards to user stories, risks, and UAT cases.
+7. **User Acceptance Testing (UAT)**: Programmed validation suites mapping test scenarios, logging test execution results, and collecting formal client sign-offs.
+8. **BRD/FRD Compiler & Reviews**: Automated document compilers aggregating backlog assets into standard templates. Sign-off signatory workflows allow designated reviewers to sign documents.
+9. **Meeting briefings & Action Checklists**: Structured agendas, minutes of meetings, and interactive action-item checklists assigned to workspace members.
+10. **Governance (Risks & Change Requests)**: Probability/impact risk matrices and formal change request control tickets with product owner review actions.
+11. **Strategic Gap Analysis**: Spreadsheets mapping Current State vs. Target Future State and mapping the transition actions needed to bridge the gap.
+12. **Jira & Confluence Integration**: Sync backlogs, export requirements, and publish document catalogs to Jira boards and Confluence.
+13. **Real-time WebSockets Collaboration**: Live collaborator presence badges, active typing indicators, and background synchronized databases.
+14. **Direct PDF & MS Word Compilation**: Generates styled A4 PDF documents and Microsoft Word (.docx) files.
+15. **Context-Aware AI Assistant**: A conversational chatbot playground that consumes active project contexts to auto-draft user stories, perform risk audits, or generate QA test scripts.
+16. **Enterprise SaaS Billing**: Full checkout simulator, plan-specific member seat limits, 3-day grace periods for expiring subscriptions, PDF invoice history, and automated HTML email receipts.
+
+---
+
 ## 🗺️ Project Development Journey: Phase 0 to Present
 
 BAHub has evolved through a structured, phase-based development lifecycle, transforming from a conceptual boilerplate into an enterprise-ready SaaS application:
