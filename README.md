@@ -133,39 +133,39 @@ BAHub organizes business analysis activities into focused, high-performance modu
 ### Multi-Tenant Isolation
 ```mermaid
 graph TD
-    subgraph Multi-Tenant Isolation
-        User[Client Browser] -->|JWT Auth token| Middleware[SubscriptionMiddleware]
-        Middleware -->|Check is_active & plan_verified| API[DRF API Views]
-        API -->|Scoped Query| Tenant[Organization Context]
-        Tenant -->|Filters| Projects[Project Memberships]
-        Projects -->|Strict Isolation| Data[Requirements / Stories / UAT]
+    subgraph "Multi-Tenant Isolation"
+        User["Client Browser"] -->|JWT Auth token| Middleware["SubscriptionMiddleware"]
+        Middleware -->|Check is_active & plan_verified| API["DRF API Views"]
+        API -->|Scoped Query| Tenant["Organization Context"]
+        Tenant -->|Filters| Projects["Project Memberships"]
+        Projects -->|Strict Isolation| Data["Requirements / Stories / UAT"]
     end
 ```
 
 ### Context-Aware AI Engine
 ```mermaid
 graph TD
-    subgraph Context-Aware AI Engine
-        Playground[AI Playground UI] -->|Prompt + Project Metrics| Handler[API Request Handler]
-        Handler -->|Fetch Context| DB[(SQLite Database)]
-        DB -->|Project Stats & Backlog| Context[Context Wrapper]
-        Context -->|Payload Assembly| Orchestrator[Multi-LLM Orchestrator]
-        Orchestrator -->|REST API Request| OpenAI[OpenAI API]
-        Orchestrator -->|REST API Request| Gemini[Gemini API]
-        Orchestrator -->|Fallback| MockLLM[Offline Mock LLM]
+    subgraph "Context-Aware AI Engine"
+        Playground["AI Playground UI"] -->|Prompt + Project Metrics| Handler["API Request Handler"]
+        Handler -->|Fetch Context| DB[("SQLite Database")]
+        DB -->|Project Stats & Backlog| Context["Context Wrapper"]
+        Context -->|Payload Assembly| Orchestrator["Multi-LLM Orchestrator"]
+        Orchestrator -->|REST API Request| OpenAI["OpenAI API"]
+        Orchestrator -->|REST API Request| Gemini["Gemini API"]
+        Orchestrator -->|Fallback| MockLLM["Offline Mock LLM"]
     end
 ```
 
 ### Document Generator & Sign-off
 ```mermaid
 graph TD
-    subgraph Document Generator & Sign-off
-        Compiler[Compilation Engine] -->|Aggregate Data| Assembler[Markdown Assembler]
-        Assembler -->|Markdown Document| Exports[Export Router]
-        Exports -->|python-docx| Word[.docx Document]
-        Exports -->|WeasyPrint A4| PDF[.pdf Package]
-        Compiler -->|Submit to signatory queue| Queue[Review Sign-off Queue]
-        Queue -->|PO/PM Signature| Sign[Immutable Audit Signature]
+    subgraph "Document Generator & Sign-off"
+        Compiler["Compilation Engine"] -->|Aggregate Data| Assembler["Markdown Assembler"]
+        Assembler -->|Markdown Document| Exports["Export Router"]
+        Exports -->|python-docx| Word[".docx Document"]
+        Exports -->|WeasyPrint A4| PDF[".pdf Package"]
+        Compiler -->|Submit to signatory queue| Queue["Review Sign-off Queue"]
+        Queue -->|PO/PM Signature| Sign["Immutable Audit Signature"]
     end
 ```
 
