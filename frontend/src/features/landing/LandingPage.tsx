@@ -465,32 +465,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             </motion.div>
           </div>
 
-          {/* Right — Product Image */}
+          {/* Right — Product Image (Clean Transparent & Scaled Larger) */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="relative hidden lg:block my-[80px] w-full max-w-[580px] z-10"
+            className="relative hidden lg:block my-[40px] w-full max-w-[720px] z-10 lg:translate-x-12"
           >
             {/* Ambient Background Glows */}
-            <div className="absolute -inset-4 bg-purple-600/10 rounded-3xl blur-3xl pointer-events-none z-0" />
+            <div className="absolute -inset-10 bg-purple-600/10 rounded-full blur-3xl pointer-events-none z-0" />
             
             {/* Smooth Floating Visual */}
             <motion.div
               animate={{ 
-                y: [0, -10, 0]
+                y: [0, -15, 0]
               }}
               transition={{ 
                 repeat: Infinity, 
                 duration: 6, 
                 ease: "easeInOut" 
               }}
-              className="relative z-10 rounded-2xl border border-white/[0.08] overflow-hidden shadow-2xl bg-black"
+              className="relative z-10 select-none"
             >
               <img 
                 src={heroRightSidePng} 
                 alt="BAHub Product Ecosystem" 
-                className="w-full h-auto object-cover select-none" 
+                className="w-full h-auto object-contain select-none" 
               />
             </motion.div>
           </motion.div>
