@@ -465,36 +465,200 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             </motion.div>
           </div>
 
-          {/* Right — Product Ecosystem Visual Masterpiece */}
+          {/* Right — Product Ecosystem Interactive Visual Ecosystem */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
-            className="relative hidden lg:flex items-center justify-center min-h-[500px]"
+            className="relative hidden lg:flex items-center justify-center min-h-[600px] w-full max-w-[620px]"
           >
             {/* Ambient Background Glows */}
             <div className="absolute w-[500px] h-[500px] rounded-full bg-purple-600/10 blur-[100px] pointer-events-none z-0" />
             <div className="absolute w-[400px] h-[400px] rounded-full bg-blue-600/5 blur-[80px] pointer-events-none z-0" />
 
-            {/* Parallax Floating Dashboard & Ecosystem Masterpiece */}
-            <motion.div
-              animate={{ 
-                y: [0, -12, 0],
-                rotateZ: [0, 0.5, 0]
-              }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 14, 
-                ease: "easeInOut" 
-              }}
-              className="relative z-10 w-full max-w-[580px] drop-shadow-[0_20px_50px_rgba(168,85,247,0.15)]"
-            >
-              <img 
-                src={heroRightSidePng} 
-                alt="BAHub Connected Product Ecosystem" 
-                className="w-full h-auto object-contain select-none" 
-              />
-            </motion.div>
+            {/* Scale-wrapped fixed layout container for responsiveness */}
+            <div className="relative w-[580px] h-[500px] shrink-0 origin-center scale-90 xl:scale-100 z-10 select-none">
+              
+              {/* Volumetric Glowing Ribbon in background */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(139,92,246,0.08)_0%,transparent_50%)] pointer-events-none" />
+              
+              {/* Neural network particles */}
+              {Array.from({ length: 15 }).map((_, i) => {
+                const size = Math.random() * 3 + 1.5;
+                const x = Math.random() * 580;
+                const y = Math.random() * 500;
+                const duration = Math.random() * 8 + 7;
+                const delay = Math.random() * 5;
+                return (
+                  <motion.div
+                    key={i}
+                    className="absolute rounded-full bg-purple-400/20 pointer-events-none"
+                    style={{ width: size, height: size, left: x, top: y }}
+                    animate={{
+                      y: [y, y - 30, y],
+                      opacity: [0.15, 0.5, 0.15]
+                    }}
+                    transition={{
+                      repeat: Infinity,
+                      duration,
+                      delay,
+                      ease: "easeInOut"
+                    }}
+                  />
+                );
+              })}
+
+              {/* Bottom Circular Energy Platform */}
+              <div className="absolute left-[200px] top-[320px] w-[180px] h-[40px] pointer-events-none">
+                <div className="absolute inset-0 rounded-full border border-white/[0.08] bg-purple-950/10 shadow-[0_0_40px_rgba(168,85,247,0.2)]" />
+                <div className="absolute inset-2 rounded-full border border-white/[0.04] bg-transparent" />
+                {/* Simulated beams of light rising upward */}
+                <div className="absolute left-1/4 right-1/4 bottom-[20px] h-[100px] bg-gradient-to-t from-purple-500/10 via-purple-500/02 to-transparent blur-sm rounded-t-full" />
+                <div className="absolute left-1/3 right-1/3 bottom-[20px] h-[130px] bg-gradient-to-t from-pink-500/10 via-pink-500/02 to-transparent blur-xs rounded-t-full" />
+              </div>
+
+              {/* Connection Network (Curved glowing SVG lines) */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ overflow: 'visible' }}>
+                <defs>
+                  <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#c084fc" stopOpacity="0.4" />
+                    <stop offset="50%" stopColor="#a855f7" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.4" />
+                  </linearGradient>
+                  <filter id="svgGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                {[
+                  // Left inward flows
+                  { startX: 160, startY: 85,  endX: 220, endY: 200 },
+                  { startX: 170, startY: 205, endX: 215, endY: 220 },
+                  { startX: 155, startY: 335, endX: 225, endY: 260 },
+                  { startX: 145, startY: 435, endX: 235, endY: 280 },
+                  // Right outward flows
+                  { startX: 360, startY: 200, endX: 435, endY: 75  },
+                  { startX: 365, startY: 220, endX: 445, endY: 185 },
+                  { startX: 360, startY: 250, endX: 425, endY: 295 },
+                  { startX: 350, startY: 270, endX: 405, endY: 405 },
+                ].map((line, idx) => {
+                  const path = `M ${line.startX} ${line.startY} C ${(line.startX + line.endX)/2} ${line.startY}, ${(line.startX + line.endX)/2} ${line.endY}, ${line.endX} ${line.endY}`;
+                  return (
+                    <g key={idx}>
+                      {/* Glow background curve */}
+                      <path 
+                        d={path} 
+                        fill="none" 
+                        stroke="url(#lineGrad)" 
+                        strokeWidth="1.5" 
+                        filter="url(#svgGlow)"
+                        className="opacity-45"
+                      />
+                      {/* Pulse dot moving along curve */}
+                      <circle r="2.5" fill="#f472b6">
+                        <animateMotion 
+                          dur={`${4 + idx}s`} 
+                          repeatCount="indefinite" 
+                          path={path} 
+                          keyPoints={idx < 4 ? "0;1" : "0;1"}
+                          keyTimes="0;1"
+                        />
+                      </circle>
+                    </g>
+                  );
+                })}
+              </svg>
+
+              {/* Central Dashboard Viewport (Tilted in 3D & floats) */}
+              <motion.div
+                animate={{ 
+                  y: [0, -10, 0],
+                  rotateX: [11.5, 12.5, 11.5],
+                  rotateY: [-12.5, -11.5, -12.5]
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 8, 
+                  ease: "easeInOut" 
+                }}
+                className="absolute left-[170px] top-[140px] w-[240px] h-[175px] z-20 rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(139,92,246,0.3)] border border-white/[0.08]"
+                style={{ 
+                  transformStyle: 'preserve-3d',
+                  perspective: 800,
+                  background: '#0a0a0a'
+                }}
+              >
+                {/* Simple browser head top */}
+                <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/[0.05] bg-black/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500/80" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-yellow-500/80" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500/80" />
+                </div>
+                <img 
+                  src={heroRightSidePng} 
+                  alt="BAHub Workspace Dashboard" 
+                  className="w-full h-full object-cover select-none" 
+                />
+              </motion.div>
+
+              {/* Floating Glassmorphism Cards with different sizes, delays, depths */}
+              {[
+                { label: "Meeting Transcript 🎤",        left: 20,  top: 70,  z: 30, scale: 0.95, yRange: [-6, 6] },
+                { label: "AI Requirement Analysis ✨",   left: 30,  top: 190, z: 30, scale: 1.0,  yRange: [6, -6] },
+                { label: "BRD Generated 📄",             left: 15,  top: 320, z: 30, scale: 0.95, yRange: [-5, 5] },
+                { label: "User Stories 📋",              left: 30,  top: 420, z: 30, scale: 0.9,  yRange: [4, -4] },
+                
+                { label: "BPMN Diagram 🔀",              right: 20, top: 60,  z: 30, scale: 0.95, yRange: [-6, 6] },
+                { label: "Jira Sync 🎫",                 right: 15, top: 170, z: 30, scale: 1.0,  yRange: [6, -6] },
+                { label: "Test Cases 🧪",                right: 30, top: 280, z: 30, scale: 0.95, yRange: [-5, 5] },
+                { label: "Traceability Matrix ✅",        right: 40, top: 390, z: 30, scale: 0.9,  yRange: [4, -4] },
+              ].map((card, idx) => (
+                <motion.div
+                  key={idx}
+                  className="absolute cursor-default pointer-events-auto"
+                  style={{
+                    left: card.left !== undefined ? `${card.left}px` : undefined,
+                    right: card.right !== undefined ? `${card.right}px` : undefined,
+                    top: `${card.top}px`,
+                    zIndex: card.z,
+                  }}
+                  animate={{ 
+                    y: card.yRange 
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    borderColor: 'rgba(192,132,252,0.4)',
+                    boxShadow: '0 0 20px rgba(168,85,247,0.3)',
+                    backgroundColor: 'rgba(255,255,255,0.06)'
+                  }}
+                  transition={{ 
+                    y: {
+                      repeat: Infinity, 
+                      duration: 5 + (idx % 3), 
+                      ease: "easeInOut",
+                      delay: idx * 0.4 
+                    },
+                    scale: { duration: 0.2 },
+                    borderColor: { duration: 0.2 },
+                    boxShadow: { duration: 0.2 },
+                    backgroundColor: { duration: 0.2 }
+                  }}
+                >
+                  <div 
+                    className="px-3.5 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-[10px] text-[10px] font-bold text-white shadow-[0_8px_32px_0_rgba(139,92,246,0.1)] transition-all uppercase tracking-wider flex items-center gap-2"
+                    style={{ scale: card.scale }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500/60 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                    {card.label}
+                  </div>
+                </motion.div>
+              ))}
+
+            </div>
           </motion.div>
         </div>
       </section>
