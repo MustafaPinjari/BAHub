@@ -122,12 +122,16 @@ const MainAppContent: React.FC = () => {
 
   const isPlatformAdmin = user?.is_superuser || user?.is_staff;
 
+  const queryParams = new URLSearchParams(location.search);
+  const waitlistBypassParam = queryParams.get("waitlist_bypass") === "true";
+  const hasWaitlistBypass = waitlistBypassParam || bypassWaitlistLock;
+
   // Waitlist Lockout check
   if (waitlist_countdown_enabled && !isPlatformAdmin) {
-    if (!isLandingPath && !isWaitlistPath && !bypassWaitlistLock) {
+    if (!isLandingPath && !isWaitlistPath && !hasWaitlistBypass) {
       return <Navigate to="/waitlist" replace />;
     }
-    if ((isLoginPath || isRegisterPath) && !bypassWaitlistLock) {
+    if ((isLoginPath || isRegisterPath) && !hasWaitlistBypass) {
       return <Navigate to="/waitlist" replace />;
     }
   }

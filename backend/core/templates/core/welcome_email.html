@@ -1,0 +1,37 @@
+{% extends "core/email_base.html" %}
+
+{% block content %}
+<h2 class="heading">Welcome to BAHub, {{ first_name }}!</h2>
+<p class="text">
+    You have joined the platform built for serious business analysts and product managers.
+    BAHub gives your team a centralized, AI-powered workspace to map requirements, write user stories,
+    generate documentation, and run automated UAT validations.
+</p>
+
+<div class="btn-container">
+    <a href="https://bahub-beta.netlify.app/login" class="btn">Access Your Dashboard</a>
+</div>
+
+<p class="subheading">What to do next</p>
+<div class="details-box">
+    <div class="details-item">
+        <span class="details-label">Create a Project</span>
+        <span class="details-value">Start capturing business requirements and user stories.</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Invite Your Team</span>
+        <span class="details-value">Add stakeholders and assign roles in your workspace.</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Explore AI Tools</span>
+        <span class="details-value">Generate BRDs, FRDs, and flow diagrams automatically.</span>
+    </div>
+</div>
+
+<hr class="divider">
+
+<p class="text" style="font-size:13px; text-align:center;">
+    Have questions? We are here to help &mdash;
+    <a href="mailto:bahubofficial@gmail.com" style="color:#A78BFA; text-decoration:none;">bahubofficial@gmail.com</a>
+</p>
+{% endblock %}

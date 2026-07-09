@@ -1,0 +1,31 @@
+{% extends "core/email_base.html" %}
+
+{% block content %}
+<h2 class="heading">Your Account Has Been Approved!</h2>
+<p class="text">Hello {{ first_name }},</p>
+<p class="text">
+    Great news &mdash; your BAHub account has been reviewed and approved by our platform administrators.
+    You now have full access to your workspace and all team collaboration features.
+</p>
+
+<div class="success-box">
+    <div class="success-label">&#10004; Account Approved &amp; Active</div>
+    <div class="success-sub">Sign in below to start building with BAHub.</div>
+</div>
+
+<div class="btn-container">
+    <a href="{{ login_url }}" class="btn">Sign In to Your Account</a>
+</div>
+
+<div class="notice-box">
+    If the button above does not work, visit:<br>
+    <span class="url-fallback">{{ login_url }}</span>
+</div>
+
+<hr class="divider">
+
+<p class="text" style="font-size:13px; text-align:center;">
+    Thank you for your patience during the approval process. We are excited to have you on board.<br><br>
+    Questions? Reach us at <a href="mailto:bahubofficial@gmail.com" style="color:#A78BFA; text-decoration:none;">bahubofficial@gmail.com</a>.
+</p>
+{% endblock %}

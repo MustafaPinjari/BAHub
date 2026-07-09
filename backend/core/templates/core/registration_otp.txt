@@ -1,22 +1,23 @@
-Verify Your Email Address - BAHub
+Verify Your BAHub Email Address
+================================
 
-Hello {{ username }},
+Hello {{ first_name }},
 
-Thank you for registering at BAHub! We are excited to welcome you to your new AI-powered Business Analyst workspace. To complete your registration and activate your workspace, please use the following One-Time Password (OTP).
+Thank you for registering at BAHub. To complete your registration, use the
+one-time verification code below. It expires in 10 minutes.
 
-Verification Code: {{ otp_code }}
-(Valid for 10 minutes • Do not share this code)
+  Verification Code: {{ otp_code }}
 
---------------------------------------------------
-WHAT IS BAHUB?
-BAHub is an enterprise-ready environment designed to accelerate your business analysis workflows. By verifying your email, you will gain immediate access to:
+Do not share this code with anyone.
 
-* AI Requirements: Automated BRD, FRD, and User Story compiling.
-* Strategic Models: Interactive SWOT, Gap Analysis, and roadmaps.
-* Collaboration: Share projects, trace requirements, and allocate seats.
+What you get with BAHub:
+  - AI Requirements: Automated BRD, FRD, and User Story generation
+  - Strategic Models: Interactive SWOT, Gap Analysis, and roadmaps
+  - Collaboration: Share projects, trace requirements, allocate seats
 
---------------------------------------------------
-SECURITY NOTICE
-This security verification ensures that only authorized email owners can create workspaces on BAHub. If you did not initiate this registration request, no further action is required and your email remains secure.
+If you did not create this account, you can safely ignore this email.
+Contact us at bahubofficial@gmail.com if you have concerns.
 
-If you experience any issues during verification, please contact support at bahubofficial@gmail.com.
+---
+BAHub Team | bahubofficial@gmail.com
+https://bahub-beta.netlify.app/

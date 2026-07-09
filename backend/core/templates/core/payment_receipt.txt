@@ -1,15 +1,23 @@
-BAHub: Payment Receipt & Confirmation
+BAHub Payment Receipt
+======================
 
-Hello {{ username }},
+Hello {{ first_name }},
 
-Thank you for your payment! Here is the receipt for your subscription to the {{ plan_name }} plan. A copy of the formal invoice PDF is attached to this email.
+Thank you for choosing BAHub. Your subscription to the {{ plan_name }} plan has
+been successfully activated.{% if pdf_content %} A PDF invoice is attached for your records.{% endif %}
 
-Receipt Details:
-- Receipt Number: {{ receipt_number }}
-- Transaction ID: {{ transaction_id }}
-- Date: {{ date }}
-- Organization: {{ organization_name }}
-- Subscribed Plan: {{ plan_name }}
-- Amount Paid: {{ amount }}
+Payment Summary:
+  Receipt Number : {{ receipt_number }}
+  Transaction ID : {{ transaction_id }}
+  Payment Date   : {{ date }}
+  Organization   : {{ organization_name }}
+  Plan Tier      : {{ plan_name }}
+  Total Paid     : {{ amount }}
 
-Your subscription is active. If you did not make this purchase, please contact bahubofficial@gmail.com immediately.
+Your subscription is active. Log in to your dashboard:
+  https://bahub-beta.netlify.app/login
+
+If you did not make this purchase, contact bahubofficial@gmail.com immediately.
+
+---
+BAHub Team | https://bahub-beta.netlify.app/

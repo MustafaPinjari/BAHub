@@ -1,118 +1,109 @@
 {% extends "core/email_base.html" %}
 
 {% block content %}
-<!-- Premium Payment Receipt Email -->
-<div style="max-width: 600px; margin: 0 auto;">
-    
-    <!-- Hero Header with Success Badge -->
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+<!-- Header row: title + status badge -->
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+    <tr>
+        <td style="vertical-align:middle;">
+            <h2 class="heading" style="margin:0;">Payment Receipt</h2>
+            <p class="text" style="margin:4px 0 0 0; font-size:13px;">
+                Hello {{ first_name }}, thank you for choosing BAHub.
+            </p>
+        </td>
+        <td style="vertical-align:middle; text-align:right; white-space:nowrap; padding-left:12px;">
+            <div style="display:inline-block; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.22);
+                        border-radius:20px; padding:5px 14px;">
+                <span style="color:#4ADE80; font-size:11px; font-weight:700;">&#10004; Payment Successful</span>
+            </div>
+            <p style="color:#4D4D70; font-size:9px; font-family:'Courier New',Courier,monospace;
+                       margin:4px 0 0 0; text-align:right;">{{ receipt_number }}</p>
+        </td>
+    </tr>
+</table>
+
+<p class="text">
+    Your subscription to the <strong>{{ plan_name }}</strong> plan has been successfully activated.
+    {% if pdf_content %}A PDF invoice is attached to this email for your records.{% endif %}
+</p>
+
+<hr class="divider">
+
+<!-- Payment summary table -->
+<div style="background:#0F0D1F; border:1px solid #1E1B38; border-radius:12px;
+             padding:20px 22px; margin-bottom:24px;">
+    <p style="color:#A78BFA; font-size:10px; font-weight:700; letter-spacing:1.2px;
+               text-transform:uppercase; margin:0 0 14px 0;">Payment Summary</p>
+    <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-            <td style="text-align: left;">
-                <h1 style="color: #111827; font-size: 22px; font-weight: 700; margin: 0; line-height: 1.3;">
-                    BAHub
-                </h1>
-                <p style="color: #6B7280; font-size: 11px; margin: 4px 0 0 0;">Payment Receipt</p>
+            <td style="color:#94A3B8; font-size:13px; padding:6px 0;">Receipt Number</td>
+            <td style="color:#FFFFFF; font-size:13px; font-weight:600; text-align:right;
+                        padding:6px 0;">{{ receipt_number }}</td>
+        </tr>
+        <tr>
+            <td style="color:#94A3B8; font-size:13px; padding:6px 0;">Transaction ID</td>
+            <td style="color:#FFFFFF; font-size:12px; font-family:'Courier New',Courier,monospace;
+                        font-weight:600; text-align:right; padding:6px 0;">{{ transaction_id }}</td>
+        </tr>
+        <tr>
+            <td style="color:#94A3B8; font-size:13px; padding:6px 0;">Payment Date</td>
+            <td style="color:#FFFFFF; font-size:13px; font-weight:600; text-align:right;
+                        padding:6px 0;">{{ date }}</td>
+        </tr>
+        <tr>
+            <td style="color:#94A3B8; font-size:13px; padding:6px 0;">Organization</td>
+            <td style="color:#FFFFFF; font-size:13px; font-weight:600; text-align:right;
+                        padding:6px 0;">{{ organization_name }}</td>
+        </tr>
+        <tr>
+            <td style="color:#94A3B8; font-size:13px; padding:6px 0;">Plan Tier</td>
+            <td style="color:#A78BFA; font-size:13px; font-weight:700; text-align:right;
+                        padding:6px 0;">{{ plan_name }}</td>
+        </tr>
+        <tr style="border-top:1px solid #1E1B38;">
+            <td style="color:#FFFFFF; font-size:15px; font-weight:800; padding:12px 0 0 0;">Total Paid</td>
+            <td style="color:#FFFFFF; font-size:18px; font-weight:900; text-align:right;
+                        padding:12px 0 0 0;">{{ amount }}</td>
+        </tr>
+    </table>
+</div>
+
+<!-- Features unlocked -->
+<div style="background:rgba(124,58,237,0.05); border:1px solid rgba(124,58,237,0.16);
+             border-radius:12px; padding:20px 22px; margin-bottom:24px;">
+    <p style="color:#A78BFA; font-size:10px; font-weight:700; letter-spacing:1.2px;
+               text-transform:uppercase; margin:0 0 14px 0;">&#10024; Your {{ plan_name }} Plan Includes</p>
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td style="vertical-align:top; width:50%; color:#94A3B8; font-size:13px; line-height:2.0;">
+                &#10003; Unlimited Projects<br>
+                &#10003; AI Requirement Generation<br>
+                &#10003; Team Collaboration<br>
+                &#10003; PDF Export
             </td>
-            <td style="text-align: right; vertical-align: middle;">
-                <div style="display: inline-block; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 16px; padding: 6px 14px;">
-                    <span style="color: #16A34A; font-size: 11px; font-weight: 700;">✔  Payment Successful</span>
-                </div>
-                <p style="color: #9CA3AF; font-size: 9px; margin: 4px 0 0 0;">{{ receipt_number }}</p>
+            <td style="vertical-align:top; width:50%; color:#94A3B8; font-size:13px; line-height:2.0; padding-left:12px;">
+                &#10003; AI Flow Diagrams<br>
+                &#10003; Advanced Analytics<br>
+                &#10003; Priority Support<br>
+                &#10003; Stakeholder Management
             </td>
         </tr>
     </table>
-
-    <!-- Thank You Message -->
-    <p style="color: #374151; font-size: 14px; line-height: 1.6; margin: 0 0 24px 0;">
-        Hello <strong>{{ username }}</strong>,<br><br>
-        Thank you for choosing BAHub. Your subscription to the <strong>{{ plan_name }}</strong> plan has been successfully activated. 
-        A detailed invoice PDF is attached to this email for your records.
-    </p>
-
-    <!-- Divider -->
-    <div style="height: 1px; background: #E5E7EB; margin: 24px 0;"></div>
-
-    <!-- Payment Summary Card -->
-    <div style="background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-        <p style="color: #6B7280; font-size: 10px; font-weight: 700; letter-spacing: 1px; margin: 0 0 12px 0; text-transform: uppercase;">
-            Payment Summary
-        </p>
-        
-        <table width="100%" cellpadding="6" cellspacing="0">
-            <tr>
-                <td style="color: #6B7280; font-size: 13px; padding: 6px 0;">Receipt Number</td>
-                <td style="color: #111827; font-size: 13px; font-weight: 600; text-align: right; padding: 6px 0;">{{ receipt_number }}</td>
-            </tr>
-            <tr style="background: #FFFFFF;">
-                <td style="color: #6B7280; font-size: 13px; padding: 6px 8px;">Transaction ID</td>
-                <td style="color: #111827; font-size: 13px; font-weight: 600; text-align: right; padding: 6px 8px;">{{ transaction_id }}</td>
-            </tr>
-            <tr>
-                <td style="color: #6B7280; font-size: 13px; padding: 6px 0;">Payment Date</td>
-                <td style="color: #111827; font-size: 13px; font-weight: 600; text-align: right; padding: 6px 0;">{{ date }}</td>
-            </tr>
-            <tr style="background: #FFFFFF;">
-                <td style="color: #6B7280; font-size: 13px; padding: 6px 8px;">Organization</td>
-                <td style="color: #111827; font-size: 13px; font-weight: 600; text-align: right; padding: 6px 8px;">{{ organization_name }}</td>
-            </tr>
-            <tr>
-                <td style="color: #6B7280; font-size: 13px; padding: 6px 0;">Plan</td>
-                <td style="color: #2563EB; font-size: 13px; font-weight: 700; text-align: right; padding: 6px 0;">{{ plan_name }}</td>
-            </tr>
-            <tr style="border-top: 2px solid #E5E7EB;">
-                <td style="color: #111827; font-size: 14px; font-weight: 700; padding: 12px 0 0 0;">Total Paid</td>
-                <td style="color: #111827; font-size: 18px; font-weight: 700; text-align: right; padding: 12px 0 0 0;">{{ amount }}</td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Features Unlocked -->
-    <div style="background: #EFF6FF; border: 1px solid #DBEAFE; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-        <p style="color: #1E40AF; font-size: 10px; font-weight: 700; letter-spacing: 1px; margin: 0 0 12px 0; text-transform: uppercase;">
-            ✨ Your {{ plan_name }} Plan Includes
-        </p>
-        <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-                <td style="vertical-align: top; width: 50%;">
-                    <p style="color: #374151; font-size: 13px; line-height: 1.8; margin: 0;">
-                        ✔ Unlimited Projects<br>
-                        ✔ AI Requirement Generation<br>
-                        ✔ Team Collaboration<br>
-                        ✔ Export to PDF
-                    </p>
-                </td>
-                <td style="vertical-align: top; width: 50%;">
-                    <p style="color: #374151; font-size: 13px; line-height: 1.8; margin: 0;">
-                        ✔ AI Flow Diagrams<br>
-                        ✔ Advanced Analytics<br>
-                        ✔ Priority Support<br>
-                        ✔ Stakeholder Management
-                    </p>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Status Confirmation -->
-    <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 24px;">
-        <p style="color: #16A34A; font-size: 15px; font-weight: 700; margin: 0 0 8px 0;">
-            ✔  Subscription Active
-        </p>
-        <p style="color: #6B7280; font-size: 13px; margin: 0;">
-            Your subscription is ready to use. Log in to your dashboard to get started.
-        </p>
-    </div>
-
-    <!-- Divider -->
-    <div style="height: 1px; background: #E5E7EB; margin: 24px 0;"></div>
-
-    <!-- Footer -->
-    <p style="font-size: 12px; color: #6B7280; text-align: center; line-height: 1.6; margin: 0;">
-        Thank you for choosing <strong>BAHub</strong>.<br>
-        If you did not make this purchase, please contact <a href="mailto:bahubofficial@gmail.com" style="color: #2563EB; text-decoration: none;">bahubofficial@gmail.com</a> immediately.<br>
-        <br>
-        <a href="https://www.bahub.com" style="color: #2563EB; text-decoration: none; font-size: 11px;">www.bahub.com</a> · 
-        <span style="color: #9CA3AF; font-size: 11px;">Privacy Policy · Terms of Service</span>
-    </p>
 </div>
+
+<!-- Status confirmation -->
+<div class="success-box">
+    <div class="success-label">&#10004; Subscription Active</div>
+    <div class="success-sub">Log in to your dashboard to get started.</div>
+</div>
+
+<div class="btn-container">
+    <a href="https://bahub-beta.netlify.app/login" class="btn">Go to Dashboard</a>
+</div>
+
+<hr class="divider">
+
+<p class="text" style="font-size:12px; text-align:center;">
+    If you did not make this purchase, contact
+    <a href="mailto:bahubofficial@gmail.com" style="color:#A78BFA; text-decoration:none;">bahubofficial@gmail.com</a> immediately.
+</p>
 {% endblock %}

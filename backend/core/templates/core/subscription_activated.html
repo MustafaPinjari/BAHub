@@ -1,0 +1,50 @@
+{% extends "core/email_base.html" %}
+
+{% block content %}
+<h2 class="heading">Your Subscription Is Active!</h2>
+<p class="text">Hello {{ first_name }},</p>
+<p class="text">
+    Congratulations! Your workspace subscription has been upgraded and is now fully active.
+    Your organization plan tier and resource limits have been updated below.
+</p>
+
+<div class="success-box">
+    <div class="success-label">&#10004; {{ plan_name }} Plan &mdash; Active</div>
+    <div class="success-sub">{{ organization_name }}</div>
+</div>
+
+<div class="details-box">
+    <div class="details-item">
+        <span class="details-label">Workspace</span>
+        <span class="details-value">{{ organization_name }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Plan Tier</span>
+        <span class="details-value">{{ plan_name }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Workspace Seats</span>
+        <span class="details-value">{{ seats_limit }} seats</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">AI Credits</span>
+        <span class="details-value">{{ ai_credits_limit }} credits / month</span>
+    </div>
+</div>
+
+<p class="text">
+    You can now invite team members, assign roles, and unlock the full suite of AI-powered
+    business analysis tools in your workspace.
+</p>
+
+<div class="btn-container">
+    <a href="https://bahub-beta.netlify.app/dashboard" class="btn">Go to Workspace</a>
+</div>
+
+<hr class="divider">
+
+<p class="text" style="font-size:13px; text-align:center;">
+    Questions about your subscription?
+    <a href="mailto:bahubofficial@gmail.com" style="color:#A78BFA; text-decoration:none;">bahubofficial@gmail.com</a>
+</p>
+{% endblock %}

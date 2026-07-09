@@ -1,0 +1,41 @@
+{% extends "core/email_base.html" %}
+
+{% block content %}
+<h2 class="heading">Your BAHub Beta Invitation Is Here!</h2>
+<p class="text">
+    Great news &mdash; you have been selected from our waitlist for <strong>exclusive early access</strong>
+    to the BAHub private beta. Your 3 months of free Pro Growth plan tier is ready and waiting.
+</p>
+<p class="text">
+    Click the button below to register your account and set up your workspace. This invitation is
+    personal and linked to your email address.
+</p>
+
+<div class="btn-container">
+    <a href="{{ invite_url }}" class="btn">Create Your Account</a>
+</div>
+
+<div class="details-box">
+    <div class="details-item">
+        <span class="details-label">Invited Email</span>
+        <span class="details-value">{{ email }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Beta Promo</span>
+        <span class="details-value">3 Months Free &mdash; Pro Growth Tier</span>
+    </div>
+</div>
+
+<div class="notice-box">
+    If the button above does not work, copy and paste this URL into your browser:<br>
+    <span class="url-fallback">{{ invite_url }}</span>
+</div>
+
+<hr class="divider">
+
+<p class="text" style="font-size:13px; text-align:center;">
+    This invitation was sent because you joined the BAHub waitlist.
+    If that was not you, please ignore this email.<br><br>
+    Help: <a href="mailto:bahubofficial@gmail.com" style="color:#A78BFA; text-decoration:none;">bahubofficial@gmail.com</a>
+</p>
+{% endblock %}

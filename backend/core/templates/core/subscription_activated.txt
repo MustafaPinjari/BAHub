@@ -1,0 +1,24 @@
+Your BAHub Subscription Is Active!
+====================================
+
+Hello {{ first_name }},
+
+Congratulations! Your workspace subscription has been upgraded and is now
+fully active. Your plan tier and resource limits have been updated.
+
+Details:
+  Workspace     : {{ organization_name }}
+  Plan Tier     : {{ plan_name }}
+  Seats         : {{ seats_limit }} seats
+  AI Credits    : {{ ai_credits_limit }} credits / month
+
+You can now invite team members, assign roles, and unlock the full suite
+of AI-powered business analysis features.
+
+Go to your workspace:
+  https://bahub-beta.netlify.app/dashboard
+
+Questions? Contact bahubofficial@gmail.com.
+
+---
+BAHub Team | https://bahub-beta.netlify.app/

@@ -1,28 +1,35 @@
 {% extends "core/email_base.html" %}
 
 {% block content %}
-<h2 class="heading">You're on the Waitlist!</h2>
+<h2 class="heading">You Are on the Waitlist!</h2>
 <p class="text">
-    Thank you for joining the BAHub launch waitlist! We are hard at work preparing the platform for launch on **July 18, 2026**.
+    Thank you for signing up to the BAHub launch waitlist. We are working hard to prepare the
+    platform for release and you will be among the first to gain access.
 </p>
 <p class="text">
-    As a thank you for your early support, you have been registered for **3 months of free access to our Pro Growth plan** (normally $49/month) once the doors open.
+    As a thank you for your early support, you have been registered for <strong>3 months of free access
+    to our Pro Growth plan</strong> (normally $49/month) once we open the doors.
 </p>
+
 <div class="details-box">
     <div class="details-item">
-        <span class="details-label">Waitlist Email:</span>
+        <span class="details-label">Registered Email</span>
         <span class="details-value">{{ email }}</span>
     </div>
     <div class="details-item">
-        <span class="details-label">Launch Date:</span>
-        <span class="details-value">July 18, 2026</span>
-    </div>
-    <div class="details-item">
-        <span class="details-label">Special Offer:</span>
-        <span class="details-value">3 Months Free Pro Tier</span>
+        <span class="details-label">Early Access Offer</span>
+        <span class="details-value">3 Months Free &mdash; Pro Growth Tier</span>
     </div>
 </div>
-<p class="text">
-    We will email you with your access link on launch day. If you have any questions or feedback, please reach out to our team at support@bahub.com.
+
+<div class="notice-box">
+    We will email you with your personal access link on launch day. Keep an eye on your inbox!
+</div>
+
+<hr class="divider">
+
+<p class="text" style="font-size:13px; text-align:center;">
+    Have questions or feedback?
+    <a href="mailto:bahubofficial@gmail.com" style="color:#A78BFA; text-decoration:none;">bahubofficial@gmail.com</a>
 </p>
 {% endblock %}

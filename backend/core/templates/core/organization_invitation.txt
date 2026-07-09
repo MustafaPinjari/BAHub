@@ -1,14 +1,23 @@
-{% autoescape off %}
-Hello,
+You Have Been Invited to Join {{ organization_name }}
+=====================================================
 
-You have been invited by {{ inviter_name }} to join the {{ organization_name }} workspace on BAHub as a {{ role }}.
+Hello {{ first_name }},
 
-Accept the invitation and sign up by clicking the link below:
+{{ inviter_name }} has invited you to join the {{ organization_name }} workspace on BAHub.
+As a member, you will collaborate on projects, trace requirements, manage stakeholders,
+write user stories, and leverage AI to generate documentation.
 
-{{ invite_url }}
+Invitation Details:
+  Workspace  : {{ organization_name }}
+  Your Role  : {{ role }}
+  Invited By : {{ inviter_name }}
+  Expires On : {{ expires_at }}
 
-This invitation is valid for 7 days (expires on {{ expires_at }}).
+Accept your invitation here:
+  {{ invite_url }}
 
-Best regards,
-The BAHub Team
-{% endautoescape %}
+If you did not expect this invitation, you can safely ignore it.
+Contact bahubofficial@gmail.com if you have concerns.
+
+---
+BAHub Team | https://bahub-beta.netlify.app/

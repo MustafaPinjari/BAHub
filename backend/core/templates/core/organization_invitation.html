@@ -1,22 +1,48 @@
 {% extends "core/email_base.html" %}
 
 {% block content %}
-<h2 class="heading">You've Been Invited to Join {{ organization_name }}</h2>
+<h2 class="heading">You Have Been Invited to Join {{ organization_name }}</h2>
+<p class="text">Hello {{ first_name }},</p>
 <p class="text">
-    Hello,
-</p>
-<p class="text">
-    You have been invited by <strong>{{ inviter_name }}</strong> to join the <strong>{{ organization_name }}</strong> workspace on BAHub.
-</p>
-<p class="text">
-    As a member of this workspace, you'll be assigned the role of <strong>{{ role }}</strong>. You can collaborate on projects, plan requirements, manage stakeholders, write user stories, and leverage AI power to generate documentations.
+    <strong>{{ inviter_name }}</strong> has invited you to join the
+    <strong>{{ organization_name }}</strong> workspace on BAHub. As a member, you will collaborate on
+    projects, trace requirements, manage stakeholders, write user stories, and leverage AI to
+    generate documentation.
 </p>
 
-<div class="btn-container">
-    <a href="{{ invite_url }}" class="btn">Accept Invitation & Sign Up</a>
+<div class="details-box">
+    <div class="details-item">
+        <span class="details-label">Workspace</span>
+        <span class="details-value">{{ organization_name }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Your Role</span>
+        <span class="details-value">{{ role }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Invited By</span>
+        <span class="details-value">{{ inviter_name }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Expires On</span>
+        <span class="details-value">{{ expires_at }}</span>
+    </div>
 </div>
 
-<p class="text" style="font-size: 13px; color: #64748B; text-align: center;">
-    This invitation is valid for 7 days (expires on {{ expires_at }}).
+<div class="btn-container">
+    <a href="{{ invite_url }}" class="btn">Accept Invitation &amp; Sign Up</a>
+</div>
+
+<div class="notice-box">
+    If the button above does not work, copy and paste this URL into your browser:<br>
+    <span class="url-fallback">{{ invite_url }}</span>
+</div>
+
+<hr class="divider">
+
+<p class="text" style="font-size:13px; text-align:center;">
+    If you did not expect this invitation, you can safely ignore it.
+    Contact <a href="mailto:bahubofficial@gmail.com" style="color:#A78BFA; text-decoration:none;">bahubofficial@gmail.com</a>
+    if you have concerns.
 </p>
 {% endblock %}

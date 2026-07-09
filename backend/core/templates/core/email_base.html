@@ -1,176 +1,284 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <!--[if !mso]><!-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!--<![endif]-->
     <title>{{ subject }}</title>
-    <style>
+
+    <!--[if mso]>
+    <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+    <![endif]-->
+
+    <style type="text/css">
+        /* ── Reset ─────────────────────────────────────── */
+        * { box-sizing: border-box; }
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+        a { color: #A78BFA; }
+
+        /* ── Global ─────────────────────────────────────── */
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #090816;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0B0B0F;
             color: #E2E8F0;
             -webkit-font-smoothing: antialiased;
         }
-        table {
-            border-collapse: collapse;
+
+        /* ── Outer wrapper ──────────────────────────────── */
+        .email-wrapper {
+            background-color: #0B0B0F;
             width: 100%;
+            padding: 40px 16px;
         }
-        .wrapper {
-            background-color: #090816;
-            width: 100%;
-            padding: 40px 0;
-        }
-        .container {
-            max-width: 600px;
+
+        /* ── Card container ─────────────────────────────── */
+        .email-container {
+            max-width: 580px;
             margin: 0 auto;
-            background-color: #121026;
-            border: 1px solid #232043;
-            border-radius: 12px;
+            background-color: #121020;
+            border: 1px solid #1E1B38;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 0 0 1px rgba(124,58,237,0.08), 0 24px 60px rgba(0,0,0,0.85);
         }
-        .banner-img {
-            display: block;
-            width: 100%;
-            height: auto;
-            border-bottom: 1px solid #232043;
+
+        /* ── Header ─────────────────────────────────────── */
+        .email-header {
+            background: linear-gradient(135deg, #0F0D1F 0%, #1A1535 100%);
+            padding: 32px 36px 24px 36px;
+            text-align: center;
+            border-bottom: 1px solid #1E1B38;
         }
-        .content {
-            padding: 32px 28px;
+        .logo-wordmark {
+            font-size: 27px;
+            font-weight: 900;
+            color: #FFFFFF;
+            letter-spacing: -0.04em;
+            text-decoration: none;
+            display: inline-block;
         }
+        .logo-accent { color: #7C3AED; }
+        .logo-tagline {
+            font-size: 10px;
+            color: #6D6D8A;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* ── Content body ───────────────────────────────── */
+        .email-content {
+            padding: 36px 36px 28px 36px;
+        }
+
+        /* ── Typography ─────────────────────────────────── */
         .heading {
             font-size: 22px;
-            font-weight: 700;
+            font-weight: 800;
             color: #FFFFFF;
-            margin-top: 0;
-            margin-bottom: 16px;
-            letter-spacing: -0.02em;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.025em;
+            line-height: 1.3;
+        }
+        .subheading {
+            font-size: 15px;
+            font-weight: 700;
+            color: #A78BFA;
+            margin: 22px 0 10px 0;
         }
         .text {
             font-size: 15px;
-            line-height: 1.6;
-            color: #CBD5E1;
-            margin-top: 0;
-            margin-bottom: 24px;
+            line-height: 1.7;
+            color: #94A3B8;
+            margin: 0 0 20px 0;
         }
-        .btn-container {
-            margin-bottom: 28px;
-            text-align: center;
-        }
+        .text strong { color: #E2E8F0; font-weight: 700; }
+
+        /* ── Primary CTA button ─────────────────────────── */
+        .btn-container { margin: 28px 0; text-align: center; }
         .btn {
             display: inline-block;
-            background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
             color: #FFFFFF !important;
             text-decoration: none;
-            padding: 14px 28px;
+            padding: 14px 36px;
             font-size: 15px;
-            font-weight: 600;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            font-weight: 700;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.45), 0 0 0 1px rgba(124,58,237,0.3);
+            letter-spacing: -0.01em;
         }
+
+        /* ── Details info card ──────────────────────────── */
         .details-box {
-            background-color: #1B183A;
-            border-left: 4px solid #6366F1;
-            border-radius: 0 8px 8px 0;
-            padding: 20px;
-            margin-bottom: 28px;
+            background-color: #0F0D1F;
+            border: 1px solid #1E1B38;
+            border-left: 3px solid #7C3AED;
+            border-radius: 4px 12px 12px 4px;
+            padding: 20px 22px;
+            margin: 0 0 24px 0;
         }
         .details-item {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             font-size: 14px;
-            color: #E2E8F0;
+            color: #CBD5E1;
         }
-        .details-item:last-child {
-            margin-bottom: 0;
-        }
+        .details-item:last-child { margin-bottom: 0; }
         .details-label {
-            font-weight: 600;
-            color: #818CF8;
+            font-weight: 700;
+            color: #A78BFA;
             display: inline-block;
-            width: 130px;
+            min-width: 140px;
         }
-        .details-value {
-            color: #FFFFFF;
-        }
+        .details-value { color: #FFFFFF; }
+
+        /* ── Divider ────────────────────────────────────── */
         .divider {
             border: 0;
-            border-top: 1px solid #232043;
+            border-top: 1px solid #1E1B38;
             margin: 28px 0;
         }
-        .footer {
-            padding: 24px;
+
+        /* ── Notice / highlight boxes ───────────────────── */
+        .notice-box {
+            background: rgba(124,58,237,0.07);
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 0 0 24px 0;
+            font-size: 13px;
+            color: #C4B5FD;
+            line-height: 1.6;
+        }
+        .success-box {
+            background: rgba(34,197,94,0.05);
+            border: 1px solid rgba(34,197,94,0.2);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 0 0 24px 0;
             text-align: center;
-            background-color: #0E0D21;
-            border-top: 1px solid #1D1B36;
+        }
+        .success-label { color: #4ADE80; font-size: 15px; font-weight: 700; }
+        .success-sub { color: #94A3B8; font-size: 13px; margin-top: 4px; }
+
+        /* ── Monospace URL fallback ──────────────────────── */
+        .url-fallback {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 11px;
+            color: #6D6D8A;
+            word-break: break-all;
+            background: #0B0B0F;
+            border: 1px solid #1E1B38;
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: block;
+            margin-top: 8px;
+        }
+
+        /* ── Footer ─────────────────────────────────────── */
+        .email-footer {
+            background-color: #0A0910;
+            border-top: 1px solid #1A1A28;
+            padding: 28px 36px;
+            text-align: center;
         }
         .footer-logo {
-            font-size: 18px;
-            font-weight: 800;
+            font-size: 15px;
+            font-weight: 900;
             color: #FFFFFF;
-            letter-spacing: 0.05em;
-            margin-bottom: 4px;
-        }
-        .footer-logo span {
-            color: #6366F1;
+            letter-spacing: -0.02em;
         }
         .footer-tagline {
-            font-size: 12px;
-            color: #64748B;
+            font-size: 10px;
+            color: #3A3A52;
+            margin-top: 3px;
             margin-bottom: 16px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
         .footer-text {
             font-size: 11px;
-            color: #475569;
-            line-height: 1.5;
-            margin: 0;
+            color: #3A3A52;
+            line-height: 1.7;
+            margin: 0 0 4px 0;
         }
-        .footer-links {
-            margin-top: 12px;
-        }
+        .footer-links { margin-top: 14px; }
         .footer-link {
-            color: #818CF8;
+            color: #4D3FA0;
             text-decoration: none;
             font-size: 11px;
+            font-weight: 600;
             margin: 0 8px;
+        }
+
+        /* ── Mobile ─────────────────────────────────────── */
+        @media only screen and (max-width: 600px) {
+            .email-wrapper  { padding: 16px 8px !important; }
+            .email-header   { padding: 24px 20px 18px 20px !important; }
+            .email-content  { padding: 24px 20px 20px 20px !important; }
+            .email-footer   { padding: 20px !important; }
+            .email-container{ border-radius: 12px !important; }
+            .heading        { font-size: 20px !important; }
+            .btn            { padding: 13px 24px !important; font-size: 14px !important; }
+            .details-label  { min-width: 110px !important; }
         }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <table border="0" cellpadding="0" cellspacing="0" align="center" style="max-width: 600px;">
-            <tr>
-                <td>
-                    <div class="container">
-                        <!-- Header Banner -->
-                        {% if has_banner %}
-                        <img src="cid:email_banner" alt="BAHub Banner" class="banner-img" />
-                        {% endif %}
-                        
-                        <!-- Content Body -->
-                        <div class="content">
-                            {% block content %}
-                            {% endblock %}
-                        </div>
-                        
-                        <!-- Footer Section -->
-                        <div class="footer">
-                            <div class="footer-logo">BA<span>Hub</span></div>
-                            <div class="footer-tagline">AI-Powered Business Analyst Workspace</div>
-                            <p class="footer-text">
-                                This email was sent to you as a notification regarding your activity on BAHub.<br>
-                                Please do not reply directly to this automated message.
-                            </p>
-                            <div class="footer-links">
-                                <a href="https://bahub-beta.netlify.app" class="footer-link">Visit BAHub</a>
-                                <a href="mailto:unlessuser99@gmail.com" class="footer-link">Contact Support</a>
+<div class="email-wrapper">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="580" style="max-width:580px;">
+                    <tr>
+                        <td>
+                            <div class="email-container">
+
+                                <!-- ── Header ───────────────────────── -->
+                                <div class="email-header">
+                                    <a href="https://bahub-beta.netlify.app" class="logo-wordmark">BA<span class="logo-accent">Hub</span></a>
+                                    <div class="logo-tagline">Premium Business Analysis Workspace</div>
+                                </div>
+
+                                <!-- ── Content (child template) ─────── -->
+                                <div class="email-content">
+                                    {% block content %}{% endblock %}
+                                </div>
+
+                                <!-- ── Footer ───────────────────────── -->
+                                <div class="email-footer">
+                                    <div class="footer-logo">BA<span class="logo-accent">Hub</span></div>
+                                    <div class="footer-tagline">Intelligent Workspace for BAs &amp; PMs</div>
+                                    <p class="footer-text">
+                                        This email was sent regarding your BAHub account.<br>
+                                        Please do not reply to this automated message.
+                                    </p>
+                                    <p class="footer-text" style="margin-top:6px;">
+                                        &copy; 2026 BAHub Platform. All rights reserved.
+                                    </p>
+                                    <div class="footer-links">
+                                        <a href="https://bahub-beta.netlify.app/" class="footer-link">Website</a>
+                                        <a href="mailto:bahubofficial@gmail.com" class="footer-link">Support</a>
+                                        <a href="https://bahub-beta.netlify.app/privacy" class="footer-link">Privacy</a>
+                                    </div>
+                                </div>
+
                             </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>

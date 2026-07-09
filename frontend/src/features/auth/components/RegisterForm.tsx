@@ -65,11 +65,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
       setInviteToken(token);
       setStep(2);
     }
+    const emailParam = params.get("email");
+    if (emailParam) {
+      setValue("email", emailParam);
+    }
   }, []);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),

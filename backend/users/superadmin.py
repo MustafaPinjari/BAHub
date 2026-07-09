@@ -415,4 +415,34 @@ class SuperAdminDashboardView(APIView):
             except User.DoesNotExist:
                 return api_error(message="User not found.", status_code=status.HTTP_404_NOT_FOUND)
 
+        elif action == "delete_waitlist":
+            email = request.data.get("email")
+            if not email:
+                return api_error(message="Email address is required.", status_code=status.HTTP_400_BAD_REQUEST)
+            waitlist_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "users", "waitlist.json")
+            if os.path.exists(waitlist_file):
+                try:
+                    with open(waitlist_file, "r") as f:
+                        entries = json.load(f)
+                    new_entries = [entry for entry in entries if entry.get("email", "").lower() != email.strip().lower()]
+                    with open(waitlist_file, "w") as f:
+                        json.dump(new_entries, f, indent=4)
+                    return api_success(message=f"Successfully removed '{email}' from the waitlist.")
+                except Exception as e:
+                    return api_error(message=f"Failed to update waitlist: {str(e)}")
+            return api_error(message="Waitlist is empty.", status_code=status.HTTP_404_NOT_FOUND)
+
+        elif action == "send_waitlist_invite":
+            email = request.data.get("email")
+            if not email:
+                return api_error(message="Email address is required.", status_code=status.HTTP_400_BAD_REQUEST)
+            try:
+                from core.emails import send_waitlist_invite_email
+                success = send_waitlist_invite_email(email.strip().lower())
+                if success:
+                    return api_success(message=f"Successfully sent beta invitation to '{email}'.")
+                return api_error(message="Failed to dispatch invitation email. Please check SMTP settings.")
+            except Exception as e:
+                return api_error(message=f"Failed to send invitation: {str(e)}")
+
         return api_error(message="Invalid action specified.", status_code=status.HTTP_400_BAD_REQUEST)

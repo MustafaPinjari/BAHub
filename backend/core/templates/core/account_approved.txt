@@ -1,0 +1,19 @@
+Your BAHub Account Has Been Approved!
+======================================
+
+Hello {{ first_name }},
+
+Great news — your BAHub account has been reviewed and approved by our
+platform administrators. You now have full access to your workspace and
+all team collaboration features.
+
+Sign in here:
+  {{ login_url }}
+
+Thank you for your patience during the approval process. We are excited
+to have you on board.
+
+Questions? Reach us at bahubofficial@gmail.com.
+
+---
+BAHub Team | https://bahub-beta.netlify.app/

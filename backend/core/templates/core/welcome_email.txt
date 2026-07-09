@@ -1,0 +1,20 @@
+Welcome to BAHub, {{ first_name }}!
+=====================================
+
+You have joined the platform built for serious business analysts and product managers.
+BAHub gives your team a centralized, AI-powered workspace to map requirements, write
+user stories, generate documentation, and run automated UAT validations.
+
+Sign in to your dashboard:
+  https://bahub-beta.netlify.app/login
+
+What to do next:
+  - Create your first project and start capturing requirements
+  - Invite your team and assign roles
+  - Explore AI tools: BRD, FRD, user stories, and flow diagram generation
+
+Have questions? We are here to help:
+  bahubofficial@gmail.com
+
+---
+BAHub Team | https://bahub-beta.netlify.app/

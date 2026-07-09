@@ -194,6 +194,42 @@ export const SuperAdminPage: React.FC = () => {
     }
   };
 
+  const handleSendInvite = async (email: string) => {
+    try {
+      setActionLoading(`invite-${email}`);
+      setError(null);
+      setSuccess(null);
+      const res = await api.post<any, any>("/auth/superadmin/dashboard/", {
+        action: "send_waitlist_invite",
+        email: email
+      });
+      setSuccess(res.message || "Beta invitation sent successfully.");
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to send invitation.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDeleteWaitlist = async (email: string) => {
+    if (!window.confirm(`Are you sure you want to remove '${email}' from the waitlist?`)) return;
+    try {
+      setActionLoading(`delete-wait-${email}`);
+      setError(null);
+      setSuccess(null);
+      const res = await api.post<any, any>("/auth/superadmin/dashboard/", {
+        action: "delete_waitlist",
+        email: email
+      });
+      setSuccess(res.message || "Waitlist signup deleted successfully.");
+      await fetchData();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to remove subscriber.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handleBulkUpdateOrgs = async (payload: { plan_tier?: string; plan_verified?: boolean; is_active?: boolean; delete?: boolean }) => {
     try {
       setActionLoading("bulk-org");
@@ -554,6 +590,7 @@ export const SuperAdminPage: React.FC = () => {
                           <tr className="border-b border-white/[0.06] text-gray-500 uppercase tracking-wider text-[9px] font-bold bg-white/[0.02]">
                             <th className="py-2.5 px-4">Email Address</th>
                             <th className="py-2.5 px-4 text-right">Signed Up At</th>
+                            <th className="py-2.5 px-4 text-right w-32">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -562,6 +599,34 @@ export const SuperAdminPage: React.FC = () => {
                               <td className="py-2.5 px-4 font-medium text-white">{sub.email}</td>
                               <td className="py-2.5 px-4 text-right text-gray-500">
                                 {new Date(sub.created_at).toLocaleString()}
+                              </td>
+                              <td className="py-2.5 px-4 text-right">
+                                <div className="flex justify-end gap-2.5">
+                                  <button
+                                    onClick={() => handleSendInvite(sub.email)}
+                                    disabled={actionLoading !== null}
+                                    className="p-1.5 rounded-lg border border-purple-500/20 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 cursor-pointer disabled:opacity-40 transition-all"
+                                    title="Send Beta Invitation"
+                                  >
+                                    {actionLoading === `invite-${sub.email}` ? (
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    ) : (
+                                      <Mail className="w-3.5 h-3.5" />
+                                    )}
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteWaitlist(sub.email)}
+                                    disabled={actionLoading !== null}
+                                    className="p-1.5 rounded-lg border border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer disabled:opacity-40 transition-all"
+                                    title="Remove from Waitlist"
+                                  >
+                                    {actionLoading === `delete-wait-${sub.email}` ? (
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    ) : (
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    )}
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))}
