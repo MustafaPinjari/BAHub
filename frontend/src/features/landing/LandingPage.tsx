@@ -401,7 +401,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           }}
         />
 
-        <div className="grid lg:grid-cols-2 gap-16 items-center relative z-10 w-full">
+        <div className="grid lg:grid-cols-[1fr_1.35fr] gap-12 lg:gap-16 items-center relative z-10 w-full">
           {/* Left */}
           <div className="flex flex-col items-start text-left">
             <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5 }}
@@ -470,7 +470,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="relative hidden lg:block my-[40px] w-full max-w-[720px] z-10 lg:translate-x-12"
+            className="relative hidden lg:block my-[40px] w-full max-w-none z-10 lg:translate-x-16"
           >
             {/* Ambient Background Glows */}
             <div className="absolute -inset-10 bg-purple-600/10 rounded-full blur-3xl pointer-events-none z-0" />
