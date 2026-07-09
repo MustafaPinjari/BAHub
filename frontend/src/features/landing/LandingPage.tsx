@@ -384,7 +384,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
       <section 
         onMouseMove={handleMouseMove}
-        className="relative min-h-[95vh] flex items-center justify-center pt-32 pb-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 group overflow-visible rounded-3xl"
+        className="relative min-h-[95vh] flex items-center justify-center mt-10 lg:mt-16 pt-32 pb-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 group overflow-visible rounded-3xl"
         style={{ 
           background: 'radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.10) 0%, transparent 60%), #050505',
           boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05)'
@@ -456,7 +456,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -35, opacity: 0 }}
                   transition={{ duration: 0.35, ease: "easeInOut" }}
-                  className="absolute inset-x-0 block truncate text-center"
+                  className="absolute inset-x-0 block text-center"
                 >
                   {taglines[taglineIndex]}
                 </motion.span>
