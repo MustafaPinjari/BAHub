@@ -146,11 +146,11 @@ const MainAppContent: React.FC = () => {
 
   // Waitlist Lockout check
   if (waitlist_countdown_enabled && !isPlatformAdmin) {
-    if (isAuthenticated) {
+    if (isAuthenticated && authView !== "landing") {
       return (
         <LaunchLockedScreen
           onAdminClick={() => {}}
-          onBackToHome={() => { window.location.href = "/"; }}
+          onBackToHome={() => setAuthView("landing")}
         />
       );
     }
@@ -164,7 +164,7 @@ const MainAppContent: React.FC = () => {
     }
   }
 
-  if (isExplicitLanding || !isAuthenticated) {
+  if (isExplicitLanding || !isAuthenticated || authView === "landing") {
     if (authView === "landing" || isExplicitLanding) {
       return (
         <LandingPage 
