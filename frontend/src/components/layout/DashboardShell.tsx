@@ -16,6 +16,7 @@ import {
   FileCheck,
   Calendar,
   ShieldAlert,
+  ShieldCheck,
   RefreshCw,
   GitCompare,
   Grid,
@@ -84,6 +85,8 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isPlatformAdmin = user?.is_superuser || user?.is_staff;
+
   const currentTab = location.pathname.substring(1) || "dashboard";
 
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
@@ -150,13 +153,18 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
   };
 
 
-  const breadcrumbs = [
-    { label: user?.organization_name || "Workspace", path: "" },
-    {
-      label: currentTab.charAt(0).toUpperCase() + currentTab.slice(1),
-      path: currentTab,
-    },
-  ];
+  const breadcrumbs = isPlatformAdmin
+    ? [
+        { label: "Platform Control", path: "superadmin" },
+        { label: "Overview", path: "superadmin" }
+      ]
+    : [
+        { label: user?.organization_name || "Workspace", path: "" },
+        {
+          label: currentTab.charAt(0).toUpperCase() + currentTab.slice(1),
+          path: currentTab,
+        },
+      ];
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-black text-white">
@@ -178,19 +186,21 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
               <div className="flex items-center justify-between w-full overflow-hidden">
                 <div className="flex flex-col text-left overflow-hidden">
                   <span className="font-semibold text-[11px] text-white/90 truncate w-28 leading-tight">
-                    {user?.organization_name || "BAHub"}
+                    {isPlatformAdmin ? "BAHub Platform" : (user?.organization_name || "BAHub")}
                   </span>
                   <span className={`text-[8px] uppercase font-bold tracking-wider leading-none mt-0.5 ${
-                    user?.plan_tier === "ENTERPRISE"
+                    isPlatformAdmin
+                      ? "text-purple-400"
+                      : user?.plan_tier === "ENTERPRISE"
                       ? "text-green-500"
                       : user?.plan_tier === "PRO"
                       ? "text-purple-400"
                       : "text-gray-600"
                   }`}>
-                    {user?.plan_tier ? `${user.plan_tier} Plan` : "Free Plan"}
+                    {isPlatformAdmin ? "System Admin" : (user?.plan_tier ? `${user.plan_tier} Plan` : "Free Plan")}
                   </span>
                 </div>
-                <ChevronsUpDown className="w-3 h-3 text-gray-700 shrink-0 ml-1" />
+                {!isPlatformAdmin && <ChevronsUpDown className="w-3 h-3 text-gray-700 shrink-0 ml-1" />}
               </div>
             )}
           </div>
@@ -198,36 +208,51 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
 
         {/* Sidebar Navigation */}
         <nav className="flex-1 p-2 overflow-y-auto flex flex-col gap-0.5">
-          {(user?.is_superuser || user?.is_staff
-            ? [...SIDEBAR_ITEMS, { name: "Superadmin", icon: ShieldAlert, path: "superadmin", category: "settings" }]
-            : SIDEBAR_ITEMS
-          ).map((item) => {
-            const Icon = item.icon;
-            const isActive = currentTab === item.path;
-            return (
-              <button
-                key={item.name}
-                onClick={() => navigate(`/${item.path}`)}
-                className={`flex items-center gap-2.5 px-2 py-2 rounded-lg text-[11px] font-medium tracking-tight transition-all duration-150 text-left cursor-pointer w-full ${
-                  isActive
-                    ? "bg-white/[0.08] text-white"
-                    : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]"
-                }`}
-                title={!sidebarExpanded ? (isLocked(item) ? `${item.name} 🔒 (Locked)` : item.name) : undefined}
-              >
-                <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? "text-white" : "text-gray-600"}`} />
-                {sidebarExpanded && (
-                  <span className="truncate">{item.name}</span>
-                )}
-                {isLocked(item) && sidebarExpanded && (
-                  <Lock className="w-3 h-3 text-purple-400/80 ml-auto shrink-0" />
-                )}
-                {isActive && !isLocked(item) && sidebarExpanded && (
-                  <span className="ml-auto w-1 h-1 rounded-full bg-purple-500 shrink-0" />
-                )}
-              </button>
-            );
-          })}
+          {isPlatformAdmin ? (
+            <button
+              onClick={() => navigate("/superadmin")}
+              className={`flex items-center gap-2.5 px-2 py-2 rounded-lg text-[11px] font-medium tracking-tight transition-all duration-150 text-left cursor-pointer w-full ${
+                currentTab === "superadmin"
+                  ? "bg-white/[0.08] text-white"
+                  : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]"
+              }`}
+              title={!sidebarExpanded ? "Superadmin Control" : undefined}
+            >
+              <ShieldCheck className={`w-4 h-4 shrink-0 transition-colors ${currentTab === "superadmin" ? "text-white" : "text-gray-600"}`} />
+              {sidebarExpanded && <span className="truncate">Superadmin Panel</span>}
+              {currentTab === "superadmin" && sidebarExpanded && (
+                <span className="ml-auto w-1 h-1 rounded-full bg-purple-500 shrink-0" />
+              )}
+            </button>
+          ) : (
+            SIDEBAR_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const isActive = currentTab === item.path;
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => navigate(`/${item.path}`)}
+                  className={`flex items-center gap-2.5 px-2 py-2 rounded-lg text-[11px] font-medium tracking-tight transition-all duration-150 text-left cursor-pointer w-full ${
+                    isActive
+                      ? "bg-white/[0.08] text-white"
+                      : "text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]"
+                  }`}
+                  title={!sidebarExpanded ? (isLocked(item) ? `${item.name} 🔒 (Locked)` : item.name) : undefined}
+                >
+                  <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? "text-white" : "text-gray-600"}`} />
+                  {sidebarExpanded && (
+                    <span className="truncate">{item.name}</span>
+                  )}
+                  {isLocked(item) && sidebarExpanded && (
+                    <Lock className="w-3 h-3 text-purple-400/80 ml-auto shrink-0" />
+                  )}
+                  {isActive && !isLocked(item) && sidebarExpanded && (
+                    <span className="ml-auto w-1 h-1 rounded-full bg-purple-500 shrink-0" />
+                  )}
+                </button>
+              );
+            })
+          )}
         </nav>
 
         {/* Sidebar Footer */}
@@ -316,67 +341,71 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1.5 relative">
-            {/* Quick Search — opens GlobalSearchModal */}
-            <div className="relative hidden sm:flex items-center">
-              <Search className="w-3 h-3 text-gray-700 absolute left-2.5" />
-              <button
-                id="global-search-trigger"
-                onClick={() => setIsSearchOpen(true)}
-                className="pl-7 pr-10 py-1 text-[11px] rounded-md bg-gray-900/60 border border-white/[0.06] text-gray-600 outline-none w-44 text-left placeholder:text-gray-700 hover:border-white/[0.16] hover:text-gray-400 font-medium transition-colors cursor-pointer"
-              >
-                Search…
-              </button>
-              <kbd className="absolute right-2 text-[9px] text-gray-700 font-mono bg-gray-900 border border-white/[0.05] rounded px-1">⌘K</kbd>
-            </div>
-
-            {/* Quick Tour Guide */}
-            <button
-              onClick={() => setIsOnboardingOpen(true)}
-              className="w-8 h-8 rounded-md flex items-center justify-center text-gray-600 hover:text-gray-300 hover:bg-white/[0.05] transition-all relative cursor-pointer"
-              title="Start workspace guide tour"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-            </button>
-
-            {/* Notifications */}
-            <div className="relative">
-              <button
-                onClick={(e) => { e.stopPropagation(); setNotificationsOpen(!notificationsOpen); setProfileDropdownOpen(false); }}
-                className="w-8 h-8 rounded-md flex items-center justify-center text-gray-600 hover:text-gray-300 hover:bg-white/[0.05] transition-all relative cursor-pointer"
-              >
-                <Bell className="w-3.5 h-3.5" />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-purple-500 rounded-full border border-black" />
-              </button>
-              {notificationsOpen && (
-                <div
-                  className="absolute right-0 top-10 w-72 bg-gray-950 shadow-2xl border border-white/[0.08] rounded-xl p-3 z-30 flex flex-col gap-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="flex justify-between items-center pb-2 border-b border-white/[0.06]">
-                    <span className="font-semibold text-[11px] text-white">Notifications</span>
-                    <Badge variant="default">1 New</Badge>
-                  </div>
-                  <div className="flex flex-col gap-1.5 max-h-52 overflow-y-auto">
-                    <div className="p-2 rounded-lg hover:bg-white/[0.04] cursor-pointer flex flex-col gap-0.5 transition-colors">
-                      <div className="flex items-center gap-2">
-                        <Zap className="w-3 h-3 text-purple-400 shrink-0" />
-                        <span className="font-semibold text-[11px] text-white">Workspace active</span>
-                      </div>
-                      <span className="text-[10px] text-gray-600 pl-5">Your BAHub team portal has been provisioned.</span>
-                    </div>
-                  </div>
+            {!isPlatformAdmin && (
+              <>
+                {/* Quick Search — opens GlobalSearchModal */}
+                <div className="relative hidden sm:flex items-center">
+                  <Search className="w-3 h-3 text-gray-700 absolute left-2.5" />
+                  <button
+                    id="global-search-trigger"
+                    onClick={() => setIsSearchOpen(true)}
+                    className="pl-7 pr-10 py-1 text-[11px] rounded-md bg-gray-900/60 border border-white/[0.06] text-gray-600 outline-none w-44 text-left placeholder:text-gray-700 hover:border-white/[0.16] hover:text-gray-400 font-medium transition-colors cursor-pointer"
+                  >
+                    Search…
+                  </button>
+                  <kbd className="absolute right-2 text-[9px] text-gray-700 font-mono bg-gray-900 border border-white/[0.05] rounded px-1">⌘K</kbd>
                 </div>
-              )}
-            </div>
 
-            {/* Help & Guides Trigger Button */}
-            <button
-              onClick={() => setIsHelpOpen(!isHelpOpen)}
-              className={`p-1.5 rounded-lg border border-white/[0.07] hover:bg-white/[0.04] transition-all cursor-pointer text-gray-500 hover:text-white shrink-0 ${isHelpOpen ? "bg-white/[0.08] text-white border-white/20" : ""}`}
-              title="Help & Guides"
-            >
-              <HelpCircle className="w-3.5 h-3.5" />
-            </button>
+                {/* Quick Tour Guide */}
+                <button
+                  onClick={() => setIsOnboardingOpen(true)}
+                  className="w-8 h-8 rounded-md flex items-center justify-center text-gray-600 hover:text-gray-300 hover:bg-white/[0.05] transition-all relative cursor-pointer"
+                  title="Start workspace guide tour"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                </button>
+
+                {/* Notifications */}
+                <div className="relative">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setNotificationsOpen(!notificationsOpen); setProfileDropdownOpen(false); }}
+                    className="w-8 h-8 rounded-md flex items-center justify-center text-gray-600 hover:text-gray-300 hover:bg-white/[0.05] transition-all relative cursor-pointer"
+                  >
+                    <Bell className="w-3.5 h-3.5" />
+                    <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-purple-500 rounded-full border border-black" />
+                  </button>
+                  {notificationsOpen && (
+                    <div
+                      className="absolute right-0 top-10 w-72 bg-gray-950 shadow-2xl border border-white/[0.08] rounded-xl p-3 z-30 flex flex-col gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex justify-between items-center pb-2 border-b border-white/[0.06]">
+                        <span className="font-semibold text-[11px] text-white">Notifications</span>
+                        <Badge variant="default">1 New</Badge>
+                      </div>
+                      <div className="flex flex-col gap-1.5 max-h-52 overflow-y-auto">
+                        <div className="p-2 rounded-lg hover:bg-white/[0.04] cursor-pointer flex flex-col gap-0.5 transition-colors">
+                          <div className="flex items-center gap-2">
+                            <Zap className="w-3 h-3 text-purple-400 shrink-0" />
+                            <span className="font-semibold text-[11px] text-white">Workspace active</span>
+                          </div>
+                          <span className="text-[10px] text-gray-600 pl-5">Your BAHub team portal has been provisioned.</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Help & Guides Trigger Button */}
+                <button
+                  onClick={() => setIsHelpOpen(!isHelpOpen)}
+                  className={`p-1.5 rounded-lg border border-white/[0.07] hover:bg-white/[0.04] transition-all cursor-pointer text-gray-500 hover:text-white shrink-0 ${isHelpOpen ? "bg-white/[0.08] text-white border-white/20" : ""}`}
+                  title="Help & Guides"
+                >
+                  <HelpCircle className="w-3.5 h-3.5" />
+                </button>
+              </>
+            )}
 
             {/* Profile Dropdown */}
             <div className="relative">
@@ -409,13 +438,15 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
                     <UserIcon className="w-3 h-3 text-gray-700" />
                     My Profile
                   </button>
-                  <button
-                    onClick={() => { setProfileDropdownOpen(false); navigate("/settings"); }}
-                    className="w-full text-left px-2.5 py-1.5 text-[11px] text-gray-400 hover:text-white hover:bg-white/[0.05] rounded-lg flex items-center gap-2 cursor-pointer font-medium transition-colors"
-                  >
-                    <Settings className="w-3 h-3 text-gray-700" />
-                    Workspace Settings
-                  </button>
+                  {!isPlatformAdmin && (
+                    <button
+                      onClick={() => { setProfileDropdownOpen(false); navigate("/settings"); }}
+                      className="w-full text-left px-2.5 py-1.5 text-[11px] text-gray-400 hover:text-white hover:bg-white/[0.05] rounded-lg flex items-center gap-2 cursor-pointer font-medium transition-colors"
+                    >
+                      <Settings className="w-3 h-3 text-gray-700" />
+                      Workspace Settings
+                    </button>
+                  )}
                   <button
                     onClick={() => { setProfileDropdownOpen(false); logout(); }}
                     className="w-full text-left px-2.5 py-1.5 text-[11px] text-red-500 hover:bg-red-500/10 rounded-lg flex items-center gap-2 cursor-pointer font-bold border-t border-white/[0.05] mt-0.5 pt-2 transition-colors"
