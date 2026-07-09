@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
-import { Card, Button, Input, Select, Badge, Alert } from "../../components/common/UIComponents";
+import { Card, Button, Input, Badge } from "../../components/common/UIComponents";
 import { 
   Building, 
   Users, 
   ShieldCheck, 
-  ShieldAlert, 
   Trash2, 
-  Check, 
-  X, 
   Loader2, 
   Search, 
-  Activity, 
-  Sparkles, 
-  Settings,
-  ChevronDown
+  Activity
 } from "lucide-react";
 
 interface OrganizationInfo {
@@ -92,7 +86,7 @@ export const SuperAdminPage: React.FC = () => {
       setActionLoading(`org-${orgId}`);
       setError(null);
       setSuccess(null);
-      const res = await api.post("/users/superadmin/dashboard/", {
+      const res = await api.post<any, any>("/users/superadmin/dashboard/", {
         action: "update_organization",
         organization_id: orgId,
         plan_tier: planTier,
@@ -113,7 +107,7 @@ export const SuperAdminPage: React.FC = () => {
       setActionLoading(`user-${userId}`);
       setError(null);
       setSuccess(null);
-      const res = await api.post("/users/superadmin/dashboard/", {
+      const res = await api.post<any, any>("/users/superadmin/dashboard/", {
         action: "update_user",
         user_id: userId,
         role: role,
@@ -137,7 +131,7 @@ export const SuperAdminPage: React.FC = () => {
       setActionLoading(`delete-org-${orgId}`);
       setError(null);
       setSuccess(null);
-      const res = await api.post("/users/superadmin/dashboard/", {
+      const res = await api.post<any, any>("/users/superadmin/dashboard/", {
         action: "delete_organization",
         organization_id: orgId
       });
@@ -158,7 +152,7 @@ export const SuperAdminPage: React.FC = () => {
       setActionLoading(`delete-user-${userId}`);
       setError(null);
       setSuccess(null);
-      const res = await api.post("/users/superadmin/dashboard/", {
+      const res = await api.post<any, any>("/users/superadmin/dashboard/", {
         action: "delete_user",
         user_id: userId
       });
@@ -174,7 +168,7 @@ export const SuperAdminPage: React.FC = () => {
   // Compute metrics summary
   const totalOrgs = orgs.length;
   const totalUsers = users.length;
-  const activeUsersCount = users.filter(u => u.is_active).count || users.filter(u => u.is_active).length;
+  const activeUsersCount = users.filter(u => u.is_active).length;
   const planCounts = orgs.reduce((acc, current) => {
     acc[current.plan_tier] = (acc[current.plan_tier] || 0) + 1;
     return acc;
@@ -323,21 +317,21 @@ export const SuperAdminPage: React.FC = () => {
                   </div>
 
                   {activeTab === "organizations" ? (
-                    <Select
+                    <select
                       value={selectedPlanFilter}
                       onChange={(e) => setSelectedPlanFilter(e.target.value)}
-                      className="bg-black border-white/[0.06] text-xs h-9 rounded-md"
+                      className="bg-black border border-white/[0.08] text-white text-xs h-9 px-3 rounded-md outline-none focus:border-purple-500 cursor-pointer"
                     >
                       <option value="ALL">All Plans</option>
                       <option value="FREE">Free Plan</option>
                       <option value="PRO">Pro Plan</option>
                       <option value="ENTERPRISE">Enterprise Plan</option>
-                    </Select>
+                    </select>
                   ) : (
-                    <Select
+                    <select
                       value={selectedRoleFilter}
                       onChange={(e) => setSelectedRoleFilter(e.target.value)}
-                      className="bg-black border-white/[0.06] text-xs h-9 rounded-md"
+                      className="bg-black border border-white/[0.08] text-white text-xs h-9 px-3 rounded-md outline-none focus:border-purple-500 cursor-pointer"
                     >
                       <option value="ALL">All Roles</option>
                       <option value="ADMIN">Admins</option>
@@ -346,7 +340,7 @@ export const SuperAdminPage: React.FC = () => {
                       <option value="DEVELOPER">Developers</option>
                       <option value="QA_TESTER">QA Testers</option>
                       <option value="STAKEHOLDER">Stakeholders</option>
-                    </Select>
+                    </select>
                   )}
                 </div>
               </div>
