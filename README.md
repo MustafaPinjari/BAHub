@@ -6,28 +6,84 @@ The visual style is **handcrafted, minimal, and typography-driven**—inspired b
 
 ---
 
-## ✨ Core System Features
+## ✨ Comprehensive Features List
 
-BAHub provides a robust suite of tools tailored for business analysis, agile project management, and SaaS governance:
+BAHub delivers a fully featured workspace for business analysts and product teams, covering all administrative, planning, collaborative, and security requirements:
 
-1. **Multi-Tenant SaaS Architecture**: Structured around `Organizations` acting as strict isolation boundaries. All data, memberships, and permissions are multi-tenant scoped at the database layer.
-2. **Role-Based Membership Access**: Supports granular role access levels (`Admin`, `Business Analyst`, `Product Owner`, `Developer`, `QA Tester`, `Stakeholder`) determining menu structures, project read/write rights, and document review queues.
-3. **Notion-Style Requirements Backlog**: Spreadsheets with inline edits, priority rankings, status tags, and auto-incrementing unique identifiers (e.g. `REQ-001`) scoped to each project.
-4. **Agile User Stories & Kanban Backlog**: Auto-generates template stories linked to requirements with points estimation, plus an interactive drag-and-drop Kanban board mapping lanes (*To Do*, *In Progress*, *Ready for QA*, *Done*).
-5. **Interactive 2x2 Canvases**: 
-   * **Power/Interest Matrix**: Map stakeholder interest and influence to determine communication strategies (Manage Closely, Keep Satisfied, etc.).
-   * **SWOT Quadrants**: Color-coded matrix editor to track organizational Strengths, Weaknesses, Opportunities, and Threats per project.
-6. **End-to-End Traceability Matrix**: Interactive trace maps mapping requirements backwards to stakeholders/meetings, and forwards to user stories, risks, and UAT cases.
-7. **User Acceptance Testing (UAT)**: Programmed validation suites mapping test scenarios, logging test execution results, and collecting formal client sign-offs.
-8. **BRD/FRD Compiler & Reviews**: Automated document compilers aggregating backlog assets into standard templates. Sign-off signatory workflows allow designated reviewers to sign documents.
-9. **Meeting briefings & Action Checklists**: Structured agendas, minutes of meetings, and interactive action-item checklists assigned to workspace members.
-10. **Governance (Risks & Change Requests)**: Probability/impact risk matrices and formal change request control tickets with product owner review actions.
-11. **Strategic Gap Analysis**: Spreadsheets mapping Current State vs. Target Future State and mapping the transition actions needed to bridge the gap.
-12. **Jira & Confluence Integration**: Sync backlogs, export requirements, and publish document catalogs to Jira boards and Confluence.
-13. **Real-time WebSockets Collaboration**: Live collaborator presence badges, active typing indicators, and background synchronized databases.
-14. **Direct PDF & MS Word Compilation**: Generates styled A4 PDF documents and Microsoft Word (.docx) files.
-15. **Context-Aware AI Assistant**: A conversational chatbot playground that consumes active project contexts to auto-draft user stories, perform risk audits, or generate QA test scripts.
-16. **Enterprise SaaS Billing**: Full checkout simulator, plan-specific member seat limits, 3-day grace periods for expiring subscriptions, PDF invoice history, and automated HTML email receipts.
+### 1. Multi-Tenant SaaS Scoping & Security
+* **Tenant Scopes**: Organizations act as isolated tenant containers. Standard workspace members can only view projects they are assigned to, while BAs, POs, and Admins can view all projects inside the organization.
+* **Cascade Safeguards**: Enforces strict database-level cascaded deletes. If an organization or project is deleted, all related requirements, user stories, risks, and documents are securely deleted.
+* **Granular Role Controls**: Integrates six pre-configured roles: `Admin`, `Business Analyst`, `Product Owner`, `Developer`, `QA Tester`, and `Stakeholder` to determine page layouts, write permissions, and document review queues.
+
+### 2. User Profiles, Sessions & Preferences
+* **Profile Management**: Customize profiles with username, email, phone number, bio, and profile picture uploads.
+* **User Preferences**: Stateful layout settings including Light/Dark/System theme options, color themes (e.g. Indigo, Green), custom date/time formats, and sidebar layout settings.
+* **Active Session Logging**: Tracks user authentication with device types, browser agents, IP addresses, and allows revoking active sessions.
+* **OTP Sign-up Validation**: Custom registration workflow sending verification codes to validate user email addresses before activating their account.
+
+### 3. Team Management
+* **Workspace Teams**: Organize members into distinct teams.
+* **Membership Actions**: Invite organization members, assign roles, and map teams directly to active project boards.
+
+### 4. Project Directory
+* **Project Dashboard**: Tracks description, project status, targeted completion dates, and team assignments.
+* **Project Metrics Summary**: Dynamic computation of active requirements, sprint completion, and pending tasks.
+
+### 5. Stakeholder Mapping & 2x2 Matrix
+* **Stakeholder Directory**: Map titles, email, telephone, department, and notes.
+* **2x2 Matrix Canvas**: Color-coded drag-and-drop grid sorting stakeholders by Power and Interest into quadrants (*Manage Closely*, *Keep Satisfied*, *Keep Informed*, *Monitor*) for communication planning.
+
+### 6. Requirements Specification Grid
+* **Notion-Style Grid**: An interactive spreadsheet style grid for inline editing, category tagging (Functional, Non-Functional, Technical, Business, etc.), and status controls (Draft, Review, Approved, Implemented).
+* **Sequential Auto-IDs**: Custom database transaction blocks auto-assigning unique codes (e.g., `REQ-001`) per project to guarantee clean documentation.
+* **Stakeholder Trace**: Assigns requirements directly to their source stakeholder to map business value.
+
+### 7. Agile User Stories & Sprint Boards
+* **Story Mappings**: Map user stories directly to parent functional requirements.
+* **Formulation Templates**: Build user stories with standard templates (*As a... I want to... So that...*) and acceptance criteria lists.
+* **Kanban Boards**: Drag-and-drop sprint boards tracking development progress across lanes (*To Do*, *In Progress*, *Ready for QA*, *Done*) featuring Fibonacci story point estimations.
+
+### 8. Document Generation (BRD & FRD Compilers)
+* **Document Builder**: Generates formal Business Requirements Documents (BRD) and Functional Requirements Documents (FRD) by pulling active stakeholders, requirements, and user stories.
+* **Review Sign-Off Queues**: Assign reviewers to sign off on generated specs with automated PO/PM signature logging.
+* **Binary File Exports**: Exports formatted documents as Microsoft Word (`.docx`) files or print-styled A4 PDF packages directly from the UI.
+
+### 9. Meeting Briefings & Interactive MoM
+* **Meeting Logs**: Track titles, agendas, dates, attendees, and detailed Minutes of Meetings.
+* **Checklist Action Items**: Assign task checkboxes to attendees, which update completion status live.
+
+### 10. Governance (Risks & Change Requests)
+* **Risk Registers**: Profile threats based on probability and impact options.
+* **Change Request (CR) Control**: Submit scope changes, review analysis, track code impacts, and submit tickets to POs for review and sign-off.
+
+### 11. Strategic Canvases (SWOT & Gap Analysis)
+* **SWOT Quadrants**: 2x2 matrix dashboard to edit and organize project Strengths, Weaknesses, Opportunities, and Threats.
+* **Gap Analysis Planners**: Strategic spreadsheets mapping Current State vs. Target Future State alongside transition actions.
+
+### 12. Traceability Matrix
+* **End-to-End Trace Mapping**: A dedicated view showing trace relationships mapping Requirements backwards to stakeholders and meetings, and forwards to user stories, risks, and UAT cases.
+
+### 13. User Acceptance Testing (UAT)
+* **UAT Suites**: Manage test scenarios, write step-by-step acceptance steps, and log execution runs (*Pass*, *Fail*, *Blocked*).
+* **Sign-off Evidence**: Collect formal business approval evidence for final release.
+
+### 14. Real-time Collaboration (WebSockets)
+* **WebSockets Channels**: ASGI WebSockets syncing catalogs, broadcasting live collaborator online badges, active typing indicator bubbles, and syncing backlog updates.
+
+### 15. Context-Aware AI Playground
+* **Contextual Chatbot**: Prompt assistant with project statistics to automatically write user stories, audit compliance, or write test scripts.
+
+### 16. Audit Logging & SOC 2 Compliance
+* **Immutable Logs**: Capture user actions, logins, database updates, deletions, and config changes for compliance audits.
+
+### 17. Jira & Confluence Integrations
+* **Jira Sync Connector**: Save credentials, test API connections, and sync backlogs directly with Jira.
+
+### 18. Subscription Plans & Billing Protection
+* **Backend Authorization**: Restricts API calls to active subscription accounts verifying `subscription.is_active` and `plan_verified`.
+* **Grace Periods**: 3-day grace period for expiring plans with UI warning banners.
+* **Checkout & Invoices**: Stripe simulation portal generating PDF invoices, transaction history, and automated HTML email receipts.
+* **Seat Restrictions**: Limit member seats based on plan tiers (Free: 3, Pro: 15, Enterprise: Unlimited) with database-level checks.
 
 ---
 
