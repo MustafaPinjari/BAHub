@@ -9,7 +9,7 @@ django.utils.http.is_safe_url = url_has_allowed_host_and_scheme
 
 from django.contrib import admin
 from rest_framework_simplejwt.views import TokenRefreshView
-from core.views import health_check, HealthCheckView, RootView, PublicSettingsView
+from core.views import health_check, HealthCheckView, RootView, PublicSettingsView, PublicWaitlistView
 from users.views import CustomTokenObtainPairView
 
 urlpatterns = [
@@ -25,6 +25,7 @@ urlpatterns = [
     
     # Public platform settings (for landing page countdown etc.)
     path("api/v1/public/settings/", PublicSettingsView.as_view(), name="public-settings"),
+    path("api/v1/public/waitlist/", PublicWaitlistView.as_view(), name="public-waitlist"),
     
     # Auth endpoints
     path("api/v1/auth/login/", CustomTokenObtainPairView.as_view(), name="token-login"),

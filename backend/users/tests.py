@@ -546,3 +546,48 @@ class CoreAndAuthTests(APITestCase):
             # Restore settings
             save_system_settings(orig_settings)
 
+    def test_public_waitlist_signup_succeeds(self):
+        """Verify that public users can successfully register for the waitlist."""
+        import os
+        import json
+        
+        waitlist_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "users", "waitlist.json")
+        orig_content = None
+        if os.path.exists(waitlist_file):
+            try:
+                with open(waitlist_file, "r") as f:
+                    orig_content = f.read()
+            except Exception:
+                pass
+                
+        try:
+            # Clear or remove waitlist for testing
+            if os.path.exists(waitlist_file):
+                os.remove(waitlist_file)
+                
+            url = reverse("public-waitlist")
+            payload = {"email": "waitlist_tester@bahub.local"}
+            
+            # Test first signup
+            response = self.client.post(url, payload, format="json")
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertTrue(response.data["success"])
+            
+            # Test duplicate signup
+            response_dup = self.client.post(url, payload, format="json")
+            self.assertEqual(response_dup.status_code, status.HTTP_200_OK)
+            self.assertTrue(response_dup.data["success"])
+            
+            # Check file contents
+            with open(waitlist_file, "r") as f:
+                data = json.load(f)
+            self.assertEqual(len(data), 1)
+            self.assertEqual(data[0]["email"], "waitlist_tester@bahub.local")
+        finally:
+            # Restore waitlist.json
+            if orig_content is not None:
+                with open(waitlist_file, "w") as f:
+                    f.write(orig_content)
+            elif os.path.exists(waitlist_file):
+                os.remove(waitlist_file)
+

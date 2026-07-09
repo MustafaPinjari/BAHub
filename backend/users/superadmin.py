@@ -163,6 +163,18 @@ class SuperAdminDashboardView(APIView):
         # 6. Read system settings
         system_settings = get_system_settings()
 
+        # Fetch waitlist subscribers
+        waitlist_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "users", "waitlist.json")
+        waitlist_count = 0
+        waitlist_entries = []
+        if os.path.exists(waitlist_file):
+            try:
+                with open(waitlist_file, "r") as f:
+                    waitlist_entries = json.load(f)
+                    waitlist_count = len(waitlist_entries)
+            except Exception:
+                pass
+
         # 7. Execute real-time database latency query check
         try:
             start_time = time.time()
@@ -194,7 +206,9 @@ class SuperAdminDashboardView(APIView):
                 "payments": payments,
                 "webhook_events": webhooks,
                 "system_settings": system_settings,
-                "system_health": system_health
+                "system_health": system_health,
+                "waitlist_count": waitlist_count,
+                "waitlist_subscribers": waitlist_entries
             },
             message="Superadmin expanded dashboard configuration payload loaded successfully."
         )

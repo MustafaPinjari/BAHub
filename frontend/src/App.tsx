@@ -7,6 +7,8 @@ import { RegisterForm } from "./features/auth/components/RegisterForm";
 import { DashboardShell } from "./components/layout/DashboardShell";
 import banner from "./assets/banner.png";
 import { LandingPage } from "./features/landing/LandingPage.tsx";
+import { LaunchLockedScreen } from "./features/auth/components/LaunchLockedScreen";
+import { usePublicSettings } from "./features/landing/usePublicSettings";
 
 // Lazy-loaded page components for code-splitting
 const DashboardOverview = lazy(() => import("./features/dashboard/DashboardOverview").then(m => ({ default: m.DashboardOverview })));
@@ -91,10 +93,18 @@ import { BillingBlockedScreen } from "./features/auth/components/BillingBlockedS
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading, user } = useAuth();
   const [authView, setAuthView] = useState<"landing" | "login" | "register">("landing");
+  const [bypassWaitlistLock, setBypassWaitlistLock] = useState(false);
+  const { waitlist_countdown_enabled } = usePublicSettings();
 
   // Allow explicit preview of landing page via /landing or /welcome route regardless of auth state
   const path = window.location.pathname.toLowerCase();
   const isExplicitLanding = path === "/landing" || path === "/welcome";
+
+  useEffect(() => {
+    if (authView === "landing") {
+      setBypassWaitlistLock(false);
+    }
+  }, [authView]);
 
   if (path === "/admin" || path === "/admin/") {
     const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
@@ -130,6 +140,28 @@ const MainAppContent: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  const isPlatformAdmin = user?.is_superuser || user?.is_staff;
+
+  // Waitlist Lockout check
+  if (waitlist_countdown_enabled && !isPlatformAdmin) {
+    if (isAuthenticated) {
+      return (
+        <LaunchLockedScreen
+          onAdminClick={() => {}}
+          onBackToHome={() => { window.location.href = "/"; }}
+        />
+      );
+    }
+    if ((authView === "login" || authView === "register") && !bypassWaitlistLock) {
+      return (
+        <LaunchLockedScreen
+          onAdminClick={() => setBypassWaitlistLock(true)}
+          onBackToHome={() => setAuthView("landing")}
+        />
+      );
+    }
   }
 
   if (isExplicitLanding || !isAuthenticated) {
@@ -181,7 +213,6 @@ const MainAppContent: React.FC = () => {
     );
   }
 
-  const isPlatformAdmin = user?.is_superuser || user?.is_staff;
   const isBillingBlocked = user && user.plan_tier && user.plan_tier !== "FREE" && !user.plan_verified && !isPlatformAdmin;
   if (isBillingBlocked) {
     return <BillingBlockedScreen />;

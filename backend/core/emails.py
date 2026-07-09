@@ -188,3 +188,19 @@ def send_payment_receipt_email(username, email, organization_name, plan_name, am
         attachments=attachments
     )
 
+
+def send_waitlist_confirmation_email(email):
+    """
+    Send waitlist joining confirmation email.
+    """
+    subject = "BAHub: You are on the list!"
+    context = {
+        "email": email,
+    }
+    return send_html_email(
+        subject=subject,
+        template_name="core/waitlist_confirmation.html",
+        context=context,
+        recipient_list=[email]
+    )
+

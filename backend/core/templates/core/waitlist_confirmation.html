@@ -1,0 +1,28 @@
+{% extends "core/email_base.html" %}
+
+{% block content %}
+<h2 class="heading">You're on the Waitlist!</h2>
+<p class="text">
+    Thank you for joining the BAHub launch waitlist! We are hard at work preparing the platform for launch on **July 18, 2026**.
+</p>
+<p class="text">
+    As a thank you for your early support, you have been registered for **3 months of free access to our Pro Growth plan** (normally $49/month) once the doors open.
+</p>
+<div class="details-box">
+    <div class="details-item">
+        <span class="details-label">Waitlist Email:</span>
+        <span class="details-value">{{ email }}</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Launch Date:</span>
+        <span class="details-value">July 18, 2026</span>
+    </div>
+    <div class="details-item">
+        <span class="details-label">Special Offer:</span>
+        <span class="details-value">3 Months Free Pro Tier</span>
+    </div>
+</div>
+<p class="text">
+    We will email you with your access link on launch day. If you have any questions or feedback, please reach out to our team at support@bahub.com.
+</p>
+{% endblock %}

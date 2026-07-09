@@ -19,6 +19,7 @@ import {
   Settings,
   AlertTriangle,
   RefreshCw,
+  Mail,
 } from "lucide-react";
 
 interface OrganizationInfo {
@@ -111,6 +112,8 @@ export const SuperAdminPage: React.FC = () => {
   const [webhooks, setWebhooks] = useState<WebhookInfo[]>([]);
   const [systemSettings, setSystemSettings] = useState<Record<string, string>>({});
   const [health, setHealth] = useState<SystemHealth | null>(null);
+  const [waitlistCount, setWaitlistCount] = useState<number>(0);
+  const [waitlistSubscribers, setWaitlistSubscribers] = useState<any[]>([]);
 
   // Multi-select lists
   const [selectedOrgIds, setSelectedOrgIds] = useState<string[]>([]);
@@ -138,6 +141,8 @@ export const SuperAdminPage: React.FC = () => {
       setWebhooks(res.data.webhook_events || []);
       setSystemSettings(res.data.system_settings || {});
       setHealth(res.data.system_health || null);
+      setWaitlistCount(res.data.waitlist_count || 0);
+      setWaitlistSubscribers(res.data.waitlist_subscribers || []);
 
       // Pre-populate AI overrides
       const limits: Record<string, number> = {};
@@ -442,7 +447,7 @@ export const SuperAdminPage: React.FC = () => {
             {/* OVERVIEW TAB */}
             {activeTab === "overview" && (
               <div className="flex flex-col gap-6 animate-fadeIn">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <Card className="bg-white/[0.01] border-white/[0.06] p-5 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Total Workspaces</span>
@@ -457,6 +462,14 @@ export const SuperAdminPage: React.FC = () => {
                       <Users className="w-4 h-4 text-blue-400" />
                     </div>
                     <span className="text-2xl font-bold">{activeUsersCount} <span className="text-xs text-gray-600 font-normal">/ {totalUsers} total</span></span>
+                  </Card>
+
+                  <Card className="bg-white/[0.01] border-white/[0.06] p-5 flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Waitlist Signups</span>
+                      <Mail className="w-4 h-4 text-purple-400" />
+                    </div>
+                    <span className="text-2xl font-bold">{waitlistCount}</span>
                   </Card>
 
                   <Card className="bg-white/[0.01] border-white/[0.06] p-5 flex flex-col gap-2 md:col-span-2">
@@ -522,6 +535,38 @@ export const SuperAdminPage: React.FC = () => {
                           </span>
                         </div>
                       </div>
+                    </div>
+                  </Card>
+                )}
+
+                {/* Waitlist Signups List */}
+                {waitlistSubscribers.length > 0 && (
+                  <Card className="bg-black border-white/[0.08] p-6 flex flex-col gap-4">
+                    <div className="border-b border-white/[0.06] pb-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-purple-400" />
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-gray-300">Waitlist Signups ({waitlistCount})</h3>
+                      </div>
+                    </div>
+                    <div className="max-h-60 overflow-y-auto border border-white/[0.06] rounded-xl bg-white/[0.01]">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead>
+                          <tr className="border-b border-white/[0.06] text-gray-500 uppercase tracking-wider text-[9px] font-bold bg-white/[0.02]">
+                            <th className="py-2.5 px-4">Email Address</th>
+                            <th className="py-2.5 px-4 text-right">Signed Up At</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {waitlistSubscribers.map((sub, i) => (
+                            <tr key={i} className="border-b border-white/[0.04] hover:bg-white/[0.02] last:border-none">
+                              <td className="py-2.5 px-4 font-medium text-white">{sub.email}</td>
+                              <td className="py-2.5 px-4 text-right text-gray-500">
+                                {new Date(sub.created_at).toLocaleString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </Card>
                 )}
