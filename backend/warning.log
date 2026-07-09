@@ -196,3 +196,13 @@ WARNING 2026-07-09 15:52:17,613 log 6096 21500 Bad Request: /api/v1/auth/registe
 ERROR 2026-07-09 15:52:19,338 log 6096 21500 Service Unavailable: /api/v1/auth/profile/
 WARNING 2026-07-09 15:52:22,092 log 6096 21500 Forbidden: /api/v1/auth/superadmin/dashboard/
 WARNING 2026-07-09 15:52:24,039 log 6096 21500 Bad Request: /api/v1/auth/verify-otp/
+WARNING 2026-07-09 23:09:53,620 log 1464 13428 Unauthorized: /api/v1/auth/token/refresh/
+WARNING 2026-07-09 23:09:54,087 exceptions 1464 13428 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please choose a different name or join via invitation token.', code='invalid')]}
+WARNING 2026-07-09 23:09:54,088 log 1464 13428 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-09 23:09:54,093 exceptions 1464 13428 API Error (400): {'invite_token': [ErrorDetail(string='This invitation token has expired.', code='invalid')]}
+WARNING 2026-07-09 23:09:54,094 log 1464 13428 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-09 23:09:54,097 exceptions 1464 13428 API Error (400): {'invite_token': [ErrorDetail(string='Invalid or expired invitation token.', code='invalid')]}
+WARNING 2026-07-09 23:09:54,097 log 1464 13428 Bad Request: /api/v1/auth/register/
+ERROR 2026-07-09 23:09:55,301 log 1464 13428 Service Unavailable: /api/v1/auth/profile/
+WARNING 2026-07-09 23:09:57,225 log 1464 13428 Forbidden: /api/v1/auth/superadmin/dashboard/
+WARNING 2026-07-09 23:09:58,819 log 1464 13428 Bad Request: /api/v1/auth/verify-otp/
