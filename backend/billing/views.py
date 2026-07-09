@@ -132,20 +132,30 @@ class CreateCheckoutSessionView(APIView):
         # Resolve price configuration based on requested plan
         price_id = getattr(settings, f"STRIPE_PRICE_{plan}", None)
         
-        # Resolve frontend origin URL
-        frontend_origin = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
-        if isinstance(frontend_origin, list):
-            frontend_origin = frontend_origin[0]
+        # Resolve frontend origin URL dynamically from client request headers to support dynamic ports
+        frontend_origin = request.META.get('HTTP_ORIGIN')
+        if not frontend_origin:
+            frontend_origin = request.META.get('HTTP_REFERER')
+        if frontend_origin:
+            from urllib.parse import urlparse
+            parsed_uri = urlparse(frontend_origin)
+            frontend_origin = f"{parsed_uri.scheme}://{parsed_uri.netloc}"
+        else:
+            frontend_origin = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
+            if isinstance(frontend_origin, list):
+                frontend_origin = frontend_origin[0]
 
-        # In dev mode, test mode, or if Stripe is unconfigured: fallback to mock checkout redirects
+
+        # Fallback to mock checkout redirects in test mode or if Stripe is unconfigured
         import sys
         is_testing = 'test' in sys.argv or any('test' in arg for arg in sys.argv)
-        if settings.DEBUG or is_testing or not stripe.api_key or not price_id:
+        if is_testing or not stripe.api_key or not price_id:
             mock_checkout_url = f"{request.build_absolute_uri('/api/v1/billing/mock-upgrade/')}?plan={plan}&org_id={request.user.organization.id}&redirect_uri={frontend_origin}"
             return api_success(
                 data={"checkout_url": mock_checkout_url, "mode": "MOCK"},
                 message="Mock checkout session initiated in development."
             )
+
 
         if not stripe.api_key:
             return api_error(message="Stripe API is not configured on this server environment.")
@@ -158,7 +168,7 @@ class CreateCheckoutSessionView(APIView):
                     'quantity': 1,
                 }],
                 mode='subscription',
-                success_url=f"{frontend_origin.rstrip('/')}/billing?success=true",
+                success_url=f"{request.build_absolute_uri('/api/v1/billing/verify-subscription/')}?session_id={{CHECKOUT_SESSION_ID}}&redirect_uri={frontend_origin}",
                 cancel_url=f"{frontend_origin.rstrip('/')}/billing?cancelled=true",
                 client_reference_id=str(request.user.organization.id),
                 customer_email=request.user.email,
@@ -370,9 +380,41 @@ class VerifySubscriptionView(APIView):
     def get(self, request):
         token = request.query_params.get("token")
         org_id = request.query_params.get("org_id")
+        session_id = request.query_params.get("session_id")
+        redirect_uri = request.query_params.get("redirect_uri")
+
+        if not redirect_uri:
+            redirect_uri = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
+            if isinstance(redirect_uri, list):
+                redirect_uri = redirect_uri[0]
+        redirect_uri = redirect_uri.rstrip("/")
+
+        if session_id:
+            try:
+                session = stripe.checkout.Session.retrieve(session_id)
+                if session.payment_status == 'paid' or session.status == 'complete':
+                    target_org_id = session.client_reference_id
+                    sub = TenantSubscription.objects.get(organization_id=target_org_id)
+                    if not sub.plan_verified:
+                        amount = session.amount_total / 100.0 if session.amount_total else 49.0
+                        process_successful_payment(
+                            sub=sub,
+                            plan_tier=sub.plan_tier,
+                            amount=amount,
+                            checkout_session_id=session.id,
+                            stripe_sub_id=session.subscription,
+                            stripe_cust_id=session.customer,
+                            payment_intent_id=session.payment_intent,
+                            event_type="stripe.sync_verification"
+                        )
+                    return redirect(f"{redirect_uri}/billing?verified=true")
+            except Exception as e:
+                logger.error(f"Sync Stripe session verification failed: {e}")
+                return redirect(f"{redirect_uri}/billing?error=verification_failed")
 
         if not token or not org_id:
             return api_error(message="Missing verification token or organization id.", status_code=status.HTTP_400_BAD_REQUEST)
+
 
         try:
             sub = TenantSubscription.objects.get(organization_id=org_id, verification_token=token)
@@ -385,12 +427,7 @@ class VerifySubscriptionView(APIView):
         except TenantSubscription.DoesNotExist:
             return api_error(message="Invalid or expired verification token.", status_code=status.HTTP_400_BAD_REQUEST)
 
-        frontend_origin = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
-        if isinstance(frontend_origin, list):
-            frontend_origin = frontend_origin[0]
-        frontend_origin = frontend_origin.rstrip("/")
-
-        return redirect(f"{frontend_origin}/billing?verified=true")
+        return redirect(f"{redirect_uri}/billing?verified=true")
 
     def post(self, request):
         token = request.data.get("token")
