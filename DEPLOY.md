@@ -86,17 +86,46 @@ Deploy the static build of the Vite application to Vercel for high-speed edge di
 ## 🛠️ Step 4: Configure Django Production DB
 Since we are using PostgreSQL in production instead of SQLite, we must tell Django to dynamically use the `DATABASE_URL` environment variable if it is set.
 
-We have already configured database resolution in `backend/bahub_backend/settings.py` to check for `DATABASE_URL` and fall back to SQLite when running locally:
+We have already configured database resolution in `backend/bahub_backend/settings.py` to check for `DATABASE_URL`, parse it, force relative local SQLite paths to resolve relative to `BASE_DIR`, and fall back to SQLite when running locally:
 ```python
 import dj_database_url
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        ssl_require=True if os.getenv("DATABASE_URL") else False
-    )
-}
+if IS_TESTING:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    }
+else:
+    db_url = os.getenv("DATABASE_URL", "").strip()
+    db_url = db_url.strip('"').strip("'").strip()
+    try:
+        if not db_url:
+            raise ValueError("Empty DATABASE_URL")
+        conn_max_age = int(os.getenv("CONN_MAX_AGE", "600"))
+        parsed_db = dj_database_url.parse(
+            db_url,
+            conn_max_age=conn_max_age,
+            ssl_require=True if db_url.startswith("postgres") else False
+        )
+    except ValueError:
+        db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+        parsed_db = dj_database_url.parse(
+            db_url,
+            conn_max_age=0,
+            ssl_require=False
+        )
+    # Ensure relative SQLite paths always resolve relative to BASE_DIR
+    if parsed_db.get("ENGINE") == "django.db.backends.sqlite3" and parsed_db.get("NAME") != ":memory:":
+        from pathlib import Path
+        db_path = Path(parsed_db["NAME"])
+        if not db_path.is_absolute():
+            parsed_db["NAME"] = str(BASE_DIR / db_path)
+
+    DATABASES = {
+        "default": parsed_db
+    }
 ```
 *(This is fully configured and ready in your codebase).*
 
