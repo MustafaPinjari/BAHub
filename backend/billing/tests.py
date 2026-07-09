@@ -755,7 +755,8 @@ class PlanVerificationTests(APITestCase):
             "action_type": "CHAT"
         })
         self.assertEqual(resp.status_code, status.HTTP_402_PAYMENT_REQUIRED)
-        self.assertIn("pending verification", resp.data["message"])
+        resp_data = resp.data if hasattr(resp, "data") else resp.json()
+        self.assertIn("pending verification", resp_data["message"])
 
         # Check diagram generate blocked
         resp_diag = self.client.post(reverse("diagram-generate"), {
@@ -765,7 +766,8 @@ class PlanVerificationTests(APITestCase):
             "source_text": "Sample details"
         })
         self.assertEqual(resp_diag.status_code, status.HTTP_402_PAYMENT_REQUIRED)
-        self.assertIn("pending verification", resp_diag.data["message"])
+        resp_diag_data = resp_diag.data if hasattr(resp_diag, "data") else resp_diag.json()
+        self.assertIn("pending verification", resp_diag_data["message"])
 
     def test_verify_subscription_success_get_redirects(self):
         """Clicking the verification link via GET activates the subscription and redirects to frontend."""

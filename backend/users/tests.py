@@ -494,3 +494,55 @@ class CoreAndAuthTests(APITestCase):
         target_user.refresh_from_db()
         self.assertEqual(target_user.role, "QA_TESTER")
 
+    def test_superadmin_dashboard_maintenance_mode_blocks_regular_user(self):
+        """Verify maintenance mode blocks regular users with 503 Service Unavailable."""
+        from users.superadmin import get_system_settings, save_system_settings
+        orig_settings = get_system_settings()
+        
+        # Turn maintenance mode on
+        test_settings = {**orig_settings, "maintenance_mode": "true"}
+        save_system_settings(test_settings)
+        
+        try:
+            org = Organization.objects.create(name="Maint Org")
+            user = User.objects.create_user(
+                username="maint_user",
+                email="maint@bahub.local",
+                password="SecureP@ss123",
+                role="BUSINESS_ANALYST",
+                organization=org
+            )
+            self.client.force_authenticate(user=user)
+            profile_url = reverse("auth-profile")
+            response = self.client.get(profile_url, HTTP_X_TEST_MAINTENANCE="True")
+            self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+        finally:
+            # Restore settings
+            save_system_settings(orig_settings)
+
+    def test_superadmin_dashboard_maintenance_mode_allows_superuser(self):
+        """Verify maintenance mode allows superusers to bypass the block."""
+        from users.superadmin import get_system_settings, save_system_settings
+        orig_settings = get_system_settings()
+        
+        # Turn maintenance mode on
+        test_settings = {**orig_settings, "maintenance_mode": "true"}
+        save_system_settings(test_settings)
+        
+        try:
+            org = Organization.objects.create(name="Maint Org 2")
+            admin_user = User.objects.create_superuser(
+                username="maint_super",
+                email="maintsuper@bahub.local",
+                password="SecureP@ss123",
+                role="ADMIN",
+                organization=org
+            )
+            self.client.force_authenticate(user=admin_user)
+            profile_url = reverse("auth-profile")
+            response = self.client.get(profile_url, HTTP_X_TEST_MAINTENANCE="True")
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        finally:
+            # Restore settings
+            save_system_settings(orig_settings)
+
