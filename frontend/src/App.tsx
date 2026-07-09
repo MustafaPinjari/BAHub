@@ -1,5 +1,5 @@
 import React, { useState, Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./features/auth/AuthContext";
 import { ProjectProvider } from "./features/projects/ProjectContext";
 import { LoginForm } from "./features/auth/components/LoginForm";
@@ -92,21 +92,19 @@ import { BillingBlockedScreen } from "./features/auth/components/BillingBlockedS
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading, user } = useAuth();
-  const [authView, setAuthView] = useState<"landing" | "login" | "register">("landing");
   const [bypassWaitlistLock, setBypassWaitlistLock] = useState(false);
   const { waitlist_countdown_enabled } = usePublicSettings();
+  
+  const location = useLocation();
+  const navigate = useNavigate();
+  const path = location.pathname.toLowerCase();
 
-  // Allow explicit preview of landing page via /landing or /welcome route regardless of auth state
-  const path = window.location.pathname.toLowerCase();
   const isExplicitLanding = path === "/landing" || path === "/welcome";
   const isRoot = path === "/" || path === "";
-  const isWaitlistRoute = (path === "/waitlist" || path === "/join") && !bypassWaitlistLock;
-
-  useEffect(() => {
-    if (authView === "landing") {
-      setBypassWaitlistLock(false);
-    }
-  }, [authView]);
+  const isLandingPath = isRoot || isExplicitLanding;
+  const isWaitlistPath = path === "/waitlist" || path === "/join";
+  const isLoginPath = path === "/login";
+  const isRegisterPath = path === "/register";
 
   if (path === "/admin" || path === "/admin/") {
     const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
@@ -122,18 +120,28 @@ const MainAppContent: React.FC = () => {
     );
   }
 
+  const isPlatformAdmin = user?.is_superuser || user?.is_staff;
+
+  // Waitlist Lockout check
+  if (waitlist_countdown_enabled && !isPlatformAdmin) {
+    if (!isLandingPath && !isWaitlistPath && !bypassWaitlistLock) {
+      return <Navigate to="/waitlist" replace />;
+    }
+    if ((isLoginPath || isRegisterPath) && !bypassWaitlistLock) {
+      return <Navigate to="/waitlist" replace />;
+    }
+  }
+
   // Handle direct url path for the waitlist countdown/join screen
-  if (isWaitlistRoute) {
+  if (isWaitlistPath) {
     return (
       <LaunchLockedScreen
         onAdminClick={() => {
           setBypassWaitlistLock(true);
-          setAuthView("login");
-          window.history.pushState({}, "", "/login");
+          navigate("/login");
         }}
         onBackToHome={() => {
-          window.history.pushState({}, "", "/");
-          setAuthView("landing");
+          navigate("/");
         }}
       />
     );
@@ -161,38 +169,21 @@ const MainAppContent: React.FC = () => {
     );
   }
 
-  const isPlatformAdmin = user?.is_superuser || user?.is_staff;
-  const isViewingLanding = (isRoot || isExplicitLanding) && authView === "landing";
-
-  // Waitlist Lockout check
-  if (waitlist_countdown_enabled && !isPlatformAdmin) {
-    if (!isViewingLanding && !bypassWaitlistLock) {
-      return (
-        <LaunchLockedScreen
-          onAdminClick={() => {
-            setBypassWaitlistLock(true);
-            setAuthView("login");
-            window.history.pushState({}, "", "/login");
-          }}
-          onBackToHome={() => {
-            window.history.pushState({}, "", "/");
-            setAuthView("landing");
-          }}
-        />
-      );
-    }
+  // If user is logged in, and tries to go to login or register page, send them to dashboard
+  if (isAuthenticated && (isLoginPath || isRegisterPath) && !waitlist_countdown_enabled) {
+    return <Navigate to="/dashboard" replace />;
   }
 
-  if (isViewingLanding || !isAuthenticated) {
-    if (authView === "landing" || isExplicitLanding || isRoot) {
-      return (
-        <LandingPage 
-          onNavigateToLogin={() => setAuthView("login")} 
-          onNavigateToRegister={() => setAuthView("register")} 
-        />
-      );
-    }
+  if (isLandingPath) {
+    return (
+      <LandingPage 
+        onNavigateToLogin={() => navigate("/login")} 
+        onNavigateToRegister={() => navigate("/register")} 
+      />
+    );
+  }
 
+  if (isLoginPath || isRegisterPath) {
     return (
       <div className="w-screen h-screen flex bg-black text-white overflow-hidden">
         {/* Left Side: Form Container */}
@@ -201,21 +192,21 @@ const MainAppContent: React.FC = () => {
           <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-purple-600/5 blur-3xl pointer-events-none" />
           <div className="absolute top-4 left-4 z-10">
             <button
-              onClick={() => setAuthView("landing")}
+              onClick={() => navigate("/")}
               className="text-[10px] font-bold text-gray-600 hover:text-gray-300 cursor-pointer flex items-center gap-1.5 bg-transparent border-none outline-none transition-colors duration-150"
             >
               <span>←</span> Back to Home
             </button>
           </div>
-          {authView === "login" ? (
+          {isLoginPath ? (
             <LoginForm
-              onSuccess={() => {}}
-              onNavigateToRegister={() => setAuthView("register")}
+              onSuccess={() => navigate("/dashboard")}
+              onNavigateToRegister={() => navigate("/register")}
             />
           ) : (
             <RegisterForm
-              onSuccess={() => setAuthView("login")}
-              onNavigateToLogin={() => setAuthView("login")}
+              onSuccess={() => navigate("/login")}
+              onNavigateToLogin={() => navigate("/login")}
             />
           )}
         </div>
@@ -230,6 +221,11 @@ const MainAppContent: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  // Fallback for unauthenticated access to any other app page
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
 
   const isBillingBlocked = user && user.plan_tier && user.plan_tier !== "FREE" && !user.plan_verified && !isPlatformAdmin;
