@@ -66,7 +66,7 @@ export const SuperAdminPage: React.FC = () => {
       setLoading(true);
       setError(null);
       const res = await api.get<any, { data: { organizations: OrganizationInfo[]; users: UserInfo[] } }>(
-        "/users/superadmin/dashboard/"
+        "/auth/superadmin/dashboard/"
       );
       setOrgs(res.data.organizations || []);
       setUsers(res.data.users || []);
@@ -86,7 +86,7 @@ export const SuperAdminPage: React.FC = () => {
       setActionLoading(`org-${orgId}`);
       setError(null);
       setSuccess(null);
-      const res = await api.post<any, any>("/users/superadmin/dashboard/", {
+      const res = await api.post<any, any>("/auth/superadmin/dashboard/", {
         action: "update_organization",
         organization_id: orgId,
         plan_tier: planTier,
@@ -107,7 +107,7 @@ export const SuperAdminPage: React.FC = () => {
       setActionLoading(`user-${userId}`);
       setError(null);
       setSuccess(null);
-      const res = await api.post<any, any>("/users/superadmin/dashboard/", {
+      const res = await api.post<any, any>("/auth/superadmin/dashboard/", {
         action: "update_user",
         user_id: userId,
         role: role,
@@ -131,7 +131,7 @@ export const SuperAdminPage: React.FC = () => {
       setActionLoading(`delete-org-${orgId}`);
       setError(null);
       setSuccess(null);
-      const res = await api.post<any, any>("/users/superadmin/dashboard/", {
+      const res = await api.post<any, any>("/auth/superadmin/dashboard/", {
         action: "delete_organization",
         organization_id: orgId
       });
@@ -152,7 +152,7 @@ export const SuperAdminPage: React.FC = () => {
       setActionLoading(`delete-user-${userId}`);
       setError(null);
       setSuccess(null);
-      const res = await api.post<any, any>("/users/superadmin/dashboard/", {
+      const res = await api.post<any, any>("/auth/superadmin/dashboard/", {
         action: "delete_user",
         user_id: userId
       });
