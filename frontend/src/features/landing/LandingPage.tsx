@@ -493,7 +493,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             {/* Primary CTA */}
             <button 
               onClick={onNavigateToRegister}
-              className="group relative px-9 py-4.5 rounded-2xl text-[13px] font-bold tracking-wide bg-white text-black hover:bg-white/90 active:scale-95 transition-all cursor-pointer flex items-center gap-2 shadow-[0_10px_30px_rgba(255,255,255,0.12)] overflow-hidden"
+              className="group relative px-8 py-4 rounded-2xl text-[13px] font-bold tracking-wide bg-white text-black hover:bg-white/90 active:scale-95 transition-all cursor-pointer flex items-center gap-2 shadow-[0_10px_30px_rgba(255,255,255,0.12)] overflow-hidden"
             >
               {/* Shine reflection effect */}
               <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full transition-transform duration-1000 ease-out group-hover:translate-x-[300%]" />
@@ -504,7 +504,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             {/* Secondary CTA */}
             <button 
               onClick={onNavigateToLogin}
-              className="px-9 py-4.5 rounded-2xl text-[13px] font-semibold tracking-wide border border-white/[0.08] text-white/80 hover:text-white hover:bg-white/[0.04] hover:border-white/[0.18] active:scale-95 transition-all cursor-pointer bg-[#0c0c0c]/40 backdrop-blur-md"
+              className="px-8 py-4 rounded-2xl text-[13px] font-semibold tracking-wide border border-white/[0.08] text-white/80 hover:text-white hover:bg-white/[0.04] hover:border-white/[0.18] active:scale-95 transition-all cursor-pointer bg-[#0c0c0c]/40 backdrop-blur-md"
             >
               View Live Demo
             </button>

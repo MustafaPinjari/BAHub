@@ -99,6 +99,7 @@ const MainAppContent: React.FC = () => {
   // Allow explicit preview of landing page via /landing or /welcome route regardless of auth state
   const path = window.location.pathname.toLowerCase();
   const isExplicitLanding = path === "/landing" || path === "/welcome";
+  const isRoot = path === "/" || path === "";
   const isWaitlistRoute = (path === "/waitlist" || path === "/join") && !bypassWaitlistLock;
 
   useEffect(() => {
@@ -161,29 +162,29 @@ const MainAppContent: React.FC = () => {
   }
 
   const isPlatformAdmin = user?.is_superuser || user?.is_staff;
+  const isViewingLanding = (isRoot || isExplicitLanding) && authView === "landing";
 
   // Waitlist Lockout check
   if (waitlist_countdown_enabled && !isPlatformAdmin) {
-    if (isAuthenticated && authView !== "landing") {
+    if (!isViewingLanding && !bypassWaitlistLock) {
       return (
         <LaunchLockedScreen
-          onAdminClick={() => {}}
-          onBackToHome={() => setAuthView("landing")}
-        />
-      );
-    }
-    if ((authView === "login" || authView === "register") && !bypassWaitlistLock) {
-      return (
-        <LaunchLockedScreen
-          onAdminClick={() => setBypassWaitlistLock(true)}
-          onBackToHome={() => setAuthView("landing")}
+          onAdminClick={() => {
+            setBypassWaitlistLock(true);
+            setAuthView("login");
+            window.history.pushState({}, "", "/login");
+          }}
+          onBackToHome={() => {
+            window.history.pushState({}, "", "/");
+            setAuthView("landing");
+          }}
         />
       );
     }
   }
 
-  if (isExplicitLanding || !isAuthenticated || authView === "landing") {
-    if (authView === "landing" || isExplicitLanding) {
+  if (isViewingLanding || !isAuthenticated) {
+    if (authView === "landing" || isExplicitLanding || isRoot) {
       return (
         <LandingPage 
           onNavigateToLogin={() => setAuthView("login")} 
