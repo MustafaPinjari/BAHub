@@ -14,7 +14,6 @@ import {
   RiskHeader, SwotHeader, StoriesHeader, AuditHeader,
 } from "../../components/ui/BentoHeaders";
 import logo from "../../assets/logo.png";
-import heroRightSidePng from "../../assets/hero_right_side.png";
 import { LaunchCountdown } from "./LaunchCountdown";
 import { usePublicSettings } from "./usePublicSettings";
 
@@ -408,210 +407,97 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           }}
         />
 
-        <div className="grid lg:grid-cols-[1fr_1.35fr] gap-12 lg:gap-16 items-center relative z-10 w-full">
-          {/* Left */}
-          <div className="flex flex-col items-start text-left">
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-[10px] font-bold uppercase tracking-wider mb-12 select-none">
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-              <span className="text-white/40">BAHub Platform</span>
-              <span className="text-white/20">·</span>
-              <span className="text-white/80">AI-Powered BA Workspace</span>
-            </motion.div>
+        {/* Elegant Flowing Purple Glass Ribbons behind the text */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden flex items-center justify-center">
+          <svg className="w-[1000px] h-[600px] opacity-70" viewBox="0 0 1000 600" fill="none">
+            <defs>
+              <linearGradient id="ribbonGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#a855f7" stopOpacity="0.14" />
+                <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.07" />
+                <stop offset="100%" stopColor="#ec4899" stopOpacity="0" />
+              </linearGradient>
+              <linearGradient id="ribbonGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#6366f1" stopOpacity="0.10" />
+                <stop offset="50%" stopColor="#a855f7" stopOpacity="0.05" />
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+              </linearGradient>
+              <filter id="ribbonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="20" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <path d="M 100 200 C 350 50, 650 550, 900 300" stroke="url(#ribbonGrad1)" strokeWidth="72" strokeLinecap="round" filter="url(#ribbonGlow)" />
+            <path d="M 150 450 C 450 500, 550 100, 850 350" stroke="url(#ribbonGrad2)" strokeWidth="54" strokeLinecap="round" filter="url(#ribbonGlow)" />
+          </svg>
+        </div>
 
-            <motion.h1 initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.1 }}
-              className="text-4xl sm:text-6xl lg:text-[88px] font-extrabold tracking-tighter leading-[0.95] mb-12 flex flex-col">
-              <span>Ship traceable</span>
-              <span className="h-[48px] sm:h-[72px] lg:h-[104px] relative overflow-hidden text-gradient-blue-purple block w-full text-left">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={taglineIndex}
-                    initial={{ y: 35, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -35, opacity: 0 }}
-                    transition={{ duration: 0.35, ease: "easeInOut" }}
-                    className="absolute inset-0 block truncate"
-                  >
-                    {taglines[taglineIndex]}
-                  </motion.span>
-                </AnimatePresence>
-              </span>
-              <span>in under 10 minutes.</span>
-            </motion.h1>
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto relative z-10 w-full my-[40px]">
+          {/* Announcement Badge */}
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-[10px] font-bold uppercase tracking-wider mb-12 select-none">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+            <span className="text-white/40">BAHub Platform</span>
+            <span className="text-white/20">·</span>
+            <span className="text-white/80">AI-Powered BA Workspace</span>
+          </motion.div>
 
-            <motion.p initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.2 }}
-              className="text-white/50 text-base leading-relaxed mb-14 max-w-[560px]">
-              Paste meeting notes. Get requirements, diagrams, BRDs, risk registers, and a Jira-ready backlog — all linked, all traceable.
-            </motion.p>
+          {/* Headline */}
+          <motion.h1 initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.1 }}
+            className="text-5xl sm:text-7xl lg:text-[96px] font-extrabold tracking-tighter leading-[0.95] mb-12 flex flex-col items-center text-center w-full">
+            <span>Ship traceable</span>
+            <span className="h-[54px] sm:h-[76px] lg:h-[104px] relative overflow-hidden text-gradient-blue-purple block w-full text-center">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={taglineIndex}
+                  initial={{ y: 35, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -35, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  className="absolute inset-x-0 block truncate text-center"
+                >
+                  {taglines[taglineIndex]}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+            <span>in under 10 minutes.</span>
+          </motion.h1>
 
-            <motion.div initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.3 }}
-              className="flex flex-wrap items-center gap-5 mb-20">
-              <button onClick={onNavigateToRegister}
-                className="px-8 py-4.5 rounded-2xl text-sm font-bold bg-white text-black hover:bg-gray-100 transition-all cursor-pointer flex items-center gap-2 shadow-[0_4px_20px_rgba(255,255,255,0.15)]">
-                Start Free — No Card <ArrowRight className="w-4 h-4" />
-              </button>
-              <button onClick={onNavigateToLogin}
-                className="px-8 py-4.5 rounded-2xl text-sm font-semibold border border-white/10 text-white/80 hover:text-white hover:border-white/20 transition-all cursor-pointer bg-transparent">
-                View Live Demo
-              </button>
-            </motion.div>
+          {/* Paragraph */}
+          <motion.p initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.2 }}
+            className="text-white/50 text-base sm:text-lg leading-relaxed mb-14 max-w-[620px] mx-auto text-center">
+            Paste meeting notes. Get requirements, diagrams, BRDs, risk registers, and a Jira-ready backlog — all linked, all traceable.
+          </motion.p>
 
-            <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.5, delay:0.5 }}
-              className="flex flex-wrap gap-5">
-              {[
-                { icon:<Shield className="w-3 h-3 text-white/80"/>, bg:"bg-white/[0.03] border-white/10",  text:"Audit Trails"       },
-                { icon:<Zap    className="w-3 h-3 text-white/80"/>,  bg:"bg-white/[0.03] border-white/10",   text:"Real-time Sync"     },
-                { icon:<Users  className="w-3 h-3 text-white/80"/>,  bg:"bg-white/[0.03] border-white/10",   text:"Team Workspaces"   },
-                { icon:<Clock  className="w-3 h-3 text-white/80"/>,  bg:"bg-white/[0.03] border-white/10",   text:"SOC 2 Audit Logs"  },
-              ].map(p => (
-                <div key={p.text} className="flex items-center gap-1.5">
-                  <div className={`w-5 h-5 rounded-md border flex items-center justify-center ${p.bg}`}>{p.icon}</div>
-                  <span className="text-[11px] font-medium text-white/60">{p.text}</span>
-                </div>
-              ))}
-            </motion.div>
-          </div>
+          {/* CTAs */}
+          <motion.div initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.3 }}
+            className="flex flex-wrap items-center justify-center gap-5 mb-20 w-full">
+            <button onClick={onNavigateToRegister}
+              className="px-8 py-4.5 rounded-2xl text-sm font-bold bg-white text-black hover:bg-gray-100 transition-all cursor-pointer flex items-center gap-2 shadow-[0_4px_20px_rgba(255,255,255,0.15)]">
+              Start Free — No Card <ArrowRight className="w-4 h-4" />
+            </button>
+            <button onClick={onNavigateToLogin}
+              className="px-8 py-4.5 rounded-2xl text-sm font-semibold border border-white/10 text-white/80 hover:text-white hover:border-white/20 transition-all cursor-pointer bg-transparent">
+              View Live Demo
+            </button>
+          </motion.div>
 
-          {/* Right — Product Image (Clean Transparent & Scaled Larger) */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="relative hidden lg:block my-[40px] w-full max-w-none z-10 lg:translate-x-16"
-          >
-            {/* Elegant Flowing Purple Glass Ribbons behind the dashboard */}
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-visible">
-              <svg className="absolute w-[800px] h-[600px] top-[-50px] left-[-100px]" viewBox="0 0 800 600" fill="none">
-                <defs>
-                  <linearGradient id="ribbonGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#a855f7" stopOpacity="0.16" />
-                    <stop offset="40%" stopColor="#8b5cf6" stopOpacity="0.08" />
-                    <stop offset="100%" stopColor="#ec4899" stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="ribbonGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity="0.12" />
-                    <stop offset="55%" stopColor="#a855f7" stopOpacity="0.06" />
-                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-                  </linearGradient>
-                  <filter id="ribbonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="15" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-                {/* Ribbon 1 */}
-                <path d="M 50 150 C 250 50, 450 450, 750 250" stroke="url(#ribbonGrad1)" strokeWidth="64" strokeLinecap="round" filter="url(#ribbonGlow)" />
-                {/* Ribbon 2 */}
-                <path d="M 100 420 C 300 480, 500 120, 780 320" stroke="url(#ribbonGrad2)" strokeWidth="48" strokeLinecap="round" filter="url(#ribbonGlow)" />
-              </svg>
-            </div>
-
-            {/* Spotlight emergence flares behind dashboard */}
-            <div className="absolute w-[450px] h-[350px] rounded-full bg-purple-500/[0.08] blur-[90px] pointer-events-none z-0 left-[15%] top-[10%]" />
-            <div className="absolute w-[220px] h-[220px] rounded-full bg-white/[0.04] blur-[40px] pointer-events-none z-0 left-[30%] top-[25%]" />
-
-            {/* 4 Premium Glass Chips floating in organic offsets */}
-            
-            {/* Glass Chip 1 — Jira Synced */}
-            <motion.div
-              className="absolute left-[-30px] top-[15%] z-30 select-none pointer-events-auto"
-              animate={{ y: [0, -6, 0] }}
-              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut", delay: 0 }}
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
-                <div className="w-5 h-5 rounded-md bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                  <Check className="w-3 h-3 text-blue-400" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-[10px] font-bold text-white tracking-wide">Jira Synced</span>
-                  <span className="text-[8px] font-bold text-gray-500 uppercase tracking-wider">Complete</span>
-                </div>
+          {/* Trust Indicators */}
+          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.5, delay:0.5 }}
+            className="flex flex-wrap items-center justify-center gap-6">
+            {[
+              { icon:<Shield className="w-3.5 h-3.5 text-white/80"/>, bg:"bg-white/[0.03] border-white/10",  text:"Audit Trails"       },
+              { icon:<Zap    className="w-3.5 h-3.5 text-white/80"/>,  bg:"bg-white/[0.03] border-white/10",   text:"Real-time Sync"     },
+              { icon:<Users  className="w-3.5 h-3.5 text-white/80"/>,  bg:"bg-white/[0.03] border-white/10",   text:"Team Workspaces"   },
+              { icon:<Clock  className="w-3.5 h-3.5 text-white/80"/>,  bg:"bg-white/[0.03] border-white/10",   text:"SOC 2 Audit Logs"  },
+            ].map(p => (
+              <div key={p.text} className="flex items-center gap-2">
+                <div className={`w-6 h-6 rounded-md border flex items-center justify-center ${p.bg}`}>{p.icon}</div>
+                <span className="text-[11px] font-semibold text-white/60">{p.text}</span>
               </div>
-            </motion.div>
-
-            {/* Glass Chip 2 — BRD Drafted */}
-            <motion.div
-              className="absolute left-[0px] bottom-[20%] z-30 select-none pointer-events-auto"
-              animate={{ y: [0, 6, 0] }}
-              transition={{ repeat: Infinity, duration: 6.5, ease: "easeInOut", delay: 1 }}
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
-                <div className="w-5 h-5 rounded-md bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-                  <FileText className="w-3 h-3 text-green-400" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-[10px] font-bold text-white tracking-wide">BRD Drafted</span>
-                  <span className="text-[8px] font-bold text-green-400 uppercase tracking-wider">10 Minutes</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Glass Chip 3 — Traceability Complete */}
-            <motion.div
-              className="absolute right-[-10px] top-[20%] z-30 select-none pointer-events-auto"
-              animate={{ y: [0, -5, 0] }}
-              transition={{ repeat: Infinity, duration: 5.5, ease: "easeInOut", delay: 0.5 }}
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
-                <div className="w-5 h-5 rounded-md bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                  <GitBranch className="w-3 h-3 text-purple-400" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-[10px] font-bold text-white tracking-wide">Traceability</span>
-                  <span className="text-[8px] font-bold text-purple-400 uppercase tracking-wider">100% Secure</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Glass Chip 4 — AI Assistant */}
-            <motion.div
-              className="absolute right-[20px] bottom-[15%] z-30 select-none pointer-events-auto"
-              animate={{ y: [0, 5, 0] }}
-              transition={{ repeat: Infinity, duration: 7, ease: "easeInOut", delay: 1.5 }}
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]">
-                <div className="w-5 h-5 rounded-md bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                  <Sparkles className="w-3 h-3 text-amber-400" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-[10px] font-bold text-white tracking-wide">AI Assistant</span>
-                  <span className="text-[8px] font-bold text-gray-500 uppercase tracking-wider">Ready</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Tilted Floating Dashboard emerging from light with custom thin glass borders */}
-            <motion.div
-              animate={{ 
-                y: [0, -8, 0],
-                rotateX: [12, 12.5, 12],
-                rotateY: [-12, -11.5, -12]
-              }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 8, 
-                ease: "easeInOut" 
-              }}
-              className="relative z-10 select-none rounded-[24px] p-[1.5px] bg-gradient-to-b from-white/15 via-white/5 to-white/0 shadow-[0_30px_70px_rgba(139,92,246,0.20)] hover:shadow-[0_30px_80px_rgba(168,85,247,0.30)] transition-shadow duration-500"
-              style={{
-                transformStyle: 'preserve-3d',
-                perspective: 1000
-              }}
-            >
-              <div className="rounded-[22px] overflow-hidden bg-black/90">
-                <img 
-                  src={heroRightSidePng} 
-                  alt="BAHub Product Dashboard" 
-                  className="w-full h-auto object-contain select-none brightness-[1.05] contrast-[1.02] border border-white/[0.06] rounded-[22px]" 
-                />
-              </div>
-            </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
