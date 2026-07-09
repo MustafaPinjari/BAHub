@@ -15,7 +15,6 @@ import {
   FileText,
   History,
   TrendingUp,
-  AlertTriangle
 } from "lucide-react";
 
 interface SubscriptionDetail {
@@ -48,7 +47,6 @@ export const BillingPage: React.FC = () => {
   const [sub, setSub] = useState<SubscriptionDetail | null>(null);
   const [invoices, setInvoices] = useState<InvoiceDetail[]>([]);
   const [adminStats, setAdminStats] = useState<any | null>(null);
-  const [adminLoading, setAdminLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notification, setNotification] = useState<{
     type: "success" | "warning";
@@ -82,13 +80,13 @@ export const BillingPage: React.FC = () => {
   const fetchAdminStats = async () => {
     if (isPlatformAdmin || (isAdmin && sub?.plan_tier !== "FREE")) {
       try {
-        setAdminLoading(true);
+        setLoading(true);
         const res = await api.get<any, { data: any }>("/billing/admin-dashboard/");
         setAdminStats(res.data);
       } catch (err) {
         console.error("Failed to load billing metrics", err);
       } finally {
-        setAdminLoading(false);
+        setLoading(false);
       }
     }
   };

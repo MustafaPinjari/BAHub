@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 import logging
 import datetime
+import os
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -61,4 +63,37 @@ class RootView(APIView):
             "status": "running",
             "health": "/health/",
             "docs": "/api/docs/"
+        }, status=status.HTTP_200_OK)
+
+
+
+class PublicSettingsView(APIView):
+    """
+    Public endpoint to read non-sensitive platform settings.
+    Used by landing page to check countdown timer status.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    renderer_classes = [JSONRenderer]
+
+    def get(self, request, *args, **kwargs):
+        # Read system_settings.json
+        settings_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "users", "system_settings.json")
+        default_settings = {
+            "waitlist_countdown_enabled": "false",
+            "maintenance_mode": "false",
+        }
+        
+        if os.path.exists(settings_file):
+            try:
+                with open(settings_file, "r") as f:
+                    settings_data = json.load(f)
+                    default_settings.update(settings_data)
+            except Exception:
+                pass
+        
+        # Only expose safe public settings
+        return Response({
+            "waitlist_countdown_enabled": default_settings.get("waitlist_countdown_enabled", "false") == "true",
+            "maintenance_mode": default_settings.get("maintenance_mode", "false") == "true",
         }, status=status.HTTP_200_OK)

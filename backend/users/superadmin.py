@@ -25,7 +25,8 @@ def get_system_settings():
         "maintenance_mode": "false",
         "global_ai_disabled": "false",
         "free_tier_seats": "5",
-        "free_tier_credits": "100"
+        "free_tier_credits": "100",
+        "waitlist_countdown_enabled": "false"
     }
     if not os.path.exists(SETTINGS_FILE):
         try:

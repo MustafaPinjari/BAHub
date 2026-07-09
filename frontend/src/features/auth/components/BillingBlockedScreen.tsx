@@ -42,7 +42,7 @@ export const BillingBlockedScreen: React.FC = () => {
 
   // Poll for checkout success while component is active
   React.useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (user && user.plan_tier !== "FREE" && !user.plan_verified) {
       interval = setInterval(async () => {
         try {

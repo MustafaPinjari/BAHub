@@ -16,12 +16,9 @@ import {
   Server,
   Database,
   Cpu,
-  Layers,
   Settings,
   AlertTriangle,
   RefreshCw,
-  CheckSquare,
-  Square
 } from "lucide-react";
 
 interface OrganizationInfo {
@@ -1083,6 +1080,37 @@ export const SuperAdminPage: React.FC = () => {
                     >
                       {systemSettings.global_ai_disabled === "true" ? (
                         <ToggleRight className="w-10 h-10 text-purple-500" />
+                      ) : (
+                        <ToggleLeft className="w-10 h-10 text-gray-700" />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Waitlist Countdown Timer */}
+                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-5">
+                    <div className="flex flex-col gap-1 text-left max-w-md">
+                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                        Launch Countdown Timer
+                        {systemSettings.waitlist_countdown_enabled === "true" && (
+                          <span className="bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[8px] uppercase tracking-wider font-extrabold px-1.5 rounded flex items-center gap-0.5">
+                            Active
+                          </span>
+                        )}
+                      </span>
+                      <p className="text-[10px] text-gray-500 leading-relaxed">
+                        Display a countdown timer on the landing page until July 18, 2026 12:00 AM UTC. When enabled, visitors can join the waitlist and receive email notifications when the platform launches.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleSaveSettings({
+                        ...systemSettings,
+                        waitlist_countdown_enabled: systemSettings.waitlist_countdown_enabled === "true" ? "false" : "true"
+                      })}
+                      className="text-gray-500 hover:text-white cursor-pointer transition-colors bg-transparent border-none outline-none"
+                      disabled={actionLoading === "settings-save"}
+                    >
+                      {systemSettings.waitlist_countdown_enabled === "true" ? (
+                        <ToggleRight className="w-10 h-10 text-blue-500" />
                       ) : (
                         <ToggleLeft className="w-10 h-10 text-gray-700" />
                       )}
