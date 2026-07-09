@@ -181,7 +181,8 @@ const MainAppContent: React.FC = () => {
     );
   }
 
-  const isBillingBlocked = user && user.plan_tier && user.plan_tier !== "FREE" && !user.plan_verified;
+  const isPlatformAdmin = user?.is_superuser || user?.is_staff;
+  const isBillingBlocked = user && user.plan_tier && user.plan_tier !== "FREE" && !user.plan_verified && !isPlatformAdmin;
   if (isBillingBlocked) {
     return <BillingBlockedScreen />;
   }

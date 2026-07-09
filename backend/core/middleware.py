@@ -36,6 +36,8 @@ class SubscriptionMiddleware:
                         pass
 
             if user and user.is_authenticated:
+                if user.is_superuser or user.is_staff:
+                    return self.get_response(request)
                 # If they have an organization, we check their subscription status
                 if user.organization:
                     try:
