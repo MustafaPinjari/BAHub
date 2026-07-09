@@ -4,157 +4,146 @@ import datetime
 
 from django.http import JsonResponse
 from django.utils import timezone
+from django.utils.decorators import sync_and_async_middleware
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from billing.models import TenantSubscription
 
 logger = logging.getLogger("bahub.core")
 
 
-class SubscriptionMiddleware:
+@sync_and_async_middleware
+def SubscriptionMiddleware(get_response):
     """
-    Subscription verification middleware.
-    Validates organization subscription active/verified status on all premium endpoints.
-
-    Fully compatible with both sync (WSGI) and async (ASGI/Daphne) stacks.
-    The guard logic runs in a sync thread via asgiref so Django ORM calls are safe.
+    Subscription verification middleware — written as a functional middleware
+    so Django's @sync_and_async_middleware decorator handles the sync/async
+    dispatch automatically, which is more reliable than manual coroutine detection.
     """
+    import asyncio
 
-    async_capable = True
-    sync_capable = True
+    if asyncio.iscoroutinefunction(get_response):
+        # ── Async path (ASGI / Daphne) ──────────────────────────────
+        async def async_middleware(request):
+            from asgiref.sync import sync_to_async
+            blocked = await sync_to_async(_guard, thread_sensitive=True)(request)
+            if blocked is not None:
+                return blocked
+            return await get_response(request)
+        return async_middleware
+    else:
+        # ── Sync path (WSGI / test runner) ──────────────────────────
+        def sync_middleware(request):
+            blocked = _guard(request)
+            if blocked is not None:
+                return blocked
+            return get_response(request)
+        return sync_middleware
 
-    def __init__(self, get_response):
-        self.get_response = get_response
-        import asyncio
-        if asyncio.iscoroutinefunction(self.get_response):
-            # Mark this middleware as a coroutine so Django/asgiref wraps it correctly
-            self._is_coroutine = asyncio.coroutines._is_coroutine
 
-    # ------------------------------------------------------------------
-    # Entry point — dispatches to async or sync path
-    # ------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Guard logic — returns a JsonResponse to block, or None to pass through.
+# Never calls get_response.
+# ---------------------------------------------------------------------------
 
-    def __call__(self, request):
-        import asyncio
-        if asyncio.iscoroutinefunction(self.get_response):
-            return self._async_call(request)
-        # Sync path (WSGI / tests)
-        blocked = self._guard(request)
-        if blocked is not None:
-            return blocked
-        return self.get_response(request)
+def _guard(request):
+    if not request.path.startswith('/api/'):
+        return None
 
-    async def _async_call(self, request):
-        from asgiref.sync import sync_to_async
-        # Run the synchronous guard (file I/O + ORM) in a thread-safe way
-        blocked = await sync_to_async(self._guard, thread_sensitive=True)(request)
-        if blocked is not None:
-            return blocked
-        return await self.get_response(request)
+    from django.conf import settings
+    is_testing = (
+        'test' in sys.argv or getattr(settings, 'TESTING', False)
+    ) and request.META.get('HTTP_X_TEST_MAINTENANCE') != 'True'
 
-    # ------------------------------------------------------------------
-    # Guard logic — returns a JsonResponse to block, or None to pass through
-    # ------------------------------------------------------------------
+    # ── 1. Maintenance mode ────────────────────────────────────────────
+    from users.superadmin import get_system_settings
+    settings_data = get_system_settings()
 
-    def _guard(self, request):
-        if not request.path.startswith('/api/'):
-            return None
-
-        from django.conf import settings
-        is_testing = (
-            'test' in sys.argv or getattr(settings, 'TESTING', False)
-        ) and request.META.get('HTTP_X_TEST_MAINTENANCE') != 'True'
-
-        # ── 1. Maintenance mode check ──────────────────────────────────
-        from users.superadmin import get_system_settings
-        settings_data = get_system_settings()
-
-        if settings_data.get("maintenance_mode") == "true" and not is_testing:
-            user = self._resolve_user(request)
-            is_admin = user and (user.is_superuser or user.is_staff)
-            is_bypass = any(p in request.path for p in ['/auth/login/', '/health/', '/admin/'])
-            if not is_admin and not is_bypass:
-                return JsonResponse(
-                    {
-                        "success": False,
-                        "message": (
-                            "BAHub is currently undergoing scheduled platform maintenance. "
-                            "Please check back shortly."
-                        ),
-                        "errors": {"maintenance": ["System is in maintenance mode."]},
-                    },
-                    status=503,
-                )
-
-        # ── 2. Bypass billing / auth / admin / SAML routes ────────────
-        bypass_paths = ['/billing/', '/auth/', '/admin/', '/saml2/']
-        if any(p in request.path for p in bypass_paths):
-            return None  # pass through
-
-        # ── 3. Subscription enforcement for authenticated users ────────
-        user = self._resolve_user(request)
-        if not (user and user.is_authenticated):
-            return None
-
-        if user.is_superuser or user.is_staff:
-            return None
-
-        if not user.organization:
-            return None
-
-        try:
-            sub = TenantSubscription.objects.get(organization=user.organization)
-        except TenantSubscription.DoesNotExist:
-            return None
-
-        # Paid tier not yet verified by admin
-        if sub.plan_tier != "FREE" and not sub.plan_verified:
+    if settings_data.get("maintenance_mode") == "true" and not is_testing:
+        user = _resolve_user(request)
+        is_admin = user and (user.is_superuser or user.is_staff)
+        is_bypass = any(p in request.path for p in ['/auth/login/', '/health/', '/admin/'])
+        if not is_admin and not is_bypass:
             return JsonResponse(
                 {
                     "success": False,
-                    "message": "Your organization subscription is pending verification.",
-                    "errors": {"error": "Payment pending verification."},
+                    "message": (
+                        "BAHub is currently undergoing scheduled platform maintenance. "
+                        "Please check back shortly."
+                    ),
+                    "errors": {"maintenance": ["System is in maintenance mode."]},
+                },
+                status=503,
+            )
+
+    # ── 2. Bypass billing / auth / admin / SAML ───────────────────────
+    bypass_paths = ['/billing/', '/auth/', '/admin/', '/saml2/']
+    if any(p in request.path for p in bypass_paths):
+        return None
+
+    # ── 3. Subscription enforcement ───────────────────────────────────
+    user = _resolve_user(request)
+    if not (user and user.is_authenticated):
+        return None
+
+    if user.is_superuser or user.is_staff:
+        return None
+
+    if not user.organization:
+        return None
+
+    try:
+        sub = TenantSubscription.objects.get(organization=user.organization)
+    except TenantSubscription.DoesNotExist:
+        return None
+
+    # Paid tier pending admin verification
+    if sub.plan_tier != "FREE" and not sub.plan_verified:
+        return JsonResponse(
+            {
+                "success": False,
+                "message": "Your organization subscription is pending verification.",
+                "errors": {"error": "Payment pending verification."},
+            },
+            status=402,
+        )
+
+    # Paid tier expired past 7-day grace period
+    if sub.plan_tier != "FREE" and sub.expires_at:
+        grace_ends = sub.expires_at + datetime.timedelta(days=7)
+        if timezone.now() >= grace_ends:
+            if sub.payment_status != "EXPIRED":
+                sub.payment_status = "EXPIRED"
+                sub.is_active = False
+                sub.save()
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": (
+                        "Your organization's subscription is inactive or expired. "
+                        "Please complete payment."
+                    ),
+                    "errors": {"error": "Payment required to access this resource."},
                 },
                 status=402,
             )
 
-        # Paid tier expired past grace period
-        if sub.plan_tier != "FREE" and sub.expires_at:
-            grace_ends = sub.expires_at + datetime.timedelta(days=7)
-            if timezone.now() >= grace_ends:
-                if sub.payment_status != "EXPIRED":
-                    sub.payment_status = "EXPIRED"
-                    sub.is_active = False
-                    sub.save()
-                return JsonResponse(
-                    {
-                        "success": False,
-                        "message": (
-                            "Your organization's subscription is inactive or expired. "
-                            "Please complete payment."
-                        ),
-                        "errors": {"error": "Payment required to access this resource."},
-                    },
-                    status=402,
-                )
+    return None
 
-        return None  # all checks passed
 
-    # ------------------------------------------------------------------
-    # Helper — resolve user from request (cached auth or JWT header)
-    # ------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Helper — resolve the authenticated user from the request
+# ---------------------------------------------------------------------------
 
-    def _resolve_user(self, request):
-        if hasattr(request, 'user') and request.user and request.user.is_authenticated:
-            return request.user
-        if hasattr(request, '_force_auth_user'):
-            return request._force_auth_user
-        auth_header = request.headers.get('Authorization', '')
-        if auth_header.startswith('Bearer '):
-            try:
-                authenticator = JWTAuthentication()
-                result = authenticator.authenticate(request)
-                if result:
-                    return result[0]
-            except Exception:
-                pass
-        return None
+def _resolve_user(request):
+    if hasattr(request, 'user') and request.user and request.user.is_authenticated:
+        return request.user
+    if hasattr(request, '_force_auth_user'):
+        return request._force_auth_user
+    auth_header = request.headers.get('Authorization', '')
+    if auth_header.startswith('Bearer '):
+        try:
+            result = JWTAuthentication().authenticate(request)
+            if result:
+                return result[0]
+        except Exception:
+            pass
+    return None
