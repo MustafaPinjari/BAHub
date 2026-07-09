@@ -99,6 +99,7 @@ const MainAppContent: React.FC = () => {
   // Allow explicit preview of landing page via /landing or /welcome route regardless of auth state
   const path = window.location.pathname.toLowerCase();
   const isExplicitLanding = path === "/landing" || path === "/welcome";
+  const isWaitlistRoute = (path === "/waitlist" || path === "/join") && !bypassWaitlistLock;
 
   useEffect(() => {
     if (authView === "landing") {
@@ -117,6 +118,23 @@ const MainAppContent: React.FC = () => {
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-purple-500 mb-4 animate-pulse" />
         <span className="text-xs font-bold text-gray-400 tracking-wider">Redirecting to Django Administration...</span>
       </div>
+    );
+  }
+
+  // Handle direct url path for the waitlist countdown/join screen
+  if (isWaitlistRoute) {
+    return (
+      <LaunchLockedScreen
+        onAdminClick={() => {
+          setBypassWaitlistLock(true);
+          setAuthView("login");
+          window.history.pushState({}, "", "/login");
+        }}
+        onBackToHome={() => {
+          window.history.pushState({}, "", "/");
+          setAuthView("landing");
+        }}
+      />
     );
   }
 
