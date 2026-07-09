@@ -14,7 +14,7 @@ import {
   RiskHeader, SwotHeader, StoriesHeader, AuditHeader,
 } from "../../components/ui/BentoHeaders";
 import logo from "../../assets/logo.png";
-import sandboxPng from "../../assets/sandbox.png";
+import heroRightSidePng from "../../assets/Hero_right_side.png";
 import { LaunchCountdown } from "./LaunchCountdown";
 import { usePublicSettings } from "./usePublicSettings";
 
@@ -465,33 +465,35 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             </motion.div>
           </div>
 
-          {/* Right — Dashboard preview card */}
-          <motion.div initial={{ opacity:0, x:32 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.6, delay:0.25 }}
-            className="relative hidden lg:block my-[80px]">
-            <div className="absolute -inset-4 bg-purple-600/10 rounded-3xl blur-3xl pointer-events-none" />
-            <div className="relative rounded-2xl border border-white/[0.08] overflow-hidden shadow-2xl" style={{ background:'#0a0a0a' }}>
-              <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/[0.06] bg-black/60">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                <span className="ml-3 text-[9px] font-mono text-gray-600">bahub.app — workspace</span>
-                <span className="ml-auto flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[8px] font-bold text-gray-700 uppercase tracking-widest">Live</span>
-                </span>
-              </div>
-              <img src={sandboxPng} alt="BAHub Workspace" className="w-full h-auto object-cover" />
-            </div>
-            {/* Floating stat chips */}
-            <motion.div animate={{ y:[0,-6,0] }} transition={{ repeat:Infinity, duration:3.5, ease:"easeInOut" }}
-              className="absolute -top-4 -right-4 bg-[#0d0d0d] border border-white/[0.10] rounded-xl px-3.5 py-2.5 shadow-xl">
-              <p className="text-[9px] text-gray-500 uppercase font-bold tracking-wider">BRD Generated</p>
-              <p className="text-lg font-extrabold text-white">8 min 14s</p>
-            </motion.div>
-            <motion.div animate={{ y:[0,5,0] }} transition={{ repeat:Infinity, duration:4, ease:"easeInOut", delay:1 }}
-              className="absolute -bottom-4 -left-4 bg-[#0d0d0d] border border-white/[0.10] rounded-xl px-3.5 py-2.5 shadow-xl">
-              <p className="text-[9px] text-gray-500 uppercase font-bold tracking-wider">Requirements Traced</p>
-              <p className="text-lg font-extrabold text-green-400">100%</p>
+          {/* Right — Product Ecosystem Visual Masterpiece */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="relative hidden lg:flex items-center justify-center min-h-[500px]"
+          >
+            {/* Ambient Background Glows */}
+            <div className="absolute w-[500px] h-[500px] rounded-full bg-purple-600/10 blur-[100px] pointer-events-none z-0" />
+            <div className="absolute w-[400px] h-[400px] rounded-full bg-blue-600/5 blur-[80px] pointer-events-none z-0" />
+
+            {/* Parallax Floating Dashboard & Ecosystem Masterpiece */}
+            <motion.div
+              animate={{ 
+                y: [0, -12, 0],
+                rotateZ: [0, 0.5, 0]
+              }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 14, 
+                ease: "easeInOut" 
+              }}
+              className="relative z-10 w-full max-w-[580px] drop-shadow-[0_20px_50px_rgba(168,85,247,0.15)]"
+            >
+              <img 
+                src={heroRightSidePng} 
+                alt="BAHub Connected Product Ecosystem" 
+                className="w-full h-auto object-contain select-none" 
+              />
             </motion.div>
           </motion.div>
         </div>
