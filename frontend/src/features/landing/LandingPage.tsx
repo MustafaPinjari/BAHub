@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles, Workflow, FileText, ArrowRight, GitBranch,
   FileCheck, Heart, Terminal, Zap, Star, Shield, Clock, Plus,
-  Users, ChevronRight, Check, X, BarChart2, FolderGit,
+  Users, ChevronRight, Check, X, BarChart2,
+  Layers, Lock, Folder, UserCheck, Activity, Paperclip, ListChecks,
 } from "lucide-react";
 import { AnimatedBeam } from "../../components/ui/AnimatedBeam";
 import { Marquee } from "../../components/ui/Marquee";
@@ -105,10 +106,10 @@ const PRICING = [
 ];
 
 const HOW_IT_WORKS = [
-  { step: "01", icon: <Terminal className="w-5 h-5 text-blue-400" />, bg: "bg-blue-500/10 border-blue-500/25", title: "Paste raw input", desc: "Drop in meeting transcripts, client emails, voice notes, or raw requirement briefs — any unstructured text works." },
-  { step: "02", icon: <Sparkles className="w-5 h-5 text-purple-400" />, bg: "bg-purple-500/10 border-purple-500/25", title: "AI synthesizes", desc: "The engine extracts actors, events, and logic paths — generating annotated flow diagrams, requirement drafts, and user stories instantly." },
-  { step: "03", icon: <FileCheck className="w-5 h-5 text-green-400" />, bg: "bg-green-500/10 border-green-500/25", title: "Review & link", desc: "Edit nodes, resolve compliance warnings, link stories to requirements, and route your BRD through the approval workflow." },
-  { step: "04", icon: <ArrowRight className="w-5 h-5 text-amber-400" />, bg: "bg-amber-500/10 border-amber-500/25", title: "Export & sync", desc: "Push to Jira, export BPMN / PDF / Word, push Confluence pages, or download PlantUML — all from one click." },
+  { step: "01", icon: <Terminal className="w-4 h-4 text-white/40" />, title: "Paste raw input",  desc: "Drop in meeting transcripts, client emails, voice notes, or raw requirement briefs — any unstructured text works." },
+  { step: "02", icon: <Sparkles className="w-4 h-4 text-white/40" />, title: "AI synthesizes",   desc: "The engine extracts actors, events, and logic paths — generating annotated flow diagrams, requirement drafts, and user stories instantly." },
+  { step: "03", icon: <FileCheck className="w-4 h-4 text-white/40" />, title: "Review & link",   desc: "Edit nodes, resolve compliance warnings, link stories to requirements, and route your BRD through the approval workflow." },
+  { step: "04", icon: <ArrowRight className="w-4 h-4 text-white/40" />, title: "Export & sync",  desc: "Push to Jira, export BPMN / PDF / Word, push Confluence pages, or download PlantUML — all from one click." },
 ];
 
 // ─── Shared micro-components ──────────────────────────────────────────────────
@@ -518,10 +519,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             className="flex flex-wrap items-center justify-center gap-4"
           >
             {[
-              { icon: <Shield className="w-3.5 h-3.5 text-purple-400" />, text: "Audit Trails" },
-              { icon: <Zap className="w-3.5 h-3.5 text-blue-400" />, text: "Real-time Sync" },
-              { icon: <Users className="w-3.5 h-3.5 text-pink-400" />, text: "Team Workspaces" },
-              { icon: <Clock className="w-3.5 h-3.5 text-amber-400" />, text: "SOC 2 Audit Logs" },
+              { icon: <Shield className="w-3 h-3 text-white/30" />, text: "Audit Trails" },
+              { icon: <Zap    className="w-3 h-3 text-white/30" />, text: "Real-time Sync" },
+              { icon: <Users  className="w-3 h-3 text-white/30" />, text: "Team Workspaces" },
+              { icon: <Clock  className="w-3 h-3 text-white/30" />, text: "SOC 2 Audit Logs" },
             ].map(p => (
               <div 
                 key={p.text} 
@@ -568,16 +569,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </h2>
           <p className="text-gray-500 text-sm max-w-[650px] mx-auto leading-relaxed">BAHub collapses the typical 3-week BA cycle into a single traceable workflow.</p>
         </div>
-        <div className="relative grid grid-cols-1 md:grid-cols-4 gap-12">
-          {/* Connector */}
-          <div className="hidden md:block absolute top-10 left-[14%] right-[14%] h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent pointer-events-none" />
+        <div className="relative grid grid-cols-1 md:grid-cols-4 gap-10">
+          {/* Connector line */}
+          <div className="hidden md:block absolute top-[22px] left-[14%] right-[14%] h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent pointer-events-none" />
           {HOW_IT_WORKS.map((item, i) => (
-            <motion.div key={item.step} initial={{ opacity:0, y:24 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ delay:i*0.12 }}
-              className="flex flex-col items-center text-center gap-4 relative">
-              <div className={`w-16 h-16 rounded-2xl border flex items-center justify-center ${item.bg}`}>{item.icon}</div>
-              <span className="text-[9px] font-black text-gray-700 tracking-[0.2em]">{item.step}</span>
-              <h4 className="font-extrabold text-[13px] text-white">{item.title}</h4>
-              <p className="text-[11px] text-gray-500 leading-relaxed max-w-[280px]">{item.desc}</p>
+            <motion.div key={item.step} initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ delay:i*0.1 }}
+              className="flex flex-col items-center text-center gap-5 relative">
+              {/* Step node */}
+              <div className="relative w-11 h-11 rounded-full border border-white/[0.08] bg-[#0d0d0d] flex items-center justify-center z-10">
+                {item.icon}
+                <span className="absolute -top-2 -right-2 text-[8px] font-black text-white/20 tracking-widest">{item.step}</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <h4 className="font-semibold text-[13px] text-white/90 tracking-tight">{item.title}</h4>
+                <p className="text-[11px] text-gray-600 leading-relaxed max-w-[240px] mx-auto">{item.desc}</p>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -596,20 +602,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
         </div>
 
         {/* Tabs navigation */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-12 max-w-xl mx-auto relative z-10">
+        <div className="flex items-center justify-center gap-2 mb-12">
           {[
-            { id: "chat",   label: "AI Chat Assistant", icon: <Sparkles className="w-3.5 h-3.5" /> },
-            { id: "canvas", label: "Workflow Canvas",   icon: <Workflow className="w-3.5 h-3.5" /> },
-            { id: "trace",  label: "Traceability Map",  icon: <GitBranch className="w-3.5 h-3.5" /> },
-            { id: "doc",    label: "BRD Spec Sheet",    icon: <FileText className="w-3.5 h-3.5" /> },
+            { id: "chat",   label: "AI Chat",          icon: <Sparkles  className="w-3 h-3" /> },
+            { id: "canvas", label: "Workflow Canvas",  icon: <Workflow  className="w-3 h-3" /> },
+            { id: "trace",  label: "Traceability",     icon: <GitBranch className="w-3 h-3" /> },
+            { id: "doc",    label: "BRD Sheet",        icon: <FileText  className="w-3 h-3" /> },
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setSimTab(tab.id as any)}
-              className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              onClick={() => setSimTab(tab.id as "chat" | "canvas" | "trace" | "doc")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer whitespace-nowrap ${
                 simTab === tab.id
-                  ? "bg-white/[0.08] border border-white/25 text-white"
-                  : "bg-white/[0.03] border border-white/[0.06] text-gray-500 hover:text-white hover:bg-white/[0.08]"
+                  ? "bg-white/[0.07] border border-white/[0.18] text-white"
+                  : "border border-transparent text-gray-600 hover:text-gray-400 hover:border-white/[0.06]"
               }`}
             >
               {tab.icon}
@@ -879,15 +885,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </p>
         </div>
         <BentoGrid>
-          <BentoGridItem className="md:col-span-2" accentColor="blue"   icon={<FileCheck  className="w-4 h-4 text-blue-400"  />} title="Requirements Manager"        description="Capture Functional, Non-Functional, Technical, and UI requirements with priority, versioning, and stakeholder source links. AI-generates drafts from raw transcripts." header={<RequirementsHeader />} />
-          <BentoGridItem                            accentColor="amber"  icon={<Sparkles   className="w-4 h-4 text-yellow-400"/>} title="AI Assistant"                 description="Context-aware BA chat. Drafts user stories, audits risks, writes QA scripts, and answers questions about your active project data." header={<AIHeader />} />
-          <BentoGridItem                            accentColor="indigo" icon={<FileText   className="w-4 h-4 text-indigo-400"/>} title="BRD / FRD Generator"          description="Compiles IEEE-structured Business and Functional Requirements Documents. Draft → review → approved → signed-off with PDF & Word export." header={<BRDHeader />} />
-          <BentoGridItem className="md:col-span-2" accentColor="green"  icon={<Workflow   className="w-4 h-4 text-green-400" />} title="Interactive Flow Canvas"      description="Build BPMN 2.0, UML Use Case, Sequence, ERD, and Customer Journey diagrams. 12+ templates. Export to draw.io, PlantUML, Mermaid.js, BPMN XML." header={<DiagramHeader />} />
-          <BentoGridItem                            accentColor="red"    icon={<Shield     className="w-4 h-4 text-red-400"   />} title="Risk Register"               description="Log risks with probability, impact scoring, mitigation plans, and lifecycle — Identified → Mitigated → Occurred → Closed." header={<RiskHeader />} />
-          <BentoGridItem                            accentColor="amber"  icon={<Zap        className="w-4 h-4 text-amber-400" />} title="SWOT Analysis"               description="Structured Strengths, Weaknesses, Opportunities, and Threats workspace per project. Compare models across iterations." header={<SwotHeader />} />
-          <BentoGridItem                            accentColor="cyan"   icon={<GitBranch  className="w-4 h-4 text-cyan-400"  />} title="User Stories & Kanban"       description="AI-generates As a / I want / So that stories. Kanban with TODO → In Progress → QA → Done, story points, and acceptance criteria. Syncs to Jira." header={<StoriesHeader />} />
-          <BentoGridItem                            accentColor="purple" icon={<Terminal   className="w-4 h-4 text-purple-400"/>} title="Full Audit Log"              description="Every CREATE, UPDATE, DELETE, and LOGIN recorded with IP, user agent, and field-level diffs. SOC 2 evidence packages on demand." header={<AuditHeader />} />
-          <BentoGridItem className="md:col-span-2" accentColor="blue"   icon={<Clock      className="w-4 h-4 text-teal-400"  />} title="Meetings · Change Requests · Gap Analysis" description="Log meeting minutes and action items. Manage formal change requests with approval gates. Map current vs. future state gaps with resolution tracking." />
+          <BentoGridItem className="md:col-span-2" icon={<FileCheck  className="w-4 h-4 text-white/40" />} title="Requirements Manager"        description="Capture Functional, Non-Functional, Technical, and UI requirements with priority, versioning, and stakeholder source links. AI-generates drafts from raw transcripts." header={<RequirementsHeader />} />
+          <BentoGridItem                            icon={<Sparkles   className="w-4 h-4 text-white/40" />} title="AI Assistant"                 description="Context-aware BA chat. Drafts user stories, audits risks, writes QA scripts, and answers questions about your active project data." header={<AIHeader />} />
+          <BentoGridItem                            icon={<FileText   className="w-4 h-4 text-white/40" />} title="BRD / FRD Generator"          description="Compiles IEEE-structured Business and Functional Requirements Documents. Draft → review → approved → signed-off with PDF & Word export." header={<BRDHeader />} />
+          <BentoGridItem className="md:col-span-2" icon={<Workflow   className="w-4 h-4 text-white/40" />} title="Interactive Flow Canvas"      description="Build BPMN 2.0, UML Use Case, Sequence, ERD, and Customer Journey diagrams. 12+ templates. Export to draw.io, PlantUML, Mermaid.js, BPMN XML." header={<DiagramHeader />} />
+          <BentoGridItem                            icon={<Shield     className="w-4 h-4 text-white/40" />} title="Risk Register"               description="Log risks with probability, impact scoring, mitigation plans, and lifecycle — Identified → Mitigated → Occurred → Closed." header={<RiskHeader />} />
+          <BentoGridItem                            icon={<Zap        className="w-4 h-4 text-white/40" />} title="SWOT Analysis"               description="Structured Strengths, Weaknesses, Opportunities, and Threats workspace per project. Compare models across iterations." header={<SwotHeader />} />
+          <BentoGridItem                            icon={<GitBranch  className="w-4 h-4 text-white/40" />} title="User Stories & Kanban"       description="AI-generates As a / I want / So that stories. Kanban with TODO → In Progress → QA → Done, story points, and acceptance criteria. Syncs to Jira." header={<StoriesHeader />} />
+          <BentoGridItem                            icon={<Terminal   className="w-4 h-4 text-white/40" />} title="Full Audit Log"              description="Every CREATE, UPDATE, DELETE, and LOGIN recorded with IP, user agent, and field-level diffs. SOC 2 evidence packages on demand." header={<AuditHeader />} />
+          <BentoGridItem className="md:col-span-2" icon={<Clock      className="w-4 h-4 text-white/40" />} title="Meetings · Change Requests · Gap Analysis" description="Log meeting minutes and action items. Manage formal change requests with approval gates. Map current vs. future state gaps with resolution tracking." />
         </BentoGrid>
       </section>
 
@@ -928,37 +934,36 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
         </div>
 
         {/* Row 1 — Stakeholder Matrix + Reports */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
           {/* Stakeholder Power/Interest Matrix */}
-          <PremiumGlassCard accentColor="rose" className="h-full">
-            <div className="p-[36px] border-b border-white/[0.06]">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
-                  <Users className="w-4 h-4 text-rose-400" />
+          <PremiumGlassCard className="h-full">
+            <div className="px-8 pt-8 pb-6 border-b border-white/[0.05]">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
+                  <Users className="w-3.5 h-3.5 text-white/50" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-[13px] text-white">Stakeholder Power / Interest Matrix</h3>
-                  <p className="text-[11px] text-gray-500 mt-1">Map every stakeholder into 4 strategic quadrants</p>
+                  <h3 className="font-bold text-[13px] text-white leading-none">Stakeholder Power / Interest Matrix</h3>
+                  <p className="text-[11px] text-gray-600 mt-1">Map every stakeholder into 4 strategic quadrants</p>
                 </div>
               </div>
             </div>
-            {/* Matrix visual */}
-            <div className="p-[36px] grid grid-cols-2 gap-4">
+            <div className="p-8 grid grid-cols-2 gap-3">
               {[
-                { q:"High Power · High Interest", s:"Manage Closely",  c:"border-green-500/30 bg-green-500/5",  tc:"text-green-400",  names:["CEO","Product Owner"]           },
-                { q:"High Power · Low Interest",  s:"Keep Satisfied",  c:"border-blue-500/30 bg-blue-500/5",   tc:"text-blue-400",   names:["Legal Dept","Board Sponsor"]     },
-                { q:"Low Power · High Interest",  s:"Keep Informed",   c:"border-amber-500/30 bg-amber-500/5", tc:"text-amber-400",  names:["QA Engineer","End User"]         },
-                { q:"Low Power · Low Interest",   s:"Monitor",         c:"border-gray-500/20 bg-white/[0.02]", tc:"text-gray-500",   names:["External Auditor"]              },
-              ].map(cell => (
-                <div key={cell.s} className={`rounded-xl border p-3 flex flex-col gap-2 ${cell.c}`}>
+                { q: "High Power · High Interest", label: "Manage Closely",  names: ["CEO", "Product Owner"]       },
+                { q: "High Power · Low Interest",  label: "Keep Satisfied",  names: ["Legal Dept", "Board Sponsor"] },
+                { q: "Low Power · High Interest",  label: "Keep Informed",   names: ["QA Engineer", "End User"]    },
+                { q: "Low Power · Low Interest",   label: "Monitor",         names: ["External Auditor"]           },
+              ].map((cell, i) => (
+                <div key={cell.label} className={`rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex flex-col gap-3 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all duration-200 ${i === 0 ? "border-white/[0.10]" : ""}`}>
                   <div>
-                    <p className={`text-[8px] font-black uppercase tracking-wider ${cell.tc}`}>{cell.q}</p>
-                    <p className="text-[9px] font-bold text-white mt-0.5">{cell.s}</p>
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-gray-600">{cell.q}</p>
+                    <p className="text-[11px] font-semibold text-white/90 mt-1">{cell.label}</p>
                   </div>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {cell.names.map(n => (
-                      <span key={n} className="text-[8px] bg-white/[0.05] border border-white/[0.08] text-gray-400 px-1.5 py-0.5 rounded-md font-medium">{n}</span>
+                      <span key={n} className="text-[9px] bg-white/[0.04] border border-white/[0.07] text-gray-500 px-2 py-0.5 rounded-md font-medium">{n}</span>
                     ))}
                   </div>
                 </div>
@@ -967,35 +972,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </PremiumGlassCard>
 
           {/* Reports & Analytics */}
-          <PremiumGlassCard accentColor="amber" className="h-full">
-            <div className="p-[36px] border-b border-white/[0.06]">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-9 h-9 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
-                  <BarChart2 className="w-4 h-4 text-yellow-400" />
+          <PremiumGlassCard className="h-full">
+            <div className="px-8 pt-8 pb-6 border-b border-white/[0.05]">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
+                  <BarChart2 className="w-3.5 h-3.5 text-white/50" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-[13px] text-white">Reports & Analytics Dashboard</h3>
-                  <p className="text-[11px] text-gray-500 mt-1">Live metrics across all project modules</p>
+                  <h3 className="font-bold text-[13px] text-white leading-none">Reports &amp; Analytics Dashboard</h3>
+                  <p className="text-[11px] text-gray-600 mt-1">Live metrics across all project modules</p>
                 </div>
               </div>
             </div>
-            {/* Mini bar charts */}
-            <div className="p-[36px] flex flex-col gap-4">
+            <div className="p-8 flex flex-col gap-5">
               {[
-                { label:"Requirements Pipeline", approved:72, review:18, draft:10, color:"bg-green-500" },
-                { label:"User Stories Sprint",   done:58,    progress:24, todo:18, color:"bg-blue-500" },
-                { label:"Risk Register",         closed:45,  mitigated:35, open:20, color:"bg-red-500" },
-                { label:"Change Requests",       approved:60, review:25, draft:15, color:"bg-purple-500" },
+                { label: "Requirements Pipeline", a: 72,  b: 18, c: 10, vals: "72 / 18 / 10" },
+                { label: "User Stories Sprint",   a: 58,  b: 24, c: 18, vals: "58 / 24 / 18" },
+                { label: "Risk Register",         a: 45,  b: 35, c: 20, vals: "45 / 35 / 20" },
+                { label: "Change Requests",       a: 60,  b: 25, c: 15, vals: "60 / 25 / 15" },
               ].map(row => (
-                <div key={row.label} className="flex flex-col gap-1">
+                <div key={row.label} className="flex flex-col gap-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-semibold text-gray-500">{row.label}</span>
-                    <span className="text-[9px] font-bold text-gray-600">{Object.values(row).slice(1,-1).join(' / ')}</span>
+                    <span className="text-[11px] font-medium text-gray-500">{row.label}</span>
+                    <span className="text-[10px] font-mono text-gray-700">{row.vals}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-white/[0.05] rounded-full overflow-hidden flex">
-                    {Object.entries(row).slice(1,-1).map(([k,v],i) => (
-                      <div key={k} className={`h-full ${i===0 ? row.color : i===1 ? "bg-white/20" : "bg-white/[0.08]"}`} style={{ width:`${v}%` }} />
-                    ))}
+                  <div className="w-full h-1 bg-white/[0.05] rounded-full overflow-hidden flex gap-px">
+                    <div className="h-full bg-white/60 rounded-l-full transition-all" style={{ width: `${row.a}%` }} />
+                    <div className="h-full bg-white/20 transition-all" style={{ width: `${row.b}%` }} />
+                    <div className="h-full bg-white/[0.08] rounded-r-full transition-all" style={{ width: `${row.c}%` }} />
                   </div>
                 </div>
               ))}
@@ -1003,75 +1007,75 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </PremiumGlassCard>
         </div>
 
-        {/* Row 2 — Diagram Templates + RBAC + Projects/Teams */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Row 2 — Sector Templates + RBAC + Projects & Teams */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {/* 16 Sector Templates */}
-          <PremiumGlassCard accentColor="cyan" className="p-[36px] h-full">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                <Workflow className="w-4 h-4 text-cyan-400" />
+          <PremiumGlassCard className="p-8 h-full">
+            <div className="flex items-center gap-3 mb-7">
+              <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
+                <Layers className="w-3.5 h-3.5 text-white/50" />
               </div>
               <div>
-                <h3 className="font-bold text-[13px] text-white">16 Sector Templates</h3>
-                <p className="text-[10px] text-gray-500 mt-1">Pre-built industry starter canvases</p>
+                <h3 className="font-bold text-[13px] text-white leading-none">16 Sector Templates</h3>
+                <p className="text-[10px] text-gray-600 mt-1">Pre-built industry starter canvases</p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {["E-Commerce","Banking","Healthcare","ERP","CRM","HRMS","Insurance","Education","Government","Inventory","Payment Gateway","Loyalty","Supply Chain","Hotel Mgmt","Hospital","Custom"].map(t => (
-                <span key={t} className="text-[8px] font-bold bg-white/[0.04] border border-white/[0.06] text-gray-500 px-2 py-0.5 rounded-full uppercase tracking-wide">{t}</span>
+                <span key={t} className="text-[8px] font-semibold bg-white/[0.03] border border-white/[0.06] text-gray-600 px-2 py-0.5 rounded-md tracking-wide hover:text-gray-400 hover:border-white/[0.10] transition-colors cursor-default">{t}</span>
               ))}
             </div>
           </PremiumGlassCard>
 
           {/* RBAC */}
-          <PremiumGlassCard accentColor="orange" className="p-[36px] h-full">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-orange-400" />
+          <PremiumGlassCard className="p-8 h-full">
+            <div className="flex items-center gap-3 mb-7">
+              <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
+                <Lock className="w-3.5 h-3.5 text-white/50" />
               </div>
               <div>
-                <h3 className="font-bold text-[13px] text-white">Role-Based Access Control</h3>
-                <p className="text-[10px] text-gray-500 mt-1">Custom roles with granular permissions</p>
+                <h3 className="font-bold text-[13px] text-white leading-none">Role-Based Access Control</h3>
+                <p className="text-[10px] text-gray-600 mt-1">Custom roles with granular permissions</p>
               </div>
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col divide-y divide-white/[0.04]">
               {[
-                { role:"Admin",            perms:["Full Access","Billing","Audit Logs"],     color:"text-purple-400" },
-                { role:"Business Analyst", perms:["Create Reqs","Generate BRD","AI Chat"],  color:"text-blue-400"   },
-                { role:"Developer",        perms:["View Canvas","Edit Stories"],             color:"text-green-400"  },
-                { role:"Custom Role",      perms:["Define any permission set"],              color:"text-amber-400"  },
+                { role: "Admin",            perms: "Full Access · Billing · Audit Logs"    },
+                { role: "Business Analyst", perms: "Create Reqs · Generate BRD · AI Chat" },
+                { role: "Developer",        perms: "View Canvas · Edit Stories"            },
+                { role: "Custom Role",      perms: "Define any permission set"             },
               ].map(r => (
-                <div key={r.role} className="flex items-center gap-2 text-[9px]">
-                  <span className={`font-bold w-28 shrink-0 ${r.color}`}>{r.role}</span>
-                  <span className="text-gray-600 truncate">{r.perms.join(" · ")}</span>
+                <div key={r.role} className="flex items-baseline gap-3 py-2.5 first:pt-0 last:pb-0">
+                  <span className="text-[10px] font-semibold text-white/70 w-28 shrink-0">{r.role}</span>
+                  <span className="text-[9px] text-gray-600 leading-relaxed">{r.perms}</span>
                 </div>
               ))}
             </div>
           </PremiumGlassCard>
 
           {/* Projects & Teams */}
-          <PremiumGlassCard accentColor="indigo" className="p-[36px] h-full">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                <FolderGit className="w-4 h-4 text-indigo-400" />
+          <PremiumGlassCard className="p-8 h-full">
+            <div className="flex items-center gap-3 mb-7">
+              <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
+                <Folder className="w-3.5 h-3.5 text-white/50" />
               </div>
               <div>
-                <h3 className="font-bold text-[13px] text-white">Projects & Teams</h3>
-                <p className="text-[10px] text-gray-500 mt-1">Multi-project workspace with member roles</p>
+                <h3 className="font-bold text-[13px] text-white leading-none">Projects &amp; Teams</h3>
+                <p className="text-[10px] text-gray-600 mt-1">Multi-project workspace with member roles</p>
               </div>
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col divide-y divide-white/[0.04]">
               {[
-                { icon:"🗂️", label:"Unlimited projects per workspace"    },
-                { icon:"👥", label:"Teams with assigned leads & members"  },
-                { icon:"🔀", label:"Project context scopes all modules"   },
-                { icon:"📎", label:"File attachments per project"         },
-                { icon:"📊", label:"Per-project activity log timeline"    },
+                { icon: <Layers      className="w-3 h-3" />, label: "Unlimited projects per workspace"   },
+                { icon: <UserCheck   className="w-3 h-3" />, label: "Teams with assigned leads & members" },
+                { icon: <Activity    className="w-3 h-3" />, label: "Project context scopes all modules"  },
+                { icon: <Paperclip   className="w-3 h-3" />, label: "File attachments per project"        },
+                { icon: <ListChecks  className="w-3 h-3" />, label: "Per-project activity log timeline"   },
               ].map(f => (
-                <div key={f.label} className="flex items-center gap-2 text-[10px]">
-                  <span>{f.icon}</span>
-                  <span className="text-gray-500">{f.label}</span>
+                <div key={f.label} className="flex items-center gap-2.5 py-2.5 first:pt-0 last:pb-0">
+                  <span className="text-white/20 shrink-0">{f.icon}</span>
+                  <span className="text-[10px] text-gray-600">{f.label}</span>
                 </div>
               ))}
             </div>

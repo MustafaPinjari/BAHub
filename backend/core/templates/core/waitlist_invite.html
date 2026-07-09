@@ -1,6 +1,14 @@
 {% extends "core/email_base.html" %}
 
 {% block content %}
+<!-- Coming Soon banner — inline CID, not an attachment -->
+<div style="text-align:center; margin:-4px -4px 28px -4px;">
+    <img src="cid:coming_soon_banner" alt="BAHub — Coming Soon"
+         width="520" border="0"
+         style="display:block; width:100%; max-width:520px; height:auto;
+                border-radius:8px 8px 0 0; margin:0 auto;" />
+</div>
+
 <h2 class="heading">Your BAHub Beta Invitation Is Here!</h2>
 <p class="text">
     Great news &mdash; you have been selected from our waitlist for <strong>exclusive early access</strong>

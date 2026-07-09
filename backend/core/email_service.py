@@ -3,14 +3,23 @@ import time
 import uuid
 import logging
 import threading
+import smtplib
 from pathlib import Path
-from django.core.mail import EmailMultiAlternatives
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
 from django.utils.timezone import now
-from email.mime.image import MIMEImage
+
+# Resolved once at import time — works on both local and Render
+BANNER_PATH = Path(__file__).resolve().parent / "static" / "core" / "email_banner.png"
+COMING_SOON_PATH = Path(__file__).resolve().parent / "static" / "core" / "CommingSoon.png"
 
 logger = logging.getLogger("django")
 
@@ -47,83 +56,146 @@ class EmailService:
     @classmethod
     def _send_email_worker(cls, subject, template_name, context, recipient_list, from_email, attachments, headers, email_type, max_retries=3):
         """
-        Background worker that handles rendering, header generation, SMTP delivery, and exponential backoff retry logic.
+        Background worker: renders templates, builds a correct multipart/related
+        MIME structure so CID images appear inline (never as attachments), then
+        delivers via Django's configured SMTP backend with exponential backoff.
+
+        MIME structure:
+          multipart/mixed          ← outer (allows PDF attachments)
+            multipart/alternative  ← plain-text + html wrapper
+              text/plain
+              multipart/related    ← HTML + inline images
+                text/html
+                image/png  (email_banner,   Content-ID: <email_banner>)
+                image/png  (coming_soon,    Content-ID: <coming_soon_banner>, waitlist only)
+            application/pdf  (optional receipt attachment)
         """
         retry_count = 0
         success = False
         start_time = now()
-        
+
         while retry_count < max_retries and not success:
             try:
-                # Render HTML template
+                # ── Render templates ──────────────────────────────────────
                 html_content = render_to_string(template_name, context)
-                
-                # Check for explicit text template, otherwise auto-generate from HTML content
-                text_template_name = template_name.replace(".html", ".txt")
+                txt_name = template_name.replace(".html", ".txt")
                 try:
-                    text_content = render_to_string(text_template_name, context)
+                    text_content = render_to_string(txt_name, context)
                 except Exception:
                     text_content = strip_tags(html_content)
-                
-                # Setup custom headers
+
+                # ── Headers ───────────────────────────────────────────────
                 msg_id = f"<{uuid.uuid4()}@{cls.DOMAIN}>"
-                current_headers = {
+                extra_headers = {
                     "Reply-To": cls.DEFAULT_SENDER,
                     "Message-ID": msg_id,
                     "X-Mailer": "BAHub-Mailer-Service-v1",
                 }
-                
-                # List-Unsubscribe header for newsletters or waitlist emails
                 if email_type in ["waitlist_confirm", "waitlist_invite", "welcome"]:
-                    current_headers["List-Unsubscribe"] = f"<mailto:{cls.SUPPORT_EMAIL}?subject=unsubscribe>"
-                
+                    extra_headers["List-Unsubscribe"] = f"<mailto:{cls.SUPPORT_EMAIL}?subject=unsubscribe>"
                 if headers:
-                    current_headers.update(headers)
-                
-                msg = EmailMultiAlternatives(
-                    subject=subject,
-                    body=text_content,
-                    from_email=from_email or cls.DEFAULT_SENDER,
-                    to=recipient_list,
-                    headers=current_headers
-                )
-                msg.attach_alternative(html_content, "text/html")
-                
-                # Attach custom attachments
+                    extra_headers.update(headers)
+
+                # ── Build inline images list ──────────────────────────────
+                inline_images = []
+                if BANNER_PATH.exists() and context.get("has_banner", True):
+                    inline_images.append((BANNER_PATH, "email_banner", "email_banner.png"))
+                if email_type in ["waitlist_confirm", "waitlist_invite"] and COMING_SOON_PATH.exists():
+                    inline_images.append((COMING_SOON_PATH, "coming_soon_banner", "CommingSoon.png"))
+
+                # ── Assemble MIME ─────────────────────────────────────────
+                # Outer container: multipart/mixed (holds body + any file attachments)
+                outer = MIMEMultipart("mixed")
+                outer["Subject"] = subject
+                outer["From"]    = from_email or cls.DEFAULT_SENDER
+                outer["To"]      = ", ".join(recipient_list)
+                for k, v in extra_headers.items():
+                    outer[k] = v
+
+                # multipart/alternative wraps plain-text and the related block
+                alternative = MIMEMultipart("alternative")
+
+                # Plain-text part
+                alternative.attach(MIMEText(text_content, "plain", "utf-8"))
+
+                if inline_images:
+                    # multipart/related: html + inline images
+                    related = MIMEMultipart("related")
+                    related.attach(MIMEText(html_content, "html", "utf-8"))
+                    for img_path, cid, filename in inline_images:
+                        with open(img_path, "rb") as f:
+                            img = MIMEImage(f.read(), _subtype="png")
+                        img.add_header("Content-ID", f"<{cid}>")
+                        img.add_header("Content-Disposition", "inline", filename=filename)
+                        related.attach(img)
+                    alternative.attach(related)
+                else:
+                    # No inline images — plain html is fine
+                    alternative.attach(MIMEText(html_content, "html", "utf-8"))
+
+                outer.attach(alternative)
+
+                # Optional file attachments (e.g. PDF receipts)
                 if attachments:
-                    for attachment in attachments:
-                        msg.attach(*attachment)
-                
-                # Attach marketing banner as inline image (CID) if present in template
-                banner_path = Path(settings.BASE_DIR).parent / "frontend" / "src" / "assets" / "email_banner.png"
-                if banner_path.exists() and context.get("has_banner", True):
-                    with open(banner_path, "rb") as f:
-                        mime_image = MIMEImage(f.read())
-                        mime_image.add_header("Content-ID", "<email_banner>")
-                        mime_image.add_header("Content-Disposition", "inline", filename="email_banner.png")
-                        msg.attach(mime_image)
-                
-                # Send email (throws SMTPException/SocketError on failure)
-                msg.send(fail_silently=False)
+                    for name, data, mime_type in attachments:
+                        main_type, sub_type = mime_type.split("/", 1)
+                        part = MIMEBase(main_type, sub_type)
+                        part.set_payload(data)
+                        encoders.encode_base64(part)
+                        part.add_header("Content-Disposition", "attachment", filename=name)
+                        outer.attach(part)
+
+                # ── Send via Django SMTP backend ──────────────────────────
+                from django.core.mail import get_connection
+                from django.conf import settings as django_settings
+
+                connection = get_connection()
+                connection.open()
+
+                # Real SMTP connection exposes .connection (smtplib.SMTP instance).
+                # Django's locmem/console backends do not — fall back to Django's
+                # own message API in that case (used in tests and dev).
+                if hasattr(connection, "connection") and connection.connection is not None:
+                    connection.connection.sendmail(
+                        from_addr=from_email or cls.DEFAULT_SENDER,
+                        to_addrs=recipient_list,
+                        msg=outer.as_string(),
+                    )
+                    connection.close()
+                else:
+                    connection.close()
+                    # Fallback: send via Django's EmailMessage so locmem/console
+                    # backends work correctly (dev / test environments).
+                    from django.core.mail import EmailMultiAlternatives
+                    fallback = EmailMultiAlternatives(
+                        subject=subject,
+                        body=text_content,
+                        from_email=from_email or cls.DEFAULT_SENDER,
+                        to=recipient_list,
+                        headers=extra_headers,
+                    )
+                    fallback.attach_alternative(html_content, "text/html")
+                    if attachments:
+                        for name, data, mime_type in attachments:
+                            fallback.attach(name, data, mime_type)
+                    fallback.send(fail_silently=False)
                 success = True
-                
-                # Log successful delivery
+
                 logger.info(
-                    f"[EmailService] Delivered successfully. Type: {email_type} | Subject: '{subject}' | "
-                    f"Recipients: {recipient_list} | Attempts: {retry_count + 1} | Time: {now() - start_time}"
+                    f"[EmailService] Delivered successfully. Type: {email_type} | "
+                    f"Subject: '{subject}' | Recipients: {recipient_list} | "
+                    f"Attempts: {retry_count + 1} | Time: {now() - start_time}"
                 )
-                
+
             except Exception as e:
                 retry_count += 1
                 logger.warning(
-                    f"[EmailService] Failed attempt {retry_count}/{max_retries} to send '{subject}' to {recipient_list}. "
-                    f"Error: {e}"
+                    f"[EmailService] Failed attempt {retry_count}/{max_retries} to send "
+                    f"'{subject}' to {recipient_list}. Error: {e}"
                 )
                 if retry_count < max_retries:
-                    # Exponential backoff sleep (1s, 2s, 4s...)
                     time.sleep(2 ** (retry_count - 1))
                 else:
-                    # Log hard failure
                     logger.error(
                         f"[EmailService] Hard Failure. Type: {email_type} | Subject: '{subject}' | "
                         f"Recipients: {recipient_list} | Retries exhausted. Final Error: {e}"
