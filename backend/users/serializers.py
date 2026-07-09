@@ -264,6 +264,8 @@ class RegisterSerializer(serializers.Serializer):
                 name=org_name,
                 description=f"Default workspace created for {username}."
             )
+            role = User.ADMIN
+
 
         # Create user (inactive until OTP verification)
         user = User.objects.create_user(

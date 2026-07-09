@@ -292,7 +292,7 @@ class StripeWebhookView(APIView):
 
 
 class MockUpgradeView(APIView):
-    permission_classes = [IsAuthenticated] # Bypasses HasActiveSubscription
+    permission_classes = [AllowAny] # Bypasses HasActiveSubscription
 
     def get(self, request):
         import sys
