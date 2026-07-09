@@ -198,7 +198,10 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
 
         {/* Sidebar Navigation */}
         <nav className="flex-1 p-2 overflow-y-auto flex flex-col gap-0.5">
-          {SIDEBAR_ITEMS.map((item) => {
+          {(user?.is_superuser || user?.is_staff
+            ? [...SIDEBAR_ITEMS, { name: "Superadmin", icon: ShieldAlert, path: "superadmin", category: "settings" }]
+            : SIDEBAR_ITEMS
+          ).map((item) => {
             const Icon = item.icon;
             const isActive = currentTab === item.path;
             return (

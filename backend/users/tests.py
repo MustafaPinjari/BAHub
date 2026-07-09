@@ -399,3 +399,98 @@ class CoreAndAuthTests(APITestCase):
             "refresh": refresh_token
         })
         self.assertEqual(refresh_response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_superadmin_dashboard_view_denies_non_staff_non_superuser(self):
+        """Verify standard users are blocked from superadmin dashboard API."""
+        org = Organization.objects.create(name="Std Org")
+        user = User.objects.create_user(
+            username="regular_user",
+            email="regular@bahub.local",
+            password="SecureP@ss123",
+            role="BUSINESS_ANALYST",
+            organization=org
+        )
+        self.client.force_authenticate(user=user)
+        url = reverse("users-superadmin-dashboard")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_superadmin_dashboard_view_allows_superuser(self):
+        """Verify superusers can access the superadmin dashboard API."""
+        org = Organization.objects.create(name="Super Org")
+        admin_user = User.objects.create_superuser(
+            username="super_user",
+            email="super@bahub.local",
+            password="SecureP@ss123",
+            role="ADMIN",
+            organization=org
+        )
+        self.client.force_authenticate(user=admin_user)
+        url = reverse("users-superadmin-dashboard")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("organizations", response.data["data"])
+        self.assertIn("users", response.data["data"])
+
+    def test_superadmin_dashboard_update_organization(self):
+        """Verify superuser can update an organization's plan tier and verification status."""
+        org = Organization.objects.create(name="Target Org")
+        admin_user = User.objects.create_superuser(
+            username="super_user_2",
+            email="super2@bahub.local",
+            password="SecureP@ss123",
+            role="ADMIN",
+            organization=org
+        )
+        self.client.force_authenticate(user=admin_user)
+        url = reverse("users-superadmin-dashboard")
+        
+        # Upgrade plan to PRO and verify
+        payload = {
+            "action": "update_organization",
+            "organization_id": str(org.id),
+            "plan_tier": "PRO",
+            "plan_verified": True,
+            "is_active": True
+        }
+        response = self.client.post(url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        from billing.models import TenantSubscription
+        sub = TenantSubscription.objects.get(organization=org)
+        self.assertEqual(sub.plan_tier, "PRO")
+        self.assertTrue(sub.plan_verified)
+        self.assertTrue(sub.is_active)
+
+    def test_superadmin_dashboard_update_user_role(self):
+        """Verify superuser can change a user's role."""
+        org = Organization.objects.create(name="Role Org")
+        admin_user = User.objects.create_superuser(
+            username="super_user_3",
+            email="super3@bahub.local",
+            password="SecureP@ss123",
+            role="ADMIN",
+            organization=org
+        )
+        target_user = User.objects.create_user(
+            username="target_member",
+            email="target@bahub.local",
+            password="SecureP@ss123",
+            role="DEVELOPER",
+            organization=org
+        )
+        self.client.force_authenticate(user=admin_user)
+        url = reverse("users-superadmin-dashboard")
+        
+        payload = {
+            "action": "update_user",
+            "user_id": str(target_user.id),
+            "role": "QA_TESTER",
+            "is_active": True
+        }
+        response = self.client.post(url, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        target_user.refresh_from_db()
+        self.assertEqual(target_user.role, "QA_TESTER")
+

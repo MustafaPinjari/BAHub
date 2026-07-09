@@ -31,6 +31,7 @@ const BillingPage = lazy(() => import("./features/auth/BillingPage").then(m => (
 const AuditLogPage = lazy(() => import("./features/audit/AuditLogPage").then(m => ({ default: m.AuditLogPage })));
 const TraceabilityPage = lazy(() => import("./features/traceability/TraceabilityPage").then(m => ({ default: m.TraceabilityPage })));
 const UatPage = lazy(() => import("./features/uat/UatPage").then(m => ({ default: m.UatPage })));
+const SuperAdminPage = lazy(() => import("./features/superadmin/SuperAdminPage").then(m => ({ default: m.SuperAdminPage })));
 
 // Loading spinner fallback for lazy routing
 const PageLoader: React.FC = () => (
@@ -46,6 +47,9 @@ const PageLoader: React.FC = () => (
 );
 
 const AuthenticatedApp: React.FC = () => {
+  const { user } = useAuth();
+  const isPlatformAdmin = user?.is_superuser || user?.is_staff;
+
   return (
     <DashboardShell>
       <Suspense fallback={<PageLoader />}>
@@ -74,6 +78,7 @@ const AuthenticatedApp: React.FC = () => {
           <Route path="/audit" element={<AuditLogPage />} />
           <Route path="/traceability" element={<TraceabilityPage />} />
           <Route path="/uat" element={<UatPage />} />
+          {isPlatformAdmin && <Route path="/superadmin" element={<SuperAdminPage />} />}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Suspense>

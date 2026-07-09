@@ -13,6 +13,8 @@ from users.views import (
 router = DefaultRouter()
 router.register(r"sessions", UserSessionViewSet, basename="user-session")
 
+from users.superadmin import SuperAdminDashboardView
+
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="auth-register"),
     path("verify-otp/", VerifyOTPView.as_view(), name="auth-verify-otp"),
@@ -20,6 +22,7 @@ urlpatterns = [
     path("profile/", ProfileView.as_view(), name="auth-profile"),
     path("sessions/logout-all/", LogoutAllView.as_view(), name="auth-logout-all"),
     path("members/", WorkspaceMembersView.as_view(), name="auth-members"),
+    path("superadmin/dashboard/", SuperAdminDashboardView.as_view(), name="users-superadmin-dashboard"),
     path("", include(router.urls)),
 ]
 
