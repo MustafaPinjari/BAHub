@@ -177,6 +177,13 @@ else:
             conn_max_age=0,
             ssl_require=False
         )
+    # Ensure relative SQLite paths always resolve relative to BASE_DIR
+    if parsed_db.get("ENGINE") == "django.db.backends.sqlite3" and parsed_db.get("NAME") != ":memory:":
+        from pathlib import Path
+        db_path = Path(parsed_db["NAME"])
+        if not db_path.is_absolute():
+            parsed_db["NAME"] = str(BASE_DIR / db_path)
+
     DATABASES = {
         "default": parsed_db
     }

@@ -69,6 +69,9 @@ BAHub/
 
 ## 🚀 Getting Started
 
+> [!NOTE]
+> **Database Location**: The SQLite database is permanently configured to resolve to [backend/db.sqlite3](file:///c:/Users/pinja/OneDrive/Desktop/BAHub/backend/db.sqlite3). Path resolutions in `settings.py` are locked to avoid creating duplicate database files in the project root. You can safely delete any duplicate `db.sqlite3` file in the root folder.
+
 ### Windows One-Click Execution
 Double-click `run_all.bat` in the workspace root, or run it via PowerShell:
 ```powershell
@@ -122,6 +125,10 @@ Pre-populated workspace demo credentials:
 * **Administrator Account**:
   * **Username**: `admin`
   * **Password**: `AdminP@ss123`
+* **Django Admin Superuser**:
+  * **Access Route**: `/admin` (navigating to `http://127.0.0.1:5173/admin` redirects to Django administration panel)
+  * **Username**: `mustafa`
+  * **Password**: `Mustafa@123`
 
 ---
 

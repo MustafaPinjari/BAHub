@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, UserPreference, OTPCode
+from .models import User, UserPreference, EmailOTP
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
@@ -12,4 +12,5 @@ class CustomUserAdmin(UserAdmin):
     )
 
 admin.site.register(UserPreference)
-admin.site.register(OTPCode)
+admin.site.register(EmailOTP)
+

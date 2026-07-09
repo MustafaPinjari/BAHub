@@ -9,6 +9,7 @@ class RiskAdmin(admin.ModelAdmin):
 
 @admin.register(ChangeRequest)
 class ChangeRequestAdmin(admin.ModelAdmin):
-    list_display = ("title", "project", "status", "raised_by", "reviewed_by", "created_at")
+    list_display = ("title", "project", "status", "requested_by", "reviewed_by", "created_at")
     list_filter = ("status",)
-    search_fields = ("title", "description", "project__name", "raised_by__username")
+    search_fields = ("title", "description", "project__name", "requested_by__username")
+
