@@ -458,201 +458,6 @@ else:
 # Stripe Configuration
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", None)
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", None)
-# Ensure other standard local dev ports are allowed in DEBUG mode to prevent port-conflict CORS errors
-if DEBUG:
-    for port in ["5174", "5175", "5176"]:
-        for host in ["localhost", "127.0.0.1"]:
-            local_origin = f"http://{host}:{port}"
-            if local_origin not in CORS_ALLOWED_ORIGINS:
-                CORS_ALLOWED_ORIGINS.append(local_origin)
-
-CORS_ALLOW_CREDENTIALS = True
-
-# CSRF Trusted Origins
-CSRF_TRUSTED_ORIGINS = [
-    origin for origin in CORS_ALLOWED_ORIGINS if origin.startswith("http")
-]
-
-
-# REST Framework Settings
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
-    "DEFAULT_PAGINATION_CLASS": "core.pagination.StandardResultsSetPagination",
-    "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
-}
-
-
-# SimpleJWT settings
-JWT_ACCESS_LIFETIME_MINUTES = int(os.getenv("JWT_ACCESS_LIFETIME_MINUTES", "60"))
-JWT_REFRESH_LIFETIME_DAYS = int(os.getenv("JWT_REFRESH_LIFETIME_DAYS", "7"))
-
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=JWT_ACCESS_LIFETIME_MINUTES),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=JWT_REFRESH_LIFETIME_DAYS),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-    "UPDATE_LAST_LOGIN": True,
-    "ALGORITHM": "HS256",
-    "SIGNING_KEY": os.getenv("JWT_SECRET_KEY", SECRET_KEY),
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-}
-
-
-# Central Logging System
-# Configure colored logging for development (when DEBUG=True)
-if DEBUG:
-    import re
-    from colorlog import ColoredFormatter
-
-    class CleanColoredFormatter(ColoredFormatter):
-        def format(self, record):
-            if record.name == "django.server":
-                msg = record.getMessage()
-                # 1. Match custom runserver format with HTTP prefix and duration/IP:
-                # e.g., HTTP GET /api/v1/requirements/?project=a6ed0b03-120a-4559-9172-147284cefc85 200 [0.02, 127.0.0.1:58297]
-                match = re.match(r'^(?:HTTP\s+)?([A-Z]+)\s+([^\s?]+)(?:\?[^\s]*)?\s+(\d+)(?:\s+\[.*\])?$', msg)
-                if not match:
-                    # 2. Match standard Django runserver format:
-                    # e.g., "GET /api/v1/projects/ HTTP/1.1" 200 1234
-                    match = re.match(r'^"([A-Z]+)\s+([^\s?]+)(?:\?[^\s]*)?\s+HTTP/[0-9.]+"\s+(\d+)\s+\d+', msg)
-                
-                if match:
-                    method, path, status = match.groups()
-                    status_color = "\033[37m"  # Default white
-                    if status.startswith("2"):
-                        status_color = "\033[32m"  # Green
-                    elif status.startswith("3"):
-                        status_color = "\033[36m"  # Cyan
-                    elif status.startswith("4"):
-                        status_color = "\033[33m"  # Yellow
-                    elif status.startswith("5"):
-                        status_color = "\033[31m"  # Red
-                    
-                    reset = "\033[0m"
-                    
-                    # Clean message layout: aligned method, path, and colored status code
-                    record.msg = f"{method:<6} {path:<50} {status_color}{status}{reset}"
-                    record.args = ()
-            return super().format(record)
-
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            # Standard Django formatters
-            "verbose": {
-                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-                "style": "{",
-            },
-            "simple": {
-                "format": "{levelname} {message}",
-                "style": "{",
-            },
-            # Development colored formatter with clean formatting structure
-            "colored": {
-                "()": "bahub_backend.settings.CleanColoredFormatter",
-                "format": "%(log_color)s[%(asctime)s] %(levelname)-8s%(reset)s %(message)s",
-                "datefmt": "%H:%M:%S",
-                "log_colors": {
-                    "DEBUG": "cyan",
-                    "INFO": "green",
-                    "WARNING": "yellow",
-                    "ERROR": "red",
-                    "CRITICAL": "bold_red",
-                },
-            },
-        },
-        "handlers": {
-            # Console handler using the colorlog CleanColoredFormatter
-            "console": {
-                "class": "logging.StreamHandler",
-                "formatter": "colored",
-            },
-            # Fallback/production file handler to write logs to warning.log
-            "file": {
-                "level": "WARNING",
-                "class": "logging.FileHandler",
-                "filename": BASE_DIR / "warning.log",
-                "formatter": "verbose",
-            },
-        },
-        "loggers": {
-            # Top-level Django logger
-            "django": {
-                "handlers": ["console", "file"],
-                "level": "INFO",
-                "propagate": True,
-            },
-            # Django server logger (logs requests e.g. "GET /api/... 200")
-            "django.server": {
-                "handlers": ["console"],
-                "level": "INFO",
-                "propagate": False,
-            },
-            # Django request logger (logs system warning/errors in requests)
-            "django.request": {
-                "handlers": ["console", "file"],
-                "level": "INFO",
-                "propagate": False,
-            },
-            # Custom application logger
-            "bahub.core": {
-                "handlers": ["console", "file"],
-                "level": "INFO",
-                "propagate": True,
-            },
-        },
-    }
-else:
-    # Production-safe logging structure without requiring colorlog at runtime
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "verbose": {
-                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-                "style": "{",
-            },
-            "simple": {
-                "format": "{levelname} {message}",
-                "style": "{",
-            },
-        },
-        "handlers": {
-            "console": {
-                "class": "logging.StreamHandler",
-                "formatter": "verbose",
-            },
-            "file": {
-                "level": "WARNING",
-                "class": "logging.FileHandler",
-                "filename": BASE_DIR / "warning.log",
-                "formatter": "verbose",
-            },
-        },
-        "loggers": {
-            "django": {
-                "handlers": ["console", "file"],
-                "level": "INFO",
-                "propagate": True,
-            },
-            "bahub.core": {
-                "handlers": ["console", "file"],
-                "level": "INFO",
-                "propagate": True,
-            },
-        },
-    }
-
-# Stripe Configuration
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", None)
-STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", None)
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", None)
 STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", None)
 STRIPE_PRICE_ENTERPRISE = os.getenv("STRIPE_PRICE_ENTERPRISE", None)
@@ -667,8 +472,8 @@ EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.Em
 
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587 if os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "yes") else (465 if os.getenv("EMAIL_USE_SSL", "False").lower() in ("true", "1", "yes") else 25)))
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "yes")
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").lower() in ("true", "1", "yes")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@bahub.com")
@@ -696,14 +501,6 @@ SAML2_AUTH = {
     }
 }
 
-
-# Stripe Billing Settings
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", None)
-STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", None)
-STRIPE_PRICE_ENTERPRISE = os.getenv("STRIPE_PRICE_ENTERPRISE", None)
-STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", None)
-
-# Consolidated email settings at top of settings file
 
 # Frontend URL
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://bahub-beta.netlify.app")

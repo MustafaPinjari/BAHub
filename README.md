@@ -87,7 +87,7 @@ BAHub organizes business analysis activities into focused, high-performance modu
 > [!NOTE]
 > Displays active requirements, sprint completion rates, active team members, and overall project health indicators.
 >
-> ![Dashboard Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/assets/screenshots/dashboard.png)
+> ![Dashboard Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/frontend/src/assets/Dashboard_Project_Directory.png)
 </details>
 
 <details>
@@ -96,7 +96,7 @@ BAHub organizes business analysis activities into focused, high-performance modu
 > [!NOTE]
 > Interactive Notion-style spreadsheet for quick inline backlog edits, auto-incrementing custom keys, and stakeholder mapping.
 >
-> ![Requirements Grid Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/assets/screenshots/requirements.png)
+> ![Requirements Grid Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/frontend/src/assets/Requirements_Backlog_Grid.png)
 </details>
 
 <details>
@@ -105,7 +105,7 @@ BAHub organizes business analysis activities into focused, high-performance modu
 > [!NOTE]
 > Maps upstream stakeholder needs and meetings down to functional requirements, user stories, risks, and UAT verify runs.
 >
-> ![Traceability Matrix Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/assets/screenshots/traceability.png)
+> ![Traceability Matrix Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/frontend/src/assets/End_to_End_Traceability_Matrix.png)
 </details>
 
 <details>
@@ -114,7 +114,7 @@ BAHub organizes business analysis activities into focused, high-performance modu
 > [!NOTE]
 > Agile sprint tracker featuring drag-and-drop lanes, custom formulation templates, and story point assignment.
 >
-> ![Kanban Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/assets/screenshots/kanban.png)
+> ![Kanban Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/frontend/src/assets/KanbanBoard_User_Story_Editor.png)
 </details>
 
 <details>
@@ -123,7 +123,7 @@ BAHub organizes business analysis activities into focused, high-performance modu
 > [!NOTE]
 > Manage subscription plans, track historical payments, download PDF invoices, and monitor platform utilization.
 >
-> ![Admin Panel Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/assets/screenshots/admin.png)
+> ![Admin Panel Preview](https://raw.githubusercontent.com/MustafaPinjari/BAHub/main/frontend/src/assets/Admin_Panel_Billing_Protection.png)
 </details>
 
 ---
@@ -147,7 +147,7 @@ graph TD
 graph TD
     subgraph "Context-Aware AI Engine"
         Playground["AI Playground UI"] -->|Prompt + Project Metrics| Handler["API Request Handler"]
-        Handler -->|Fetch Context| DB[("SQLite Database")]
+        Handler -->|Fetch Context| DB["SQLite Database"]
         DB -->|Project Stats & Backlog| Context["Context Wrapper"]
         Context -->|Payload Assembly| Orchestrator["Multi-LLM Orchestrator"]
         Orchestrator -->|REST API Request| OpenAI["OpenAI API"]

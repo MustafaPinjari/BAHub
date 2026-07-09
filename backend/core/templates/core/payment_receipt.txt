@@ -12,4 +12,4 @@ Receipt Details:
 - Subscribed Plan: {{ plan_name }}
 - Amount Paid: {{ amount }}
 
-Your subscription is active. If you did not make this purchase, please contact support@bahub.com immediately.
+Your subscription is active. If you did not make this purchase, please contact bahubofficial@gmail.com immediately.

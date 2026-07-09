@@ -242,7 +242,7 @@ class RegisterSerializer(serializers.Serializer):
             cleaned_name = org_name.strip()
             if Organization.objects.filter(name__iexact=cleaned_name).exists():
                 raise serializers.ValidationError({
-                    "organization_name": "An organization with this name already exists. Please join via invitation token."
+                    "organization_name": "An organization with this name already exists. Please choose a different name or join via invitation token."
                 })
         return attrs
 
@@ -260,11 +260,25 @@ class RegisterSerializer(serializers.Serializer):
             organization = invite.organization
             role = invite.role
         else:
-            org_name = validated_data.get("organization_name", "")
-            organization = Organization.objects.create(
-                name=org_name,
-                description=f"Default workspace created for {username}."
-            )
+            org_name = validated_data.get("organization_name", "").strip()
+            # Use get_or_create as a safety net against race conditions.
+            # The validate() step already rejected existing names, so if we
+            # land here it means a concurrent request slipped through — we
+            # raise a clean validation error instead of a 500.
+            from django.db import IntegrityError
+            try:
+                organization, created = Organization.objects.get_or_create(
+                    name=org_name,
+                    defaults={"description": f"Default workspace created for {username}."}
+                )
+                if not created:
+                    raise serializers.ValidationError({
+                        "organization_name": "An organization with this name was just registered. Please choose a different name."
+                    })
+            except IntegrityError:
+                raise serializers.ValidationError({
+                    "organization_name": "An organization with this name already exists. Please choose a different name."
+                })
             role = User.ADMIN
 
 

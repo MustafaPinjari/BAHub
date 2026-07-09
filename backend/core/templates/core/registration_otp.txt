@@ -19,4 +19,4 @@ BAHub is an enterprise-ready environment designed to accelerate your business an
 SECURITY NOTICE
 This security verification ensures that only authorized email owners can create workspaces on BAHub. If you did not initiate this registration request, no further action is required and your email remains secure.
 
-If you experience any issues during verification, please contact support at support@bahub.com.
+If you experience any issues during verification, please contact support at bahubofficial@gmail.com.

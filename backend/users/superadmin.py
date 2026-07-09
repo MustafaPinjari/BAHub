@@ -214,8 +214,10 @@ class SuperAdminDashboardView(APIView):
             orgs = Organization.objects.filter(id__in=org_ids)
             if delete_mode:
                 count = orgs.count()
+                # Hard-delete all users in these orgs first (SET_NULL means they'd survive otherwise)
+                User.objects.filter(organization__in=orgs).delete()
                 orgs.delete()
-                return api_success(message=f"Successfully bulk deleted {count} organizations.")
+                return api_success(message=f"Successfully bulk deleted {count} organizations and all their users.")
 
             updated_count = 0
             for org in orgs:
@@ -374,8 +376,13 @@ class SuperAdminDashboardView(APIView):
             try:
                 org = Organization.objects.get(id=org_id)
                 org_name = org.name
+                # Hard-delete all users belonging to this organization first,
+                # so they are permanently removed from the database.
+                # (User.organization uses SET_NULL, so we must delete users explicitly.)
+                User.objects.filter(organization=org).delete()
+                # Now delete the organization — cascades to subscription, payments, invitations, etc.
                 org.delete()
-                return api_success(message=f"Organization '{org_name}' and all associated workspace data deleted successfully.")
+                return api_success(message=f"Organization '{org_name}' and all associated users and workspace data deleted successfully.")
             except Organization.DoesNotExist:
                 return api_error(message="Organization not found.", status_code=status.HTTP_404_NOT_FOUND)
 
