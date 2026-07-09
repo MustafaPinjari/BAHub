@@ -239,7 +239,8 @@ class RegisterSerializer(serializers.Serializer):
                 raise serializers.ValidationError({
                     "organization_name": "Organization name is required to register a new workspace."
                 })
-            if Organization.objects.filter(name=org_name).exists():
+            cleaned_name = org_name.strip()
+            if Organization.objects.filter(name__iexact=cleaned_name).exists():
                 raise serializers.ValidationError({
                     "organization_name": "An organization with this name already exists. Please join via invitation token."
                 })
