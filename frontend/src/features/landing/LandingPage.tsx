@@ -279,6 +279,7 @@ export const PremiumGlassCard: React.FC<PremiumGlassCardProps> = ({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigateToRegister }) => {
+  const { waitlist_countdown_enabled } = usePublicSettings();
   const [openFaq, setOpenFaq]       = useState<number | null>(null);
   const [yearly, setYearly]         = useState(false);
 
@@ -495,6 +496,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </motion.div>
         </div>
       </section>
+
+      {waitlist_countdown_enabled && <LaunchCountdown />}
 
       {/* ── SOCIAL PROOF BAR ─────────────────────────────────────────────────── */}
       <section className="py-10 border-t border-b border-white/[0.05] mt-16">
