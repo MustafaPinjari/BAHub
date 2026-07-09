@@ -384,7 +384,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
       <section 
         onMouseMove={handleMouseMove}
-        className="relative min-h-[95vh] flex items-center justify-center mt-10 lg:mt-16 pt-32 pb-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 group overflow-visible rounded-3xl"
+        className="relative min-h-[95vh] flex items-center justify-center mt-4 lg:mt-6 pt-32 pb-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 group overflow-visible rounded-3xl"
         style={{ 
           background: 'radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.10) 0%, transparent 60%), #050505',
           boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05)'
@@ -444,11 +444,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             <span className="text-white/80">AI-Powered BA Workspace</span>
           </motion.div>
 
-          {/* Headline */}
           <motion.h1 initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.1 }}
-            className="text-5xl sm:text-7xl lg:text-[96px] font-extrabold tracking-tighter leading-[0.95] mb-12 flex flex-col items-center text-center w-full">
+            className="text-5xl sm:text-7xl lg:text-[80px] font-extrabold tracking-tighter leading-[0.95] mb-12 flex flex-col items-center text-center w-full">
             <span>Ship traceable</span>
-            <span className="h-[54px] sm:h-[76px] lg:h-[104px] relative overflow-hidden text-gradient-blue-purple block w-full text-center">
+            <span className="h-[54px] sm:h-[76px] lg:h-[88px] relative overflow-hidden text-gradient-blue-purple block w-full text-center">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={taglineIndex}
