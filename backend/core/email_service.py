@@ -90,12 +90,24 @@ class EmailService:
                 extra_headers = {
                     "Reply-To": cls.DEFAULT_SENDER,
                     "Message-ID": msg_id,
-                    "X-Mailer": "BAHub-Mailer-Service-v1",
+                    # NOTE: Do NOT add X-Mailer — some filters treat custom
+                    # mailer strings as a spam/promotions signal.
                 }
-                if email_type in ["waitlist_confirm", "waitlist_invite", "welcome"]:
-                    extra_headers["List-Unsubscribe"] = f"<mailto:{cls.SUPPORT_EMAIL}?subject=unsubscribe>"
+
+                # Transactional emails (invitations, OTP, approvals, etc.) must
+                # NOT carry List-Unsubscribe — Gmail uses that header as its
+                # primary signal to route mail to the Promotions tab.
+                # Only add it for genuine bulk marketing sends.
+                BULK_EMAIL_TYPES = {"waitlist_confirm"}
+                if email_type in BULK_EMAIL_TYPES:
+                    extra_headers["List-Unsubscribe"] = (
+                        f"<mailto:{cls.SUPPORT_EMAIL}?subject=unsubscribe>"
+                    )
+                    extra_headers["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
+
                 if headers:
                     extra_headers.update(headers)
+
 
                 # ── Build inline images list ──────────────────────────────
                 inline_images = []
