@@ -183,7 +183,7 @@ class EmailService:
                 email_msg = EmailMessage(
                     subject=subject,
                     body="",  # body is carried inside outer MIME tree
-                    from_email=from_email or cls.DEFAULT_SENDER,
+                    from_email=from_email or cls._default_sender(),
                     to=recipient_list,
                     headers=extra_headers,
                 )
