@@ -400,7 +400,7 @@ export const SuperAdminPage: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-black text-white p-8 relative min-h-screen pb-24">
+    <div className="flex-1 overflow-y-auto bg-black text-white p-4 sm:p-6 lg:p-8 relative min-h-screen pb-24">
       {/* Background glow effects */}
       <div className="absolute w-[500px] h-[500px] rounded-full bg-purple-600/5 blur-[120px] top-0 right-0 pointer-events-none" />
       <div className="absolute w-[500px] h-[500px] rounded-full bg-blue-600/5 blur-[120px] bottom-0 left-0 pointer-events-none" />
@@ -446,7 +446,7 @@ export const SuperAdminPage: React.FC = () => {
         )}
 
         {/* Main tabs bar */}
-        <div className="flex gap-6 border-b border-white/[0.08]">
+        <div className="flex gap-1 sm:gap-4 lg:gap-6 border-b border-white/[0.08] overflow-x-auto scrollbar-none -mx-1 px-1">
           {(["overview", "organizations", "users", "audit", "payments", "settings"] as const).map((tab) => (
             <button
               key={tab}
@@ -456,16 +456,20 @@ export const SuperAdminPage: React.FC = () => {
                 setSelectedOrgIds([]); 
                 setSelectedUserIds([]); 
               }}
-              className={`pb-4 text-xs font-bold tracking-wider uppercase cursor-pointer transition-all duration-150 relative ${
+              className={`pb-3 sm:pb-4 text-[10px] sm:text-xs font-bold tracking-wider uppercase cursor-pointer transition-all duration-150 relative shrink-0 px-1 sm:px-0 ${
                 activeTab === tab ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
               }`}
             >
-              {tab === "overview" && "Overview & Health"}
+              {tab === "overview" && <span className="sm:hidden">Overview</span>}
+              {tab === "overview" && <span className="hidden sm:inline">Overview & Health</span>}
               {tab === "organizations" && "Workspaces"}
-              {tab === "users" && "Users & Roles"}
-              {tab === "audit" && "Security Logs"}
+              {tab === "users" && <span className="sm:hidden">Users</span>}
+              {tab === "users" && <span className="hidden sm:inline">Users & Roles</span>}
+              {tab === "audit" && <span className="sm:hidden">Audit</span>}
+              {tab === "audit" && <span className="hidden sm:inline">Security Logs</span>}
               {tab === "payments" && "Payments"}
-              {tab === "settings" && "Platform Configuration"}
+              {tab === "settings" && <span className="sm:hidden">Settings</span>}
+              {tab === "settings" && <span className="hidden sm:inline">Platform Configuration</span>}
               {activeTab === tab && (
                 <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />
               )}
@@ -483,7 +487,7 @@ export const SuperAdminPage: React.FC = () => {
             {/* OVERVIEW TAB */}
             {activeTab === "overview" && (
               <div className="flex flex-col gap-6 animate-fadeIn">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                   <Card className="bg-white/[0.01] border-white/[0.06] p-5 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Total Workspaces</span>
@@ -508,7 +512,7 @@ export const SuperAdminPage: React.FC = () => {
                     <span className="text-2xl font-bold">{waitlistCount}</span>
                   </Card>
 
-                  <Card className="bg-white/[0.01] border-white/[0.06] p-5 flex flex-col gap-2 md:col-span-2">
+                  <Card className="bg-white/[0.01] border-white/[0.06] p-5 flex flex-col gap-2 col-span-2 md:col-span-3 lg:col-span-2">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Subscription Tiers Breakdown</span>
                       <Activity className="w-4 h-4 text-green-400" />
@@ -641,8 +645,8 @@ export const SuperAdminPage: React.FC = () => {
             {/* WORKSPACES TAB */}
             {activeTab === "organizations" && (
               <div className="flex flex-col gap-6 animate-fadeIn">
-                <div className="flex justify-between items-center bg-white/[0.01] border border-white/[0.06] p-4 rounded-xl">
-                  <div className="relative w-64">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-white/[0.01] border border-white/[0.06] p-4 rounded-xl">
+                  <div className="relative w-full sm:w-64">
                     <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-gray-600" />
                     <Input
                       placeholder="Search workspaces by name..."
@@ -654,7 +658,7 @@ export const SuperAdminPage: React.FC = () => {
                   <select
                     value={selectedPlanFilter}
                     onChange={(e) => setSelectedPlanFilter(e.target.value)}
-                    className="bg-black border border-white/[0.08] text-white text-xs h-9 px-3 rounded-md outline-none focus:border-purple-500 cursor-pointer"
+                    className="bg-black border border-white/[0.08] text-white text-xs h-9 px-3 rounded-md outline-none focus:border-purple-500 cursor-pointer w-full sm:w-auto"
                   >
                     <option value="ALL">All Plans</option>
                     <option value="FREE">FREE</option>
@@ -828,8 +832,8 @@ export const SuperAdminPage: React.FC = () => {
             {/* USERS TAB */}
             {activeTab === "users" && (
               <div className="flex flex-col gap-6 animate-fadeIn">
-                <div className="flex justify-between items-center bg-white/[0.01] border border-white/[0.06] p-4 rounded-xl">
-                  <div className="relative w-64">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 bg-white/[0.01] border border-white/[0.06] p-4 rounded-xl">
+                  <div className="relative w-full sm:w-64">
                     <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-gray-600" />
                     <Input
                       placeholder="Search users by name/email..."
@@ -841,7 +845,7 @@ export const SuperAdminPage: React.FC = () => {
                   <select
                     value={selectedRoleFilter}
                     onChange={(e) => setSelectedRoleFilter(e.target.value)}
-                    className="bg-black border border-white/[0.08] text-white text-xs h-9 px-3 rounded-md outline-none focus:border-purple-500 cursor-pointer"
+                    className="bg-black border border-white/[0.08] text-white text-xs h-9 px-3 rounded-md outline-none focus:border-purple-500 cursor-pointer w-full sm:w-auto"
                   >
                     <option value="ALL">All Roles</option>
                     {Object.entries(ROLE_LABELS).map(([val, label]) => (
@@ -1133,7 +1137,7 @@ export const SuperAdminPage: React.FC = () => {
 
             {/* SETTINGS TAB */}
             {activeTab === "settings" && (
-              <div className="flex flex-col gap-6 max-w-2xl animate-fadeIn">
+              <div className="flex flex-col gap-6 w-full max-w-2xl animate-fadeIn">
                 <div className="border-b border-white/[0.08] pb-3 flex items-center gap-2">
                   <Settings className="w-4 h-4 text-purple-400" />
                   <h3 className="text-xs font-bold uppercase tracking-wider text-gray-300">Global Platform Overrides</h3>
@@ -1142,7 +1146,7 @@ export const SuperAdminPage: React.FC = () => {
                 <Card className="bg-black border-white/[0.08] p-6 flex flex-col gap-6">
                   
                   {/* Maintenance Mode */}
-                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
                     <div className="flex flex-col gap-1 text-left max-w-md">
                       <span className="text-xs font-bold text-white flex items-center gap-1.5">
                         Maintenance Mode Lockout
@@ -1173,7 +1177,7 @@ export const SuperAdminPage: React.FC = () => {
                   </div>
 
                   {/* Disable AI features */}
-                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
                     <div className="flex flex-col gap-1 text-left max-w-md">
                       <span className="text-xs font-bold text-white">Disable AI Services Globally</span>
                       <p className="text-[10px] text-gray-500 leading-relaxed">
@@ -1197,7 +1201,7 @@ export const SuperAdminPage: React.FC = () => {
                   </div>
 
                   {/* Waitlist Countdown Timer */}
-                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
                     <div className="flex flex-col gap-1 text-left max-w-md">
                       <span className="text-xs font-bold text-white flex items-center gap-1.5">
                         Launch Countdown Timer
@@ -1278,11 +1282,11 @@ export const SuperAdminPage: React.FC = () => {
 
       {/* Floating Bulk Action Bar for Workspaces */}
       {activeTab === "organizations" && selectedOrgIds.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-950 border border-purple-500/30 px-6 py-3.5 rounded-full shadow-[0_0_50px_-12px_rgba(168,85,247,0.4)] flex items-center gap-4 z-50 animate-bounceOnce">
-          <span className="text-xs font-bold text-white pr-2 border-r border-white/10 shrink-0">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl bg-gray-950 border border-purple-500/30 px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl shadow-[0_0_50px_-12px_rgba(168,85,247,0.4)] flex flex-col sm:flex-row sm:items-center gap-3 z-50 animate-bounceOnce">
+          <span className="text-xs font-bold text-white sm:pr-2 sm:border-r border-white/10 shrink-0">
             {selectedOrgIds.length} Selected
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select
               onChange={(e) => {
                 if (e.target.value) {
@@ -1290,7 +1294,7 @@ export const SuperAdminPage: React.FC = () => {
                   e.target.value = "";
                 }
               }}
-              className="bg-black border border-white/[0.08] text-white text-[10px] h-8 px-2 rounded-md outline-none cursor-pointer"
+              className="bg-black border border-white/[0.08] text-white text-[10px] h-8 px-2 rounded-md outline-none cursor-pointer flex-1 sm:flex-none"
             >
               <option value="">Bulk Set Plan</option>
               <option value="FREE">FREE</option>
@@ -1308,7 +1312,7 @@ export const SuperAdminPage: React.FC = () => {
                   e.target.value = "";
                 }
               }}
-              className="bg-black border border-white/[0.08] text-white text-[10px] h-8 px-2 rounded-md outline-none cursor-pointer"
+              className="bg-black border border-white/[0.08] text-white text-[10px] h-8 px-2 rounded-md outline-none cursor-pointer flex-1 sm:flex-none"
             >
               <option value="">Bulk Status</option>
               <option value="verify_true">Verify Accounts</option>
@@ -1323,7 +1327,7 @@ export const SuperAdminPage: React.FC = () => {
                   handleBulkUpdateOrgs({ delete: true });
                 }
               }}
-              className="bg-red-500/10 border border-red-500/20 hover:bg-red-600 hover:text-white text-red-400 text-[10px] font-extrabold h-8 rounded-md px-3 py-0 min-h-0 flex items-center justify-center cursor-pointer transition-colors"
+              className="bg-red-500/10 border border-red-500/20 hover:bg-red-600 hover:text-white text-red-400 text-[10px] font-extrabold h-8 rounded-md px-3 py-0 min-h-0 flex items-center justify-center cursor-pointer transition-colors shrink-0"
               disabled={actionLoading === "bulk-org"}
             >
               Bulk Delete
@@ -1334,11 +1338,11 @@ export const SuperAdminPage: React.FC = () => {
 
       {/* Floating Bulk Action Bar for Users */}
       {activeTab === "users" && selectedUserIds.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-950 border border-purple-500/30 px-6 py-3.5 rounded-full shadow-[0_0_50px_-12px_rgba(168,85,247,0.4)] flex items-center gap-4 z-50 animate-bounceOnce">
-          <span className="text-xs font-bold text-white pr-2 border-r border-white/10 shrink-0">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl bg-gray-950 border border-purple-500/30 px-4 sm:px-6 py-3 sm:py-3.5 rounded-2xl shadow-[0_0_50px_-12px_rgba(168,85,247,0.4)] flex flex-col sm:flex-row sm:items-center gap-3 z-50 animate-bounceOnce">
+          <span className="text-xs font-bold text-white sm:pr-2 sm:border-r border-white/10 shrink-0">
             {selectedUserIds.length} Selected
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select
               onChange={(e) => {
                 if (e.target.value) {
@@ -1346,7 +1350,7 @@ export const SuperAdminPage: React.FC = () => {
                   e.target.value = "";
                 }
               }}
-              className="bg-black border border-white/[0.08] text-white text-[10px] h-8 px-2 rounded-md outline-none cursor-pointer"
+              className="bg-black border border-white/[0.08] text-white text-[10px] h-8 px-2 rounded-md outline-none cursor-pointer flex-1 sm:flex-none"
             >
               <option value="">Bulk Set Role</option>
               {Object.entries(ROLE_LABELS).map(([val, label]) => (
@@ -1364,7 +1368,7 @@ export const SuperAdminPage: React.FC = () => {
                   e.target.value = "";
                 }
               }}
-              className="bg-black border border-white/[0.08] text-white text-[10px] h-8 px-2 rounded-md outline-none cursor-pointer"
+              className="bg-black border border-white/[0.08] text-white text-[10px] h-8 px-2 rounded-md outline-none cursor-pointer flex-1 sm:flex-none"
             >
               <option value="">Bulk Status</option>
               <option value="active_true">Activate Accounts</option>
@@ -1379,7 +1383,7 @@ export const SuperAdminPage: React.FC = () => {
                   handleBulkUpdateUsers({ delete: true });
                 }
               }}
-              className="bg-red-500/10 border border-red-500/20 hover:bg-red-600 hover:text-white text-red-400 text-[10px] font-extrabold h-8 rounded-md px-3 py-0 min-h-0 flex items-center justify-center cursor-pointer transition-colors"
+              className="bg-red-500/10 border border-red-500/20 hover:bg-red-600 hover:text-white text-red-400 text-[10px] font-extrabold h-8 rounded-md px-3 py-0 min-h-0 flex items-center justify-center cursor-pointer transition-colors shrink-0"
               disabled={actionLoading === "bulk-user"}
             >
               Bulk Delete
