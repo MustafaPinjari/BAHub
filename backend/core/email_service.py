@@ -30,8 +30,22 @@ class EmailService:
     designed to maximize inbox placement for BAHub.
     """
 
-    DEFAULT_SENDER = "BAHub Team <bahubofficial@gmail.com>"
-    SUPPORT_EMAIL = "bahubofficial@gmail.com"
+    # Read sender config from Django settings so switching email providers
+    # only requires updating env vars — no code change needed.
+    @classmethod
+    def _default_sender(cls):
+        from django.conf import settings as _s
+        from_email = getattr(_s, "DEFAULT_FROM_EMAIL", "bahubofficial@gmail.com")
+        # Wrap in a display name if it's a bare address
+        if "<" not in from_email:
+            return f"BAHub Team <{from_email}>"
+        return from_email
+
+    @classmethod
+    def _support_email(cls):
+        from django.conf import settings as _s
+        return getattr(_s, "DEFAULT_FROM_EMAIL", "bahubofficial@gmail.com").split("<")[-1].rstrip(">")
+
     DOMAIN = "bahub.com"
 
     @staticmethod
@@ -88,7 +102,7 @@ class EmailService:
                 # ── Headers ───────────────────────────────────────────────
                 msg_id = f"<{uuid.uuid4()}@{cls.DOMAIN}>"
                 extra_headers = {
-                    "Reply-To": cls.DEFAULT_SENDER,
+                    "Reply-To": cls._default_sender(),
                     "Message-ID": msg_id,
                     # NOTE: Do NOT add X-Mailer — some filters treat custom
                     # mailer strings as a spam/promotions signal.
@@ -101,7 +115,7 @@ class EmailService:
                 BULK_EMAIL_TYPES = {"waitlist_confirm"}
                 if email_type in BULK_EMAIL_TYPES:
                     extra_headers["List-Unsubscribe"] = (
-                        f"<mailto:{cls.SUPPORT_EMAIL}?subject=unsubscribe>"
+                        f"<mailto:{cls._support_email()}?subject=unsubscribe>"
                     )
                     extra_headers["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
 
@@ -121,7 +135,7 @@ class EmailService:
                 # Django's SMTP backend can call as_bytes(linesep='\r\n') on it.
                 outer = SafeMIMEMultipart("mixed")
                 outer["Subject"] = subject
-                outer["From"]    = from_email or cls.DEFAULT_SENDER
+                outer["From"]    = from_email or cls._default_sender()
                 outer["To"]      = ", ".join(recipient_list)
                 for k, v in extra_headers.items():
                     outer[k] = v
