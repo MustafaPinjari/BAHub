@@ -145,40 +145,24 @@ class EmailService:
                         part.add_header("Content-Disposition", "attachment", filename=name)
                         outer.attach(part)
 
-                # ── Send via Django SMTP backend ──────────────────────────
-                from django.core.mail import get_connection
-                from django.conf import settings as django_settings
+                # ── Send via Django's EmailMessage ─────────────────────────
+                # We use Django's EmailMessage as the transport layer so it
+                # works with ANY configured backend (SMTP, console, locmem).
+                # The pre-built multipart MIME tree is attached as the raw
+                # message body, preserving inline images and file attachments.
+                from django.core.mail import EmailMessage
 
-                connection = get_connection()
-                connection.open()
-
-                # Real SMTP connection exposes .connection (smtplib.SMTP instance).
-                # Django's locmem/console backends do not — fall back to Django's
-                # own message API in that case (used in tests and dev).
-                if hasattr(connection, "connection") and connection.connection is not None:
-                    connection.connection.sendmail(
-                        from_addr=from_email or cls.DEFAULT_SENDER,
-                        to_addrs=recipient_list,
-                        msg=outer.as_string(),
-                    )
-                    connection.close()
-                else:
-                    connection.close()
-                    # Fallback: send via Django's EmailMessage so locmem/console
-                    # backends work correctly (dev / test environments).
-                    from django.core.mail import EmailMultiAlternatives
-                    fallback = EmailMultiAlternatives(
-                        subject=subject,
-                        body=text_content,
-                        from_email=from_email or cls.DEFAULT_SENDER,
-                        to=recipient_list,
-                        headers=extra_headers,
-                    )
-                    fallback.attach_alternative(html_content, "text/html")
-                    if attachments:
-                        for name, data, mime_type in attachments:
-                            fallback.attach(name, data, mime_type)
-                    fallback.send(fail_silently=False)
+                email_msg = EmailMessage(
+                    subject=subject,
+                    body="",  # body is carried inside `outer` MIME tree
+                    from_email=from_email or cls.DEFAULT_SENDER,
+                    to=recipient_list,
+                    headers=extra_headers,
+                )
+                # Swap Django's default MIMEText body for our fully-built MIME tree.
+                email_msg.mixed_subtype = outer.get_content_subtype()  # 'mixed'
+                email_msg.message = lambda: outer  # type: ignore[method-assign]
+                email_msg.send(fail_silently=False)
                 success = True
 
                 logger.info(

@@ -464,11 +464,19 @@ STRIPE_PRICE_ENTERPRISE = os.getenv("STRIPE_PRICE_ENTERPRISE", None)
 
 
 # ─── Email Configuration ──────────────────────────────────────────────────
-# During automated tests Django overrides EMAIL_BACKEND to locmem automatically.
-# In development: uses console backend so all emails print to terminal.
-# In production:  uses SMTP backend, reading configurations from environment variables.
-
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend" if DEBUG else "django.core.mail.backends.smtp.EmailBackend")
+# Priority order for EMAIL_BACKEND:
+#   1. Explicit EMAIL_BACKEND env var (always wins — set this on Render).
+#   2. If EMAIL_HOST_USER is configured → SMTP (works in both dev and prod).
+#   3. Fallback to console backend (safe for local dev with no credentials).
+#
+# IMPORTANT: On Render, set these env vars in the dashboard:
+#   EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+#   EMAIL_HOST=smtp.gmail.com
+#   EMAIL_PORT=587
+#   EMAIL_HOST_USER=bahubofficial@gmail.com
+#   EMAIL_HOST_PASSWORD=<your-app-password>
+#   EMAIL_USE_TLS=True
+#   DEFAULT_FROM_EMAIL=bahubofficial@gmail.com
 
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587 if os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "yes") else (465 if os.getenv("EMAIL_USE_SSL", "False").lower() in ("true", "1", "yes") else 25)))
@@ -478,6 +486,13 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "False").lower() in ("true", "1", "ye
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").lower() in ("true", "1", "yes")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@bahub.com")
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Auto-select SMTP when credentials are present, console otherwise.
+# An explicit EMAIL_BACKEND env var always takes precedence.
+_smtp_backend = "django.core.mail.backends.smtp.EmailBackend"
+_console_backend = "django.core.mail.backends.console.EmailBackend"
+_default_backend = _smtp_backend if EMAIL_HOST_USER else _console_backend
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", _default_backend)
 
 
 
