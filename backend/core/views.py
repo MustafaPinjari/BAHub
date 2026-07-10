@@ -102,54 +102,36 @@ class PublicSettingsView(APIView):
 class PublicWaitlistView(APIView):
     """
     Public endpoint to register interest in the waitlist.
+    Signups are persisted in the database (WaitlistSignup model) so they
+    survive deployments — the old JSON file was wiped on every git push.
     """
     permission_classes = [AllowAny]
     authentication_classes = []
     renderer_classes = [JSONRenderer]
 
     def post(self, request, *args, **kwargs):
-        email = request.data.get("email")
+        from users.models import WaitlistSignup
+
+        email = request.data.get("email", "").strip().lower()
         if not email or "@" not in email:
             return Response(
                 {"success": False, "message": "Please provide a valid email address."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-            
-        waitlist_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "users", "waitlist.json")
-        waitlist_data = []
-        if os.path.exists(waitlist_file):
-            try:
-                with open(waitlist_file, "r") as f:
-                    waitlist_data = json.load(f)
-            except Exception:
-                pass
-                
-        # Check duplicate
-        if any(item.get("email") == email.strip().lower() for item in waitlist_data):
+
+        signup, created = WaitlistSignup.objects.get_or_create(email=email)
+        if not created:
             return Response(
                 {"success": True, "message": "You are already on the waitlist!"},
                 status=status.HTTP_200_OK
             )
-            
-        waitlist_data.append({
-            "email": email.strip().lower(),
-            "created_at": datetime.datetime.utcnow().isoformat() + "Z"
-        })
-        
-        try:
-            with open(waitlist_file, "w") as f:
-                json.dump(waitlist_data, f, indent=4)
-        except Exception:
-            return Response(
-                {"success": False, "message": "Failed to save waitlist submission."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-            
+
         # Send confirmation email
         from core.emails import send_waitlist_confirmation_email
-        send_waitlist_confirmation_email(email.strip().lower())
-            
+        send_waitlist_confirmation_email(email)
+
         return Response(
             {"success": True, "message": "Successfully joined the waitlist!"},
             status=status.HTTP_201_CREATED
         )
+

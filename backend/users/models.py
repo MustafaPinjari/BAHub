@@ -128,3 +128,18 @@ class EmailOTP(models.Model):
         )
         return code
 
+
+class WaitlistSignup(models.Model):
+    """
+    Stores waitlist signups in the database so they survive deployments.
+    Replaces the fragile waitlist.json file approach which was wiped on every git push.
+    """
+    email = models.EmailField(unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "waitlist_signups"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.email

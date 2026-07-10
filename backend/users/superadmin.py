@@ -163,17 +163,14 @@ class SuperAdminDashboardView(APIView):
         # 6. Read system settings
         system_settings = get_system_settings()
 
-        # Fetch waitlist subscribers
-        waitlist_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "users", "waitlist.json")
-        waitlist_count = 0
-        waitlist_entries = []
-        if os.path.exists(waitlist_file):
-            try:
-                with open(waitlist_file, "r") as f:
-                    waitlist_entries = json.load(f)
-                    waitlist_count = len(waitlist_entries)
-            except Exception:
-                pass
+        # Fetch waitlist subscribers from the database
+        from users.models import WaitlistSignup
+        qs = WaitlistSignup.objects.all()
+        waitlist_count = qs.count()
+        waitlist_entries = [
+            {"email": entry.email, "created_at": entry.created_at.isoformat()}
+            for entry in qs
+        ]
 
         # 7. Execute real-time database latency query check
         try:
@@ -416,21 +413,14 @@ class SuperAdminDashboardView(APIView):
                 return api_error(message="User not found.", status_code=status.HTTP_404_NOT_FOUND)
 
         elif action == "delete_waitlist":
-            email = request.data.get("email")
+            from users.models import WaitlistSignup
+            email = request.data.get("email", "").strip().lower()
             if not email:
                 return api_error(message="Email address is required.", status_code=status.HTTP_400_BAD_REQUEST)
-            waitlist_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "users", "waitlist.json")
-            if os.path.exists(waitlist_file):
-                try:
-                    with open(waitlist_file, "r") as f:
-                        entries = json.load(f)
-                    new_entries = [entry for entry in entries if entry.get("email", "").lower() != email.strip().lower()]
-                    with open(waitlist_file, "w") as f:
-                        json.dump(new_entries, f, indent=4)
-                    return api_success(message=f"Successfully removed '{email}' from the waitlist.")
-                except Exception as e:
-                    return api_error(message=f"Failed to update waitlist: {str(e)}")
-            return api_error(message="Waitlist is empty.", status_code=status.HTTP_404_NOT_FOUND)
+            deleted_count, _ = WaitlistSignup.objects.filter(email=email).delete()
+            if deleted_count:
+                return api_success(message=f"Successfully removed '{email}' from the waitlist.")
+            return api_error(message="Email not found on the waitlist.", status_code=status.HTTP_404_NOT_FOUND)
 
         elif action == "send_waitlist_invite":
             email = request.data.get("email")
