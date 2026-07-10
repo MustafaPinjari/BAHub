@@ -10,6 +10,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from django.core.mail.message import SafeMIMEMultipart
 
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -104,8 +105,9 @@ class EmailService:
                     inline_images.append((COMING_SOON_PATH, "coming_soon_banner", "CommingSoon.png"))
 
                 # ── Assemble MIME ─────────────────────────────────────────
-                # Outer container: multipart/mixed (holds body + any file attachments)
-                outer = MIMEMultipart("mixed")
+                # Outer container: SafeMIMEMultipart (Django's subclass) so that
+                # Django's SMTP backend can call as_bytes(linesep='\r\n') on it.
+                outer = SafeMIMEMultipart("mixed")
                 outer["Subject"] = subject
                 outer["From"]    = from_email or cls.DEFAULT_SENDER
                 outer["To"]      = ", ".join(recipient_list)
@@ -146,21 +148,20 @@ class EmailService:
                         outer.attach(part)
 
                 # ── Send via Django's EmailMessage ─────────────────────────
-                # We use Django's EmailMessage as the transport layer so it
-                # works with ANY configured backend (SMTP, console, locmem).
-                # The pre-built multipart MIME tree is attached as the raw
-                # message body, preserving inline images and file attachments.
+                # Uses Django's EmailMessage as the transport layer so it works
+                # with ANY configured backend (SMTP, console, locmem).
+                # outer is a SafeMIMEMultipart so Django can call
+                # as_bytes(linesep='\r\n') on it without TypeError.
                 from django.core.mail import EmailMessage
 
                 email_msg = EmailMessage(
                     subject=subject,
-                    body="",  # body is carried inside `outer` MIME tree
+                    body="",  # body is carried inside outer MIME tree
                     from_email=from_email or cls.DEFAULT_SENDER,
                     to=recipient_list,
                     headers=extra_headers,
                 )
-                # Swap Django's default MIMEText body for our fully-built MIME tree.
-                email_msg.mixed_subtype = outer.get_content_subtype()  # 'mixed'
+                # Replace Django's auto-built message with our pre-built MIME tree.
                 email_msg.message = lambda: outer  # type: ignore[method-assign]
                 email_msg.send(fail_silently=False)
                 success = True
