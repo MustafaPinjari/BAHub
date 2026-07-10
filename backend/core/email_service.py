@@ -35,7 +35,7 @@ class EmailService:
     @classmethod
     def _default_sender(cls):
         from django.conf import settings as _s
-        from_email = getattr(_s, "DEFAULT_FROM_EMAIL", "bahubofficial@gmail.com")
+        from_email = getattr(_s, "DEFAULT_FROM_EMAIL", "noreply@bahub.com")
         # Wrap in a display name if it's a bare address
         if "<" not in from_email:
             return f"BAHub Team <{from_email}>"

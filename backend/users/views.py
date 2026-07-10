@@ -55,6 +55,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     Overridden SimpleJWT Login view that creates a UserSession and wraps the payload.
     """
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_scope = "login"
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -104,6 +105,7 @@ class RegisterView(APIView):
     User signup endpoint. Creates a new user along with a workspace organization.
     """
     permission_classes = [AllowAny]
+    throttle_scope = "login"  # 10 requests/minute — prevents signup spam & OTP email abuse
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -135,6 +137,7 @@ class VerifyOTPView(APIView):
     Verify the 6-digit OTP code to activate the user account.
     """
     permission_classes = [AllowAny]
+    throttle_scope = "otp"
 
     def post(self, request):
         username = request.data.get("username")
@@ -207,6 +210,7 @@ class ResendOTPView(APIView):
     Generate and resend a new OTP code to the user's email.
     """
     permission_classes = [AllowAny]
+    throttle_scope = "otp"
 
     def post(self, request):
         username = request.data.get("username")

@@ -134,3 +134,47 @@ else:
 ## 💡 Troubleshooting & Tips
 * **Cold Starts**: Render's free tier spins down the backend web service after 15 minutes of inactivity. The first API call from your frontend can take ~50 seconds to respond as the backend wakes up. Once awake, it will be fast and responsive.
 * **WebSocket Port**: Render maps WebSockets automatically over standard ports (`80`/`443`). Always use `wss://` for production WebSockets to bypass security blocks.
+
+---
+
+## 🔴 Known Limitation: WebSocket Scaling (InMemoryChannelLayer)
+
+### The Problem
+
+By default (when `REDIS_URL` is **not** set), Django Channels uses `InMemoryChannelLayer`. This works fine for **a single server instance**, but has a critical limitation:
+
+> If Render (or any host) scales to **more than one instance**, WebSocket messages will only be delivered to users connected to the *same* instance. Real-time collaboration between users on different instances will silently break.
+
+### The Fix — Redis Channel Layer
+
+The codebase **already supports Redis** — the switch is automatic when `REDIS_URL` is present (see `settings.py`):
+
+```python
+REDIS_URL = os.getenv("REDIS_URL", "")
+if REDIS_URL:
+    # Uses channels_redis.core.RedisChannelLayer — multi-instance safe ✅
+    CHANNEL_LAYERS = { "default": { "BACKEND": "channels_redis.core.RedisChannelLayer", ... } }
+else:
+    # Falls back to InMemoryChannelLayer — single-instance only ⚠️
+    CHANNEL_LAYERS = { "default": { "BACKEND": "channels.layers.InMemoryChannelLayer" } }
+```
+
+### Free Redis Options
+
+| Provider | Free Tier | Setup |
+|---|---|---|
+| [Upstash Redis](https://upstash.com/) | 10k req/day, 256MB | Sign up → create DB → copy `redis://` URL |
+| [Railway Redis](https://railway.app/) | $5 credit/month (covers Redis) | New project → Add Redis → copy URL |
+
+### Steps to Enable
+
+1. Sign up for **Upstash** (recommended for free tier).
+2. Create a Redis database → copy the connection string (format: `rediss://default:password@host:port`).
+3. In your Render dashboard, add the environment variable:
+   ```
+   REDIS_URL=rediss://default:<password>@<host>:<port>
+   ```
+4. Redeploy — Channels will automatically switch to `RedisChannelLayer`.
+
+> **Priority**: If you are running a single Render instance, `InMemoryChannelLayer` is safe. Upgrade to Redis before scaling to multiple instances.
+

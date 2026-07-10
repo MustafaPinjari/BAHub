@@ -289,6 +289,19 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "core.pagination.StandardResultsSetPagination",
     "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
+    # Rate limiting — protects login, OTP, and waitlist from brute-force/spam
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "60/minute",
+        "user": "300/minute",
+        "login": "10/minute",
+        "otp": "5/minute",
+        "waitlist": "5/minute",
+    },
 }
 
 

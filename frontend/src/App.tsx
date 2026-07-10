@@ -89,6 +89,9 @@ const AuthenticatedApp: React.FC = () => {
 };
 
 import { BillingBlockedScreen } from "./features/auth/components/BillingBlockedScreen";
+import { PrivacyPolicyPage } from "./features/legal/PrivacyPolicyPage";
+import { TermsOfServicePage } from "./features/legal/TermsOfServicePage";
+import { ContactPage } from "./features/legal/ContactPage";
 
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading, user } = useAuth();
@@ -172,6 +175,11 @@ const MainAppContent: React.FC = () => {
       </div>
     );
   }
+
+  // Legal pages — always accessible, no auth required
+  if (path === "/privacy") return <PrivacyPolicyPage />;
+  if (path === "/terms")   return <TermsOfServicePage />;
+  if (path === "/contact") return <ContactPage />;
 
   // If user is logged in, and tries to go to login or register page, send them to dashboard
   if (isAuthenticated && (isLoginPath || isRegisterPath) && !waitlist_countdown_enabled) {

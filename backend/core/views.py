@@ -108,6 +108,7 @@ class PublicWaitlistView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
     renderer_classes = [JSONRenderer]
+    throttle_scope = "waitlist"
 
     def post(self, request, *args, **kwargs):
         from users.models import WaitlistSignup

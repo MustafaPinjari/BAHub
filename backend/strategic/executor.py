@@ -19,7 +19,7 @@ def call_llm(prompt, system_instruction=""):
     openai_key = os.environ.get("OPENAI_API_KEY")
     
     if gemini_key:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={gemini_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
         headers = {"Content-Type": "application/json"}
         full_text = f"{system_instruction}\n\nUser request: {prompt}"
         data = {
