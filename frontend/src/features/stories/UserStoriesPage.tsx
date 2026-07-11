@@ -11,7 +11,8 @@ import {
   FolderGit,
   X,
   FileText,
-  CheckSquare
+  CheckSquare,
+  ListChecks
 } from "lucide-react";
 
 
@@ -265,15 +266,41 @@ export const UserStoriesPage: React.FC = () => {
           <div className="flex flex-col gap-1">
             <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">No Requirements Configured</h2>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
-              User stories trace back directly to requirements. Create your first requirement specifications profile before writing user stories.
+              User stories trace back directly to requirements. Create your first requirement before writing user stories.
             </p>
           </div>
+          <button
+            onClick={() => window.location.href = "/requirements"}
+            className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
+          >
+            → Go to Requirements
+          </button>
         </Card>
       ) : loading ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="w-7 h-7 text-primary animate-spin mb-2" />
           <span className="text-xs text-muted-foreground font-semibold">Loading story cards...</span>
         </div>
+      ) : stories.length === 0 ? (
+        <Card className="flex flex-col items-center justify-center text-center p-12 py-16 max-w-lg mx-auto gap-4 mt-6">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20 shrink-0">
+            <ListChecks className="w-6 h-6" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">No User Stories Yet</h2>
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
+              Break requirements into Scrum story cards to estimate velocity and track progress on the board.
+            </p>
+          </div>
+          {canManage && (
+            <button
+              onClick={openCreateModal}
+              className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
+            >
+              + Create first story
+            </button>
+          )}
+        </Card>
       ) : (
         /* KANBAN SCRUM BOARD */
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-stretch select-none text-foreground text-left font-semibold">

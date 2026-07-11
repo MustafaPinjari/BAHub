@@ -21,6 +21,7 @@ import { usePublicSettings } from "./usePublicSettings";
 interface LandingPageProps {
   onNavigateToLogin: () => void;
   onNavigateToRegister: () => void;
+  onTryDemo: () => void;
 }
 
 // ─── Static Data ─────────────────────────────────────────────────────────────
@@ -278,7 +279,7 @@ export const PremiumGlassCard: React.FC<PremiumGlassCardProps> = ({
 };
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigateToRegister }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigateToRegister, onTryDemo }) => {
   const { waitlist_countdown_enabled } = usePublicSettings();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [yearly, setYearly] = useState(false);
@@ -502,12 +503,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
 
-            {/* Secondary CTA */}
+            {/* Try Demo CTA */}
             <button
-              onClick={onNavigateToLogin}
-              className="px-8 py-4 rounded-2xl text-[13px] font-semibold tracking-wide border border-white/[0.08] text-white/80 hover:text-white hover:bg-white/[0.04] hover:border-white/[0.18] active:scale-95 transition-all cursor-pointer bg-[#0c0c0c]/40 backdrop-blur-md"
+              onClick={onTryDemo}
+              className="group px-8 py-4 rounded-2xl text-[13px] font-semibold tracking-wide border border-white/[0.08] text-white/80 hover:text-white hover:bg-white/[0.04] hover:border-white/[0.18] active:scale-95 transition-all cursor-pointer bg-[#0c0c0c]/40 backdrop-blur-md flex items-center gap-2"
             >
-              View Live Demo
+              <Zap className="w-4 h-4 text-purple-400 group-hover:text-purple-300 transition-colors" />
+              Try Demo
             </button>
           </motion.div>
 

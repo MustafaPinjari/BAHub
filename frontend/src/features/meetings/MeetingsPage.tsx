@@ -356,9 +356,28 @@ export const MeetingsPage: React.FC = () => {
               <span className="text-xs text-muted-foreground font-semibold">Loading logs...</span>
             </div>
           ) : filteredMeetings.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center text-xs text-muted-foreground flex-1">
-              <Calendar className="w-8 h-8 text-muted-foreground/30 mb-2" />
-              <span>No scheduled sessions recorded.</span>
+            <div className="flex flex-col items-center justify-center py-12 text-center flex-1 gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-xl border border-primary/20 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="text-xs font-bold text-foreground">
+                  {searchQuery ? "No meetings match your search" : "No meetings scheduled yet"}
+                </p>
+                <p className="text-[10px] text-muted-foreground max-w-[180px] leading-relaxed">
+                  {searchQuery
+                    ? "Try a different keyword or clear the filter."
+                    : "Schedule your first meeting to capture MoM and track action items."}
+                </p>
+              </div>
+              {!searchQuery && canManage && (
+                <button
+                  onClick={openScheduleModal}
+                  className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
+                >
+                  + Schedule first meeting
+                </button>
+              )}
             </div>
           ) : (
             <div className="flex flex-col gap-2 overflow-y-auto max-h-[550px] pr-1">

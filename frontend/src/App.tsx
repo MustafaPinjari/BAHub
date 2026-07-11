@@ -94,8 +94,9 @@ import { TermsOfServicePage } from "./features/legal/TermsOfServicePage";
 import { ContactPage } from "./features/legal/ContactPage";
 
 const MainAppContent: React.FC = () => {
-  const { isAuthenticated, loading, user } = useAuth();
+  const { isAuthenticated, loading, user, login } = useAuth();
   const [bypassWaitlistLock, setBypassWaitlistLock] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
   const { waitlist_countdown_enabled } = usePublicSettings();
   
   const location = useLocation();
@@ -124,13 +125,14 @@ const MainAppContent: React.FC = () => {
   }
 
   const isPlatformAdmin = user?.is_superuser || user?.is_staff;
+  const isDemoUser = user?.username === "analyst" || user?.username === "admin";
 
   const queryParams = new URLSearchParams(location.search);
   const waitlistBypassParam = queryParams.get("waitlist_bypass") === "true";
   const hasWaitlistBypass = waitlistBypassParam || bypassWaitlistLock;
 
-  // Waitlist Lockout check
-  if (waitlist_countdown_enabled && !isPlatformAdmin) {
+  // Waitlist Lockout check — admins, demo users, and explicit bypass holders get through
+  if (waitlist_countdown_enabled && !isPlatformAdmin && !isDemoUser) {
     if (!isLandingPath && !isWaitlistPath && !hasWaitlistBypass) {
       return <Navigate to="/waitlist" replace />;
     }
@@ -186,11 +188,27 @@ const MainAppContent: React.FC = () => {
     return <Navigate to="/dashboard" replace />;
   }
 
+  const handleTryDemo = async () => {
+    setDemoLoading(true);
+    try {
+      await login("analyst", "AnalystP@ss123");
+      navigate("/dashboard");
+    } catch {
+      // Demo login failed — fall back to login page with bypass so the
+      // form is reachable during the countdown period
+      setBypassWaitlistLock(true);
+      navigate("/login");
+    } finally {
+      setDemoLoading(false);
+    }
+  };
+
   if (isLandingPath) {
     return (
       <LandingPage 
         onNavigateToLogin={() => navigate("/login")} 
-        onNavigateToRegister={() => navigate("/register")} 
+        onNavigateToRegister={() => navigate("/register")}
+        onTryDemo={handleTryDemo}
       />
     );
   }
