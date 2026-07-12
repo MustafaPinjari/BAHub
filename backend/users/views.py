@@ -337,3 +337,156 @@ class WorkspaceMembersView(APIView):
         members = User.objects.filter(organization_id=user.organization_id, is_active=True)
         serializer = UserSerializer(members, many=True)
         return api_success(data=serializer.data, message="Workspace members retrieved successfully.")
+
+
+class DemoLoginView(APIView):
+    """
+    Secure demo login endpoint — credentials are stored server-side in environment
+    variables, never exposed in the frontend bundle.
+
+    Returns JWT tokens for the demo account if it exists and DEMO_MODE is enabled.
+    Throttled via the 'login' scope to prevent abuse.
+    """
+    permission_classes = [AllowAny]
+    throttle_scope = "login"
+
+    def post(self, request):
+        from django.conf import settings as django_settings
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        demo_username = getattr(django_settings, "DEMO_USERNAME", None)
+        demo_password = getattr(django_settings, "DEMO_PASSWORD", None)
+
+        if not demo_username or not demo_password:
+            return api_error(
+                message="Demo access is not enabled on this server.",
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        try:
+            demo_user = User.objects.get(username=demo_username, is_active=True)
+        except User.DoesNotExist:
+            return api_error(
+                message="Demo account not available.",
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        if not demo_user.check_password(demo_password):
+            return api_error(
+                message="Demo account misconfigured.",
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        # Issue JWT tokens
+        refresh = RefreshToken.for_user(demo_user)
+        refresh["role"] = demo_user.role
+        refresh["organization_id"] = str(demo_user.organization_id) if demo_user.organization_id else None
+        refresh["username"] = demo_user.username
+        refresh["email"] = demo_user.email
+
+        user_data = UserSerializer(demo_user).data
+        return api_success(
+            data={
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": user_data,
+            },
+            message="Demo session started successfully.",
+        )
+
+
+class PasswordResetRequestView(APIView):
+    """
+    Request a password reset — sends a time-limited token to the user's email.
+    Throttled to prevent email enumeration abuse.
+    """
+    permission_classes = [AllowAny]
+    throttle_scope = "login"
+
+    def post(self, request):
+        from django.contrib.auth.tokens import default_token_generator
+        from django.utils.encoding import force_bytes
+        from django.utils.http import urlsafe_base64_encode
+        from core.emails import send_password_reset_email
+
+        email = request.data.get("email", "").strip().lower()
+        if not email:
+            return api_error(
+                message="Email address is required.",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Always return 200 to prevent user enumeration
+        try:
+            user = User.objects.get(email__iexact=email, is_active=True)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            send_password_reset_email(
+                username=user.get_full_name() or user.username,
+                email=user.email,
+                uid=uid,
+                token=token,
+            )
+        except User.DoesNotExist:
+            pass  # Silently ignore — don't reveal if mail exists
+
+        return api_success(
+            message="If an account with that email exists, a password reset link has been sent."
+        )
+
+
+class PasswordResetConfirmView(APIView):
+    """
+    Confirm a password reset using the uid + token pair from the email link.
+    Sets the new password if the token is valid and not expired.
+    """
+    permission_classes = [AllowAny]
+    throttle_scope = "login"
+
+    def post(self, request):
+        from django.contrib.auth.tokens import default_token_generator
+        from django.utils.encoding import force_str
+        from django.utils.http import urlsafe_base64_decode
+
+        uid = request.data.get("uid", "")
+        token = request.data.get("token", "")
+        new_password = request.data.get("new_password", "")
+        confirm_password = request.data.get("confirm_password", "")
+
+        if not uid or not token or not new_password:
+            return api_error(
+                message="uid, token and new_password are required.",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if new_password != confirm_password:
+            return api_error(
+                message="Passwords do not match.",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if len(new_password) < 8:
+            return api_error(
+                message="Password must be at least 8 characters long.",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user_pk = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=user_pk)
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            return api_error(
+                message="Invalid or expired reset link.",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not default_token_generator.check_token(user, token):
+            return api_error(
+                message="Invalid or expired reset link. Please request a new one.",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.set_password(new_password)
+        user.save()
+
+        return api_success(message="Password reset successfully. You can now log in with your new password.")

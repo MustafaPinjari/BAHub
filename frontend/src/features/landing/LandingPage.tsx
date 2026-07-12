@@ -543,13 +543,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       {/* ── SOCIAL PROOF BAR ─────────────────────────────────────────────────── */}
       <section className="py-[120px] border-t border-b border-white/[0.05]">
         <div className="max-w-[1380px] w-full mx-auto px-6 md:px-10 lg:px-16 flex flex-col items-center gap-8">
-          <p className="text-[9px] font-bold text-gray-700 uppercase tracking-[0.2em]">Trusted by teams across</p>
+          <p className="text-[9px] font-bold text-gray-700 uppercase tracking-[0.2em]">Built for Business Analysts</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center w-full">
             {[
-              { value: "2,400+", label: "Active Workspaces", color: "text-purple-400" },
-              { value: "180K+", label: "Requirements Traced", color: "text-blue-400" },
-              { value: "4× faster", label: "BRD vs. Manual", color: "text-green-400" },
-              { value: "17", label: "Integrated Modules", color: "text-amber-400" },
+              { value: "17", label: "Integrated Modules", color: "text-purple-400" },
+              { value: "4× faster", label: "BRD vs. Manual", color: "text-blue-400" },
+              { value: "AI-Native", label: "Gemini-Powered", color: "text-green-400" },
+              { value: "Free Trial", label: "No Credit Card", color: "text-amber-400" },
             ].map(s => (
               <div key={s.label} className="flex flex-col gap-2">
                 <span className={`text-3xl md:text-4xl font-extrabold tracking-tight ${s.color}`}>{s.value}</span>
@@ -615,8 +615,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
               key={tab.id}
               onClick={() => setSimTab(tab.id as "chat" | "canvas" | "trace" | "doc")}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer whitespace-nowrap ${simTab === tab.id
-                  ? "bg-white/[0.07] border border-white/[0.18] text-white"
-                  : "border border-transparent text-gray-600 hover:text-gray-400 hover:border-white/[0.06]"
+                ? "bg-white/[0.07] border border-white/[0.18] text-white"
+                : "border border-transparent text-gray-600 hover:text-gray-400 hover:border-white/[0.06]"
                 }`}
             >
               {tab.icon}
@@ -760,8 +760,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                           onMouseEnter={() => setHoveredReq(r.id)}
                           onMouseLeave={() => setHoveredReq(null)}
                           className={`p-3 rounded-xl border text-[11px] transition-all duration-300 cursor-pointer ${hoveredReq === r.id
-                              ? "bg-purple-950/20 border-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.15)]"
-                              : "bg-white/[0.02] border-white/[0.06] text-gray-400 hover:border-white/10"
+                            ? "bg-purple-950/20 border-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+                            : "bg-white/[0.02] border-white/[0.06] text-gray-400 hover:border-white/10"
                             }`}
                         >
                           <span className="font-mono font-bold text-[10px] text-purple-400 mr-2">{r.code}</span>
@@ -783,8 +783,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                           <div
                             key={item.id}
                             className={`p-3 rounded-xl border text-[11px] transition-all duration-300 ${isLinked
-                                ? "bg-blue-950/20 border-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)] scale-[1.02]"
-                                : "bg-white/[0.01] border-white/[0.04] text-gray-600"
+                              ? "bg-blue-950/20 border-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.15)] scale-[1.02]"
+                              : "bg-white/[0.01] border-white/[0.04] text-gray-600"
                               }`}
                           >
                             <div className="flex items-center gap-1.5 mb-1">

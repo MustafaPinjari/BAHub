@@ -78,6 +78,51 @@ class SyncLogViewSet(viewsets.ReadOnlyModelViewSet):
 class TestConnectionView(APIView):
     permission_classes = [IsAuthenticated, IsEnterprise]
 
+    # ---------------------------------------------------------------------------
+    # SSRF protection — validated before any outbound request
+    # ---------------------------------------------------------------------------
+    @staticmethod
+    def _validate_integration_url(url: str) -> None:
+        """
+        Raise ValueError if the URL resolves to a private/internal address.
+        Blocks SSRF attacks against AWS metadata, internal services, etc.
+        """
+        import ipaddress
+        import socket
+        from urllib.parse import urlparse
+
+        parsed = urlparse(url)
+        hostname = parsed.hostname
+
+        if not hostname:
+            raise ValueError("Invalid URL: missing hostname.")
+
+        # Block raw IP literals
+        try:
+            addr = ipaddress.ip_address(hostname)
+            if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
+                raise ValueError("Connections to internal/private IP addresses are not allowed.")
+        except ValueError as exc:
+            if "Connections to" in str(exc):
+                raise
+            # hostname is a domain — resolve and check
+            try:
+                resolved_ip = socket.gethostbyname(hostname)
+                addr = ipaddress.ip_address(resolved_ip)
+                if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
+                    raise ValueError("Connections to internal/private IP addresses are not allowed.")
+            except socket.gaierror:
+                raise ValueError(f"Could not resolve hostname: {hostname}")
+
+        # Block well-known metadata endpoints by hostname pattern
+        blocked_patterns = [
+            "169.254", "metadata.google", "metadata.aws", "169.254.169.254",
+            "instance-data", "localhost", "127.", "::1",
+        ]
+        for pattern in blocked_patterns:
+            if pattern in hostname:
+                raise ValueError("Connections to cloud metadata endpoints are not allowed.")
+
     def post(self, request):
         system_type = request.data.get("system")  # "jira" or "confluence"
         url = request.data.get("url")
@@ -87,9 +132,15 @@ class TestConnectionView(APIView):
 
         if not system_type or system_type not in ["jira", "confluence"]:
             return api_error(message="Invalid system type. Must be 'jira' or 'confluence'.")
-        
+
         if not url or not username or not token or not key:
             return api_error(message="All connection details (url, username, token, project/space key) are required.")
+
+        # SSRF protection — validate before any network call
+        try:
+            self._validate_integration_url(url)
+        except ValueError as e:
+            return api_error(message=f"Invalid integration URL: {e}")
 
         is_mock = getattr(settings, "IS_TESTING", False) or "invalid" in url.lower() or "error" in url.lower() or token == "fail" or "company.atlassian.net" in url.lower() or "example" in url.lower()
 

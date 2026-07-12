@@ -23,6 +23,29 @@ logger = logging.getLogger("bahub.core")
 stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", None)
 
 
+def _safe_redirect_uri(requested_uri: str) -> str:
+    """
+    Validate that a redirect_uri is in CORS_ALLOWED_ORIGINS.
+    Prevents open-redirect attacks by falling back to the first allowed origin
+    if the requested URI does not match any known origin.
+    """
+    from urllib.parse import urlparse
+    allowed = getattr(settings, "CORS_ALLOWED_ORIGINS", [])
+    if isinstance(allowed, str):
+        allowed = [allowed]
+    default = allowed[0] if allowed else "http://localhost:5173"
+    if not requested_uri:
+        return default
+    try:
+        parsed = urlparse(requested_uri)
+        origin = f"{parsed.scheme}://{parsed.netloc}"
+        if origin in allowed:
+            return requested_uri.rstrip("/")
+    except Exception:
+        pass
+    return default
+
+
 def generate_receipt_number():
     year = timezone.now().year
     count = Payment.objects.filter(receipt_number__startswith=f"BAH-{year}-").count() + 1
@@ -168,6 +191,14 @@ class CreateCheckoutSessionView(APIView):
                     'quantity': 1,
                 }],
                 mode='subscription',
+                # 14-day free trial — subscription starts after trial ends
+                subscription_data={
+                    'trial_period_days': 14,
+                    'metadata': {
+                        'organization_id': str(request.user.organization.id),
+                        'plan': plan,
+                    }
+                },
                 success_url=f"{request.build_absolute_uri('/api/v1/billing/verify-subscription/')}?session_id={{CHECKOUT_SESSION_ID}}&redirect_uri={frontend_origin}",
                 cancel_url=f"{frontend_origin.rstrip('/')}/billing?cancelled=true",
                 client_reference_id=str(request.user.organization.id),
@@ -369,13 +400,9 @@ class MockUpgradeView(APIView):
                 fail_silently=False,
             )
 
-        # Redirect back to the frontend billing success view
-        if not redirect_uri:
-            redirect_uri = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
-            if isinstance(redirect_uri, list):
-                redirect_uri = redirect_uri[0]
-        
-        return redirect(f"{redirect_uri.rstrip('/')}/billing?success=true")
+        # Redirect back to the frontend billing success view (open-redirect safe)
+        safe_uri = _safe_redirect_uri(redirect_uri)
+        return redirect(f"{safe_uri}/billing?success=true")
 
 
 class VerifySubscriptionView(APIView):
@@ -387,11 +414,8 @@ class VerifySubscriptionView(APIView):
         session_id = request.query_params.get("session_id")
         redirect_uri = request.query_params.get("redirect_uri")
 
-        if not redirect_uri:
-            redirect_uri = getattr(settings, "CORS_ALLOWED_ORIGINS", "http://localhost:5173")
-            if isinstance(redirect_uri, list):
-                redirect_uri = redirect_uri[0]
-        redirect_uri = redirect_uri.rstrip("/")
+        # Validate redirect_uri against allowed origins (open-redirect safe)
+        redirect_uri = _safe_redirect_uri(redirect_uri)
 
         if session_id:
             try:

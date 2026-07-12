@@ -8,6 +8,9 @@ from users.views import (
     WorkspaceMembersView,
     VerifyOTPView,
     ResendOTPView,
+    DemoLoginView,
+    PasswordResetRequestView,
+    PasswordResetConfirmView,
 )
 
 router = DefaultRouter()
@@ -23,6 +26,12 @@ urlpatterns = [
     path("sessions/logout-all/", LogoutAllView.as_view(), name="auth-logout-all"),
     path("members/", WorkspaceMembersView.as_view(), name="auth-members"),
     path("superadmin/dashboard/", SuperAdminDashboardView.as_view(), name="users-superadmin-dashboard"),
+    # Secure demo login — credentials never exposed in frontend
+    path("demo-login/", DemoLoginView.as_view(), name="auth-demo-login"),
+    # Password reset flow
+    path("password-reset/request/", PasswordResetRequestView.as_view(), name="auth-password-reset-request"),
+    path("password-reset/confirm/", PasswordResetConfirmView.as_view(), name="auth-password-reset-confirm"),
     path("", include(router.urls)),
 ]
+
 

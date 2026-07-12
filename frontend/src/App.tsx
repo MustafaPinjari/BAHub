@@ -9,6 +9,7 @@ import banner from "./assets/banner.png";
 import { LandingPage } from "./features/landing/LandingPage.tsx";
 import { LaunchLockedScreen } from "./features/auth/components/LaunchLockedScreen";
 import { usePublicSettings } from "./features/landing/usePublicSettings";
+import { api } from "./services/api";
 
 // Lazy-loaded page components for code-splitting
 const DashboardOverview = lazy(() => import("./features/dashboard/DashboardOverview").then(m => ({ default: m.DashboardOverview })));
@@ -34,6 +35,43 @@ const AuditLogPage = lazy(() => import("./features/audit/AuditLogPage").then(m =
 const TraceabilityPage = lazy(() => import("./features/traceability/TraceabilityPage").then(m => ({ default: m.TraceabilityPage })));
 const UatPage = lazy(() => import("./features/uat/UatPage").then(m => ({ default: m.UatPage })));
 const SuperAdminPage = lazy(() => import("./features/superadmin/SuperAdminPage").then(m => ({ default: m.SuperAdminPage })));
+const PasswordResetPage = lazy(() => import("./features/auth/components/PasswordResetPage").then(m => ({ default: m.PasswordResetPage })));
+
+// ─── Global Error Boundary ───────────────────────────────────────────────────
+interface ErrorBoundaryState { hasError: boolean; error?: Error; }
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, ErrorBoundaryState> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    // TODO: send to Sentry when configured
+    console.error("[ErrorBoundary] Caught error:", error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-[60vh] flex flex-col items-center justify-center gap-4 text-center select-none">
+          <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-xl">!</div>
+          <div>
+            <p className="text-sm font-bold text-white">Something went wrong</p>
+            <p className="text-xs text-gray-500 mt-1">Please refresh the page or contact support.</p>
+          </div>
+          <button
+            onClick={() => { this.setState({ hasError: false }); window.location.reload(); }}
+            className="px-4 py-1.5 text-xs font-bold rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition-colors cursor-pointer"
+          >
+            Refresh Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Loading spinner fallback for lazy routing
 const PageLoader: React.FC = () => (
@@ -54,36 +92,38 @@ const AuthenticatedApp: React.FC = () => {
 
   return (
     <DashboardShell>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<DashboardOverview />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/teams" element={<TeamsPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/stakeholders" element={<StakeholdersPage />} />
-          <Route path="/settings" element={<WorkspaceSettingsPage />} />
-          <Route path="/requirements" element={<RequirementsPage />} />
-          <Route path="/diagrams" element={<DiagramsPage />} />
-          <Route path="/stories" element={<UserStoriesPage />} />
-          <Route path="/brd" element={<DocumentGeneratorPage docType="BRD" />} />
-          <Route path="/frd" element={<DocumentGeneratorPage docType="FRD" />} />
-          <Route path="/meetings" element={<MeetingsPage />} />
-          <Route path="/risks" element={<RisksPage />} />
-          <Route path="/changes" element={<ChangeRequestsPage />} />
-          <Route path="/swot" element={<SwotAnalysisPage />} />
-          <Route path="/gap" element={<GapAnalysisPage />} />
-          <Route path="/reports" element={<ReportsPage />} />
-          <Route path="/ai" element={<AiWorkspacePage />} />
-          <Route path="/integrations" element={<IntegrationsPage />} />
-          <Route path="/billing" element={<BillingPage />} />
-          <Route path="/audit" element={<AuditLogPage />} />
-          <Route path="/traceability" element={<TraceabilityPage />} />
-          <Route path="/uat" element={<UatPage />} />
-          {isPlatformAdmin && <Route path="/superadmin" element={<SuperAdminPage />} />}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<DashboardOverview />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/teams" element={<TeamsPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/stakeholders" element={<StakeholdersPage />} />
+            <Route path="/settings" element={<WorkspaceSettingsPage />} />
+            <Route path="/requirements" element={<RequirementsPage />} />
+            <Route path="/diagrams" element={<DiagramsPage />} />
+            <Route path="/stories" element={<UserStoriesPage />} />
+            <Route path="/brd" element={<DocumentGeneratorPage docType="BRD" />} />
+            <Route path="/frd" element={<DocumentGeneratorPage docType="FRD" />} />
+            <Route path="/meetings" element={<MeetingsPage />} />
+            <Route path="/risks" element={<RisksPage />} />
+            <Route path="/changes" element={<ChangeRequestsPage />} />
+            <Route path="/swot" element={<SwotAnalysisPage />} />
+            <Route path="/gap" element={<GapAnalysisPage />} />
+            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/ai" element={<AiWorkspacePage />} />
+            <Route path="/integrations" element={<IntegrationsPage />} />
+            <Route path="/billing" element={<BillingPage />} />
+            <Route path="/audit" element={<AuditLogPage />} />
+            <Route path="/traceability" element={<TraceabilityPage />} />
+            <Route path="/uat" element={<UatPage />} />
+            {isPlatformAdmin && <Route path="/superadmin" element={<SuperAdminPage />} />}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </DashboardShell>
   );
 };
@@ -94,11 +134,11 @@ import { TermsOfServicePage } from "./features/legal/TermsOfServicePage";
 import { ContactPage } from "./features/legal/ContactPage";
 
 const MainAppContent: React.FC = () => {
-  const { isAuthenticated, loading, user, login } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const [bypassWaitlistLock, setBypassWaitlistLock] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
   const { waitlist_countdown_enabled } = usePublicSettings();
-  
+
   const location = useLocation();
   const navigate = useNavigate();
   const path = location.pathname.toLowerCase();
@@ -112,8 +152,8 @@ const MainAppContent: React.FC = () => {
 
   if (path === "/admin" || path === "/admin/") {
     const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-    const backendAdminUrl = isLocal 
-      ? "http://127.0.0.1:8000/admin/" 
+    const backendAdminUrl = isLocal
+      ? "http://127.0.0.1:8000/admin/"
       : "https://bahub-backend.onrender.com/admin/";
     window.location.href = backendAdminUrl;
     return (
@@ -178,10 +218,38 @@ const MainAppContent: React.FC = () => {
     );
   }
 
-  // Legal pages — always accessible, no auth required
+  // Public pages — always accessible, no auth required
   if (path === "/privacy") return <PrivacyPolicyPage />;
-  if (path === "/terms")   return <TermsOfServicePage />;
+  if (path === "/terms") return <TermsOfServicePage />;
   if (path === "/contact") return <ContactPage />;
+
+  // Password reset pages — public, no auth required
+  if (path === "/forgot-password" || path === "/reset-password") {
+    return (
+      <div className="w-screen h-screen flex bg-black text-white overflow-hidden">
+        <div className="w-full md:w-[40%] h-full flex items-center justify-center p-8 overflow-y-auto bg-black relative">
+          <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-purple-600/5 blur-3xl pointer-events-none" />
+          <div className="absolute top-4 left-4 z-10">
+            <button
+              onClick={() => navigate("/")}
+              className="text-[10px] font-bold text-gray-600 hover:text-gray-300 cursor-pointer flex items-center gap-1.5 bg-transparent border-none outline-none transition-colors"
+            >
+              <span>←</span> Back to Home
+            </button>
+          </div>
+          <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <PasswordResetPage />
+            </Suspense>
+          </ErrorBoundary>
+        </div>
+        <div className="hidden md:flex md:w-[60%] h-full items-center justify-center bg-black border-l border-white/[0.06] select-none">
+          <img src={banner} alt="BAHub Workspace Banner" className="w-full h-full object-contain" />
+        </div>
+      </div>
+    );
+  }
+
 
   // If user is logged in, and tries to go to login or register page, send them to dashboard
   if (isAuthenticated && (isLoginPath || isRegisterPath) && !waitlist_countdown_enabled) {
@@ -191,12 +259,19 @@ const MainAppContent: React.FC = () => {
   const handleTryDemo = async () => {
     setDemoLoading(true);
     try {
-      await login("analyst", "AnalystP@ss123");
-      navigate("/dashboard");
+      // Credentials are stored server-side only — never hardcoded in the frontend bundle
+      const res = await api.post<any, any>("/auth/demo-login/");
+      const resData = res?.data || res;
+      if (resData?.access) {
+        localStorage.setItem("accessToken", resData.access);
+      }
+      if (resData?.refresh) {
+        localStorage.setItem("refreshToken", resData.refresh);
+      }
+      // Reload to hydrate auth context via initAuth
+      window.location.href = "/dashboard";
     } catch {
-      // Demo login failed — fall back to login page with bypass so the
-      // form is reachable during the countdown period
-      setBypassWaitlistLock(true);
+      // Demo login unavailable — redirect to login so users can sign up
       navigate("/login");
     } finally {
       setDemoLoading(false);
@@ -205,8 +280,8 @@ const MainAppContent: React.FC = () => {
 
   if (isLandingPath) {
     return (
-      <LandingPage 
-        onNavigateToLogin={() => navigate("/login")} 
+      <LandingPage
+        onNavigateToLogin={() => navigate("/login")}
         onNavigateToRegister={() => navigate("/register")}
         onTryDemo={handleTryDemo}
       />

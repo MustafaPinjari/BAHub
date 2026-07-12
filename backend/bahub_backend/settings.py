@@ -20,7 +20,7 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-replace-me-in-production-12345!")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
+DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
 
 if not DEBUG and SECRET_KEY.startswith("django-insecure-replace-me"):
     raise ImproperlyConfigured("SECRET_KEY must be configured in production.")
@@ -532,3 +532,12 @@ SAML2_AUTH = {
 
 # Frontend URL
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://bahub-beta.netlify.app")
+
+# ---------------------------------------------------------------------------
+# Demo Account — credentials stored server-side only, never in the JS bundle.
+# Set DEMO_USERNAME and DEMO_PASSWORD in Render environment variables.
+# If not set, the /auth/demo-login/ endpoint returns 503 (graceful degradation).
+# ---------------------------------------------------------------------------
+DEMO_USERNAME = os.getenv("DEMO_USERNAME", "")
+DEMO_PASSWORD = os.getenv("DEMO_PASSWORD", "")
+

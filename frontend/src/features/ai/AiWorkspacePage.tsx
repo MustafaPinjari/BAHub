@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { api } from "../../services/api";
 import { useProject } from "../projects/ProjectContext";
 import { Card, Button, Input, Alert } from "../../components/common/UIComponents";
-import { 
-  Bot, 
-  Sparkles, 
-  Loader2, 
-  FolderGit, 
-  Network, 
-  LayoutDashboard, 
-  FileText, 
-  KanbanSquare, 
-  Code2, 
-  RefreshCw, 
+import {
+  Bot,
+  Sparkles,
+  Loader2,
+  FolderGit,
+  Network,
+  LayoutDashboard,
+  FileText,
+  KanbanSquare,
+  Code2,
+  RefreshCw,
   Database,
   CheckCircle2,
   Activity,
@@ -24,10 +24,10 @@ import {
   Save,
   Check
 } from "lucide-react";
-import { 
-  ReactFlow, 
-  Background, 
-  Controls, 
+import {
+  ReactFlow,
+  Background,
+  Controls,
   MiniMap,
   useNodesState,
   useEdgesState,
@@ -101,7 +101,20 @@ export const AiWorkspacePage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [activeExecution, setActiveExecution] = useState<WorkflowExecution | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
+  // Ref to hold the polling interval so it can be cleared on unmount
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Clear interval on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current !== null) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
+    };
+  }, []);
+
   // Traceability Graph State
   const [rawNodes, setRawNodes] = useState<GraphNode[]>([]);
   const [rawEdges, setRawEdges] = useState<GraphEdge[]>([]);
@@ -145,7 +158,7 @@ export const AiWorkspacePage: React.FC = () => {
       );
       setRawNodes(res.data.nodes || []);
       setRawEdges(res.data.edges || []);
-      
+
       // Auto-extract content caches if nodes are available
       const bpmnNode = res.data.nodes.find(n => n.node_type === "BPMN");
       if (bpmnNode) {
@@ -325,7 +338,20 @@ export const AiWorkspacePage: React.FC = () => {
   };
 
   const pollWorkflowStatus = (execId: string) => {
+    // Max 3-minute polling window — prevents infinite polling on hung workflows
+    const MAX_POLL_MS = 3 * 60 * 1000;
+    const startedAt = Date.now();
+
     const interval = setInterval(async () => {
+      // Timeout guard — stop if we exceed 3 minutes
+      if (Date.now() - startedAt > MAX_POLL_MS) {
+        clearInterval(interval);
+        pollIntervalRef.current = null;
+        setLoading(false);
+        setError("Workflow timed out after 3 minutes. Please try again.");
+        return;
+      }
+
       try {
         const res = await api.get<any, { data: WorkflowExecution }>(`/strategic/workflow/${execId}/`);
         const data = res.data;
@@ -346,20 +372,26 @@ export const AiWorkspacePage: React.FC = () => {
 
         if (data.status === "SUCCESS") {
           clearInterval(interval);
+          pollIntervalRef.current = null;
           setLoading(false);
           setTerminalLogs(prev => [...prev, "[+] Redesign process completed. Rebuilding Knowledge Graph."]);
           fetchGraphData();
         } else if (data.status === "FAILED") {
           clearInterval(interval);
+          pollIntervalRef.current = null;
           setLoading(false);
           setError("Orchestrator pipeline execution failed.");
         }
       } catch (err) {
         clearInterval(interval);
+        pollIntervalRef.current = null;
         setLoading(false);
         setError("Error monitoring background agent workspace.");
       }
     }, 2000);
+
+    // Store ref so unmount cleanup can clear it
+    pollIntervalRef.current = interval;
   };
 
   // ─── NODE SELECTION & SIDE DRAWER ───
@@ -423,10 +455,10 @@ export const AiWorkspacePage: React.FC = () => {
 
   return (
     <div className="flex flex-col xl:flex-row gap-6 w-full h-full min-h-[82vh] items-stretch text-white select-none">
-      
+
       {/* ─── LEFT COLUMN: AGENT ORCHESTRATOR & TERMINAL ─── */}
       <div className="w-full xl:w-[28%] flex flex-col gap-5 shrink-0">
-        
+
         {/* Workflow Prompt Input */}
         <Card className="p-4 bg-black/40 border-white/[0.07] backdrop-blur-xl flex flex-col gap-3.5 text-left">
           <div className="flex items-center gap-2 border-b border-white/[0.06] pb-2">
@@ -513,12 +545,11 @@ export const AiWorkspacePage: React.FC = () => {
 
               return (
                 <div key={idx} className="flex items-center gap-3 relative z-10 py-0.5">
-                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 text-[7px] ${
-                    isSuccess ? "bg-green-500/20 border-green-500/30 text-green-400" :
+                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 text-[7px] ${isSuccess ? "bg-green-500/20 border-green-500/30 text-green-400" :
                     isProcessing ? "bg-purple-500/20 border-purple-500/30 text-purple-400" :
-                    isFailed ? "bg-red-500/20 border-red-500/30 text-red-400" :
-                    "bg-gray-950 border-white/10 text-gray-500"
-                  }`}>
+                      isFailed ? "bg-red-500/20 border-red-500/30 text-red-400" :
+                        "bg-gray-950 border-white/10 text-gray-500"
+                    }`}>
                     {isSuccess ? <Check className="w-2 h-2" /> : idx + 1}
                   </div>
                   <div className="flex flex-col text-left min-w-0">
@@ -558,7 +589,7 @@ export const AiWorkspacePage: React.FC = () => {
 
       {/* ─── RIGHT COLUMN: WORKSPACE SANDBOX PANEL ─── */}
       <div className="flex-1 flex flex-col gap-4">
-        
+
         {/* Navigation Tabs Bar */}
         <div className="flex gap-1 bg-black/40 border border-white/[0.07] p-1 rounded-xl backdrop-blur-xl select-none flex-wrap">
           {[
@@ -575,9 +606,8 @@ export const AiWorkspacePage: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-lg transition-colors cursor-pointer ${
-                  isActive ? "bg-white/[0.08] text-white" : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.02]"
-                }`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-lg transition-colors cursor-pointer ${isActive ? "bg-white/[0.08] text-white" : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.02]"
+                  }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 <span>{tab.label}</span>
@@ -588,7 +618,7 @@ export const AiWorkspacePage: React.FC = () => {
 
         {/* Tab Contents Viewport */}
         <div className="flex-1 min-h-[580px] relative">
-          
+
           {/* TAB 1: DASHBOARD OVERVIEW */}
           {activeTab === "dashboard" && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
@@ -601,8 +631,8 @@ export const AiWorkspacePage: React.FC = () => {
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">AI Operations</span>
                 </div>
                 <div className="mt-2">
-                  <h4 className="text-xl font-black">16 Agents Active</h4>
-                  <p className="text-[10px] text-gray-600 mt-1 font-semibold leading-relaxed">Specialized Business Analyst nodes linked to active project db.</p>
+                  <h4 className="text-xl font-black">Multi-Agent</h4>
+                  <p className="text-[10px] text-gray-600 mt-1 font-semibold leading-relaxed">Specialized BA nodes: Analyst, Critic, Synthesizer, and Coordinator agents work in concert.</p>
                 </div>
               </Card>
 
@@ -615,10 +645,10 @@ export const AiWorkspacePage: React.FC = () => {
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">QA Quality Index</span>
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
-                  <h4 className="text-xl font-black">Grade A+</h4>
-                  <span className="text-[9px] font-bold text-green-400 bg-green-500/10 border border-green-500/20 rounded px-1.5 py-0.5">98% confidence</span>
+                  <h4 className="text-xl font-black">Critic Agent</h4>
+                  <span className="text-[9px] font-bold text-green-400 bg-green-500/10 border border-green-500/20 rounded px-1.5 py-0.5">AI-Reviewed</span>
                 </div>
-                <p className="text-[10px] text-gray-600 font-semibold leading-relaxed">No ambiguous requirements detected by Critic scan.</p>
+                <p className="text-[10px] text-gray-600 font-semibold leading-relaxed">Dedicated Critic agent scans for ambiguous or incomplete requirements.</p>
               </Card>
 
               {/* Risks Ledger Score */}
@@ -630,8 +660,8 @@ export const AiWorkspacePage: React.FC = () => {
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Threat profile</span>
                 </div>
                 <div className="mt-2">
-                  <h4 className="text-xl font-black text-amber-500">Medium Risk</h4>
-                  <p className="text-[10px] text-gray-600 mt-1 font-semibold leading-relaxed">Two concurrency threats identified. Mitigation locks active.</p>
+                  <h4 className="text-xl font-black text-amber-500">Risk Ledger</h4>
+                  <p className="text-[10px] text-gray-600 mt-1 font-semibold leading-relaxed">Identify, classify, and mitigate project risks with AI-generated mitigation strategies.</p>
                 </div>
               </Card>
 
@@ -701,7 +731,7 @@ export const AiWorkspacePage: React.FC = () => {
           {/* TAB 2: INTERACTIVE KNOWLEDGE GRAPH */}
           {activeTab === "graph" && (
             <div className="absolute inset-0 flex border border-white/[0.07] rounded-2xl overflow-hidden bg-black/50 backdrop-blur-xl">
-              
+
               {/* React Flow Canvas */}
               <div className="flex-1 h-full relative">
                 <ReactFlow
@@ -714,10 +744,10 @@ export const AiWorkspacePage: React.FC = () => {
                 >
                   <Background color="rgba(255,255,255,0.06)" gap={16} size={1} />
                   <Controls className="bg-gray-950 border border-white/10 rounded-lg p-1" />
-                  <MiniMap 
-                    nodeColor={() => "rgba(107, 33, 168, 0.4)"} 
+                  <MiniMap
+                    nodeColor={() => "rgba(107, 33, 168, 0.4)"}
                     maskColor="rgba(0, 0, 0, 0.7)"
-                    className="bg-gray-950 border border-white/10 rounded-lg overflow-hidden hidden md:block" 
+                    className="bg-gray-950 border border-white/10 rounded-lg overflow-hidden hidden md:block"
                   />
                 </ReactFlow>
                 <div className="absolute top-3 left-3 bg-black/80 border border-white/10 px-2.5 py-1.5 rounded-lg text-[9px] font-bold text-gray-400">
@@ -733,8 +763,8 @@ export const AiWorkspacePage: React.FC = () => {
                       <span className="text-[8px] font-mono text-purple-400 font-bold">{selectedNode.node_key}</span>
                       <h4 className="text-[11px] font-black uppercase text-white tracking-wider mt-0.5">{selectedNode.node_type} Drawer</h4>
                     </div>
-                    <button 
-                      onClick={() => setSelectedNode(null)} 
+                    <button
+                      onClick={() => setSelectedNode(null)}
                       className="text-gray-500 hover:text-white text-xs font-bold shrink-0 cursor-pointer"
                     >
                       Close
@@ -743,33 +773,33 @@ export const AiWorkspacePage: React.FC = () => {
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[8px] font-black uppercase tracking-wider text-gray-500">Title</label>
-                    <Input 
-                      value={editingTitle} 
-                      onChange={(e) => setEditingTitle(e.target.value)} 
+                    <Input
+                      value={editingTitle}
+                      onChange={(e) => setEditingTitle(e.target.value)}
                       className="text-xs py-1.5 h-8 bg-black/60 border-white/[0.08] rounded-lg"
                     />
                   </div>
 
                   <div className="flex flex-col gap-1.5 flex-1 min-h-[220px]">
                     <label className="text-[8px] font-black uppercase tracking-wider text-gray-500">Specification Metadata (Markdown/Text)</label>
-                    <textarea 
-                      value={editingContent} 
-                      onChange={(e) => setEditingContent(e.target.value)} 
+                    <textarea
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
                       className="w-full flex-1 bg-black/60 border border-white/[0.08] hover:border-white/[0.16] focus:border-purple-500/50 rounded-xl p-3 text-xs text-gray-300 font-semibold focus:outline-none resize-none font-mono leading-relaxed"
                     />
                   </div>
 
                   <div className="flex gap-2 border-t border-white/[0.06] pt-3 mt-auto">
-                    <Button 
-                      onClick={handleSaveNodeEdits} 
-                      variant="primary" 
+                    <Button
+                      onClick={handleSaveNodeEdits}
+                      variant="primary"
                       className="flex-1 text-[10px] font-black uppercase tracking-wider h-8 rounded-lg flex items-center justify-center gap-1 bg-purple-600 text-white cursor-pointer"
                     >
                       {saveSuccess ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
                       <span>{saveSuccess ? "Saved!" : "Save Node"}</span>
                     </Button>
-                    <Button 
-                      onClick={handleDeleteNode} 
+                    <Button
+                      onClick={handleDeleteNode}
                       className="text-[10px] border border-red-500/20 bg-red-500/5 text-red-400 hover:bg-red-500/10 font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
                     >
                       Delete
@@ -784,14 +814,14 @@ export const AiWorkspacePage: React.FC = () => {
           {/* TAB 3: DIAGRAM CANVAS (MERMAID) */}
           {activeTab === "mermaid" && (
             <div className="absolute inset-0 flex flex-col md:flex-row border border-white/[0.07] rounded-2xl overflow-hidden bg-black/50 backdrop-blur-xl">
-              
+
               {/* Code Editor */}
               <div className="w-full md:w-[40%] border-r border-white/[0.08] p-4 flex flex-col gap-3 text-left">
                 <div className="flex items-center gap-1.5 border-b border-white/[0.05] pb-2">
                   <Code2 className="w-3.5 h-3.5 text-purple-400" />
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-white">Mermaid BPMN Code</h4>
                 </div>
-                <textarea 
+                <textarea
                   value={mermaidCode}
                   onChange={(e) => setMermaidCode(e.target.value)}
                   className="w-full flex-1 bg-black/60 border border-white/[0.08] hover:border-white/[0.16] focus:border-purple-500/50 rounded-xl p-3 text-xs text-gray-300 font-mono focus:outline-none resize-none leading-relaxed"
@@ -806,9 +836,9 @@ export const AiWorkspacePage: React.FC = () => {
                 </div>
                 <div className="flex-1 flex items-center justify-center bg-gray-950/60 rounded-xl border border-white/[0.05] p-6 overflow-auto">
                   {mermaidSvgUrl ? (
-                    <img 
-                      src={mermaidSvgUrl} 
-                      alt="Mermaid Process Diagram" 
+                    <img
+                      src={mermaidSvgUrl}
+                      alt="Mermaid Process Diagram"
                       className="max-w-full max-h-[420px] object-contain invert opacity-90"
                     />
                   ) : (
@@ -845,8 +875,8 @@ export const AiWorkspacePage: React.FC = () => {
                         </div>
                       ) : (
                         laneStories.map(story => (
-                          <div 
-                            key={story.id} 
+                          <div
+                            key={story.id}
                             className="bg-gray-950/80 border border-white/[0.06] hover:border-white/[0.12] rounded-xl p-3 flex flex-col gap-2 transition-colors cursor-pointer"
                           >
                             <div className="flex justify-between items-center">
@@ -877,7 +907,7 @@ export const AiWorkspacePage: React.FC = () => {
                   <FileText className="w-3.5 h-3.5 text-teal-400" />
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-white">Business Requirements Document (BRD)</h4>
                 </div>
-                <Button 
+                <Button
                   onClick={async () => {
                     // Save document content to active DOC- node if any
                     const docNode = rawNodes.find(n => n.node_type === "Document");
@@ -892,8 +922,8 @@ export const AiWorkspacePage: React.FC = () => {
                       setSaveSuccess(true);
                       setTimeout(() => setSaveSuccess(false), 2000);
                     }
-                  }} 
-                  variant="primary" 
+                  }}
+                  variant="primary"
                   className="text-[9px] px-3.5 py-1.5 h-7 rounded-lg flex items-center justify-center gap-1 bg-purple-600 text-white cursor-pointer"
                 >
                   <Save className="w-3 h-3" />
@@ -901,7 +931,7 @@ export const AiWorkspacePage: React.FC = () => {
                 </Button>
               </div>
 
-              <textarea 
+              <textarea
                 value={documentContent || "# Business Requirements Document (BRD)\n\nTrigger AI compilation to generate details."}
                 onChange={(e) => setDocumentContent(e.target.value)}
                 className="w-full flex-1 bg-black/60 border border-white/[0.08] hover:border-white/[0.16] focus:border-purple-500/50 rounded-xl p-4 text-xs text-gray-300 font-mono focus:outline-none resize-none leading-relaxed overflow-y-auto"
@@ -912,7 +942,7 @@ export const AiWorkspacePage: React.FC = () => {
           {/* TAB 6: APIS, SCHEMAS & QA TEST CASES */}
           {activeTab === "apis" && (
             <div className="absolute inset-0 flex flex-col lg:flex-row gap-4">
-              
+
               {/* APIs spec panel */}
               <Card className="flex-1 p-4 bg-black/40 border-white/[0.07] backdrop-blur-xl flex flex-col gap-3 text-left overflow-y-auto">
                 <h4 className="text-xs font-black uppercase tracking-widest text-white border-b border-white/[0.05] pb-2 flex items-center gap-1.5 select-none">

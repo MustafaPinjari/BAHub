@@ -97,3 +97,26 @@ def send_waitlist_invite_email(email):
     Backward-compatibility wrapper for send_waitlist_invite_email.
     """
     return EmailService.send_waitlist_invite_email(email)
+
+
+def send_password_reset_email(username: str, email: str, uid: str, token: str):
+    """
+    Send a password reset link to the user.
+    The link redirects to the frontend /reset-password?uid=...&token=... route.
+    """
+    from django.conf import settings
+    frontend_url = getattr(settings, "FRONTEND_URL", "https://bahub-beta.netlify.app").rstrip("/")
+    reset_url = f"{frontend_url}/reset-password?uid={uid}&token={token}"
+
+    return EmailService.send_async_email(
+        subject="BAHub — Reset Your Password",
+        template_name="core/password_reset.html",
+        context={
+            "first_name": username,
+            "reset_url": reset_url,
+            "expiry_hours": 24,
+        },
+        recipient_list=[email],
+        email_type="password_reset",
+    )
+
