@@ -203,6 +203,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onNavigateToReg
           {...register("password")}
         />
 
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => window.location.href = "/forgot-password"}
+            className="text-[10px] text-primary hover:underline font-semibold cursor-pointer bg-transparent border-none outline-none"
+          >
+            Forgot password?
+          </button>
+        </div>
+
         <Button type="submit" variant="primary" className="w-full mt-1.5 font-bold" isLoading={loading}>
           Sign In
         </Button>

@@ -278,6 +278,560 @@ export const PremiumGlassCard: React.FC<PremiumGlassCardProps> = ({
   );
 };
 
+// ─── Feature Showcase Component ───────────────────────────────────────────────
+interface Feature {
+  id: string;
+  title: string;
+  icon: React.ReactNode;
+  description: string;
+  bullets: string[];
+  cta: string;
+}
+
+const FEATURES: Feature[] = [
+  {
+    id: "ai-requirements",
+    title: "AI Requirements",
+    icon: <Sparkles className="w-4 h-4" />,
+    description: "Transform meeting transcripts into structured requirements with AI-powered extraction and categorization.",
+    bullets: ["Auto-extract from transcripts", "Smart categorization", "Version tracking", "Stakeholder linking"],
+    cta: "Try AI Extraction",
+  },
+  {
+    id: "bpmn-designer",
+    title: "BPMN Designer",
+    icon: <Workflow className="w-4 h-4" />,
+    description: "Build interactive BPMN 2.0 process diagrams with drag-and-drop nodes and real-time collaboration.",
+    bullets: ["Drag-and-drop canvas", "12+ BPMN templates", "Export to XML/PlantUML", "Real-time sync"],
+    cta: "Explore Canvas",
+  },
+  {
+    id: "brd-generator",
+    title: "BRD Generator",
+    icon: <FileText className="w-4 h-4" />,
+    description: "Compile IEEE-structured Business Requirements Documents with one-click PDF and Word export.",
+    bullets: ["IEEE-structured format", "Auto-populate sections", "Sign-off workflow", "Version history"],
+    cta: "Generate BRD",
+  },
+  {
+    id: "user-stories",
+    title: "AI User Stories",
+    icon: <GitBranch className="w-4 h-4" />,
+    description: "Generate Jira-ready user stories with acceptance criteria from requirements automatically.",
+    bullets: ["As-a/I-want/So-that format", "Acceptance criteria", "Story points", "Jira bidirectional sync"],
+    cta: "Create Stories",
+  },
+  {
+    id: "collaboration",
+    title: "Collaboration",
+    icon: <Users className="w-4 h-4" />,
+    description: "Real-time team collaboration with role-based permissions and activity feeds.",
+    bullets: ["Real-time editing", "Role-based access", "Activity feeds", "Comments & mentions"],
+    cta: "Invite Team",
+  },
+  {
+    id: "jira-integration",
+    title: "Jira Integration",
+    icon: <BarChart2 className="w-4 h-4" />,
+    description: "Bidirectional sync with Jira for seamless workflow between BA and engineering teams.",
+    bullets: ["Push stories to Jira", "Sync status updates", "Map custom fields", "Bulk operations"],
+    cta: "Connect Jira",
+  },
+  {
+    id: "compliance",
+    title: "Compliance Inspector",
+    icon: <Shield className="w-4 h-4" />,
+    description: "Automated compliance checks with SOC 2 audit trails and risk assessment workflows.",
+    bullets: ["Automated checks", "SOC 2 audit logs", "Risk scoring", "Mitigation tracking"],
+    cta: "View Compliance",
+  },
+  {
+    id: "analytics",
+    title: "Analytics",
+    icon: <Activity className="w-4 h-4" />,
+    description: "Track project health, requirement coverage, and team productivity with advanced dashboards.",
+    bullets: ["Coverage metrics", "Velocity tracking", "Health scores", "Custom reports"],
+    cta: "View Analytics",
+  },
+];
+
+export const FeatureShowcase: React.FC = () => {
+  const [activeFeature, setActiveFeature] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Scroll-based feature activation
+  useEffect(() => {
+    if (isMobile) return;
+
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const scrollProgress = -rect.top / (rect.height - window.innerHeight);
+      const featureIndex = Math.min(
+        Math.floor(scrollProgress * FEATURES.length),
+        FEATURES.length - 1
+      );
+      if (featureIndex >= 0 && featureIndex < FEATURES.length) {
+        setActiveFeature(featureIndex);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
+
+  const feature = FEATURES[activeFeature];
+
+  return (
+    <div ref={sectionRef} className="relative">
+      {/* Desktop: 3-column sticky layout */}
+      {!isMobile && (
+        <div className="grid grid-cols-12 gap-8">
+          {/* Left Panel - Feature Navigation */}
+          <div className="col-span-3 sticky top-32 h-fit">
+            <div className="flex flex-col gap-2">
+              {FEATURES.map((f, i) => (
+                <button
+                  key={f.id}
+                  onClick={() => setActiveFeature(i)}
+                  className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-left ${
+                    activeFeature === i
+                      ? "bg-emerald-500/10 border border-emerald-500/30 shadow-[0_0_20px_rgba(34,197,94,0.15)]"
+                      : "bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.04]"
+                  }`}
+                >
+                  {activeFeature === i && (
+                    <motion.div
+                      layoutId="activeIndicator"
+                      className="absolute left-0 top-0 bottom-0 w-0.5 bg-emerald-500 rounded-full"
+                      initial={false}
+                    />
+                  )}
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      activeFeature === i ? "bg-emerald-500/20 text-emerald-400" : "bg-white/[0.04] text-gray-500 group-hover:text-gray-400"
+                    }`}
+                  >
+                    {f.icon}
+                  </div>
+                  <span className={`text-[11px] font-semibold ${activeFeature === i ? "text-white" : "text-gray-500 group-hover:text-gray-400"}`}>
+                    {f.title}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Center Panel - Dynamic Content */}
+          <div className="col-span-4">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={feature.id}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-8 h-fit"
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-white">{feature.title}</h3>
+                </div>
+                <p className="text-gray-400 text-sm leading-relaxed mb-6">{feature.description}</p>
+                <ul className="space-y-3 mb-8">
+                  {feature.bullets.map((bullet, i) => (
+                    <li key={i} className="flex items-center gap-3 text-[11px] text-gray-500">
+                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+                <button className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-bold uppercase tracking-wider transition-colors">
+                  {feature.cta}
+                </button>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Right Panel - Animated Preview */}
+          <div className="col-span-5">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={feature.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.4 }}
+                className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 h-[400px] overflow-hidden"
+              >
+                <FeaturePreview featureId={feature.id} />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile: Tabbed layout */}
+      {isMobile && (
+        <div className="flex flex-col gap-6">
+          {/* Feature Tabs */}
+          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+            {FEATURES.map((f, i) => (
+              <button
+                key={f.id}
+                onClick={() => setActiveFeature(i)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
+                  activeFeature === i
+                    ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
+                    : "bg-white/[0.02] border border-white/[0.06] text-gray-500"
+                }`}
+              >
+                {f.icon}
+                <span className="text-[10px] font-semibold">{f.title}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Content */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={feature.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                  {feature.icon}
+                </div>
+                <h3 className="text-lg font-bold text-white">{feature.title}</h3>
+              </div>
+              <p className="text-gray-400 text-sm leading-relaxed mb-4">{feature.description}</p>
+              <ul className="space-y-2 mb-6">
+                {feature.bullets.map((bullet, i) => (
+                  <li key={i} className="flex items-center gap-2 text-[11px] text-gray-500">
+                    <Check className="w-3 h-3 text-emerald-400 shrink-0" />
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+              <button className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-bold uppercase tracking-wider transition-colors">
+                {feature.cta}
+              </button>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Preview */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`preview-${feature.id}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 h-[300px] overflow-hidden"
+            >
+              <FeaturePreview featureId={feature.id} />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Feature Preview Animations ───────────────────────────────────────────────
+const FeaturePreview: React.FC<{ featureId: string }> = ({ featureId }) => {
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStep((prev) => (prev + 1) % 4);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const renderPreview = () => {
+    switch (featureId) {
+      case "ai-requirements":
+        return (
+          <div className="h-full flex flex-col gap-3 font-mono text-[10px]">
+            <div className="flex items-center gap-2 text-gray-500 mb-2">
+              <Terminal className="w-3 h-3" />
+              <span>AI Processing Pipeline</span>
+            </div>
+            {[
+              { label: "Meeting Transcript", status: step >= 0 ? "complete" : "pending" },
+              { label: "AI Extraction", status: step >= 1 ? "complete" : step === 0 ? "active" : "pending" },
+              { label: "Requirement Draft", status: step >= 2 ? "complete" : step === 1 ? "active" : "pending" },
+              { label: "BRD Generated", status: step >= 3 ? "complete" : step === 2 ? "active" : "pending" },
+            ].map((item, i) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className={`flex items-center gap-3 p-3 rounded-lg border ${
+                  item.status === "complete"
+                    ? "bg-emerald-500/10 border-emerald-500/30"
+                    : item.status === "active"
+                    ? "bg-purple-500/10 border-purple-500/30"
+                    : "bg-white/[0.02] border-white/[0.06]"
+                }`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    item.status === "complete" ? "bg-emerald-400" : item.status === "active" ? "bg-purple-400 animate-pulse" : "bg-gray-600"
+                  }`}
+                />
+                <span className={item.status === "complete" ? "text-emerald-300" : item.status === "active" ? "text-purple-300" : "text-gray-500"}>
+                  {item.label}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        );
+
+      case "bpmn-designer":
+        return (
+          <div className="h-full flex items-center justify-center">
+            <svg className="w-full h-full" viewBox="0 0 400 300">
+              <defs>
+                <pattern id="preview-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#preview-grid)" />
+              {[
+                { x: 50, y: 130, label: "Start" },
+                { x: 150, y: 130, label: "Process", active: step === 0 },
+                { x: 250, y: 80, label: "Decision", active: step === 1 },
+                { x: 250, y: 180, label: "Task", active: step === 2 },
+                { x: 350, y: 130, label: "End", active: step === 3 },
+              ].map((node, i) => (
+                <g key={i}>
+                  <motion.rect
+                    x={node.x}
+                    y={node.y}
+                    width="80"
+                    height="40"
+                    rx="8"
+                    fill={node.active ? "#1b122b" : "#111"}
+                    stroke={node.active ? "rgba(168,85,247,0.6)" : "rgba(255,255,255,0.08)"}
+                    strokeWidth="1.5"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: i * 0.1 }}
+                  />
+                  <text x={node.x + 40} y={node.y + 24} textAnchor="middle" fill={node.active ? "#c084fc" : "#fff"} fontSize="9" fontWeight="bold" fontFamily="monospace">
+                    {node.label}
+                  </text>
+                </g>
+              ))}
+              {/* Animated connectors */}
+              <motion.path
+                d="M 130 150 L 150 150"
+                stroke="rgba(168,85,247,0.4)"
+                strokeWidth="1.5"
+                strokeDasharray="5,5"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1, delay: 0.2 }}
+              />
+              <motion.path
+                d="M 230 150 L 250 150 L 250 120"
+                stroke="rgba(168,85,247,0.4)"
+                strokeWidth="1.5"
+                strokeDasharray="5,5"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1, delay: 0.4 }}
+              />
+            </svg>
+          </div>
+        );
+
+      case "brd-generator":
+        return (
+          <div className="h-full bg-white text-gray-900 p-4 font-serif text-[9px] overflow-hidden">
+            <div className="text-center border-b-2 border-gray-900 pb-2 mb-3">
+              <h1 className="text-[11px] font-bold uppercase tracking-wider">Business Requirements Document</h1>
+              <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">Project: Checkout Engine</p>
+            </div>
+            <div className="space-y-2">
+              {[
+                { title: "1. Introduction", active: step === 0 },
+                { title: "2. Functional Requirements", active: step === 1 },
+                { title: "3. Non-Functional Requirements", active: step === 2 },
+                { title: "4. Appendices", active: step === 3 },
+              ].map((section, i) => (
+                <motion.div
+                  key={section.title}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`p-2 rounded border ${section.active ? "bg-purple-50 border-purple-300" : "bg-gray-50 border-gray-200"}`}
+                >
+                  <span className={`font-bold ${section.active ? "text-purple-700" : "text-gray-700"}`}>{section.title}</span>
+                  {section.active && (
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: "auto" }}
+                      className="mt-1 text-gray-600"
+                    >
+                      <p>REQ-001: Authentication flow...</p>
+                      <p>REQ-002: Payment processing...</p>
+                    </motion.div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case "user-stories":
+        return (
+          <div className="h-full flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-gray-500 mb-2">
+              <GitBranch className="w-3 h-3" />
+              <span className="text-[10px] font-semibold">Story Hierarchy</span>
+            </div>
+            {[
+              { label: "Epic: Checkout Flow", level: 0, active: step === 0 },
+              { label: "Story: User Login", level: 1, active: step === 1 },
+              { label: "Task: OAuth Setup", level: 2, active: step === 2 },
+              { label: "Criteria: Valid Token", level: 2, active: step === 3 },
+            ].map((item, i) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className={`p-2 rounded-lg border ml-${item.level * 4} ${
+                  item.active
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                    : "bg-white/[0.02] border-white/[0.06] text-gray-500"
+                }`}
+              >
+                <span className="text-[10px]">{item.label}</span>
+              </motion.div>
+            ))}
+          </div>
+        );
+
+      case "jira-integration":
+        return (
+          <div className="h-full flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-gray-500 mb-2">
+              <BarChart2 className="w-3 h-3" />
+              <span className="text-[10px] font-semibold">Sync Pipeline</span>
+            </div>
+            {[
+              { label: "BAHub Requirement", status: step >= 0 ? "synced" : "pending" },
+              { label: "Map to Jira Field", status: step >= 1 ? "synced" : step === 0 ? "syncing" : "pending" },
+              { label: "Create Jira Issue", status: step >= 2 ? "synced" : step === 1 ? "syncing" : "pending" },
+              { label: "Status Update", status: step >= 3 ? "synced" : step === 2 ? "syncing" : "pending" },
+            ].map((item, i) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className={`flex items-center justify-between p-3 rounded-lg border ${
+                  item.status === "synced"
+                    ? "bg-emerald-500/10 border-emerald-500/30"
+                    : item.status === "syncing"
+                    ? "bg-blue-500/10 border-blue-500/30"
+                    : "bg-white/[0.02] border-white/[0.06]"
+                }`}
+              >
+                <span className={`text-[10px] ${item.status === "synced" ? "text-emerald-300" : item.status === "syncing" ? "text-blue-300" : "text-gray-500"}`}>
+                  {item.label}
+                </span>
+                {item.status === "syncing" && (
+                  <motion.div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                )}
+                {item.status === "synced" && <Check className="w-3 h-3 text-emerald-400" />}
+              </motion.div>
+            ))}
+          </div>
+        );
+
+      case "analytics":
+        return (
+          <div className="h-full flex flex-col gap-3">
+            <div className="flex items-center gap-2 text-gray-500 mb-1">
+              <Activity className="w-3 h-3" />
+              <span className="text-[10px] font-semibold">Project Health</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { label: "Coverage", value: "87%", color: "emerald" },
+                { label: "Velocity", value: "42 pts", color: "blue" },
+                { label: "Health", value: "A+", color: "purple" },
+                { label: "Risks", value: "3 Low", color: "amber" },
+              ].map((metric, i) => (
+                <motion.div
+                  key={metric.label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`p-3 rounded-lg border bg-${metric.color}-500/10 border-${metric.color}-500/30`}
+                >
+                  <div className="text-[9px] text-gray-500">{metric.label}</div>
+                  <div className={`text-lg font-bold text-${metric.color}-400`}>{metric.value}</div>
+                </motion.div>
+              ))}
+            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="flex-1 bg-white/[0.02] border border-white/[0.06] rounded-lg p-3"
+            >
+              <div className="text-[9px] text-gray-500 mb-2">Trend (Last 30 days)</div>
+              <div className="flex items-end gap-1 h-16">
+                {[40, 55, 45, 60, 70, 65, 80, 75, 85, 90].map((h, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ height: 0 }}
+                    animate={{ height: `${h}%` }}
+                    transition={{ delay: 0.5 + i * 0.05 }}
+                    className="flex-1 bg-emerald-500/30 rounded-t"
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        );
+
+      default:
+        return (
+          <div className="h-full flex items-center justify-center text-gray-500 text-[11px]">
+            <div className="text-center">
+              <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p>Preview coming soon</p>
+            </div>
+          </div>
+        );
+    }
+  };
+
+  return <div className="h-full">{renderPreview()}</div>;
+};
+
 // ─── Main component ───────────────────────────────────────────────────────────
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigateToRegister, onTryDemo }) => {
   const { waitlist_countdown_enabled } = usePublicSettings();
@@ -370,7 +924,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             </div>
           </div>
           <div className="hidden md:flex items-center gap-6 text-[11px] font-semibold tracking-wide text-gray-500">
-            {["#features", "#workflow", "#pricing", "#testimonials", "#faq"].map(h => (
+            {["#features", "#workflow", "#in-action", "#pricing", "#testimonials", "#faq"].map(h => (
               <a key={h} href={h} className="hover:text-white transition-colors capitalize">{h.slice(1)}</a>
             ))}
           </div>
@@ -589,6 +1143,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {/* ── SEE BAHUB IN ACTION ───────────────────────────────────────────────── */}
+      <section id="in-action" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-[#030209]/40 border-t border-b border-white/[0.02]">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-6">
+            See BAHub in Action
+          </div>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-6">
+            Every Business Process.<br /><span className="text-gradient-emerald-blue">One AI Workspace.</span>
+          </h2>
+          <p className="text-gray-500 text-sm max-w-[650px] mx-auto leading-relaxed">Scroll to explore how each module transforms your workflow with AI-powered automation.</p>
+        </div>
+
+        <FeatureShowcase />
       </section>
 
       {/* ── SANDBOX ──────────────────────────────────────────────────────────── */}
@@ -1253,7 +1822,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
               <Zap className="w-3 h-3 fill-white" /> Ship your first BRD in 10 minutes
             </div>
             <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-6">
-              2,400+ BA teams switched.<br />Your turn.
+              Built for Business Analysts.<br />Ship faster.
             </h2>
             <p className="text-purple-200/80 text-sm max-w-[650px] mx-auto mb-12 leading-relaxed">
               Free tier. No credit card. Full access to Requirements, SWOT, Gap Analysis, and the AI Assistant from day one.

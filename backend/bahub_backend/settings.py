@@ -81,6 +81,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "audit.middleware.AuditThreadLocalMiddleware",
     "core.middleware.SubscriptionMiddleware",
+    "security_headers.SecurityHeadersMiddleware",  # Custom security headers (CSP, X-Content-Type-Options, etc.)
 ]
 
 ROOT_URLCONF = "bahub_backend.urls"
@@ -236,6 +237,8 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# Media files (Invoice PDFs, uploads)
+# Note: Using local filesystem storage. For production, consider S3 or similar.
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
