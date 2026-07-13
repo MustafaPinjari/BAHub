@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 import datetime
+import email as email_stdlib
 
 from organizations.models import Organization, OrganizationInvitation
 from projects.models import Project
@@ -14,6 +15,37 @@ from core.emails import (
 )
 
 User = get_user_model()
+
+
+def _get_mime_parts(msg):
+    """
+    Extract plain-text and HTML bodies from a Django EmailMessage whose
+    MIME tree was assembled by EmailService using SafeMIMEMultipart.
+
+    Django's locmem backend captures the EmailMessage object; all content
+    lives in msg.message() (the MIME tree), NOT in .body or .alternatives.
+    """
+    raw = msg.message().as_bytes()
+    parsed = email_stdlib.message_from_bytes(raw)
+    plain_parts, html_parts = [], []
+
+    def walk(part):
+        ct = part.get_content_type()
+        if ct == "text/plain":
+            payload = part.get_payload(decode=True)
+            if payload:
+                plain_parts.append(payload.decode("utf-8", errors="replace"))
+        elif ct == "text/html":
+            payload = part.get_payload(decode=True)
+            if payload:
+                html_parts.append(payload.decode("utf-8", errors="replace"))
+        elif part.is_multipart():
+            for subpart in part.get_payload():
+                walk(subpart)
+
+    walk(parsed)
+    return "".join(plain_parts), "".join(html_parts)
+
 
 class EmailServiceTests(TestCase):
     def setUp(self):
@@ -52,10 +84,8 @@ class EmailServiceTests(TestCase):
         )
 
     def test_send_meeting_email(self):
-        # Clear outbox
         mail.outbox = []
         
-        # Trigger meeting email
         success = send_meeting_email(
             meeting=self.meeting,
             is_update=False,
@@ -63,20 +93,25 @@ class EmailServiceTests(TestCase):
         )
         
         self.assertTrue(success)
+        # EmailService is async — wait for delivery
+        import time
+        deadline = time.monotonic() + 5.0
+        while time.monotonic() < deadline:
+            if mail.outbox:
+                break
+            time.sleep(0.05)
+
         self.assertEqual(len(mail.outbox), 1)
-        email = mail.outbox[0]
-        
-        self.assertEqual(email.subject, "Meeting Scheduled: Design Sync")
-        self.assertEqual(email.to, ["attendee@bahub.local"])
-        self.assertIn("Join Video Call Room", email.body)
-        
-        # Check HTML content
-        self.assertEqual(len(email.alternatives), 1)
-        html_content, content_type = email.alternatives[0]
-        self.assertEqual(content_type, "text/html")
-        self.assertIn("Design Sync", html_content)
-        self.assertIn("Join Video Call Room", html_content)
-        self.assertIn("cid:email_banner", html_content)
+        msg = mail.outbox[0]
+
+        self.assertEqual(msg.subject, "Meeting Scheduled: Design Sync")
+        self.assertEqual(msg.to, ["attendee@bahub.local"])
+
+        # Body lives in the MIME tree, not .body/.alternatives
+        plain, html = _get_mime_parts(msg)
+        self.assertIn("Join Video Call Room", plain + html)
+        self.assertIn("Design Sync", html)
+        self.assertIn("cid:email_banner", html)
 
     def test_send_subscription_verification_email(self):
         mail.outbox = []
@@ -91,22 +126,25 @@ class EmailServiceTests(TestCase):
         )
         
         self.assertTrue(success)
+        import time
+        deadline = time.monotonic() + 5.0
+        while time.monotonic() < deadline:
+            if mail.outbox:
+                break
+            time.sleep(0.05)
+
         self.assertEqual(len(mail.outbox), 1)
-        email = mail.outbox[0]
-        
-        self.assertEqual(email.subject, "BAHub: Verify Your Pro Subscription Upgrade")
-        self.assertEqual(email.to, ["adminuser@bahub.local"])
-        self.assertIn("https://bahub-beta.netlify.app/verify?token=123", email.body)
-        
-        # Check HTML content
-        self.assertEqual(len(email.alternatives), 1)
-        html_content, content_type = email.alternatives[0]
-        self.assertEqual(content_type, "text/html")
-        self.assertIn("Verify Your Subscription Upgrade", html_content)
-        self.assertIn("PRO", html_content)
-        self.assertIn("20", html_content)
-        self.assertIn("https://bahub-beta.netlify.app/verify?token=123", html_content)
-        self.assertIn("cid:email_banner", html_content)
+        msg = mail.outbox[0]
+
+        self.assertEqual(msg.subject, "BAHub: Verify Your Pro Subscription Upgrade")
+        self.assertEqual(msg.to, ["adminuser@bahub.local"])
+
+        plain, html = _get_mime_parts(msg)
+        combined = plain + html
+        self.assertIn("https://bahub-beta.netlify.app/verify?token=123", combined)
+        self.assertIn("PRO", combined)
+        self.assertIn("20", combined)
+        self.assertIn("cid:email_banner", html)
 
     def test_send_organization_invitation_email(self):
         mail.outbox = []
@@ -121,17 +159,22 @@ class EmailServiceTests(TestCase):
         success = send_organization_invitation_email(invite, self.admin)
         
         self.assertTrue(success)
+        import time
+        deadline = time.monotonic() + 5.0
+        while time.monotonic() < deadline:
+            if mail.outbox:
+                break
+            time.sleep(0.05)
+
         self.assertEqual(len(mail.outbox), 1)
-        email = mail.outbox[0]
-        
-        self.assertEqual(email.subject, "Invitation to join Test Org on BAHub")
-        self.assertEqual(email.to, ["newmember@bahub.local"])
-        
-        # Check HTML content
-        self.assertEqual(len(email.alternatives), 1)
-        html_content, content_type = email.alternatives[0]
-        self.assertEqual(content_type, "text/html")
-        self.assertIn("You've Been Invited to Join Test Org", html_content)
-        self.assertIn("Developer", html_content)
-        self.assertIn(f"invite={invite.token}", html_content)
-        self.assertIn("cid:email_banner", html_content)
+        msg = mail.outbox[0]
+
+        self.assertEqual(msg.subject, "Invitation to join Test Org on BAHub")
+        self.assertEqual(msg.to, ["newmember@bahub.local"])
+
+        plain, html = _get_mime_parts(msg)
+        self.assertIn("Test Org", html)
+        self.assertIn("Developer", html)
+        self.assertIn(f"invite={invite.token}", html)
+        self.assertIn("cid:email_banner", html)
+

@@ -82,8 +82,30 @@ class MeetingManagementTests(APITestCase):
 
     def test_meeting_sends_email_invitation(self):
         """Verify scheduler emails are dispatched to attendees on meeting creation."""
+        import time
+        import email as email_stdlib
         from django.core import mail
-        
+
+        def _get_mime_parts(msg):
+            raw = msg.message().as_bytes()
+            parsed = email_stdlib.message_from_bytes(raw)
+            plain_parts, html_parts = [], []
+            def walk(part):
+                ct = part.get_content_type()
+                if ct == "text/plain":
+                    payload = part.get_payload(decode=True)
+                    if payload:
+                        plain_parts.append(payload.decode("utf-8", errors="replace"))
+                elif ct == "text/html":
+                    payload = part.get_payload(decode=True)
+                    if payload:
+                        html_parts.append(payload.decode("utf-8", errors="replace"))
+                elif part.is_multipart():
+                    for subpart in part.get_payload():
+                        walk(subpart)
+            walk(parsed)
+            return "".join(plain_parts), "".join(html_parts)
+
         self.client.force_authenticate(user=self.analyst_a)
         url_meeting = reverse("meeting-list")
         
@@ -101,10 +123,21 @@ class MeetingManagementTests(APITestCase):
         
         response = self.client.post(url_meeting, payload, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        
+
+        # EmailService is async — wait for delivery
+        deadline = time.monotonic() + 5.0
+        while time.monotonic() < deadline:
+            if mail.outbox:
+                break
+            time.sleep(0.05)
+
         # Verify email is sent
         self.assertEqual(len(mail.outbox), 1)
-        email = mail.outbox[0]
-        self.assertEqual(email.subject, "Meeting Scheduled: Strategy Alignment Sync")
-        self.assertIn("Join Video Call Room: https://meet.jit.si/bahub-", email.body)
-        self.assertIn(self.analyst_a.email, email.to)
+        msg = mail.outbox[0]
+        self.assertEqual(msg.subject, "Meeting Scheduled: Strategy Alignment Sync")
+        self.assertIn(self.analyst_a.email, msg.to)
+
+        # Body lives in MIME tree, not .body
+        plain, html = _get_mime_parts(msg)
+        self.assertIn("https://meet.jit.si/bahub-", plain + html)
+

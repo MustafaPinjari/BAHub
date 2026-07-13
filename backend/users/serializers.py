@@ -68,8 +68,18 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
     def get_subscription_obj(self, obj):
+        """
+        Return (and cache) the TenantSubscription for this user's organization.
+
+        Called up to 5 times per user by the SerializerMethodFields below.
+        The result is cached on the User instance for the lifetime of this
+        serializer invocation to avoid 5× N+1 queries on list endpoints.
+        """
         if not obj.organization:
             return None
+        cache_attr = "_cached_subscription"
+        if hasattr(obj, cache_attr):
+            return getattr(obj, cache_attr)
         from billing.models import TenantSubscription
         sub, _ = TenantSubscription.objects.get_or_create(
             organization=obj.organization,
@@ -78,9 +88,10 @@ class UserSerializer(serializers.ModelSerializer):
                 "seats_limit": 5,
                 "is_active": True,
                 "plan_verified": True,
-                "ai_credits_limit": 100
-            }
+                "ai_credits_limit": 100,
+            },
         )
+        setattr(obj, cache_attr, sub)
         return sub
 
     def get_plan_tier(self, obj):
@@ -122,6 +133,7 @@ class UserSerializer(serializers.ModelSerializer):
         if sub and sub.expires_at:
             return sub.expires_at.strftime("%Y-%m-%d")
         return None
+
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):

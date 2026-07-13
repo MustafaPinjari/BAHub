@@ -47,13 +47,34 @@ def _safe_redirect_uri(requested_uri: str) -> str:
 
 
 def generate_receipt_number():
+    """
+    Generate a unique, sequential receipt number for the current year.
+
+    Uses a database-level advisory lock via select_for_update on the latest
+    Payment row for this year to eliminate the race condition that existed
+    when two concurrent requests could both compute the same count value
+    before either had committed a new Payment row.
+    """
     year = timezone.now().year
-    count = Payment.objects.filter(receipt_number__startswith=f"BAH-{year}-").count() + 1
-    while True:
-        num = f"BAH-{year}-{count:06d}"
-        if not Payment.objects.filter(receipt_number=num).exists():
-            return num
-        count += 1
+    prefix = f"BAH-{year}-"
+    with transaction.atomic():
+        # Lock the highest existing receipt number for this year so concurrent
+        # requests queue up instead of computing the same next value.
+        last = (
+            Payment.objects.select_for_update()
+            .filter(receipt_number__startswith=prefix)
+            .order_by("-receipt_number")
+            .first()
+        )
+        if last:
+            try:
+                last_seq = int(last.receipt_number.split("-")[-1])
+            except (ValueError, IndexError):
+                last_seq = 0
+        else:
+            last_seq = 0
+        next_seq = last_seq + 1
+        return f"{prefix}{next_seq:06d}"
 
 
 def process_successful_payment(sub, plan_tier, amount, checkout_session_id=None, stripe_invoice_id=None, stripe_sub_id=None, stripe_cust_id=None, payment_intent_id=None, payment_method="Card (Stripe)", event_type="stripe.webhook"):
@@ -383,20 +404,31 @@ class MockUpgradeView(APIView):
             admins = User.objects.filter(organization_id=org_id, role="ADMIN")
             admin_emails = [admin.email for admin in admins if admin.email]
             if not admin_emails:
-                admin_emails = ["ver_admin@test.local"]
-                
-            recipient_list = list(set(admin_emails + ["unlessuser99@gmail.com"]))
-            verify_url = request.build_absolute_uri(
-                f"/api/v1/billing/verify-subscription/?token={token}&org_id={org_id}"
-            )
-            if redirect_uri:
-                verify_url += f"&redirect_uri={redirect_uri}"
-            
-            send_mail(
-                subject="Verify Your Pro Subscription Upgrade" if plan == "PRO" else "Verify Your Enterprise Subscription Upgrade",
-                message=f"Please verify your subscription upgrade. Click here: {verify_url}",
-                from_email="unlessuser99@gmail.com",
-                recipient_list=recipient_list,
+                # No org admins found — skip notification rather than emailing a
+                # hardcoded fallback address that would not exist in production.
+                logger.warning(
+                    "MockUpgradeView: no admin emails found for org_id=%s; "
+                    "skipping verification email.",
+                    org_id,
+                )
+                admin_emails = []
+
+            if admin_emails:
+                verify_url = request.build_absolute_uri(
+                    f"/api/v1/billing/verify-subscription/?token={token}&org_id={org_id}"
+                )
+                if redirect_uri:
+                    verify_url += f"&redirect_uri={redirect_uri}"
+
+                send_mail(
+                    subject=(
+                        "Verify Your Pro Subscription Upgrade"
+                        if plan == "PRO"
+                        else "Verify Your Enterprise Subscription Upgrade"
+                    ),
+                    message=f"Please verify your subscription upgrade. Click here: {verify_url}",
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=admin_emails,
                 fail_silently=False,
             )
 

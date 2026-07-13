@@ -69,14 +69,18 @@ def custom_exception_handler(exc, context):
             
     else:
         # Case 3: Server Exception (500)
-        logger.exception(f"Unhandled Server Error: {str(exc)}")
+        logger.exception("Unhandled Server Error: %s", str(exc))
+        from django.conf import settings
+        # Never expose raw exception detail to clients in production —
+        # it can leak DB schema, file paths, or internal logic.
+        error_detail = str(exc) if settings.DEBUG else "Internal server error."
         response = Response(
             {
                 "success": False,
                 "message": "An unexpected server error occurred.",
-                "errors": {"server_error": str(exc)},
+                "errors": {"server_error": error_detail},
             },
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
     return response

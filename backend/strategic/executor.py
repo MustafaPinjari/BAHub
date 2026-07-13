@@ -233,20 +233,16 @@ def run_ai_job_task(job_id):
         job.save()
 
         try:
-            from billing.models import TenantSubscription
-            sub, _ = TenantSubscription.objects.get_or_create(
-                organization=job.project.organization,
-                defaults={
-                    "plan_tier": "FREE",
-                    "seats_limit": 5,
-                    "is_active": True,
-                    "ai_credits_limit": 100
-                }
+            # Atomic increment prevents race conditions when multiple AI jobs
+            # finish concurrently and both read/write ai_credits_used.
+            # Uses F() expression so the DB does the increment, not Python.
+            from django.db.models import F
+            TenantSubscription.objects.filter(pk=sub.pk).update(
+                ai_credits_used=F("ai_credits_used") + 1
             )
-            sub.ai_credits_used += 1
-            sub.save()
         except Exception as sub_err:
             logger.error(f"Failed to update subscription AI credit count: {sub_err}")
+
 
     except Exception as e:
         logger.exception(f"Error executing AIJob {job_id} in background: {e}")
@@ -261,8 +257,7 @@ def run_ai_job_task(job_id):
     finally:
         close_old_connections()
 
-import sys
-IS_TESTING = "test" in sys.argv
+
 
 def submit_ai_job(job_id):
     """
@@ -270,6 +265,10 @@ def submit_ai_job(job_id):
     During unit tests, we skip background threading to avoid SQLite locks,
     allowing the test runner to execute the task synchronously.
     """
-    if IS_TESTING:
+    from django.conf import settings as _settings
+    # Use settings.IS_TESTING which is set at startup by settings.py
+    # (consistent with the project convention; avoids stale module-level snapshots).
+    if getattr(_settings, "IS_TESTING", False):
         return
     ai_executor.submit(run_ai_job_task, job_id)
+

@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
+from django.utils import timezone
 import logging
 import datetime
 import os
@@ -44,7 +45,7 @@ class HealthCheckView(APIView):
         return Response({
             "status": "ok",
             "service": "BAHub Backend",
-            "timestamp": datetime.datetime.utcnow().isoformat() + "Z",
+            "timestamp": timezone.now().isoformat(),
             "version": "1.0"
         }, status=status.HTTP_200_OK)
 

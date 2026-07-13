@@ -708,7 +708,10 @@ class PlanVerificationTests(APITestCase):
         self.project = Project.objects.create(name="Ver Project", organization=self.org)
 
     def test_mock_upgrade_to_pro_requires_email_verification(self):
-        """Upgrading to PRO tier sets plan_verified to False, generates token, and sends verification email."""
+        """
+        Upgrading to PRO tier sets plan_verified to False, generates token,
+        and sends a verification email to org admins via DEFAULT_FROM_EMAIL.
+        """
         # Check starting state
         self.assertEqual(self.sub.plan_tier, "FREE")
         self.assertTrue(self.sub.plan_verified)
@@ -728,17 +731,26 @@ class PlanVerificationTests(APITestCase):
         self.assertFalse(self.sub.is_active)
         self.assertIsNotNone(self.sub.verification_token)
 
-        # Verify email was sent
-        self.assertEqual(len(mail.outbox), 1)
+        # Verify email was sent to org admin only (no hardcoded developer email in recipients)
+        self.assertEqual(len(mail.outbox), 1, "Exactly one verification email should be sent.")
         email = mail.outbox[0]
-        self.assertEqual(email.from_email, "unlessuser99@gmail.com")
+
+        # from_email should come from Django's DEFAULT_FROM_EMAIL setting, not a hardcoded address
+        from django.conf import settings as django_settings
+        self.assertEqual(email.from_email, django_settings.DEFAULT_FROM_EMAIL)
+
+        # Recipient list should be the org admin's email only
         self.assertIn("ver_admin@test.local", email.to)
-        self.assertIn("unlessuser99@gmail.com", email.to)
+        # Developer's personal email must NOT appear in the recipient list
+        self.assertNotIn("unlessuser99@gmail.com", email.to)
+
         self.assertIn("Verify Your Pro Subscription Upgrade", email.subject)
-        
+
         # Verify URL is in the email body
         verify_url = f"/api/v1/billing/verify-subscription/?token={self.sub.verification_token}&org_id={self.org.id}"
         self.assertIn(verify_url, email.body)
+
+
 
     def test_ai_features_blocked_when_unverified(self):
         """Unverified paid subscription blocks AI features (chat & diagram generate) with 402."""
