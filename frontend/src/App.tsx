@@ -136,7 +136,6 @@ import { ContactPage } from "./features/legal/ContactPage";
 const MainAppContent: React.FC = () => {
   const { isAuthenticated, loading, user } = useAuth();
   const [bypassWaitlistLock, setBypassWaitlistLock] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(false);
   const { waitlist_countdown_enabled } = usePublicSettings();
 
   const location = useLocation();

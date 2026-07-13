@@ -204,9 +204,12 @@ export const ProjectsPage: React.FC = () => {
       fetchProjects();
     } catch (err: any) {
       if (err.errors) {
-        const key = Object.keys(err.errors)[0];
-        const val = err.errors[key];
-        setFormError(`${key}: ${Array.isArray(val) ? val.join(" ") : val}`);
+        const keys = Object.keys(err.errors);
+        const firstKey = keys[0];
+        if (firstKey) {
+          const val = err.errors[firstKey];
+          setFormError(`${firstKey}: ${Array.isArray(val) ? val.join(" ") : val}`);
+        }
       } else {
         setFormError(err.message || "Failed to save project.");
       }

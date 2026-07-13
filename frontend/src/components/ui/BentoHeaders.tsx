@@ -310,7 +310,7 @@ export const AuditHeader: React.FC = () => {
     let idx = 0;
     const t = setInterval(() => {
       if (idx < messages.length) {
-        setLogs(prev => [...prev.slice(-3), messages[idx]]);
+        setLogs(prev => [...prev.slice(-3), messages[idx] as string]);
         idx++;
       } else {
         idx = 0;

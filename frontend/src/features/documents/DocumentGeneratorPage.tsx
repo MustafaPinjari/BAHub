@@ -126,7 +126,10 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
       );
       setDocuments(res.data);
       if (res.data.length > 0 && !selectedDoc && !isDrafting) {
-        setSelectedDoc(res.data[0]);
+        const firstDoc = res.data[0];
+        if (firstDoc) {
+          setSelectedDoc(firstDoc);
+        }
       }
     } catch (err) {
       console.error("Failed to load documents:", err);
@@ -353,6 +356,7 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
+      if (!line) continue;
       const trimmed = line.trim();
 
       // Handle code block
@@ -451,20 +455,20 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
         
         // Node regex: n1["👤 Customer"] or n1("Customer")
         const nodeMatch = trimmedL.match(/^(\w+)\["([^"]+)"\]/) || trimmedL.match(/^(\w+)\("([^"]+)"\)/) || trimmedL.match(/^(\w+)\[([^\]]+)\]/);
-        if (nodeMatch) {
+        if (nodeMatch && nodeMatch[1] && nodeMatch[2]) {
           nodes.push({ id: nodeMatch[1], label: nodeMatch[2].trim() });
           return;
         }
         
         // Edge regex: n1 --> |label| n2 or n1 --> n2
         const edgeMatch = trimmedL.match(/^(\w+)\s*-->\s*\|([^|]+)\|\s*(\w+)/);
-        if (edgeMatch) {
+        if (edgeMatch && edgeMatch[1] && edgeMatch[2] && edgeMatch[3]) {
           edges.push({ source: edgeMatch[1], label: edgeMatch[2].trim(), target: edgeMatch[3] });
           return;
         }
         
         const edgeMatchNoLabel = trimmedL.match(/^(\w+)\s*-->\s*(\w+)/);
-        if (edgeMatchNoLabel) {
+        if (edgeMatchNoLabel && edgeMatchNoLabel[1] && edgeMatchNoLabel[2]) {
           edges.push({ source: edgeMatchNoLabel[1], label: "", target: edgeMatchNoLabel[2] });
           return;
         }
@@ -479,19 +483,19 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
         case "h1":
           return (
             <h1 key={idx} className="text-base font-bold text-foreground border-b border-border pb-1 mt-6 mb-3">
-              {block.lines[0].replace("# ", "")}
+              {block.lines[0]?.replace("# ", "") || ""}
             </h1>
           );
         case "h2":
           return (
             <h2 key={idx} className="text-xs font-bold text-foreground mt-4 mb-2">
-              {block.lines[0].replace("## ", "")}
+              {block.lines[0]?.replace("## ", "") || ""}
             </h2>
           );
         case "h3":
           return (
             <h3 key={idx} className="text-[11px] font-bold text-foreground mt-3 mb-1">
-              {block.lines[0].replace("### ", "")}
+              {block.lines[0]?.replace("### ", "") || ""}
             </h3>
           );
         case "list":
@@ -507,7 +511,7 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
         case "table": {
           const rows = block.lines.map(line => line.split("|").map(c => c.trim()).filter((_c, i, a) => i > 0 && i < a.length - 1));
           const header = rows[0];
-          const body = rows.slice(1).filter(r => r.length > 0 && !r[0].startsWith("---"));
+          const body = rows.slice(1).filter(r => r.length > 0 && r[0] && !r[0].startsWith("---"));
           return (
             <div key={idx} className="overflow-x-auto my-3 border border-border rounded-xl">
               <table className="min-w-full divide-y divide-border text-[11px]">
@@ -538,7 +542,7 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
           );
         }
         case "code": {
-          const isMermaid = block.lines[0].includes("mermaid");
+          const isMermaid = block.lines[0]?.includes("mermaid") || false;
           if (isMermaid) {
             const { nodes, edges } = parseMermaid(block.lines);
             const nodeMap = new Map(nodes.map(n => [n.id, n.label]));

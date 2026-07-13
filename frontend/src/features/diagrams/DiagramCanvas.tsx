@@ -194,20 +194,24 @@ const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({
   const triggerUndo = () => {
     if (historyPast.length === 0) return;
     const previous = historyPast[historyPast.length - 1];
-    setHistoryPast((prev) => prev.slice(0, prev.length - 1));
-    setHistoryFuture((prev) => [...prev, { nodes: [...nodes], edges: [...edges] }]);
-    setNodes(previous.nodes);
-    setEdges(previous.edges);
+    if (previous) {
+      setHistoryPast((prev) => prev.slice(0, prev.length - 1));
+      setHistoryFuture((prev) => [...prev, { nodes: [...nodes], edges: [...edges] }]);
+      setNodes(previous.nodes);
+      setEdges(previous.edges);
+    }
   };
 
   // Redo action trigger
   const triggerRedo = () => {
     if (historyFuture.length === 0) return;
     const next = historyFuture[historyFuture.length - 1];
-    setHistoryFuture((prev) => prev.slice(0, prev.length - 1));
-    setHistoryPast((prev) => [...prev, { nodes: [...nodes], edges: [...edges] }]);
-    setNodes(next.nodes);
-    setEdges(next.edges);
+    if (next) {
+      setHistoryFuture((prev) => prev.slice(0, prev.length - 1));
+      setHistoryPast((prev) => [...prev, { nodes: [...nodes], edges: [...edges] }]);
+      setNodes(next.nodes);
+      setEdges(next.edges);
+    }
   };
 
   // Drag and Drop implementation
@@ -371,8 +375,10 @@ const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({
 
     edges.forEach((e) => {
       if (adj[e.source] && e.target in levelMap) {
-        adj[e.source].push(e.target);
-        indegree[e.target]++;
+        (adj[e.source] as string[]).push(e.target);
+        if (indegree[e.target] !== undefined) {
+          indegree[e.target]++;
+        }
       }
     });
 
@@ -384,10 +390,12 @@ const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({
     while (queue.length > 0) {
       const u = queue.shift()!;
       const currentLevel = levelMap[u];
-      adj[u].forEach((v) => {
-        levelMap[v] = Math.max(levelMap[v], currentLevel + 1);
-        queue.push(v);
-      });
+      if (adj[u]) {
+        (adj[u] as string[]).forEach((v) => {
+          levelMap[v] = Math.max(levelMap[v] || 0, (currentLevel || 0) + 1);
+          queue.push(v);
+        });
+      }
     }
 
     const levelGroups: Record<number, string[]> = {};
@@ -401,7 +409,8 @@ const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({
     const isSequence = diagramType.toUpperCase().includes("SEQUENCE") || diagramType.toUpperCase().includes("ERD");
     const updatedNodes = nodes.map((n) => {
       const lvl = levelMap[n.id] || 0;
-      const index = levelGroups[lvl].indexOf(n.id);
+      const group = levelGroups[lvl];
+      const index = group ? group.indexOf(n.id) : 0;
       
       const x = isSequence ? index * 240 + 50 : lvl * 220 + 80;
       const y = isSequence ? lvl * 140 + 80 : index * 120 + 80;

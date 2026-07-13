@@ -4,7 +4,7 @@ import { useProject } from "../../features/projects/ProjectContext";
 import type { Project } from "../../features/projects/ProjectContext";
 import { api } from "../../services/api";
 import { Button, Input, Alert } from "./UIComponents";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Sparkles,
   FolderGit,
@@ -12,8 +12,6 @@ import {
   FileSpreadsheet,
   CheckCircle,
   ArrowRight,
-  ArrowLeft,
-  X,
   Zap,
   Shield,
   BarChart2
@@ -24,52 +22,6 @@ interface OnboardingWizardProps {
   onClose: () => void;
 }
 
-interface OnboardingStep {
-  id: number;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  completed: boolean;
-}
-
-const ONBOARDING_STEPS: OnboardingStep[] = [
-  {
-    id: 1,
-    title: "Welcome to BAHub",
-    description: "Let's get you started with your first project in under 2 minutes.",
-    icon: <Sparkles className="w-6 h-6" />,
-    completed: false
-  },
-  {
-    id: 2,
-    title: "Create Your First Project",
-    description: "Set up a workspace for your business analysis work.",
-    icon: <FolderGit className="w-6 h-6" />,
-    completed: false
-  },
-  {
-    id: 3,
-    title: "Add Key Stakeholders",
-    description: "Identify who will be impacted by your project.",
-    icon: <Users className="w-6 h-6" />,
-    completed: false
-  },
-  {
-    id: 4,
-    title: "Define Requirements",
-    description: "Capture your first business requirement.",
-    icon: <FileSpreadsheet className="w-6 h-6" />,
-    completed: false
-  },
-  {
-    id: 5,
-    title: "Explore Features",
-    description: "Discover powerful tools for business analysis.",
-    icon: <Zap className="w-6 h-6" />,
-    completed: false
-  }
-];
-
 export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const { setActiveProject } = useProject();
@@ -77,7 +29,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [skipped, setSkipped] = useState(false);
 
   // Completed items to display in progress
   const [createdProject, setCreatedProject] = useState<Project | null>(null);
@@ -100,13 +51,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
   const [reqPriority, setReqPriority] = useState("MEDIUM");
 
   // Update step completion status
-  const [steps, setSteps] = useState<OnboardingStep[]>(ONBOARDING_STEPS);
-
   useEffect(() => {
-    setSteps(prev => prev.map(s => ({
-      ...s,
-      completed: s.id < step || (s.id === step && (createdProject || createdStakeholder || createdRequirement))
-    })));
+    // Step completion logic can be added here if needed
   }, [step, createdProject, createdStakeholder, createdRequirement]);
 
   if (!isOpen) return null;
@@ -191,13 +137,6 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleFinish = () => {
-    if (user?.id) {
-      localStorage.setItem(`bahub_onboarding_completed_${user.id}`, "true");
-    }
-    onClose();
   };
 
   const handleComplete = () => {

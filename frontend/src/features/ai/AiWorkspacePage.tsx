@@ -253,7 +253,7 @@ export const AiWorkspacePage: React.FC = () => {
             <div className="flex flex-col text-left font-sans select-none text-[10px] w-40">
               <span className="font-mono text-[8px] text-gray-500 font-bold">{node.node_key}</span>
               <span className="font-black text-white truncate leading-tight mt-0.5">{node.title}</span>
-              <span className={`text-[7px] font-bold uppercase mt-1 w-fit px-1.5 py-0.5 rounded border ${color.bg} ${color.border} ${color.text}`}>
+              <span className={`text-[7px] font-bold uppercase mt-1 w-fit px-1.5 py-0.5 rounded border ${color?.bg || ''} ${color?.border || ''} ${color?.text || ''}`}>
                 {node.node_type}
               </span>
             </div>

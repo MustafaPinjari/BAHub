@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { api } from "../../services/api";
 import { Card, Button, Input, Alert } from "../../components/common/UIComponents";
 import { useProject } from "../projects/ProjectContext";
 import { logger } from "../../utils/logger";

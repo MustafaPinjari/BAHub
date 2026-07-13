@@ -105,13 +105,16 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onNavigat
     } catch (err: any) {
       console.error(err);
       if (err.errors) {
-        const key = Object.keys(err.errors)[0];
-        const val = err.errors[key];
-        const errMsg = Array.isArray(val) ? val.join(" ") : val;
-        if (errMsg.toLowerCase().includes("already exists")) {
-          setFormError(`${key}: ${errMsg} If you did not verify your account yet, please click "Sign In" at the bottom and log in to verify your email.`);
-        } else {
-          setFormError(`${key}: ${errMsg}`);
+        const keys = Object.keys(err.errors);
+        const firstKey = keys[0];
+        if (firstKey) {
+          const val = err.errors[firstKey];
+          const errMsg = Array.isArray(val) ? val.join(" ") : val;
+          if (errMsg.toLowerCase().includes("already exists")) {
+            setFormError(`${firstKey}: ${errMsg} If you did not verify your account yet, please click "Sign In" at the bottom and log in to verify your email.`);
+          } else {
+            setFormError(`${firstKey}: ${errMsg}`);
+          }
         }
       } else {
         setFormError(err.message || "Registration failed.");

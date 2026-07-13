@@ -84,7 +84,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ id: _id, data, selected 
   // Selected state borders
   const borderState = selected 
     ? "border-primary ring-2 ring-primary/20 scale-[1.02]" 
-    : `${activeColor.border}`;
+    : `${activeColor?.border || 'border-gray-300'}`;
 
   return (
     <div className="relative group select-none">
@@ -121,18 +121,18 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ id: _id, data, selected 
       {/* Shapes Content Layouts */}
       {/* ── UseCase oval ── */}
       {shape === "USECASE" ? (
-        <div className={`${activeColor.bg} ${borderState} border-2 rounded-[50%] px-5 py-3 min-w-[140px] text-center shadow-md flex items-center justify-center`}>
+        <div className={`${activeColor?.bg || 'bg-gray-100'} ${borderState} border-2 rounded-[50%] px-5 py-3 min-w-[140px] text-center shadow-md flex items-center justify-center`}>
           <span className="text-[11px] font-bold text-foreground leading-tight text-center">{data.label}</span>
         </div>
       ) : shape === "ACTOR" ? (
         /* ── Actor stick-figure ── */
         <div className="flex flex-col items-center gap-1 min-w-[70px]">
           {/* Head */}
-          <div className={`w-9 h-9 rounded-full border-2 ${borderState} ${activeColor.bg} flex items-center justify-center`}>
-            <IconComponent className={`w-4 h-4 ${activeColor.text}`} />
+          <div className={`w-9 h-9 rounded-full border-2 ${borderState} ${activeColor?.bg || 'bg-gray-100'} flex items-center justify-center`}>
+            <IconComponent className={`w-4 h-4 ${activeColor?.text || 'text-gray-800'}`} />
           </div>
           {/* Name label */}
-          <span className={`text-[10px] font-bold text-center leading-tight max-w-[80px] ${activeColor.text}`}>
+          <span className={`text-[10px] font-bold text-center leading-tight max-w-[80px] ${activeColor?.text || 'text-gray-800'}`}>
             {data.label}
           </span>
           {data.description && (
@@ -142,7 +142,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ id: _id, data, selected 
           )}
         </div>
       ) : shape === "DECISION" || shape === "GATEWAY" ? (
-        <div className={`${activeColor.bg} ${borderState} ${shapeClass}`}>
+        <div className={`${activeColor?.bg || 'bg-gray-100'} ${borderState} ${shapeClass}`}>
           <div className="-rotate-45 text-center flex flex-col items-center">
             <span className="text-[10px] font-extrabold leading-tight text-heading truncate max-w-[80px]">
               {data.label}
@@ -150,8 +150,8 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ id: _id, data, selected 
           </div>
         </div>
       ) : shape === "EVENT" ? (
-        <div className={`${activeColor.bg} ${borderState} ${shapeClass} flex flex-col items-center justify-center`}>
-          <IconComponent className={`w-5 h-5 ${activeColor.text}`} />
+        <div className={`${activeColor?.bg || 'bg-gray-100'} ${borderState} ${shapeClass} flex flex-col items-center justify-center`}>
+          <IconComponent className={`w-5 h-5 ${activeColor?.text || 'text-gray-800'}`} />
           <span className="text-[9px] font-bold text-muted-foreground mt-1 truncate max-w-[60px]">
             {data.label}
           </span>
@@ -184,9 +184,9 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ id: _id, data, selected 
         </div>
       ) : (
         // Standard process node layout (Actor, DB, Cloud, API, Server, Process, System, User, etc.)
-        <div className={`${activeColor.bg} ${borderState} ${shapeClass} border`}>
+        <div className={`${activeColor?.bg || 'bg-gray-100'} ${borderState} ${shapeClass} border`}>
           <div className="flex items-start gap-2.5">
-            <div className={`w-8 h-8 rounded-lg bg-card border border-border/40 flex items-center justify-center ${activeColor.text} shadow-inner`}>
+            <div className={`w-8 h-8 rounded-lg bg-card border border-border/40 flex items-center justify-center ${activeColor?.text || 'text-gray-800'} shadow-inner`}>
               <IconComponent className="w-4 h-4" />
             </div>
             

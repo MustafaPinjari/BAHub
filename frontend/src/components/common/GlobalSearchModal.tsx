@@ -216,7 +216,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
   // Group results by category
   const grouped = results.reduce<Record<string, SearchResult[]>>((acc, r) => {
     if (!acc[r.category]) acc[r.category] = [];
-    acc[r.category].push(r);
+    (acc[r.category] as SearchResult[]).push(r);
     return acc;
   }, {});
 

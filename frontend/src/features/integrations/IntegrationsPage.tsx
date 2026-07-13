@@ -140,7 +140,10 @@ export const IntegrationsPage: React.FC = () => {
       const docList = docsRes.data || [];
       setDocuments(docList);
       if (docList.length > 0) {
-        setSelectedDocId(docList[0].id);
+        const firstDoc = docList[0];
+        if (firstDoc) {
+          setSelectedDocId(firstDoc.id);
+        }
       } else {
         setSelectedDocId("");
       }

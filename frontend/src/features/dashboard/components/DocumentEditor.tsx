@@ -82,7 +82,7 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({ activeProject, o
     
     // Find Title
     const titleMatch = content.match(/^# Business Document:\s*(.*)$/m);
-    if (titleMatch) {
+    if (titleMatch && titleMatch[1]) {
       result.title = titleMatch[1].trim();
     }
     
@@ -90,15 +90,17 @@ export const DocumentEditor: React.FC<DocumentEditorProps> = ({ activeProject, o
     const sections = content.split(/^##\s+/m);
     for (const section of sections) {
       const lines = section.split("\n");
-      const header = lines[0].trim();
-      const body = lines.slice(1).join("\n").trim();
+      if (lines.length > 0) {
+        const header = lines[0]?.trim() || "";
+        const body = lines.slice(1).join("\n").trim();
       
-      if (header.includes("Scope") || header.includes("1.")) {
-        result.scope = body;
-      } else if (header.includes("User Flow") || header.includes("2.")) {
-        result.flow = body;
-      } else if (header.includes("Requirements") || header.includes("3.")) {
-        result.reqs = body;
+        if (header.includes("Scope") || header.includes("1.")) {
+          result.scope = body;
+        } else if (header.includes("User Flow") || header.includes("2.")) {
+          result.flow = body;
+        } else if (header.includes("Requirements") || header.includes("3.")) {
+          result.reqs = body;
+        }
       }
     }
     
@@ -129,16 +131,18 @@ ${reqs}`;
       
       if (docsRes.data && docsRes.data.length > 0) {
         const doc = docsRes.data[0];
-        setSelectedDoc(doc);
-        setVersion(doc.version || "1.0");
-        setStatus(doc.status || "DRAFT");
-        setDocContent(parseMarkdownContent(doc.content, doc.title));
-        
-        if (doc.updated_at) {
-          const date = new Date(doc.updated_at);
-          setLastEditedText(`Last edited ${date.toLocaleDateString()} by ${doc.created_by_username || 'David'}`);
-        } else {
-          setLastEditedText(`Last edited by ${doc.created_by_username || 'David'}`);
+        if (doc) {
+          setSelectedDoc(doc);
+          setVersion(doc.version || "1.0");
+          setStatus(doc.status || "DRAFT");
+          setDocContent(parseMarkdownContent(doc.content, doc.title));
+          
+          if (doc.updated_at) {
+            const date = new Date(doc.updated_at);
+            setLastEditedText(`Last edited ${date.toLocaleDateString()} by ${doc.created_by_username || 'David'}`);
+          } else {
+            setLastEditedText(`Last edited by ${doc.created_by_username || 'David'}`);
+          }
         }
       } else {
         // No document exists, fetch requirements to auto-populate a default template
