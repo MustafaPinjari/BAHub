@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Badge, Alert } from "../../components/common/UIComponents";
 import { useProject } from "../projects/ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   FileText, 
   Layers, 
@@ -57,7 +58,7 @@ export const ReportsPage: React.FC = () => {
       const res = await api.get<any, { data: ReportData }>(`/projects/${activeProject.id}/report/`);
       setReport(res.data);
     } catch (err: any) {
-      console.error(err);
+      logger.error("Failed to compile project reports", { error: err });
       setError("Failed to compile project reports.");
     } finally {
       setLoading(false);

@@ -3,6 +3,7 @@ import { api } from "../../services/api";
 import { Card, Button, Alert, Textarea } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   Save, 
   Loader2, 
@@ -57,7 +58,7 @@ export const SwotAnalysisPage: React.FC = () => {
       setOpportunities(res.data.opportunities || "");
       setThreats(res.data.threats || "");
     } catch (err: any) {
-      console.error("Failed to load SWOT analysis:", err);
+      logger.error("Failed to load SWOT analysis", { error: err });
       setFormError("Failed to load SWOT analysis data.");
     } finally {
       setLoading(false);

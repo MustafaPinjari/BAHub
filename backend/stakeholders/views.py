@@ -18,7 +18,9 @@ class StakeholderViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated or not user.organization_id:
             return Stakeholder.objects.none()
 
-        queryset = Stakeholder.objects.filter(organization_id=user.organization_id)
+        queryset = Stakeholder.objects.filter(
+            organization_id=user.organization_id
+        ).select_related('project', 'organization')
         
         # Support ?project=uuid query filtering
         project_id = self.request.query_params.get("project")

@@ -5,6 +5,7 @@ import { useProject } from "../../features/projects/ProjectContext";
 import { Badge } from "../common/UIComponents";
 import { GlobalSearchModal } from "../common/GlobalSearchModal";
 import { OnboardingWizard } from "../common/OnboardingWizard";
+import { InAppMessaging } from "../common/InAppMessaging";
 import logo from "../../assets/logo.png";
 import {
   LayoutDashboard,
@@ -476,6 +477,12 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
           setIsOnboardingOpen(false);
           localStorage.removeItem("show_onboarding_wizard");
         }}
+      />
+
+      {/* In-App Messaging — contextual feature promotion */}
+      <InAppMessaging 
+        userRole={user?.role}
+        currentPath={location.pathname}
       />
 
       {/* Contextual Help Slide-out Panel */}

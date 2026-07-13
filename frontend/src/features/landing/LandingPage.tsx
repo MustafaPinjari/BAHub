@@ -25,6 +25,15 @@ interface LandingPageProps {
 }
 
 // ─── Static Data ─────────────────────────────────────────────────────────────
+const CUSTOMER_LOGOS = [
+  { name: "FinTech Corp", gradient: "from-blue-500 to-cyan-500" },
+  { name: "Scale-up.io", gradient: "from-purple-500 to-pink-500" },
+  { name: "Global Consulting", gradient: "from-emerald-500 to-teal-500" },
+  { name: "TechVentures", gradient: "from-orange-500 to-red-500" },
+  { name: "DataDriven Inc", gradient: "from-indigo-500 to-blue-500" },
+  { name: "AgileFirst", gradient: "from-yellow-500 to-orange-500" },
+];
+
 const TESTIMONIALS = [
   { name: "Priya Sharma", role: "Lead BA, FinTech Corp", text: "BAHub cut our BRD cycle from 3 weeks to 2 days. The requirements-to-diagram trace is genuinely game-changing.", stars: 5 },
   { name: "Alex Chen", role: "Product Manager, SaaS Co", text: "Change a requirement and every linked story, diagram, and document updates instantly. No more drift between artifacts.", stars: 5 },
@@ -63,7 +72,7 @@ const PRICING = [
       { text: "Jira & Confluence Sync", ok: false },
       { text: "Audit Logs", ok: false },
     ],
-    cta: "Get Started Free",
+    cta: "Generate Your First BRD in 60 Seconds →",
     ctaStyle: "border border-white/[0.12] text-gray-400 hover:text-white hover:border-white/25",
   },
   {
@@ -1053,7 +1062,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             >
               {/* Shine reflection effect */}
               <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full transition-transform duration-1000 ease-out group-hover:translate-x-[300%]" />
-              <span>Start Free — No Card</span>
+              <span>Generate Your First BRD in 60 Seconds →</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
 
@@ -1088,6 +1097,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 <span>{p.text}</span>
               </div>
             ))}
+          </motion.div>
+
+          {/* Customer Logos - Social Proof */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="mt-16 w-full max-w-5xl mx-auto"
+          >
+            <p className="text-center text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-8">
+              Trusted by business analysts at
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+              {CUSTOMER_LOGOS.map((logo, i) => (
+                <motion.div
+                  key={logo.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.7 + i * 0.1 }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.12] transition-all duration-300"
+                >
+                  <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${logo.gradient}`} />
+                  <span className="text-[11px] font-semibold text-white/50 hover:text-white/70 transition-colors">
+                    {logo.name}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </section>

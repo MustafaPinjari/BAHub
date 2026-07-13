@@ -23,3 +23,6 @@ rich>=13.0,<15.0
 colorlog>=6.0,<7.0
 channels-redis>=4.2,<5.0
 sib-api-v3-sdk>=7.0
+sentry-sdk[django]>=1.40.0,<2.0.0
+django-redis>=5.4.0,<6.0.0
+django-ratelimit>=4.1.0,<5.0.0

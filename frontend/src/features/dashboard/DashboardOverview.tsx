@@ -4,7 +4,9 @@ import { Card, Badge, Button } from "../../components/common/UIComponents";
 import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { DocumentEditor } from "./components/DocumentEditor";
+import { DashboardSkeleton } from "../../components/common/SkeletonLoader";
 import { api } from "../../services/api";
+import { logger } from "../../utils/logger";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
 import {
@@ -35,10 +37,12 @@ export const DashboardOverview: React.FC = () => {
   const [attachments, setAttachments] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Fetch all dashboard data for active project in parallel
   const fetchDashboardData = async () => {
     if (!activeProject?.id) return;
+    setLoading(true);
     try {
       const [reqsRes, docsRes, attachRes, actRes] = await Promise.all([
         api.get<any, { data: any[] }>(`/requirements/?project=${activeProject.id}`),
@@ -52,7 +56,9 @@ export const DashboardOverview: React.FC = () => {
       setAttachments(attachRes.data || []);
       setActivities(actRes.data || []);
     } catch (e) {
-      console.error("Failed to load dashboard statistics:", e);
+      logger.error("Failed to load dashboard statistics", { error: e });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,7 +83,7 @@ export const DashboardOverview: React.FC = () => {
       });
       fetchDashboardData();
     } catch (err) {
-      console.error("Failed to upload attachment file:", err);
+      logger.error("Failed to upload attachment file", { error: err });
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -91,7 +97,7 @@ export const DashboardOverview: React.FC = () => {
       await api.delete(`/projects/attachments/${attachmentId}/`);
       fetchDashboardData();
     } catch (err) {
-      console.error("Failed to delete attachment:", err);
+      logger.error("Failed to delete attachment", { error: err });
     }
   };
 
@@ -202,7 +208,10 @@ export const DashboardOverview: React.FC = () => {
 
       {/* ==========================================
           ROLE-BASED WELCOME HEADER CARD
-          ========================================== */}      {isAdmin ? (
+          ========================================== */}
+      {loading ? (
+        <DashboardSkeleton />
+      ) : isAdmin ? (
         // Admin Welcome Card
         <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-secondary/30 p-8 text-white flex flex-col md:flex-row md:items-center md:justify-between gap-6 select-none shadow-2xl">
           {/* Subtle Ambient Light */}

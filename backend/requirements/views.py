@@ -20,7 +20,9 @@ class RequirementViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated or not user.organization_id:
             return Requirement.objects.none()
 
-        queryset = Requirement.objects.filter(project__organization_id=user.organization_id)
+        queryset = Requirement.objects.filter(
+            project__organization_id=user.organization_id
+        ).select_related('project', 'created_by', 'source_stakeholder')
         
         # Support ?project=uuid query filtering
         project_id = self.request.query_params.get("project")

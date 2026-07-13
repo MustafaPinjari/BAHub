@@ -8,6 +8,7 @@ import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   GitFork, 
   Plus, 
@@ -80,7 +81,7 @@ export const GapAnalysisPage: React.FC = () => {
       const res = await api.get<any, { data: Gap[] }>(`/strategic/gap/?project=${activeProject.id}`);
       setGaps(res.data);
     } catch (err) {
-      console.error("Failed to load gaps:", err);
+      logger.error("Failed to load gaps", { error: err });
     } finally {
       setLoading(false);
     }
@@ -151,7 +152,7 @@ export const GapAnalysisPage: React.FC = () => {
       setSuccessMessage("Gap record removed successfully.");
       fetchGaps();
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to delete gap", { error: err });
     }
   };
 

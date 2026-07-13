@@ -1,4 +1,5 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import { logger } from "../utils/logger";
 
 const isProd = import.meta.env.PROD || (typeof window !== "undefined" && window.location.hostname.endsWith("netlify.app"));
 const DEFAULT_API_URL = isProd ? "https://bahub-backend.onrender.com/api/v1" : "http://127.0.0.1:8000/api/v1";
@@ -50,6 +51,14 @@ api.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+
+    // Log API errors for monitoring
+    logger.error("API request failed", {
+      url: originalRequest?.url,
+      method: originalRequest?.method,
+      status: error.response?.status,
+      message: error.message
+    });
 
     if (!error.response) {
       return Promise.reject({

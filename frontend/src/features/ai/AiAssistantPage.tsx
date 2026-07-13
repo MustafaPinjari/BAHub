@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { api } from "../../services/api";
 import { Card, Button, Input, Alert } from "../../components/common/UIComponents";
 import { useProject } from "../projects/ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   Bot, 
   Send, 
@@ -54,28 +55,6 @@ export const AiAssistantPage: React.FC = () => {
     }
   }, [activeProject]);
 
-  const pollJob = (jobId: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const interval = setInterval(async () => {
-        try {
-          const res = await api.get<any, { data: { status: string; result: string; error_message: string } }>(
-            `/strategic/ai/jobs/${jobId}/`
-          );
-          if (res.data.status === "SUCCESS") {
-            clearInterval(interval);
-            resolve(res.data.result);
-          } else if (res.data.status === "FAILED") {
-            clearInterval(interval);
-            reject(new Error(res.data.error_message || "AI execution failed."));
-          }
-        } catch (err) {
-          clearInterval(interval);
-          reject(err);
-        }
-      }, 1500);
-    });
-  };
-
   const handleSend = async (messageText: string, actionType = "CHAT") => {
     if (!activeProject || !messageText.trim()) return;
     setError(null);
@@ -87,22 +66,73 @@ export const AiAssistantPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await api.post<any, { data: { job_id: string; status: string } }>("/strategic/ai/chat/", {
-        project_id: activeProject.id,
-        message: messageText,
-        action_type: actionType
+      // Create a placeholder message for streaming response
+      const aiMsgIndex = messages.length;
+      setMessages(prev => [...prev, { sender: "assistant", text: "" }]);
+
+      // Use streaming endpoint
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/v1"}/strategic/ai/chat/stream/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({
+          project_id: activeProject.id,
+          message: messageText,
+          action_type: actionType
+        })
       });
 
-      // Poll for asynchronous background job results
-      const reply = await pollJob(res.data.job_id);
+      if (!response.ok) {
+        throw new Error("Failed to connect to AI service");
+      }
 
-      // Add AI reply
-      setMessages(prev => [...prev, { sender: "assistant", text: reply }]);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "AI was unable to process your analysis request.");
-    } finally {
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) {
+        throw new Error("Response body is not readable");
+      }
+
+      let accumulatedText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = line.slice(6);
+            if (data === "[DONE]") continue;
+
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.content) {
+                accumulatedText += parsed.content;
+                setMessages(prev => {
+                  const updated = [...prev];
+                  updated[aiMsgIndex] = { sender: "assistant", text: accumulatedText };
+                  return updated;
+                });
+              }
+            } catch (e) {
+              // Skip invalid JSON
+            }
+          }
+        }
+      }
+
       setLoading(false);
+    } catch (err) {
+      logger.error("AI chat failed", err);
+      setError("Failed to get AI response. Please try again.");
+      setLoading(false);
+      // Remove the placeholder message on error
+      setMessages(prev => prev.slice(0, -1));
     }
   };
 

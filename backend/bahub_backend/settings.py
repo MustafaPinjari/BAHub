@@ -5,13 +5,29 @@ from dotenv import load_dotenv
 import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
 
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from .env file
 load_dotenv(BASE_DIR / ".env")
+
+# Sentry integration for production monitoring
+SENTRY_DSN = os.getenv("SENTRY_DSN")
+if SENTRY_DSN and not DEBUG:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.django import DjangoIntegration
+
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            integrations=[DjangoIntegration()],
+            traces_sample_rate=0.1,
+            profiles_sample_rate=0.1,
+            environment=os.getenv("ENVIRONMENT", "production"),
+            send_default_pii=False,
+        )
+    except ImportError:
+        pass  # Sentry not installed, skip initialization
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/stable/howto/deployment/checklist/
@@ -21,6 +37,49 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-replace-me-in-production-1
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
+
+# Environment variable validation
+REQUIRED_ENV_VARS = [
+    "SECRET_KEY",
+    "DATABASE_URL",
+]
+
+OPTIONAL_ENV_VARS = [
+    "REDIS_URL",
+    "SENTRY_DSN",
+    "FRONTEND_URL",
+    "CORS_ALLOWED_ORIGINS",
+]
+
+def validate_environment():
+    """Validate that required environment variables are set."""
+    missing_vars = []
+    for var in REQUIRED_ENV_VARS:
+        if not os.getenv(var):
+            missing_vars.append(var)
+    
+    if missing_vars:
+        raise ImproperlyConfigured(
+            f"Missing required environment variables: {', '.join(missing_vars)}. "
+            "Please set these in your .env file or environment configuration."
+        )
+    
+    # Warn about optional but recommended variables
+    missing_optional = []
+    for var in OPTIONAL_ENV_VARS:
+        if not os.getenv(var):
+            missing_optional.append(var)
+    
+    if missing_optional and DEBUG:
+        import warnings
+        warnings.warn(
+            f"Optional environment variables not set: {', '.join(missing_optional)}. "
+            "These are recommended for production deployment.",
+            RuntimeWarning
+        )
+
+# Validate environment on startup
+validate_environment()
 
 if not DEBUG and SECRET_KEY.startswith("django-insecure-replace-me"):
     raise ImproperlyConfigured("SECRET_KEY must be configured in production.")
@@ -68,6 +127,8 @@ INSTALLED_APPS = [
     "audit",
     "diagrams",
     "uat",
+    "referrals",
+    "templates",
 ]
 
 MIDDLEWARE = [
@@ -130,11 +191,30 @@ if REDIS_URL:
             },
         },
     }
+    # Redis caching configuration
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_URL,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+            "KEY_PREFIX": "bahub",
+            "TIMEOUT": 300,  # 5 minutes default
+        }
+    }
 else:
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels.layers.InMemoryChannelLayer",
         },
+    }
+    # Fallback to local memory cache for development
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "bahub-cache",
+        }
     }
 
 SESSION_COOKIE_SECURE = not DEBUG
@@ -299,11 +379,15 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.ScopedRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        "anon": "60/minute",
-        "user": "300/minute",
+        "anon": "100/hour",
+        "user": "1000/hour",
         "login": "10/minute",
         "otp": "5/minute",
         "waitlist": "5/minute",
+        "ai_chat": "50/hour",
+        "workflow_execution": "20/hour",
+        "api_write": "200/hour",
+        "api_read": "500/hour",
     },
 }
 

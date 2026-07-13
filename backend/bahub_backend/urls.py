@@ -80,6 +80,12 @@ urlpatterns = [
     # UAT endpoints
     path("api/v1/uat/", include("uat.urls")),
     
+    # Referral program endpoints
+    path("api/v1/referrals/", include("referrals.urls")),
+    
+    # Template gallery endpoints
+    path("api/v1/templates/", include("templates.urls")),
+    
     # SAML2 SSO login endpoints
     path("saml2_auth/", include("django_saml2_auth.urls")),
 ]

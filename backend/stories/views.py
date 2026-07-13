@@ -20,7 +20,9 @@ class UserStoryViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated or not user.organization_id:
             return UserStory.objects.none()
 
-        queryset = UserStory.objects.filter(requirement__project__organization_id=user.organization_id)
+        queryset = UserStory.objects.filter(
+            requirement__project__organization_id=user.organization_id
+        ).select_related('requirement', 'requirement__project', 'requirement__created_by').prefetch_related('requirement__stakeholders')
         
         # Support ?project=uuid query filtering
         project_id = self.request.query_params.get("project")

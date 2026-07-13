@@ -19,7 +19,9 @@ class RiskViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated or not user.organization_id:
             return Risk.objects.none()
 
-        queryset = Risk.objects.filter(project__organization_id=user.organization_id)
+        queryset = Risk.objects.filter(
+            project__organization_id=user.organization_id
+        ).select_related('project', 'created_by').prefetch_related('mitigation_tasks')
         
         # Support ?project=uuid query filtering
         project_id = self.request.query_params.get("project")
@@ -74,7 +76,9 @@ class ChangeRequestViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated or not user.organization_id:
             return ChangeRequest.objects.none()
 
-        queryset = ChangeRequest.objects.filter(project__organization_id=user.organization_id)
+        queryset = ChangeRequest.objects.filter(
+            project__organization_id=user.organization_id
+        ).select_related('project', 'requested_by', 'reviewed_by')
         
         # Support ?project=uuid query filtering
         project_id = self.request.query_params.get("project")

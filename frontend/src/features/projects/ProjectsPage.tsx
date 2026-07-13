@@ -8,6 +8,7 @@ import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "./ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   FolderGit, 
   Plus, 
@@ -122,7 +123,7 @@ export const ProjectsPage: React.FC = () => {
       const res = await api.get<any, { data: Project[] }>("/projects/");
       setProjects(res.data);
     } catch (err) {
-      console.error("Failed to load projects:", err);
+      logger.error("Failed to load projects", { error: err });
     } finally {
       setLoading(false);
     }
@@ -133,7 +134,7 @@ export const ProjectsPage: React.FC = () => {
       const res = await api.get<any, { data: UserProfile[] }>("/auth/members/");
       setMembers(res.data);
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to load members", { error: err });
     }
   };
 
@@ -224,7 +225,7 @@ export const ProjectsPage: React.FC = () => {
       }
       fetchProjects();
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to load members", { error: err });
     }
   };
 
@@ -264,7 +265,7 @@ export const ProjectsPage: React.FC = () => {
       const updatedProjRes = await api.get<any, { data: Project }>(`/projects/${selectedProjectForMembers.id}/`);
       setSelectedProjectForMembers(updatedProjRes.data);
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to load members", { error: err });
     }
   };
 

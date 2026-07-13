@@ -3,6 +3,7 @@ import { api } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   Plus, 
   Trash2, 
@@ -72,7 +73,7 @@ export const UserStoriesPage: React.FC = () => {
       const res = await api.get<any, { data: UserStory[] }>(`/stories/?project=${activeProject.id}`);
       setStories(res.data);
     } catch (err) {
-      console.error("Failed to load user stories:", err);
+      logger.error("Failed to load user stories", { error: err });
     } finally {
       setLoading(false);
     }
@@ -84,7 +85,7 @@ export const UserStoriesPage: React.FC = () => {
       const res = await api.get<any, { data: Requirement[] }>(`/requirements/?project=${activeProject.id}`);
       setRequirements(res.data);
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to load requirements", { error: err });
     }
   };
 
@@ -192,7 +193,7 @@ export const UserStoriesPage: React.FC = () => {
       setSuccessMessage("User story removed successfully.");
       fetchStories();
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to delete user story", { error: err });
     }
   };
 

@@ -1,22 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../features/auth/AuthContext";
 import { useProject } from "../../features/projects/ProjectContext";
 import type { Project } from "../../features/projects/ProjectContext";
 import { api } from "../../services/api";
 import { Button, Input, Alert } from "./UIComponents";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
   FolderGit,
   Users,
   FileSpreadsheet,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
+  ArrowLeft,
+  X,
+  Zap,
+  Shield,
+  BarChart2
 } from "lucide-react";
 
 interface OnboardingWizardProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+interface OnboardingStep {
+  id: number;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  completed: boolean;
+}
+
+const ONBOARDING_STEPS: OnboardingStep[] = [
+  {
+    id: 1,
+    title: "Welcome to BAHub",
+    description: "Let's get you started with your first project in under 2 minutes.",
+    icon: <Sparkles className="w-6 h-6" />,
+    completed: false
+  },
+  {
+    id: 2,
+    title: "Create Your First Project",
+    description: "Set up a workspace for your business analysis work.",
+    icon: <FolderGit className="w-6 h-6" />,
+    completed: false
+  },
+  {
+    id: 3,
+    title: "Add Key Stakeholders",
+    description: "Identify who will be impacted by your project.",
+    icon: <Users className="w-6 h-6" />,
+    completed: false
+  },
+  {
+    id: 4,
+    title: "Define Requirements",
+    description: "Capture your first business requirement.",
+    icon: <FileSpreadsheet className="w-6 h-6" />,
+    completed: false
+  },
+  {
+    id: 5,
+    title: "Explore Features",
+    description: "Discover powerful tools for business analysis.",
+    icon: <Zap className="w-6 h-6" />,
+    completed: false
+  }
+];
 
 export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
@@ -25,6 +77,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [skipped, setSkipped] = useState(false);
 
   // Completed items to display in progress
   const [createdProject, setCreatedProject] = useState<Project | null>(null);
@@ -45,6 +98,16 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
   const [reqTitle, setReqTitle] = useState("");
   const [reqDesc, setReqDesc] = useState("");
   const [reqPriority, setReqPriority] = useState("MEDIUM");
+
+  // Update step completion status
+  const [steps, setSteps] = useState<OnboardingStep[]>(ONBOARDING_STEPS);
+
+  useEffect(() => {
+    setSteps(prev => prev.map(s => ({
+      ...s,
+      completed: s.id < step || (s.id === step && (createdProject || createdStakeholder || createdRequirement))
+    })));
+  }, [step, createdProject, createdStakeholder, createdRequirement]);
 
   if (!isOpen) return null;
 
@@ -131,6 +194,20 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
   };
 
   const handleFinish = () => {
+    if (user?.id) {
+      localStorage.setItem(`bahub_onboarding_completed_${user.id}`, "true");
+    }
+    onClose();
+  };
+
+  const handleComplete = () => {
+    if (user?.id) {
+      localStorage.setItem(`bahub_onboarding_completed_${user.id}`, "true");
+    }
+    onClose();
+  };
+
+  const handleSkip = () => {
     if (user?.id) {
       localStorage.setItem(`bahub_onboarding_completed_${user.id}`, "true");
     }
@@ -373,44 +450,82 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
           </form>
         )}
 
-        {/* STEP 5: Congratulations / Finished */}
+        {/* STEP 5: Explore Features */}
         {step === 5 && (
           <div className="flex flex-col gap-4 py-4">
-            <div className="w-12 h-12 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 mb-2">
-              <CheckCircle className="w-6 h-6 animate-bounce" />
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-purple-400">
+                <Zap className="w-4 h-4" />
+              </div>
+              <h2 className="text-sm font-bold text-white uppercase tracking-wider">Explore BAHub Features</h2>
             </div>
-            <h1 className="text-xl font-black text-white tracking-tight">
-              You are ready to build!
-            </h1>
-            <p className="text-xs text-gray-400 leading-relaxed font-medium">
-              You have successfully configured your workspace layout with:
+            <p className="text-xs text-gray-500 leading-relaxed">
+              You're all set! Here are some powerful features to help you with business analysis.
             </p>
 
-            <ul className="text-xs space-y-2 text-gray-300 font-semibold my-2">
-              <li className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-purple-400 shrink-0" />
-                Project: {createdProject?.name}
-              </li>
-              {createdStakeholder && (
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-purple-400 shrink-0" />
-                  Stakeholder: {createdStakeholder.name}
-                </li>
-              )}
-              {createdRequirement && (
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-purple-400 shrink-0" />
-                  Requirement Compiled
-                </li>
-              )}
-            </ul>
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              {[
+                {
+                  icon: <Shield className="w-4 h-4 text-blue-400" />,
+                  title: "Audit Logs",
+                  description: "Track all changes for compliance"
+                },
+                {
+                  icon: <BarChart2 className="w-4 h-4 text-green-400" />,
+                  title: "Traceability",
+                  description: "Link requirements to stories"
+                },
+                {
+                  icon: <Sparkles className="w-4 h-4 text-purple-400" />,
+                  title: "AI Analysis",
+                  description: "Generate insights automatically"
+                },
+                {
+                  icon: <FileSpreadsheet className="w-4 h-4 text-orange-400" />,
+                  title: "BRD Generator",
+                  description: "Export professional documents"
+                }
+              ].map((feature, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="p-3 rounded-lg border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors cursor-pointer"
+                  onClick={() => {
+                    // Navigate to relevant feature
+                    if (feature.title === "Audit Logs") window.location.href = "/audit";
+                    if (feature.title === "Traceability") window.location.href = "/traceability";
+                    if (feature.title === "AI Analysis") window.location.href = "/ai";
+                    if (feature.title === "BRD Generator") window.location.href = "/brd";
+                  }}
+                >
+                  <div className="mb-2">{feature.icon}</div>
+                  <h3 className="text-xs font-bold text-white mb-1">{feature.title}</h3>
+                  <p className="text-[10px] text-gray-500">{feature.description}</p>
+                </motion.div>
+              ))}
+            </div>
 
-            <div className="flex items-center gap-3 mt-6">
-              <Button onClick={handleFinish} className="w-full flex items-center justify-center gap-1.5 py-2.5">
-                Enter Dashboard <ArrowRight className="w-4 h-4" />
+            <div className="flex items-center justify-between mt-6">
+              <Button type="button" variant="ghost" size="sm" onClick={handleBack} disabled={loading}>
+                Back
+              </Button>
+              <Button type="button" size="sm" onClick={handleComplete}>
+                Complete Onboarding <CheckCircle className="w-3.5 h-3.5 ml-1" />
               </Button>
             </div>
           </div>
+        )}
+
+        {/* Skip Button */}
+        {step < 5 && (
+          <button
+            onClick={handleSkip}
+            className="absolute bottom-4 right-4 text-[10px] text-gray-600 hover:text-gray-400 transition-colors"
+          >
+            Skip for now
+          </button>
         )}
       </div>
     </div>

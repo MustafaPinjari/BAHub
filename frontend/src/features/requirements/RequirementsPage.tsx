@@ -3,6 +3,7 @@ import { api, API_BASE_URL } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert, Textarea } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   FileSpreadsheet, 
   Plus, 
@@ -84,7 +85,7 @@ export const RequirementsPage: React.FC = () => {
         loadReqInEditor(res.data[0]);
       }
     } catch (err) {
-      console.error("Failed to load requirements:", err);
+      logger.error("Failed to load requirements", { error: err });
     } finally {
       setLoading(false);
     }
@@ -96,7 +97,7 @@ export const RequirementsPage: React.FC = () => {
       const res = await api.get<any, { data: Stakeholder[] }>(`/stakeholders/?project=${activeProject.id}`);
       setStakeholders(res.data);
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to load stakeholders", { error: err });
     }
   };
 
@@ -152,7 +153,7 @@ export const RequirementsPage: React.FC = () => {
           });
         }
       } catch (err) {
-        console.error("Failed to parse socket message:", err);
+        logger.error("Failed to parse socket message", { error: err });
       }
     };
 
@@ -181,7 +182,7 @@ export const RequirementsPage: React.FC = () => {
       const res = await api.get<any, { data: Requirement[] }>(`/requirements/?project=${activeProject.id}`);
       setRequirements(res.data);
     } catch (err) {
-      console.error("Silent reload failed:", err);
+      logger.error("Silent reload failed", { error: err });
     }
   };
 
@@ -399,7 +400,7 @@ export const RequirementsPage: React.FC = () => {
           });
           successCount++;
         } catch (err) {
-          console.error(`Failed to import row ${i + 1}:`, err);
+          logger.error(`Failed to import row ${i + 1}`, { error: err });
         }
       }
 

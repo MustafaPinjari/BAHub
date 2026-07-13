@@ -8,6 +8,7 @@ import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   AlertTriangle, 
   Plus, 
@@ -80,7 +81,7 @@ export const RisksPage: React.FC = () => {
       const res = await api.get<any, { data: Risk[] }>(`/risks/?project=${activeProject.id}`);
       setRisks(res.data);
     } catch (err) {
-      console.error("Failed to load risks:", err);
+      logger.error("Failed to load risks", { error: err });
     } finally {
       setLoading(false);
     }
@@ -151,7 +152,7 @@ export const RisksPage: React.FC = () => {
       setSuccessMessage("Risk removed successfully.");
       fetchRisks();
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to delete risk", { error: err });
     }
   };
 

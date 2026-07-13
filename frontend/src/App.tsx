@@ -10,6 +10,7 @@ import { LandingPage } from "./features/landing/LandingPage.tsx";
 import { LaunchLockedScreen } from "./features/auth/components/LaunchLockedScreen";
 import { usePublicSettings } from "./features/landing/usePublicSettings";
 import { api } from "./services/api";
+import { logger } from "./utils/logger";
 
 // Lazy-loaded page components for code-splitting
 const DashboardOverview = lazy(() => import("./features/dashboard/DashboardOverview").then(m => ({ default: m.DashboardOverview })));
@@ -48,8 +49,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, Error
     return { hasError: true, error };
   }
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    // TODO: send to Sentry when configured
-    console.error("[ErrorBoundary] Caught error:", error, info);
+    logger.error("[ErrorBoundary] Caught error", { error, info });
   }
   render() {
     if (this.state.hasError) {

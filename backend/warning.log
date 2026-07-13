@@ -203,3 +203,579 @@ WARNING 2026-07-13 09:42:00,641 log 14312 8136 Bad Request: /api/v1/auth/registe
 ERROR 2026-07-13 09:42:02,218 log 14312 8136 Service Unavailable: /api/v1/auth/profile/
 WARNING 2026-07-13 09:42:04,843 log 14312 8136 Forbidden: /api/v1/auth/superadmin/dashboard/
 WARNING 2026-07-13 09:42:07,022 log 14312 8136 Bad Request: /api/v1/auth/verify-otp/
+ERROR 2026-07-14 04:39:52,693 exceptions 5192 4568 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:39:52,807 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:39:52,809 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=bb739b46-1e92-4d1f-9d5a-1a6bddb6c5cc 500 [0.17, 127.0.0.1:52792][0m
+ERROR 2026-07-14 04:39:52,865 exceptions 5192 9008 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:39:52,886 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:39:52,888 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=bb739b46-1e92-4d1f-9d5a-1a6bddb6c5cc 500 [0.08, 127.0.0.1:53864][0m
+ERROR 2026-07-14 04:39:59,291 exceptions 5192 7652 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:39:59,319 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:39:59,320 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=bb739b46-1e92-4d1f-9d5a-1a6bddb6c5cc 500 [0.09, 127.0.0.1:52792][0m
+ERROR 2026-07-14 04:39:59,398 exceptions 5192 5016 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:39:59,411 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:39:59,414 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=bb739b46-1e92-4d1f-9d5a-1a6bddb6c5cc 500 [0.07, 127.0.0.1:61497][0m
+ERROR 2026-07-14 04:40:22,383 exceptions 5192 5384 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:40:22,408 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:40:22,410 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.11, 127.0.0.1:61497][0m
+ERROR 2026-07-14 04:40:22,484 exceptions 5192 11468 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:40:22,505 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:40:22,508 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.06, 127.0.0.1:52792][0m
+ERROR 2026-07-14 04:40:26,257 exceptions 5192 7276 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:40:26,288 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:40:26,290 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.16, 127.0.0.1:61497][0m
+ERROR 2026-07-14 04:40:26,297 exceptions 5192 11376 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\requirements\views.py"[0m, line [35m114[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Requirements retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:40:26,319 log 5192 2612 Internal Server Error: /api/v1/requirements/
+ERROR 2026-07-14 04:40:26,322 runserver 5192 20704 [35;1mHTTP GET /api/v1/requirements/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.14, 127.0.0.1:53864][0m
+ERROR 2026-07-14 04:40:26,358 exceptions 5192 20840 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:40:26,388 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:40:26,397 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.10, 127.0.0.1:52792][0m
+ERROR 2026-07-14 04:40:26,412 exceptions 5192 12632 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\requirements\views.py"[0m, line [35m114[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Requirements retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:40:26,425 log 5192 2612 Internal Server Error: /api/v1/requirements/
+ERROR 2026-07-14 04:40:26,428 runserver 5192 20704 [35;1mHTTP GET /api/v1/requirements/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.10, 127.0.0.1:61497][0m
+ERROR 2026-07-14 04:41:17,705 exceptions 5192 11400 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:41:17,721 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:41:17,722 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.07, 127.0.0.1:53864][0m
+ERROR 2026-07-14 04:41:17,788 exceptions 5192 14860 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:41:17,802 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:41:17,804 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.08, 127.0.0.1:63749][0m
+ERROR 2026-07-14 04:41:18,688 exceptions 5192 19436 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:41:18,694 exceptions 5192 2884 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\requirements\views.py"[0m, line [35m114[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Requirements retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:41:18,707 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:41:18,708 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.07, 127.0.0.1:63749][0m
+ERROR 2026-07-14 04:41:18,709 log 5192 2612 Internal Server Error: /api/v1/requirements/
+ERROR 2026-07-14 04:41:18,711 runserver 5192 20704 [35;1mHTTP GET /api/v1/requirements/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.07, 127.0.0.1:53864][0m
+ERROR 2026-07-14 04:41:18,751 exceptions 5192 5588 Unhandled Server Error: Cannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stakeholders\views.py"[0m, line [35m41[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Stakeholders retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'requirements' on Stakeholder object, 'requirements' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:41:18,762 exceptions 5192 15092 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\requirements\views.py"[0m, line [35m114[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Requirements retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:41:18,771 log 5192 2612 Internal Server Error: /api/v1/stakeholders/
+ERROR 2026-07-14 04:41:18,773 runserver 5192 20704 [35;1mHTTP GET /api/v1/stakeholders/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.06, 127.0.0.1:61497][0m
+ERROR 2026-07-14 04:41:18,776 log 5192 2612 Internal Server Error: /api/v1/requirements/
+ERROR 2026-07-14 04:41:18,777 runserver 5192 20704 [35;1mHTTP GET /api/v1/requirements/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.06, 127.0.0.1:63749][0m
+ERROR 2026-07-14 04:41:19,894 exceptions 5192 9088 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\requirements\views.py"[0m, line [35m114[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Requirements retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:41:19,902 log 5192 2612 Internal Server Error: /api/v1/requirements/
+ERROR 2026-07-14 04:41:19,903 runserver 5192 20704 [35;1mHTTP GET /api/v1/requirements/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.05, 127.0.0.1:61497][0m
+ERROR 2026-07-14 04:41:19,938 exceptions 5192 4536 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\requirements\views.py"[0m, line [35m114[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Requirements retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 04:41:19,948 log 5192 2612 Internal Server Error: /api/v1/requirements/
+ERROR 2026-07-14 04:41:19,949 runserver 5192 20704 [35;1mHTTP GET /api/v1/requirements/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.04, 127.0.0.1:63749][0m

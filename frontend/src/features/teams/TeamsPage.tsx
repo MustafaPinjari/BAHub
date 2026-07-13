@@ -7,6 +7,7 @@ import { Card, Badge, Button, Input, Select, Alert } from "../../components/comm
 import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
+import { logger } from "../../utils/logger";
 import { 
   Users, 
   UserPlus, 
@@ -85,7 +86,7 @@ export const TeamsPage: React.FC = () => {
       const res = await api.get<any, { data: Team[] }>("/teams/");
       setTeams(res.data);
     } catch (err) {
-      console.error("Failed to load teams:", err);
+      logger.error("Failed to load teams", { error: err });
     } finally {
       setLoading(false);
     }
@@ -98,7 +99,7 @@ export const TeamsPage: React.FC = () => {
       const res = await api.get<any, { data: UserProfile[] }>("/auth/members/");
       setMembers(res.data);
     } catch (err) {
-      console.error("Failed to load organization members:", err);
+      logger.error("Failed to load organization members", { error: err });
     } finally {
       setMembersLoading(false);
     }
@@ -156,7 +157,7 @@ export const TeamsPage: React.FC = () => {
       setModalOpen(false);
       fetchTeams();
     } catch (err: any) {
-      console.error(err);
+      logger.error("Team creation failed", { error: err });
       if (err.errors) {
         const key = Object.keys(err.errors)[0];
         const val = err.errors[key];
@@ -175,7 +176,7 @@ export const TeamsPage: React.FC = () => {
       setSuccessMessage("Team deleted successfully.");
       fetchTeams();
     } catch (err) {
-      console.error("Failed to delete team:", err);
+      logger.error("Failed to delete team", { error: err });
     }
   };
 

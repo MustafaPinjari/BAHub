@@ -29,7 +29,9 @@ class SWOTAnalysisViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if not user.is_authenticated or not user.organization_id:
             return SWOTAnalysis.objects.none()
-        return SWOTAnalysis.objects.filter(project__organization_id=user.organization_id)
+        return SWOTAnalysis.objects.filter(
+            project__organization_id=user.organization_id
+        ).select_related('project', 'project__organization')
 
     def list(self, request, *args, **kwargs):
         project_id = request.query_params.get("project")
@@ -91,7 +93,9 @@ class GapAnalysisViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated or not user.organization_id:
             return GapAnalysis.objects.none()
 
-        queryset = GapAnalysis.objects.filter(project__organization_id=user.organization_id)
+        queryset = GapAnalysis.objects.filter(
+            project__organization_id=user.organization_id
+        ).select_related('project', 'project__organization')
         project_id = self.request.query_params.get("project")
         if project_id:
             queryset = queryset.filter(project_id=project_id)

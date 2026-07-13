@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { api } from "../../services/api";
 import { useProject } from "../projects/ProjectContext";
 import { Card, Badge, Button, Input, Alert } from "../../components/common/UIComponents";
+import { logger } from "../../utils/logger";
 import {
   Bug,
   CheckCircle2,
@@ -120,7 +121,7 @@ export const UatPage: React.FC = () => {
         }
       }
     } catch (err) {
-      console.error("Failed to execute test case:", err);
+      logger.error("Failed to execute test case", { error: err });
     }
   };
 
@@ -146,7 +147,7 @@ export const UatPage: React.FC = () => {
       setNewCaseReqId("");
       fetchData();
     } catch (err) {
-      console.error("Failed to create test case", err);
+      logger.error("Failed to create test case", { error: err });
     }
   };
 
@@ -172,7 +173,7 @@ export const UatPage: React.FC = () => {
       setNewDefectCaseId("");
       fetchData();
     } catch (err) {
-      console.error("Failed to create defect", err);
+      logger.error("Failed to create defect", { error: err });
     }
   };
 
@@ -184,7 +185,7 @@ export const UatPage: React.FC = () => {
         prev.map((d) => (d.id === defectId ? { ...d, status: newStatus as any } : d))
       );
     } catch (err) {
-      console.error("Failed to update defect status:", err);
+      logger.error("Failed to update defect status", { error: err });
     }
   };
 
@@ -195,7 +196,7 @@ export const UatPage: React.FC = () => {
       await api.delete(`/uat/test-cases/${id}/`);
       setTestCases((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
-      console.error("Failed to delete test case", err);
+      logger.error("Failed to delete test case", { error: err });
     }
   };
 
@@ -206,7 +207,7 @@ export const UatPage: React.FC = () => {
       await api.delete(`/uat/defects/${id}/`);
       setDefects((prev) => prev.filter((d) => d.id !== id));
     } catch (err) {
-      console.error("Failed to delete defect", err);
+      logger.error("Failed to delete defect", { error: err });
     }
   };
 

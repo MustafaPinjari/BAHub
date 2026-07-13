@@ -3,6 +3,7 @@ import { api } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert, Textarea } from "../../components/common/UIComponents";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   Calendar, 
   Plus, 
@@ -112,7 +113,7 @@ export const MeetingsPage: React.FC = () => {
         setSelectedMeeting(null);
       }
     } catch (err) {
-      console.error("Failed to load meetings:", err);
+      logger.error("Failed to load meetings", { error: err });
     } finally {
       setLoading(false);
     }
@@ -124,7 +125,7 @@ export const MeetingsPage: React.FC = () => {
       const res = await api.get<any, { data: User[] }>("/auth/members/");
       setOrgUsers(res.data);
     } catch (err) {
-      console.error(err);
+      logger.error("API call failed", { error: err });
     }
   };
 
@@ -134,7 +135,7 @@ export const MeetingsPage: React.FC = () => {
       const res = await api.get<any, { data: Stakeholder[] }>(`/stakeholders/?project=${activeProject.id}`);
       setStakeholders(res.data);
     } catch (err) {
-      console.error("Failed to load stakeholders:", err);
+      logger.error("Failed to load stakeholders", { error: err });
     }
   };
 
@@ -273,7 +274,7 @@ export const MeetingsPage: React.FC = () => {
         setSelectedMeeting({ ...selectedMeeting, action_items: nextItems });
       }
     } catch (err) {
-      console.error("Failed to update task status:", err);
+      logger.error("Failed to update task status", { error: err });
     }
   };
 
@@ -288,7 +289,7 @@ export const MeetingsPage: React.FC = () => {
       setSelectedMeeting(null);
       fetchMeetings();
     } catch (err) {
-      console.error(err);
+      logger.error("API call failed", { error: err });
     }
   };
 

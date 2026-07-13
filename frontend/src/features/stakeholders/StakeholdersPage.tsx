@@ -8,6 +8,7 @@ import { DataTable } from "../../components/common/DataTable";
 import type { Column } from "../../components/common/DataTable";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
+import { logger } from "../../utils/logger";
 import { 
   UserCheck, 
   Plus, 
@@ -113,7 +114,7 @@ export const StakeholdersPage: React.FC = () => {
       const res = await api.get<any, { data: Stakeholder[] }>(url);
       setStakeholders(res.data);
     } catch (err) {
-      console.error("Failed to load stakeholders:", err);
+      logger.error("Failed to load stakeholders", { error: err });
     } finally {
       setLoading(false);
     }
@@ -124,7 +125,7 @@ export const StakeholdersPage: React.FC = () => {
       const res = await api.get<any, { data: Project[] }>("/projects/");
       setProjects(res.data);
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to load projects", { error: err });
     }
   };
 
@@ -211,7 +212,7 @@ export const StakeholdersPage: React.FC = () => {
       setSuccessMessage("Stakeholder record removed successfully.");
       fetchStakeholders();
     } catch (err) {
-      console.error(err);
+      logger.error("Failed to delete stakeholder", { error: err });
     }
   };
 

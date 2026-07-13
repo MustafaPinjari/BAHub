@@ -21,12 +21,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Project.objects.none()
 
         if user.role in ["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER"]:
-            return Project.objects.filter(organization_id=user.organization_id)
+            return Project.objects.filter(
+                organization_id=user.organization_id
+            ).prefetch_related('project_members__user', 'attachments', 'requirements')
 
         return Project.objects.filter(
             organization_id=user.organization_id,
             project_members__user=user
-        ).distinct()
+        ).prefetch_related('project_members__user', 'attachments', 'requirements').distinct()
 
     def perform_create(self, serializer):
         user = self.request.user

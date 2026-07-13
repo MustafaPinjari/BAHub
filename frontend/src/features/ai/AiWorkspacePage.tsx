@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { api } from "../../services/api";
 import { useProject } from "../projects/ProjectContext";
 import { Card, Button, Input, Alert } from "../../components/common/UIComponents";
+import { logger } from "../../utils/logger";
 import {
   Bot,
   Sparkles,
@@ -200,7 +201,7 @@ export const AiWorkspacePage: React.FC = () => {
       setUserStories(mappedStories);
 
     } catch (e) {
-      console.error("Error loading knowledge graph", e);
+      logger.error("Error loading knowledge graph", { error: e });
     }
   }, [activeProject]);
 
