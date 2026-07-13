@@ -93,7 +93,16 @@ class EmailService:
         api_client = ApiClient(configuration)
         api_instance = TransactionalEmailsApi(api_client)
 
-        sender_name, sender_email = from_email.split("<")[-1].rstrip(">"), from_email.split("<")[0].strip()
+        # Parse sender email (handle both "Name <email>" and just "email" formats)
+        if "<" in from_email and ">" in from_email:
+            # Format: "Name <email@example.com>"
+            sender_name = from_email.split("<")[0].strip()
+            sender_email = from_email.split("<")[-1].rstrip(">")
+        else:
+            # Format: just "email@example.com"
+            sender_email = from_email.strip()
+            sender_name = "BAHub Team"
+
         if not sender_name or "@" in sender_name:
             sender_name = "BAHub Team"
 
