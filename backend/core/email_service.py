@@ -18,6 +18,13 @@ from django.conf import settings
 from django.core.signing import TimestampSigner, SignatureExpired, BadSignature
 from django.utils.timezone import now
 
+# Brevo API support (fallback when SMTP is blocked)
+try:
+    from sib_api_v3_sdk import ApiClient, Configuration, TransactionalEmailsApi, SendSmtpEmail, SendSmtpEmailSender
+    BREVO_AVAILABLE = True
+except ImportError:
+    BREVO_AVAILABLE = False
+
 # Resolved once at import time — works on both local and Render
 BANNER_PATH = Path(__file__).resolve().parent / "static" / "core" / "email_banner.png"
 COMING_SOON_PATH = Path(__file__).resolve().parent / "static" / "core" / "CommingSoon.png"
@@ -69,11 +76,58 @@ class EmailService:
         return signer.unsign(token, max_age=max_age_seconds)
 
     @classmethod
+    def _send_via_brevo_api(cls, subject, html_content, text_content, recipient_list, from_email, attachments):
+        """
+        Fallback: Send via Brevo API when SMTP is blocked (e.g., Render free tier).
+        Uses HTTPS (port 443) which isn't blocked.
+        """
+        if not BREVO_AVAILABLE:
+            raise ImportError("Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt")
+
+        api_key = os.getenv("BREVO_API_KEY")
+        if not api_key:
+            raise ValueError("BREVO_API_KEY environment variable not set")
+
+        configuration = Configuration()
+        configuration.api_key['api-key'] = api_key
+        api_client = ApiClient(configuration)
+        api_instance = TransactionalEmailsApi(api_client)
+
+        sender_name, sender_email = from_email.split("<")[-1].rstrip(">"), from_email.split("<")[0].strip()
+        if not sender_name or "@" in sender_name:
+            sender_name = "BAHub Team"
+
+        send_smtp_email = SendSmtpEmail()
+        send_smtp_email.sender = SendSmtpEmailSender(email=sender_email, name=sender_name)
+        send_smtp_email.to = [{"email": email} for email in recipient_list]
+        send_smtp_email.subject = subject
+        send_smtp_email.html_content = html_content
+        send_smtp_email.text_content = text_content
+
+        # Handle attachments (base64 encoded)
+        if attachments:
+            import base64
+            send_smtp_email.attachment = []
+            for name, data, mime_type in attachments:
+                send_smtp_email.attachment.append({
+                    "name": name,
+                    "content": base64.b64encode(data).decode('utf-8'),
+                })
+
+        try:
+            api_instance.send_transac_email(send_smtp_email)
+            return True
+        except Exception as e:
+            logger.error(f"[EmailService] Brevo API failed: {e}")
+            raise
+
+    @classmethod
     def _send_email_worker(cls, subject, template_name, context, recipient_list, from_email, attachments, headers, email_type, max_retries=3):
         """
         Background worker: renders templates, builds a correct multipart/related
         MIME structure so CID images appear inline (never as attachments), then
         delivers via Django's configured SMTP backend with exponential backoff.
+        Falls back to Brevo API if SMTP fails.
 
         MIME structure:
           multipart/mixed          ← outer (allows PDF attachments)
@@ -88,6 +142,7 @@ class EmailService:
         retry_count = 0
         success = False
         start_time = now()
+        use_brevo_api = os.getenv("USE_BREVO_API", "False").lower() in ("true", "1", "yes")
 
         while retry_count < max_retries and not success:
             try:
@@ -98,6 +153,22 @@ class EmailService:
                     text_content = render_to_string(txt_name, context)
                 except Exception:
                     text_content = strip_tags(html_content)
+
+                # ── Try Brevo API first if configured or forced ─────────────
+                if use_brevo_api or (not use_brevo_api and retry_count >= 1):
+                    try:
+                        cls._send_via_brevo_api(subject, html_content, text_content, recipient_list, from_email or cls._default_sender(), attachments)
+                        success = True
+                        logger.info(
+                            f"[EmailService] Delivered via Brevo API. Type: {email_type} | "
+                            f"Subject: '{subject}' | Recipients: {recipient_list} | "
+                            f"Attempts: {retry_count + 1} | Time: {now() - start_time}"
+                        )
+                        break
+                    except Exception as api_error:
+                        logger.warning(f"[EmailService] Brevo API attempt {retry_count + 1} failed: {api_error}")
+                        if use_brevo_api:
+                            raise  # If Brevo is forced, don't fall back to SMTP
 
                 # ── Headers ───────────────────────────────────────────────
                 msg_id = f"<{uuid.uuid4()}@{cls.DOMAIN}>"
@@ -193,7 +264,7 @@ class EmailService:
                 success = True
 
                 logger.info(
-                    f"[EmailService] Delivered successfully. Type: {email_type} | "
+                    f"[EmailService] Delivered successfully via SMTP. Type: {email_type} | "
                     f"Subject: '{subject}' | Recipients: {recipient_list} | "
                     f"Attempts: {retry_count + 1} | Time: {now() - start_time}"
                 )

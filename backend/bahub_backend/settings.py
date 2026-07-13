@@ -510,6 +510,16 @@ _console_backend = "django.core.mail.backends.console.EmailBackend"
 _default_backend = _smtp_backend if EMAIL_HOST_USER else _console_backend
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", _default_backend)
 
+# Warn if email is misconfigured in production
+if not DEBUG and EMAIL_BACKEND == _console_backend:
+    import logging
+    logger = logging.getLogger("django")
+    logger.warning(
+        "⚠️ EMAIL MISCONFIGURED IN PRODUCTION: Using console backend. "
+        "Emails will NOT be sent. Set EMAIL_HOST_USER and EMAIL_HOST_PASSWORD "
+        "environment variables to enable SMTP delivery."
+    )
+
 
 
 # Enterprise SAML2 / SSO Configuration
