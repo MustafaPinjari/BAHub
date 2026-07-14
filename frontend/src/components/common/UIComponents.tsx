@@ -31,11 +31,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             // Minimal
             "bg-transparent border border-white/[0.08] text-gray-400 hover:bg-white/[0.04] hover:text-gray-200": variant === "minimal",
 
-            // Sizes
-            "px-3 py-1.5 text-xs": size === "sm",
-            "px-4 py-2 text-sm": size === "md",
-            "px-5 py-2.5 text-sm": size === "lg",
-            "p-2": size === "icon",
+            // Sizes - increased touch targets for mobile
+            "px-4 py-2.5 text-xs min-h-[44px]": size === "sm",
+            "px-5 py-3 text-sm min-h-[44px]": size === "md",
+            "px-6 py-3.5 text-sm min-h-[48px]": size === "lg",
+            "p-2.5 min-h-[44px]": size === "icon",
           },
           className
         )}
@@ -62,9 +62,9 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, helperText, type = "text", icon, ...props }, ref) => {
     return (
-      <div className="w-full flex flex-col gap-1 text-left">
+      <div className="w-full flex flex-col gap-1.5 text-left">
         {label && (
-          <label className="text-[10px] font-bold uppercase tracking-wider text-gray-600 select-none mb-0.5">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-gray-600 select-none">
             {label}
           </label>
         )}
@@ -78,9 +78,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             type={type}
             className={cn(
-              "w-full px-3 py-2 text-xs font-medium rounded-lg bg-gray-900 border border-white/[0.08] text-white focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/10 transition-all outline-none placeholder:text-gray-700",
+              "w-full px-4 py-3 text-xs sm:text-sm font-medium rounded-lg bg-gray-900 border border-white/[0.08] text-white focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/10 transition-all outline-none placeholder:text-gray-700 min-h-[44px]",
               {
-                "pl-10": !!icon,
+                "pl-11": !!icon,
                 "border-red-500/40 focus:border-red-500/60 focus:ring-red-500/10": !!error,
               },
               className

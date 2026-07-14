@@ -185,12 +185,12 @@ class RegisterSerializer(serializers.Serializer):
     plan_tier = serializers.ChoiceField(choices=["FREE", "PRO", "ENTERPRISE"], default="FREE", required=False)
 
     def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
+        if User.objects.filter(username=value, is_deleted=False).exists():
             raise serializers.ValidationError("A user with that username already exists.")
         return value
 
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
+        if User.objects.filter(email=value, is_deleted=False).exists():
             raise serializers.ValidationError("A user with that email already exists.")
         return value
 

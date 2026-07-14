@@ -17,6 +17,7 @@ import {
 import logo from "../../assets/logo.png";
 import { LaunchCountdown } from "./LaunchCountdown";
 import { usePublicSettings } from "./usePublicSettings";
+import { ExitIntentModal } from "../../components/common/ExitIntentModal";
 
 interface LandingPageProps {
   onNavigateToLogin: () => void;
@@ -852,6 +853,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
   const { waitlist_countdown_enabled } = usePublicSettings();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [yearly, setYearly] = useState(false);
+  const [isExitIntentOpen, setIsExitIntentOpen] = useState(false);
 
   // Tagline rotating state
   const [taglineIndex, setTaglineIndex] = useState(0);
@@ -915,6 +917,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
   const col2 = TESTIMONIALS.slice(2, 7);
   const col3 = TESTIMONIALS.slice(5, 10);
 
+  // Exit intent event listener
+  useEffect(() => {
+    const handleExitIntent = () => setIsExitIntentOpen(true);
+    window.addEventListener("show-exit-intent", handleExitIntent);
+    return () => window.removeEventListener("show-exit-intent", handleExitIntent);
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500/25 selection:text-white overflow-x-hidden antialiased">
       {/* Atmospheric orbs */}
@@ -926,26 +935,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       <GridPattern />
 
       {/* ── NAVBAR ───────────────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-50 px-4 pt-4">
-        <nav className="max-w-[1380px] w-full mx-auto bg-black/50 backdrop-blur-2xl border border-white/[0.08] rounded-2xl px-6 md:px-10 lg:px-16 py-4 flex items-center justify-between shadow-2xl shadow-black/60">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-white/[0.06] rounded-lg flex items-center justify-center border border-white/[0.10]">
-              <img src={logo} alt="BAHub" className="w-4 h-4 object-contain" />
+      <div className="sticky top-0 z-50 px-3 sm:px-4 pt-4">
+        <nav className="max-w-[1380px] w-full mx-auto bg-black/50 backdrop-blur-2xl border border-white/[0.08] rounded-2xl px-4 sm:px-6 md:px-10 lg:px-16 py-3 sm:py-4 flex items-center justify-between shadow-2xl shadow-black/60">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 bg-white/[0.06] rounded-lg flex items-center justify-center border border-white/[0.10]">
+              <img src={logo} alt="BAHub" className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-extrabold text-[11px] tracking-widest uppercase text-white/90">BAHub</span>
-              <span className="text-[7px] font-bold text-purple-400 uppercase tracking-widest">Workspace Platform</span>
+              <span className="font-extrabold text-[10px] sm:text-[11px] tracking-widest uppercase text-white/90">BAHub</span>
+              <span className="text-[6px] sm:text-[7px] font-bold text-purple-400 uppercase tracking-widest">Workspace Platform</span>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-6 text-[11px] font-semibold tracking-wide text-gray-500">
+          <div className="hidden md:flex items-center gap-4 sm:gap-6 text-[10px] sm:text-[11px] font-semibold tracking-wide text-gray-500">
             {["#features", "#workflow", "#in-action", "#pricing", "#testimonials", "#faq"].map(h => (
               <a key={h} href={h} className="hover:text-white transition-colors capitalize">{h.slice(1)}</a>
             ))}
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={onNavigateToLogin} className="px-3.5 py-1.5 rounded-lg text-[11px] font-semibold text-gray-500 hover:text-white transition-colors cursor-pointer">Sign In</button>
-            <button onClick={onNavigateToRegister} className="px-4 py-1.5 rounded-lg text-[11px] font-bold bg-white text-black hover:bg-gray-100 transition-all cursor-pointer flex items-center gap-1.5">
-              Get Started <ArrowRight className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <button onClick={onNavigateToLogin} className="px-2.5 sm:px-3.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-semibold text-gray-500 hover:text-white transition-colors cursor-pointer">Sign In</button>
+            <button onClick={onNavigateToRegister} className="px-3 sm:px-4 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold bg-white text-black hover:bg-gray-100 transition-all cursor-pointer flex items-center gap-1 sm:gap-1.5">
+              <span className="hidden sm:inline">Get Started</span>
+              <span className="sm:hidden">Start</span>
+              <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             </button>
           </div>
         </nav>
@@ -954,7 +965,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
       <section
         onMouseMove={handleMouseMove}
-        className="relative min-h-[95vh] flex items-center justify-center mt-4 lg:mt-6 pt-32 pb-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 group overflow-visible rounded-3xl"
+        className="relative min-h-[90vh] sm:min-h-[95vh] flex items-center justify-center mt-4 lg:mt-6 pt-24 sm:pt-32 pb-[120px] sm:pb-[160px] px-4 sm:px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 group overflow-visible rounded-3xl"
         style={{
           background: 'radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.10) 0%, transparent 60%), #050505',
           boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05)'
@@ -1004,10 +1015,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           </svg>
         </div>
 
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto relative z-10 w-full my-[40px]">
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto relative z-10 w-full my-[20px] sm:my-[40px] px-2">
           {/* Announcement Badge */}
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-[10px] font-bold uppercase tracking-wider mb-12 select-none">
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mb-8 sm:mb-12 select-none">
             <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
             <span className="text-white/40">BAHub Platform</span>
             <span className="text-white/20">·</span>
@@ -1019,12 +1030,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="text-5xl sm:text-7xl lg:text-[84px] font-black tracking-tight leading-[1.05] mb-10 flex flex-col items-center text-center w-full"
+            className="text-3xl sm:text-5xl lg:text-7xl xl:text-[84px] font-black tracking-tight leading-[1.05] sm:leading-[1.05] mb-6 sm:mb-10 flex flex-col items-center text-center w-full"
           >
             <span className="bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
               Ship traceable
             </span>
-            <span className="h-[58px] sm:h-[80px] lg:h-[94px] relative overflow-hidden block w-full text-center py-1">
+            <span className="h-[40px] sm:h-[58px] lg:h-[80px] xl:h-[94px] relative overflow-hidden block w-full text-center py-1">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={taglineIndex}
@@ -1032,7 +1043,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                   animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
                   exit={{ y: -40, opacity: 0, filter: "blur(8px)" }}
                   transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute inset-x-0 block text-center bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent font-black"
+                  className="absolute inset-x-0 block text-center bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent font-black text-2xl sm:text-4xl lg:text-6xl xl:text-[84px]"
                 >
                   {taglines[taglineIndex]}
                 </motion.span>
@@ -1048,7 +1059,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="text-gray-400/80 text-base sm:text-[19px] leading-relaxed mb-16 max-w-[640px] mx-auto text-center font-normal tracking-wide"
+            className="text-gray-400/80 text-sm sm:text-base lg:text-[19px] leading-relaxed mb-12 sm:mb-16 max-w-[640px] mx-auto text-center font-normal tracking-wide px-4"
           >
             Paste meeting notes. Get requirements, diagrams, BRDs, risk registers, and a Jira-ready backlog — <span className="text-white/80 font-medium">all linked, all traceable.</span>
           </motion.p>
@@ -1058,25 +1069,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-            className="flex flex-wrap items-center justify-center gap-6 mb-24 w-full"
+            className="flex flex-col sm:flex-wrap items-center justify-center gap-3 sm:gap-6 mb-16 sm:mb-24 w-full px-4"
           >
             {/* Primary CTA */}
             <button
               onClick={onNavigateToRegister}
-              className="group relative px-8 py-4 rounded-2xl text-[13px] font-bold tracking-wide bg-white text-black hover:bg-white/90 active:scale-95 transition-all cursor-pointer flex items-center gap-2 shadow-[0_10px_30px_rgba(255,255,255,0.12)] overflow-hidden"
+              className="group relative w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-[12px] sm:text-[13px] font-bold tracking-wide bg-white text-black hover:bg-white/90 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 shadow-[0_10px_30px_rgba(255,255,255,0.12)] overflow-hidden min-h-[48px]"
             >
               {/* Shine reflection effect */}
               <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full transition-transform duration-1000 ease-out group-hover:translate-x-[300%]" />
-              <span>Generate Your First BRD in 60 Seconds →</span>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              <span className="hidden sm:inline">Generate Your First BRD in 60 Seconds →</span>
+              <span className="sm:hidden">Generate BRD →</span>
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1" />
             </button>
 
             {/* Try Demo CTA */}
             <button
               onClick={onTryDemo}
-              className="group px-8 py-4 rounded-2xl text-[13px] font-semibold tracking-wide border border-white/[0.08] text-white/80 hover:text-white hover:bg-white/[0.04] hover:border-white/[0.18] active:scale-95 transition-all cursor-pointer bg-[#0c0c0c]/40 backdrop-blur-md flex items-center gap-2"
+              className="group w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-[12px] sm:text-[13px] font-semibold tracking-wide border border-white/[0.08] text-white/80 hover:text-white hover:bg-white/[0.04] hover:border-white/[0.18] active:scale-95 transition-all cursor-pointer bg-[#0c0c0c]/40 backdrop-blur-md flex items-center justify-center gap-2 min-h-[48px]"
             >
-              <Zap className="w-4 h-4 text-purple-400 group-hover:text-purple-300 transition-colors" />
+              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-400 group-hover:text-purple-300 transition-colors" />
               Try Demo
             </button>
           </motion.div>
@@ -1086,7 +1098,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-4"
+            className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 px-4"
           >
             {[
               { icon: <Shield className="w-3 h-3 text-white/30" />, text: "Audit Trails" },
@@ -1942,6 +1954,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
         </div>
       </footer>
 
+      {/* Exit Intent Modal */}
+      <ExitIntentModal
+        isOpen={isExitIntentOpen}
+        onClose={() => setIsExitIntentOpen(false)}
+        onNavigateToRegister={onNavigateToRegister}
+        onTryDemo={onTryDemo}
+      />
     </div>
   );
 };

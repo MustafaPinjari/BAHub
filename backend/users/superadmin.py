@@ -105,8 +105,8 @@ class SuperAdminDashboardView(APIView):
                 "created_at": org.created_at.strftime("%Y-%m-%d") if org.created_at else None
             })
 
-        # 2. Fetch all users
-        users = User.objects.all().order_by('-created_at')
+        # 2. Fetch all users (exclude soft-deleted)
+        users = User.objects.filter(is_deleted=False).order_by('-created_at')
         user_list = []
         for u in users:
             user_list.append({
@@ -271,7 +271,8 @@ class SuperAdminDashboardView(APIView):
 
             if delete_mode:
                 count = users.count()
-                users.delete()
+                # Use soft delete instead of hard delete
+                users.update(is_deleted=True, is_active=False)
                 return api_success(message=f"Successfully bulk deleted {count} users.")
 
             updated_count = 0
@@ -407,7 +408,10 @@ class SuperAdminDashboardView(APIView):
                 if str(user.id) == str(request.user.id):
                     return api_error(message="You cannot delete your own account.", status_code=status.HTTP_400_BAD_REQUEST)
                 user_name = user.username
-                user.delete()
+                # Use soft delete instead of hard delete
+                user.is_deleted = True
+                user.is_active = False
+                user.save()
                 return api_success(message=f"User '{user_name}' deleted successfully.")
             except User.DoesNotExist:
                 return api_error(message="User not found.", status_code=status.HTTP_404_NOT_FOUND)

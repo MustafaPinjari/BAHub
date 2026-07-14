@@ -86,6 +86,12 @@ urlpatterns = [
     # Template gallery endpoints
     path("api/v1/templates/", include("templates.urls")),
     
+    # Blog endpoints
+    path("api/v1/blog/", include("blog.urls")),
+    
+    # Email nurturing endpoints
+    path("api/v1/email/", include("email_nurturing.urls")),
+    
     # SAML2 SSO login endpoints
     path("saml2_auth/", include("django_saml2_auth.urls")),
 ]

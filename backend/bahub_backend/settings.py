@@ -129,6 +129,8 @@ INSTALLED_APPS = [
     "uat",
     "referrals",
     "templates",
+    "blog",
+    "email_nurturing",
 ]
 
 MIDDLEWARE = [

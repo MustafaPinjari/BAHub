@@ -165,7 +165,7 @@ export function DataTable<T extends { id?: string | number }>({
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-9 pr-4 py-1.5 text-sm rounded-lg bg-card border border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none placeholder:text-muted-foreground/60"
+            className="w-full pl-9 pr-4 py-2 text-sm rounded-lg bg-card border border-border text-foreground focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none placeholder:text-muted-foreground/60 min-h-[40px]"
           />
         </div>
 
@@ -176,19 +176,19 @@ export function DataTable<T extends { id?: string | number }>({
               variant="outline"
               size="sm"
               onClick={() => setShowColVisibilityMenu(!showColVisibilityMenu)}
-              className="text-xs font-semibold"
+              className="text-xs font-semibold min-h-[32px]"
             >
               Columns
             </Button>
             {showColVisibilityMenu && (
-              <div className="absolute right-0 mt-1.5 w-48 bg-card shadow-lg rounded-xl border border-border p-2.5 z-20 flex flex-col gap-1 select-none text-foreground">
-                <span className="text-[10px] font-bold text-muted-foreground px-2 py-1 uppercase tracking-wider">
+              <div className="absolute right-0 mt-1.5 w-48 bg-card shadow-lg rounded-xl border border-border p-2.5 z-20 flex flex-col gap-1 select-none text-foreground max-h-64 overflow-y-auto">
+                <span className="text-[10px] font-bold text-muted-foreground px-2 py-1 uppercase tracking-wider sticky top-0 bg-card">
                   Toggle Columns
                 </span>
                 {columns.map((col) => (
                   <label
                     key={col.key}
-                    className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-secondary text-xs font-medium cursor-pointer text-foreground"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-secondary text-xs font-medium cursor-pointer text-foreground"
                   >
                     <input
                       type="checkbox"
@@ -204,9 +204,9 @@ export function DataTable<T extends { id?: string | number }>({
                         }
                         setVisibleColumns(newCols);
                       }}
-                      className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
+                      className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer w-4 h-4"
                     />
-                    <span>{col.label}</span>
+                    <span className="truncate">{col.label}</span>
                   </label>
                 ))}
               </div>
@@ -249,17 +249,17 @@ export function DataTable<T extends { id?: string | number }>({
       )}
 
       {/* Data Table */}
-      <div className="w-full overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
-        <table className="w-full text-left border-collapse table-fixed">
+      <div className="w-full overflow-x-auto rounded-xl border border-border bg-card shadow-sm -mx-4 px-4 sm:mx-0 sm:px-0">
+        <table className="w-full text-left border-collapse min-w-[600px]">
           <thead>
             <tr className="border-b border-border bg-secondary/50 text-[10px] font-bold uppercase tracking-wider text-muted-foreground select-none">
               {bulkActions.length > 0 && (
-                <th className="p-4 w-12 text-center">
+                <th className="p-3 sm:p-4 w-12 text-center">
                   <input
                     type="checkbox"
                     checked={allPageSelected}
                     onChange={(e) => handleSelectAll(e, paginatedRows)}
-                    className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
+                    className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer w-4 h-4"
                   />
                 </th>
               )}
@@ -270,14 +270,14 @@ export function DataTable<T extends { id?: string | number }>({
                     key={col.key}
                     onClick={() => handleSort(col.key, col.sortable)}
                     className={cn(
-                      "p-3.5 select-none text-[11px]",
+                      "p-2.5 sm:p-3.5 select-none text-[10px] sm:text-[11px]",
                       col.sortable ? "cursor-pointer hover:bg-secondary" : ""
                     )}
                   >
                     <div className="flex items-center gap-1.5 font-bold">
                       {col.label}
                       {col.sortable && (
-                        <span className="opacity-60">
+                        <span className="opacity-60 shrink-0">
                           {sortKey !== col.key ? (
                             <ChevronsUpDown className="w-3 h-3" />
                           ) : sortDir === "asc" ? (
@@ -297,7 +297,7 @@ export function DataTable<T extends { id?: string | number }>({
               <tr>
                 <td
                   colSpan={columns.filter((c) => visibleColumns.has(c.key)).length + (bulkActions.length > 0 ? 1 : 0)}
-                  className="p-8 text-center text-muted-foreground font-medium"
+                  className="p-6 sm:p-8 text-center text-muted-foreground font-medium"
                 >
                   No items found matching search terms.
                 </td>
@@ -316,19 +316,19 @@ export function DataTable<T extends { id?: string | number }>({
                     )}
                   >
                     {bulkActions.length > 0 && (
-                      <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}>
+                      <td className="p-2.5 sm:p-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={(e) => row.id !== undefined && handleSelectRow(e, row.id)}
-                          className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer"
+                          className="rounded border-border text-primary focus:ring-primary/20 cursor-pointer w-4 h-4"
                         />
                       </td>
                     )}
                     {columns
                       .filter((col) => visibleColumns.has(col.key))
                       .map((col) => (
-                        <td key={col.key} className="p-3.5 align-middle truncate">
+                        <td key={col.key} className="p-2.5 sm:p-3.5 align-middle truncate">
                           {col.render ? col.render(row) : (row as any)[col.key]}
                         </td>
                       ))}
@@ -342,8 +342,8 @@ export function DataTable<T extends { id?: string | number }>({
 
       {/* Pagination Controls */}
       {sortedRows.length > 0 && (
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between py-1.5 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5 select-none font-medium">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-between py-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5 select-none font-medium flex-wrap">
             <span>Show</span>
             <select
               value={pageSize}
@@ -351,7 +351,7 @@ export function DataTable<T extends { id?: string | number }>({
                 setPageSize(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              className="bg-card border border-border rounded-md px-1.5 py-0.5 outline-none text-foreground cursor-pointer font-bold"
+              className="bg-card border border-border rounded-md px-2 py-1 outline-none text-foreground cursor-pointer font-bold min-h-[32px]"
             >
               {[5, 10, 20, 50].map((size) => (
                 <option key={size} value={size}>
@@ -368,7 +368,7 @@ export function DataTable<T extends { id?: string | number }>({
               size="sm"
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(currentPage - 1)}
-              className="p-1 px-1.5 rounded-md"
+              className="p-1.5 px-2 rounded-md min-h-[32px]"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
             </Button>
@@ -380,7 +380,7 @@ export function DataTable<T extends { id?: string | number }>({
               size="sm"
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(currentPage + 1)}
-              className="p-1 px-1.5 rounded-md"
+              className="p-1.5 px-2 rounded-md min-h-[32px]"
             >
               <ChevronRight className="w-3.5 h-3.5" />
             </Button>

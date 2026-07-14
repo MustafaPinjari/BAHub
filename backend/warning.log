@@ -779,3 +779,629 @@ Traceback (most recent call last):
 [1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'stakeholders' is an invalid parameter to prefetch_related()[0m
 ERROR 2026-07-14 04:41:19,948 log 5192 2612 Internal Server Error: /api/v1/requirements/
 ERROR 2026-07-14 04:41:19,949 runserver 5192 20704 [35;1mHTTP GET /api/v1/requirements/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.04, 127.0.0.1:63749][0m
+WARNING 2026-07-14 05:56:06,911 log 11508 9820 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-14 05:56:06,913 runserver 11508 1932 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.03, 127.0.0.1:61416][0m
+WARNING 2026-07-14 05:56:06,931 log 11508 9820 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-14 05:56:06,933 runserver 11508 1932 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.02, 127.0.0.1:61416][0m
+ERROR 2026-07-14 07:02:32,548 exceptions 21024 12100 Unhandled Server Error: Invalid field name(s) given in select_related: 'created_by'. Choices are: project
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1954[0m, in [35m_fetch_all[0m
+    self._result_cache = [31mlist[0m[1;31m(self._iterable_class(self))[0m
+                         [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m93[0m, in [35m__iter__[0m
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1610[0m, in [35mexecute_sql[0m
+    sql, params = [31mself.as_sql[0m[1;31m()[0m
+                  [31m~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m766[0m, in [35mas_sql[0m
+    extra_select, order_by, group_by = [31mself.pre_sql_setup[0m[1;31m([0m
+                                       [31m~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases or bool(combinator),[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m85[0m, in [35mpre_sql_setup[0m
+    [31mself.setup_query[0m[1;31m(with_col_aliases=with_col_aliases)[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m74[0m, in [35msetup_query[0m
+    self.select, self.klass_info, self.annotation_col_map = [31mself.get_select[0m[1;31m([0m
+                                                            [31m~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m299[0m, in [35mget_select[0m
+    related_klass_infos = self.get_related_selections(select, select_mask)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1396[0m, in [35mget_related_selections[0m
+    raise FieldError(
+    ...<6 lines>...
+    )
+[1;35mdjango.core.exceptions.FieldError[0m: [35mInvalid field name(s) given in select_related: 'created_by'. Choices are: project[0m
+ERROR 2026-07-14 07:02:32,605 exceptions 21024 11280 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stories\views.py"[0m, line [35m93[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="User stories retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 07:02:32,772 log 21024 7656 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-14 07:02:32,772 log 21024 19352 Internal Server Error: /api/v1/stories/
+ERROR 2026-07-14 07:02:32,776 runserver 21024 21296 [35;1mHTTP GET /api/v1/risks/?project=bb739b46-1e92-4d1f-9d5a-1a6bddb6c5cc 500 [0.32, 127.0.0.1:53022][0m
+ERROR 2026-07-14 07:02:32,777 runserver 21024 21296 [35;1mHTTP GET /api/v1/stories/?project=bb739b46-1e92-4d1f-9d5a-1a6bddb6c5cc 500 [0.32, 127.0.0.1:63662][0m
+ERROR 2026-07-14 07:02:32,892 exceptions 21024 15788 Unhandled Server Error: Invalid field name(s) given in select_related: 'created_by'. Choices are: project
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1954[0m, in [35m_fetch_all[0m
+    self._result_cache = [31mlist[0m[1;31m(self._iterable_class(self))[0m
+                         [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m93[0m, in [35m__iter__[0m
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1610[0m, in [35mexecute_sql[0m
+    sql, params = [31mself.as_sql[0m[1;31m()[0m
+                  [31m~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m766[0m, in [35mas_sql[0m
+    extra_select, order_by, group_by = [31mself.pre_sql_setup[0m[1;31m([0m
+                                       [31m~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases or bool(combinator),[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m85[0m, in [35mpre_sql_setup[0m
+    [31mself.setup_query[0m[1;31m(with_col_aliases=with_col_aliases)[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m74[0m, in [35msetup_query[0m
+    self.select, self.klass_info, self.annotation_col_map = [31mself.get_select[0m[1;31m([0m
+                                                            [31m~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m299[0m, in [35mget_select[0m
+    related_klass_infos = self.get_related_selections(select, select_mask)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1396[0m, in [35mget_related_selections[0m
+    raise FieldError(
+    ...<6 lines>...
+    )
+[1;35mdjango.core.exceptions.FieldError[0m: [35mInvalid field name(s) given in select_related: 'created_by'. Choices are: project[0m
+ERROR 2026-07-14 07:02:32,925 log 21024 7656 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-14 07:02:32,928 runserver 21024 21296 [35;1mHTTP GET /api/v1/risks/?project=bb739b46-1e92-4d1f-9d5a-1a6bddb6c5cc 500 [0.14, 127.0.0.1:53022][0m
+ERROR 2026-07-14 07:02:32,958 exceptions 21024 15252 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stories\views.py"[0m, line [35m93[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="User stories retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 07:02:32,975 log 21024 19352 Internal Server Error: /api/v1/stories/
+ERROR 2026-07-14 07:02:32,978 runserver 21024 21296 [35;1mHTTP GET /api/v1/stories/?project=bb739b46-1e92-4d1f-9d5a-1a6bddb6c5cc 500 [0.19, 127.0.0.1:63662][0m
+ERROR 2026-07-14 07:02:42,149 exceptions 21024 9116 Unhandled Server Error: Invalid field name(s) given in select_related: 'created_by'. Choices are: project
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1954[0m, in [35m_fetch_all[0m
+    self._result_cache = [31mlist[0m[1;31m(self._iterable_class(self))[0m
+                         [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m93[0m, in [35m__iter__[0m
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1610[0m, in [35mexecute_sql[0m
+    sql, params = [31mself.as_sql[0m[1;31m()[0m
+                  [31m~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m766[0m, in [35mas_sql[0m
+    extra_select, order_by, group_by = [31mself.pre_sql_setup[0m[1;31m([0m
+                                       [31m~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases or bool(combinator),[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m85[0m, in [35mpre_sql_setup[0m
+    [31mself.setup_query[0m[1;31m(with_col_aliases=with_col_aliases)[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m74[0m, in [35msetup_query[0m
+    self.select, self.klass_info, self.annotation_col_map = [31mself.get_select[0m[1;31m([0m
+                                                            [31m~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m299[0m, in [35mget_select[0m
+    related_klass_infos = self.get_related_selections(select, select_mask)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1396[0m, in [35mget_related_selections[0m
+    raise FieldError(
+    ...<6 lines>...
+    )
+[1;35mdjango.core.exceptions.FieldError[0m: [35mInvalid field name(s) given in select_related: 'created_by'. Choices are: project[0m
+ERROR 2026-07-14 07:02:42,167 log 21024 7656 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-14 07:02:42,168 runserver 21024 21296 [35;1mHTTP GET /api/v1/risks/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.07, 127.0.0.1:63662][0m
+ERROR 2026-07-14 07:02:42,239 exceptions 21024 8264 Unhandled Server Error: Invalid field name(s) given in select_related: 'created_by'. Choices are: project
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1954[0m, in [35m_fetch_all[0m
+    self._result_cache = [31mlist[0m[1;31m(self._iterable_class(self))[0m
+                         [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m93[0m, in [35m__iter__[0m
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1610[0m, in [35mexecute_sql[0m
+    sql, params = [31mself.as_sql[0m[1;31m()[0m
+                  [31m~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m766[0m, in [35mas_sql[0m
+    extra_select, order_by, group_by = [31mself.pre_sql_setup[0m[1;31m([0m
+                                       [31m~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases or bool(combinator),[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m85[0m, in [35mpre_sql_setup[0m
+    [31mself.setup_query[0m[1;31m(with_col_aliases=with_col_aliases)[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m74[0m, in [35msetup_query[0m
+    self.select, self.klass_info, self.annotation_col_map = [31mself.get_select[0m[1;31m([0m
+                                                            [31m~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m299[0m, in [35mget_select[0m
+    related_klass_infos = self.get_related_selections(select, select_mask)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1396[0m, in [35mget_related_selections[0m
+    raise FieldError(
+    ...<6 lines>...
+    )
+[1;35mdjango.core.exceptions.FieldError[0m: [35mInvalid field name(s) given in select_related: 'created_by'. Choices are: project[0m
+ERROR 2026-07-14 07:02:42,270 log 21024 19352 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-14 07:02:42,272 runserver 21024 21296 [35;1mHTTP GET /api/v1/risks/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.09, 127.0.0.1:63662][0m
+ERROR 2026-07-14 07:02:42,290 exceptions 21024 9164 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stories\views.py"[0m, line [35m93[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="User stories retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 07:02:42,325 log 21024 7656 Internal Server Error: /api/v1/stories/
+ERROR 2026-07-14 07:02:42,328 runserver 21024 21296 [35;1mHTTP GET /api/v1/stories/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.23, 127.0.0.1:61158][0m
+ERROR 2026-07-14 07:02:42,389 exceptions 21024 10640 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stories\views.py"[0m, line [35m93[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="User stories retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 07:02:42,406 log 21024 19352 Internal Server Error: /api/v1/stories/
+ERROR 2026-07-14 07:02:42,409 runserver 21024 21296 [35;1mHTTP GET /api/v1/stories/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.08, 127.0.0.1:53179][0m
+ERROR 2026-07-14 07:03:19,499 exceptions 21024 2128 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stories\views.py"[0m, line [35m93[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="User stories retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 07:03:19,513 log 21024 7656 Internal Server Error: /api/v1/stories/
+ERROR 2026-07-14 07:03:19,515 runserver 21024 21296 [35;1mHTTP GET /api/v1/stories/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.07, 127.0.0.1:61015][0m
+ERROR 2026-07-14 07:03:19,584 exceptions 21024 20748 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stories\views.py"[0m, line [35m93[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="User stories retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 07:03:19,608 log 21024 19352 Internal Server Error: /api/v1/stories/
+ERROR 2026-07-14 07:03:19,610 runserver 21024 21296 [35;1mHTTP GET /api/v1/stories/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.09, 127.0.0.1:53179][0m
+ERROR 2026-07-14 07:03:29,468 exceptions 21024 18788 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stories\views.py"[0m, line [35m93[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="User stories retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 07:03:29,481 log 21024 7656 Internal Server Error: /api/v1/stories/
+ERROR 2026-07-14 07:03:29,483 runserver 21024 21296 [35;1mHTTP GET /api/v1/stories/?project=c92b52f2-016d-4554-a03f-c8e5dc233be5 500 [0.05, 127.0.0.1:61015][0m
+ERROR 2026-07-14 07:03:29,525 exceptions 21024 21064 Unhandled Server Error: Cannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\stories\views.py"[0m, line [35m93[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="User stories retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'stakeholders' on Requirement object, 'requirement__stakeholders' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-14 07:03:29,536 log 21024 19352 Internal Server Error: /api/v1/stories/
+ERROR 2026-07-14 07:03:29,539 runserver 21024 21296 [35;1mHTTP GET /api/v1/stories/?project=c92b52f2-016d-4554-a03f-c8e5dc233be5 500 [0.05, 127.0.0.1:63662][0m
+ERROR 2026-07-14 07:04:49,247 exceptions 21024 2064 Unhandled Server Error: Invalid field name(s) given in select_related: 'created_by'. Choices are: project
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1954[0m, in [35m_fetch_all[0m
+    self._result_cache = [31mlist[0m[1;31m(self._iterable_class(self))[0m
+                         [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m93[0m, in [35m__iter__[0m
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1610[0m, in [35mexecute_sql[0m
+    sql, params = [31mself.as_sql[0m[1;31m()[0m
+                  [31m~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m766[0m, in [35mas_sql[0m
+    extra_select, order_by, group_by = [31mself.pre_sql_setup[0m[1;31m([0m
+                                       [31m~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases or bool(combinator),[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m85[0m, in [35mpre_sql_setup[0m
+    [31mself.setup_query[0m[1;31m(with_col_aliases=with_col_aliases)[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m74[0m, in [35msetup_query[0m
+    self.select, self.klass_info, self.annotation_col_map = [31mself.get_select[0m[1;31m([0m
+                                                            [31m~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m299[0m, in [35mget_select[0m
+    related_klass_infos = self.get_related_selections(select, select_mask)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1396[0m, in [35mget_related_selections[0m
+    raise FieldError(
+    ...<6 lines>...
+    )
+[1;35mdjango.core.exceptions.FieldError[0m: [35mInvalid field name(s) given in select_related: 'created_by'. Choices are: project[0m
+ERROR 2026-07-14 07:04:49,254 log 21024 7656 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-14 07:04:49,255 runserver 21024 21296 [35;1mHTTP GET /api/v1/risks/?project=c92b52f2-016d-4554-a03f-c8e5dc233be5 500 [0.02, 127.0.0.1:53022][0m
+ERROR 2026-07-14 07:04:49,272 exceptions 21024 22512 Unhandled Server Error: Invalid field name(s) given in select_related: 'created_by'. Choices are: project
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1954[0m, in [35m_fetch_all[0m
+    self._result_cache = [31mlist[0m[1;31m(self._iterable_class(self))[0m
+                         [31m~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m93[0m, in [35m__iter__[0m
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1610[0m, in [35mexecute_sql[0m
+    sql, params = [31mself.as_sql[0m[1;31m()[0m
+                  [31m~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m766[0m, in [35mas_sql[0m
+    extra_select, order_by, group_by = [31mself.pre_sql_setup[0m[1;31m([0m
+                                       [31m~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases or bool(combinator),[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m85[0m, in [35mpre_sql_setup[0m
+    [31mself.setup_query[0m[1;31m(with_col_aliases=with_col_aliases)[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m74[0m, in [35msetup_query[0m
+    self.select, self.klass_info, self.annotation_col_map = [31mself.get_select[0m[1;31m([0m
+                                                            [31m~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mwith_col_aliases=with_col_aliases,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m299[0m, in [35mget_select[0m
+    related_klass_infos = self.get_related_selections(select, select_mask)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\sql\compiler.py"[0m, line [35m1396[0m, in [35mget_related_selections[0m
+    raise FieldError(
+    ...<6 lines>...
+    )
+[1;35mdjango.core.exceptions.FieldError[0m: [35mInvalid field name(s) given in select_related: 'created_by'. Choices are: project[0m
+ERROR 2026-07-14 07:04:49,284 log 21024 19352 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-14 07:04:49,285 runserver 21024 21296 [35;1mHTTP GET /api/v1/risks/?project=c92b52f2-016d-4554-a03f-c8e5dc233be5 500 [0.03, 127.0.0.1:60428][0m
+WARNING 2026-07-14 19:11:17,452 log 11984 20244 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-14 19:11:17,455 runserver 11984 3092 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.05, 127.0.0.1:51800][0m
+WARNING 2026-07-14 19:11:17,471 log 11984 20244 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-14 19:11:17,473 runserver 11984 3092 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:51800][0m
+WARNING 2026-07-14 19:13:51,368 exceptions 11984 12528 API Error (400): {'username': [ErrorDetail(string='A user with that username already exists.', code='invalid')], 'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-14 19:13:51,375 log 11984 20244 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 19:13:51,377 runserver 11984 3092 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.24, 127.0.0.1:63408][0m
+WARNING 2026-07-14 19:14:00,722 exceptions 11984 11988 API Error (400): {'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-14 19:14:00,728 log 11984 20244 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 19:14:00,729 runserver 11984 3092 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.03, 127.0.0.1:63408][0m
+WARNING 2026-07-14 19:16:48,809 email_service 11984 10012 [EmailService] Brevo API attempt 1 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:16:48,810 email_service 11984 10012 [EmailService] Failed attempt 1/3 to send 'BAHub: Your Invitation to Join the Beta!' to ['ansariisrat1947@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:16:49,814 email_service 11984 10012 [EmailService] Brevo API attempt 2 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:16:49,814 email_service 11984 10012 [EmailService] Failed attempt 2/3 to send 'BAHub: Your Invitation to Join the Beta!' to ['ansariisrat1947@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:16:51,817 email_service 11984 10012 [EmailService] Brevo API attempt 3 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:16:51,818 email_service 11984 10012 [EmailService] Failed attempt 3/3 to send 'BAHub: Your Invitation to Join the Beta!' to ['ansariisrat1947@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+ERROR 2026-07-14 19:16:51,818 email_service 11984 10012 [EmailService] Hard Failure. Type: waitlist_invite | Subject: 'BAHub: Your Invitation to Join the Beta!' | Recipients: ['ansariisrat1947@gmail.com'] | Retries exhausted. Final Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:17:43,787 exceptions 11984 18416 API Error (400): {'username': [ErrorDetail(string='A user with that username already exists.', code='invalid')], 'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-14 19:17:43,793 log 11984 20244 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 19:17:43,795 runserver 11984 3092 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.03, 127.0.0.1:53477][0m
+WARNING 2026-07-14 19:17:54,746 exceptions 11984 14188 API Error (400): {'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-14 19:17:54,750 log 11984 20244 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 19:17:54,751 runserver 11984 3092 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.03, 127.0.0.1:53477][0m
+WARNING 2026-07-14 19:21:07,336 exceptions 16860 9780 API Error (400): {'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-14 19:21:07,343 log 16860 21108 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 19:21:07,344 runserver 16860 17588 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.09, 127.0.0.1:58240][0m
+WARNING 2026-07-14 19:32:26,035 email_service 12468 7064 [EmailService] Brevo API attempt 1 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:32:26,038 email_service 12468 7064 [EmailService] Failed attempt 1/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:32:27,040 email_service 12468 7064 [EmailService] Brevo API attempt 2 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:32:27,041 email_service 12468 7064 [EmailService] Failed attempt 2/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:32:29,042 email_service 12468 7064 [EmailService] Brevo API attempt 3 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:32:29,043 email_service 12468 7064 [EmailService] Failed attempt 3/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+ERROR 2026-07-14 19:32:29,043 email_service 12468 7064 [EmailService] Hard Failure. Type: verification | Subject: 'Verify your BAHub account' | Recipients: ['unlessuser99@gmail.com'] | Retries exhausted. Final Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:41:41,585 exceptions 12468 11368 API Error (400): {'username': [ErrorDetail(string='A user with that username already exists.', code='invalid')], 'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-14 19:41:41,611 log 12468 17720 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 19:41:41,615 runserver 12468 13412 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.11, 127.0.0.1:50233][0m
