@@ -256,7 +256,6 @@ const MainAppContent: React.FC = () => {
   }
 
   const handleTryDemo = async () => {
-    setDemoLoading(true);
     try {
       // Credentials are stored server-side only — never hardcoded in the frontend bundle
       const res = await api.post<any, any>("/auth/demo-login/");
@@ -272,8 +271,6 @@ const MainAppContent: React.FC = () => {
     } catch {
       // Demo login unavailable — redirect to login so users can sign up
       navigate("/login");
-    } finally {
-      setDemoLoading(false);
     }
   };
 

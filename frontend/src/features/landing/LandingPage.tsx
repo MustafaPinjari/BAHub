@@ -397,8 +397,6 @@ export const FeatureShowcase: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isMobile]);
 
-  const feature = FEATURES[activeFeature];
-
   return (
     <div ref={sectionRef} className="relative">
       {/* Desktop: 3-column sticky layout */}
@@ -442,9 +440,9 @@ export const FeatureShowcase: React.FC = () => {
           {/* Center Panel - Dynamic Content */}
           <div className="col-span-4">
             <AnimatePresence mode="wait">
-              {activeFeature && (
+              {FEATURES[activeFeature] && (
                 <motion.div
-                  key={activeFeature.id}
+                  key={FEATURES[activeFeature].id}
                   initial={{ opacity: 0, y: 20, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -453,13 +451,13 @@ export const FeatureShowcase: React.FC = () => {
                 >
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                      {activeFeature.icon}
+                      {FEATURES[activeFeature].icon}
                     </div>
-                    <h3 className="text-xl font-bold text-white">{activeFeature.title}</h3>
+                    <h3 className="text-xl font-bold text-white">{FEATURES[activeFeature].title}</h3>
                   </div>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-6">{activeFeature.description}</p>
+                  <p className="text-gray-400 text-sm leading-relaxed mb-6">{FEATURES[activeFeature].description}</p>
                 <ul className="space-y-3 mb-8">
-                  {activeFeature.bullets.map((bullet, i) => (
+                  {FEATURES[activeFeature].bullets.map((bullet: string, i: number) => (
                     <li key={i} className="flex items-center gap-3 text-[11px] text-gray-500">
                       <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                       {bullet}
@@ -467,7 +465,7 @@ export const FeatureShowcase: React.FC = () => {
                   ))}
                 </ul>
                 <button className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-bold uppercase tracking-wider transition-colors">
-                  {activeFeature.cta}
+                  {FEATURES[activeFeature].cta}
                 </button>
               </motion.div>
               )}
@@ -477,16 +475,16 @@ export const FeatureShowcase: React.FC = () => {
           {/* Right Panel - Animated Preview */}
           <div className="col-span-5">
             <AnimatePresence mode="wait">
-              {activeFeature && (
+              {FEATURES[activeFeature] && (
                 <motion.div
-                  key={`preview-${activeFeature.id}`}
+                  key={`preview-${FEATURES[activeFeature].id}`}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4 }}
                   className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 h-[400px] overflow-hidden"
                 >
-                  <FeaturePreview featureId={activeFeature.id} />
+                  <FeaturePreview featureId={FEATURES[activeFeature].id} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -517,47 +515,51 @@ export const FeatureShowcase: React.FC = () => {
 
           {/* Content */}
           <AnimatePresence mode="wait">
-            <motion.div
-              key={feature.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                  {feature.icon}
+            {FEATURES[activeFeature] && (
+              <motion.div
+                key={FEATURES[activeFeature].id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    {FEATURES[activeFeature].icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-white">{FEATURES[activeFeature].title}</h3>
                 </div>
-                <h3 className="text-lg font-bold text-white">{feature.title}</h3>
-              </div>
-              <p className="text-gray-400 text-sm leading-relaxed mb-4">{feature.description}</p>
-              <ul className="space-y-2 mb-6">
-                {feature.bullets.map((bullet, i) => (
-                  <li key={i} className="flex items-center gap-2 text-[11px] text-gray-500">
-                    <Check className="w-3 h-3 text-emerald-400 shrink-0" />
-                    {bullet}
-                  </li>
-                ))}
-              </ul>
-              <button className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-bold uppercase tracking-wider transition-colors">
-                {feature.cta}
-              </button>
-            </motion.div>
+                <p className="text-gray-400 text-sm leading-relaxed mb-4">{FEATURES[activeFeature].description}</p>
+                <ul className="space-y-2 mb-6">
+                  {FEATURES[activeFeature].bullets.map((bullet: string, i: number) => (
+                    <li key={i} className="flex items-center gap-2 text-[11px] text-gray-500">
+                      <Check className="w-3 h-3 text-emerald-400 shrink-0" />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+                <button className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-bold uppercase tracking-wider transition-colors">
+                  {FEATURES[activeFeature].cta}
+                </button>
+              </motion.div>
+            )}
           </AnimatePresence>
 
           {/* Preview */}
           <AnimatePresence mode="wait">
-            <motion.div
-              key={`preview-${feature.id}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 h-[300px] overflow-hidden"
-            >
-              <FeaturePreview featureId={feature.id} />
-            </motion.div>
+            {FEATURES[activeFeature] && (
+              <motion.div
+                key={`preview-${FEATURES[activeFeature].id}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 h-[300px] overflow-hidden"
+              >
+                <FeaturePreview featureId={FEATURES[activeFeature].id} />
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       )}
@@ -902,8 +904,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
         i++;
       } else {
         clearInterval(timer);
-        const replyTimer = setTimeout(() => setAiReplyVisible(true), 600);
-        return () => clearTimeout(replyTimer);
+        setTimeout(() => setAiReplyVisible(true), 600);
       }
     }, 30);
 

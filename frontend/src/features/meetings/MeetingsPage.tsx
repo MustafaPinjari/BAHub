@@ -108,7 +108,7 @@ export const MeetingsPage: React.FC = () => {
       if (res.data.length > 0) {
         // Maintain selection or default to first
         const current = selectedMeeting ? res.data.find(m => m.id === selectedMeeting.id) : null;
-        loadMeeting(current || res.data[0]);
+        loadMeeting(current || res.data[0]!);
       } else {
         setSelectedMeeting(null);
       }
@@ -158,7 +158,7 @@ export const MeetingsPage: React.FC = () => {
 
   const openScheduleModal = () => {
     setFormTitle("");
-    setFormDate(new Date().toISOString().split("T")[0]);
+    setFormDate(new Date().toISOString().split("T")[0] || "");
     setFormTime("10:00");
     setFormObjective("");
     setFormAttendees([]);

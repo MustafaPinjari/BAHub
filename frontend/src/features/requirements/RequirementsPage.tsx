@@ -82,7 +82,7 @@ export const RequirementsPage: React.FC = () => {
       setRequirements(res.data);
       // Auto-select first requirement if none selected
       if (res.data.length > 0 && !selectedReq) {
-        loadReqInEditor(res.data[0]);
+        loadReqInEditor(res.data[0]!);
       }
     } catch (err) {
       logger.error("Failed to load requirements", { error: err });
@@ -334,7 +334,7 @@ export const RequirementsPage: React.FC = () => {
         return result.map(s => s.replace(/^"|"$/g, '').replace(/""/g, '"'));
       };
 
-      const headers = parseCSVLine(lines[0]);
+      const headers = parseCSVLine(lines[0]!);
       const titleIdx = headers.findIndex(h => h.toLowerCase().includes("title"));
       const descIdx = headers.findIndex(h => h.toLowerCase().includes("desc"));
       const typeIdx = headers.findIndex(h => h.toLowerCase().includes("type"));
@@ -349,7 +349,7 @@ export const RequirementsPage: React.FC = () => {
 
       const rowsToImport = [];
       for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
+        const line = lines[i]?.trim();
         if (!line) continue;
         const columns = parseCSVLine(line);
         if (columns.length < 2) continue;
@@ -361,28 +361,28 @@ export const RequirementsPage: React.FC = () => {
         const row = rowsToImport[i];
         setImportProgress(`Importing row ${i + 1} of ${rowsToImport.length}...`);
 
-        const title = row[titleIdx] || "Untitled Requirement";
-        const description = row[descIdx] || "";
+        const title = row?.[titleIdx] || "Untitled Requirement";
+        const description = row?.[descIdx] || "";
         
         let req_type = "FUNCTIONAL";
-        if (typeIdx !== -1 && row[typeIdx]) {
-          const rawType = row[typeIdx].toUpperCase().replace(" ", "_");
+        if (typeIdx !== -1 && row?.[typeIdx]) {
+          const rawType = row[typeIdx]!.toUpperCase().replace(" ", "_");
           if (["FUNCTIONAL", "NON_FUNCTIONAL", "TECHNICAL", "UI"].includes(rawType)) {
             req_type = rawType;
           }
         }
 
         let priority = "MEDIUM";
-        if (priorityIdx !== -1 && row[priorityIdx]) {
-          const rawPriority = row[priorityIdx].toUpperCase();
+        if (priorityIdx !== -1 && row?.[priorityIdx]) {
+          const rawPriority = row[priorityIdx]!.toUpperCase();
           if (["HIGH", "MEDIUM", "LOW"].includes(rawPriority)) {
             priority = rawPriority;
           }
         }
 
         let status = "DRAFT";
-        if (statusIdx !== -1 && row[statusIdx]) {
-          const rawStatus = row[statusIdx].toUpperCase();
+        if (statusIdx !== -1 && row?.[statusIdx]) {
+          const rawStatus = row[statusIdx]!.toUpperCase();
           if (["DRAFT", "REVIEW", "APPROVED", "REJECTED"].includes(rawStatus)) {
             status = rawStatus;
           }

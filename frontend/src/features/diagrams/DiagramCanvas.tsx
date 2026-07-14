@@ -374,11 +374,9 @@ const DiagramCanvasContent: React.FC<DiagramCanvasProps> = ({
     });
 
     edges.forEach((e) => {
-      if (adj[e.source] && e.target in levelMap) {
+      if (adj[e.source] && e.target && e.target in levelMap) {
         (adj[e.source] as string[]).push(e.target);
-        if (indegree[e.target] !== undefined) {
-          indegree[e.target]++;
-        }
+        indegree[e.target] = (indegree[e.target] || 0) + 1;
       }
     });
 

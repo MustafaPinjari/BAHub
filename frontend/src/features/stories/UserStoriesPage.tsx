@@ -98,7 +98,7 @@ export const UserStoriesPage: React.FC = () => {
     setEditingStory(null);
     setFormError(null);
     setSuccessMessage(null);
-    setFormReq(requirements.length > 0 ? requirements[0].id : "");
+    setFormReq(requirements.length > 0 ? requirements[0]!.id : "");
     setFormTitle("");
     setFormRole("");
     setFormAction("");
