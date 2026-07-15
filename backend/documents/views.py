@@ -20,6 +20,13 @@ from projects.models import Project
 from core.responses import api_success, api_error
 from core.exceptions import ValidationError
 
+# AI Integration for document enhancement
+try:
+    from srs.ai_integration import ai_service
+    AI_AVAILABLE = True
+except ImportError:
+    AI_AVAILABLE = False
+
 class BusinessDocumentViewSet(viewsets.ModelViewSet):
     """
     ViewSet handling BusinessDocument CRUD operations.
@@ -153,6 +160,124 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
                 f"| Biometric Credentials Gap | Medium | High | John Doe |\n"
                 f"| Email dispatch channels | Low | High | Sarah Connor |\n"
             )
+        elif doc_type == "IEEE":
+            title = f"IEEE Standard Document - {project.name} - Version 1.0"
+            content = (
+                f"# IEEE Standard Document: {project.name}\n\n"
+                f"## 1. Introduction\n\n"
+                f"### 1.1 Scope\n"
+                f"This document specifies the requirements and specifications for {project.name}. "
+                f"It defines the system architecture, functional requirements, and technical standards to be followed.\n\n"
+                f"### 1.2 Purpose\n"
+                f"The purpose of this document is to provide a comprehensive technical specification that serves as:\n"
+                f"- A reference for system design and implementation\n"
+                f"- A basis for testing and validation\n"
+                f"- A guide for maintenance and future enhancements\n\n"
+                f"### 1.3 Document Control\n"
+                f"- **Project**: {project.name}\n"
+                f"- **Organization**: {project.organization.name}\n"
+                f"- **Author**: @{request.user.username}\n"
+                f"- **Version**: 1.0\n"
+                f"- **Status**: DRAFT\n"
+                f"- **Date**: {datetime.datetime.now().strftime('%Y-%m-%d')}\n\n"
+                f"## 2. References\n\n"
+                f"### 2.1 Applicable Documents\n"
+                f"- IEEE Std 830-1998: IEEE Recommended Practice for Software Requirements Specifications\n"
+                f"- IEEE Std 1012-2016: IEEE Standard for System and Software Verification and Validation\n"
+                f"- Project-specific requirements and design documents\n\n"
+                f"### 2.2 Definitions and Acronyms\n"
+                f"- **API**: Application Programming Interface\n"
+                f"- **UI**: User Interface\n"
+                f"- **UX**: User Experience\n"
+                f"- **SRS**: Software Requirements Specification\n\n"
+                f"## 3. System Overview\n\n"
+                f"### 3.1 System Description\n"
+                f"{project.description or 'System description to be provided.'}\n\n"
+                f"### 3.2 System Architecture\n"
+                f"The system shall follow a modular architecture with the following components:\n"
+                f"- Frontend user interface\n"
+                f"- Backend API services\n"
+                f"- Database layer\n"
+                f"- Integration interfaces\n\n"
+                f"## 4. Functional Requirements\n\n"
+                f"### 4.1 User Interface Requirements\n"
+                f"- **REQ-UI-001**: The system shall provide a responsive web interface\n"
+                f"- **REQ-UI-002**: The system shall support role-based access control\n"
+                f"- **REQ-UI-003**: The system shall provide real-time feedback for user actions\n\n"
+                f"### 4.2 Business Logic Requirements\n"
+                f"- **REQ-BL-001**: The system shall validate all user inputs before processing\n"
+                f"- **REQ-BL-002**: The system shall maintain data consistency across all modules\n"
+                f"- **REQ-BL-003**: The system shall support audit logging for all critical operations\n\n"
+                f"### 4.3 Data Management Requirements\n"
+                f"- **REQ-DM-001**: The system shall ensure data persistence through ACID-compliant transactions\n"
+                f"- **REQ-DM-002**: The system shall implement data backup and recovery mechanisms\n"
+                f"- **REQ-DM-003**: The system shall support data export in multiple formats\n\n"
+                f"## 5. Non-Functional Requirements\n\n"
+                f"### 5.1 Performance Requirements\n"
+                f"- **REQ-PERF-001**: The system shall respond to user requests within 2 seconds under normal load\n"
+                f"- **REQ-PERF-002**: The system shall support 1000 concurrent users\n"
+                f"- **REQ-PERF-003**: The system shall maintain 99.9% uptime availability\n\n"
+                f"### 5.2 Security Requirements\n"
+                f"- **REQ-SEC-001**: The system shall authenticate all users via secure protocols\n"
+                f"- **REQ-SEC-002**: The system shall encrypt sensitive data at rest and in transit\n"
+                f"- **REQ-SEC-003**: The system shall implement role-based access control\n"
+                f"- **REQ-SEC-004**: The system shall log all security-relevant events\n\n"
+                f"### 5.3 Reliability Requirements\n"
+                f"- **REQ-REL-001**: The system shall have mean time between failures (MTBF) of 720 hours\n"
+                f"- **REQ-REL-002**: The system shall recover from failures within 5 minutes\n"
+                f"- **REQ-REL-003**: The system shall implement graceful degradation under load\n\n"
+                f"## 6. Interface Requirements\n\n"
+                f"### 6.1 User Interfaces\n"
+                f"The system shall provide web-based user interfaces accessible via modern browsers.\n\n"
+                f"### 6.2 External Interfaces\n"
+                f"- **API Interface**: RESTful API for third-party integrations\n"
+                f"- **Authentication Interface**: OAuth 2.0 / SAML integration\n"
+                f"- **Notification Interface**: Email and push notification services\n\n"
+                f"## 7. Design Constraints\n\n"
+                f"### 7.1 Technical Constraints\n"
+                f"- The system shall be built using approved technology stack\n"
+                f"- The system shall comply with organizational security policies\n"
+                f"- The system shall support scalability requirements\n\n"
+                f"### 7.2 Regulatory Constraints\n"
+                f"- The system shall comply with data protection regulations\n"
+                f"- The system shall maintain audit trails for compliance\n\n"
+                f"## 8. Verification and Validation\n\n"
+                f"### 8.1 Testing Strategy\n"
+                f"- Unit testing for all components\n"
+                f"- Integration testing for module interactions\n"
+                f"- System testing for end-to-end functionality\n"
+                f"- User acceptance testing for stakeholder validation\n\n"
+                f"### 8.2 Acceptance Criteria\n"
+                f"- All functional requirements must be implemented and tested\n"
+                f"- All non-functional requirements must be met\n"
+                f"- Security audit must be completed successfully\n"
+                f"- Performance benchmarks must be achieved\n\n"
+                f"## 9. Appendices\n\n"
+                f"### Appendix A: Stakeholder Analysis\n"
+                f"| Stakeholder | Role | Interest | Influence |\n"
+                f"| --- | --- | --- | --- |\n"
+            )
+            
+            if stakeholders.exists():
+                for s in stakeholders:
+                    content += f"| {s.name} | {s.title} | {s.interest} | {s.power} |\n"
+            else:
+                content += "| [Stakeholder Name] | [Role] | [Interest Level] | [Influence Level] |\n"
+            
+            content += "\n\n### Appendix B: Requirements Traceability\n"
+            content += "| Requirement ID | Description | Priority | Status |\n"
+            content += "| --- | --- | --- | --- |\n"
+            
+            if requirements.exists():
+                for r in requirements:
+                    content += f"| {r.req_id} | {r.title} | {r.priority} | {r.status} |\n"
+            else:
+                content += "| REQ-XXX | [Requirement Description] | [Priority] | [Status] |\n"
+            
+            content += "\n\n### Appendix C: Revision History\n"
+            content += "| Version | Date | Author | Description |\n"
+            content += "| --- | --- | --- | --- |\n"
+            content += "| 1.0 | " + datetime.datetime.now().strftime('%Y-%m-%d') + f" | {request.user.username} | Initial draft |\n"
         else:
             title = f"{doc_type} - {project.name} - Version 1.0"
             content = f"# Business Document: {doc_type} - {project.name}\n\n"
@@ -360,6 +485,66 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
         serializer = DocumentVersionSerializer(versions, many=True)
         return api_success(data=serializer.data, message="Historical versions retrieved.")
 
+    @action(detail=True, methods=["post"], url_path="ai-enhance")
+    def ai_enhance(self, request, pk=None):
+        """
+        Enhances document content using AI.
+        Supports section expansion, refinement, and IEEE formatting.
+        """
+        if not AI_AVAILABLE:
+            return api_error(message="AI service is not available. Please configure AI integration.")
+        
+        doc = self.get_object()
+        enhancement_type = request.data.get("enhancement_type", "refine")  # expand, refine, format
+        section_content = request.data.get("content", doc.content)
+        
+        try:
+            # Build context for AI enhancement
+            context = {
+                "doc_type": doc.doc_type,
+                "project": doc.project.name,
+                "title": doc.title,
+                "version": doc.version,
+            }
+            
+            # For IEEE documents, add specific context
+            if doc.doc_type == "IEEE":
+                context["format_standard"] = "IEEE 830"
+                context["document_structure"] = "technical specification"
+            
+            # Call AI service for enhancement (synchronous for now)
+            import asyncio
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            enhanced_content = loop.run_until_complete(
+                ai_service.enhance_section(
+                    section_content=section_content,
+                    enhancement_type=enhancement_type,
+                    context=context
+                )
+            )
+            
+            loop.close()
+            
+            # Update document with enhanced content
+            doc.content = enhanced_content
+            doc.save()
+            
+            # Create version snapshot
+            DocumentVersion.objects.create(
+                document=doc,
+                version=doc.version,
+                content=enhanced_content,
+                created_by=request.user
+            )
+            
+            serializer = self.get_serializer(doc)
+            return api_success(data=serializer.data, message="Document enhanced successfully using AI.")
+            
+        except Exception as e:
+            return api_error(message=f"AI enhancement failed: {str(e)}")
+
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
@@ -417,6 +602,134 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
         safe_title = "".join(x for x in document.title if x.isalnum() or x in "._- ")
         response['Content-Disposition'] = f'attachment; filename="{safe_title}.docx"'
         return response
+
+    @action(detail=True, methods=["get"], url_path="export-markdown")
+    def export_markdown(self, request, pk=None):
+        document = self.get_object()
+        markdown_io = io.BytesIO(document.content.encode('utf-8'))
+        markdown_io.seek(0)
+        
+        response = FileResponse(markdown_io, content_type='text/markdown')
+        safe_title = "".join(x for x in document.title if x.isalnum() or x in "._- ")
+        response['Content-Disposition'] = f'attachment; filename="{safe_title}.md"'
+        return response
+
+    @action(detail=False, methods=["post"], url_path="import-markdown")
+    def import_markdown(self, request):
+        """
+        Import markdown content and create a new document.
+        """
+        import tempfile
+        import os
+        
+        if 'file' not in request.FILES:
+            return api_error(message="No file provided.")
+        
+        file = request.FILES['file']
+        project_id = request.data.get("project")
+        doc_type = request.data.get("doc_type", "BRD")
+        title = request.data.get("title", file.name.replace('.md', ''))
+        
+        if not project_id:
+            return api_error(message="Project ID is required.")
+        
+        try:
+            project = Project.objects.get(
+                id=project_id,
+                organization_id=request.user.organization_id
+            )
+        except Project.DoesNotExist:
+            return api_error(message="Project not found in your organization.")
+        
+        try:
+            # Read markdown content
+            content = file.read().decode('utf-8')
+            
+            # Create document
+            document = BusinessDocument.objects.create(
+                project=project,
+                doc_type=doc_type,
+                title=title,
+                version="1.0",
+                status="DRAFT",
+                content=content,
+                created_by=request.user
+            )
+            
+            # Create version snapshot
+            DocumentVersion.objects.create(
+                document=document,
+                version=document.version,
+                content=content,
+                created_by=request.user
+            )
+            
+            serializer = self.get_serializer(document)
+            return api_success(data=serializer.data, message="Markdown document imported successfully.")
+            
+        except Exception as e:
+            return api_error(message=f"Failed to import markdown file: {str(e)}")
+
+    @action(detail=False, methods=["post"], url_path="import-docx")
+    def import_docx(self, request):
+        """
+        Import DOCX content and create a new document.
+        """
+        if 'file' not in request.FILES:
+            return api_error(message="No file provided.")
+        
+        file = request.FILES['file']
+        project_id = request.data.get("project")
+        doc_type = request.data.get("doc_type", "BRD")
+        title = request.data.get("title", file.name.replace('.docx', ''))
+        
+        if not project_id:
+            return api_error(message="Project ID is required.")
+        
+        try:
+            project = Project.objects.get(
+                id=project_id,
+                organization_id=request.user.organization_id
+            )
+        except Project.DoesNotExist:
+            return api_error(message="Project not found in your organization.")
+        
+        try:
+            # Read DOCX content
+            doc = Document(file)
+            content = ""
+            
+            for paragraph in doc.paragraphs:
+                if paragraph.text.strip():
+                    content += paragraph.text + "\n\n"
+            
+            # Convert basic formatting to markdown
+            content = content.replace('\n\n\n', '\n\n')
+            
+            # Create document
+            document = BusinessDocument.objects.create(
+                project=project,
+                doc_type=doc_type,
+                title=title,
+                version="1.0",
+                status="DRAFT",
+                content=content,
+                created_by=request.user
+            )
+            
+            # Create version snapshot
+            DocumentVersion.objects.create(
+                document=document,
+                version=document.version,
+                content=content,
+                created_by=request.user
+            )
+            
+            serializer = self.get_serializer(document)
+            return api_success(data=serializer.data, message="DOCX document imported successfully.")
+            
+        except Exception as e:
+            return api_error(message=f"Failed to import DOCX file: {str(e)}")
 
     def _parse_markdown_blocks(self, content):
         lines = content.split('\n')

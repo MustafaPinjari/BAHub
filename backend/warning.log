@@ -1490,3 +1490,405 @@ WARNING 2026-07-15 12:04:55,281 runserver 22900 7404 [31;1mHTTP POST /api/v1/bi
 WARNING 2026-07-15 12:06:53,712 email_service 6892 2524 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
 WARNING 2026-07-15 12:08:20,019 email_service 4616 3216 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
 WARNING 2026-07-15 12:09:37,539 email_service 22140 18136 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 13:43:57,401 email_service 20676 20668 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 13:44:02,362 log 20676 16988 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-15 13:44:02,364 runserver 20676 16620 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.04, 127.0.0.1:61760][0m
+WARNING 2026-07-15 13:44:02,396 log 20676 16988 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-15 13:44:02,396 runserver 20676 16620 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.03, 127.0.0.1:61760][0m
+WARNING 2026-07-15 13:46:21,197 exceptions 20676 9416 API Error (400): {'organization_name': ErrorDetail(string='An organization with this name already exists. Please choose a different name.', code='invalid')}
+WARNING 2026-07-15 13:46:21,200 log 20676 16988 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-15 13:46:21,200 runserver 20676 16620 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.07, 127.0.0.1:61764][0m
+WARNING 2026-07-15 13:54:16,041 log 20676 16988 Bad Request: /api/v1/auth/verify-otp/
+WARNING 2026-07-15 13:54:16,043 runserver 20676 16620 [31;1mHTTP POST /api/v1/auth/verify-otp/ 400 [0.02, 127.0.0.1:65523][0m
+WARNING 2026-07-15 13:55:17,907 log 20676 16988 Bad Request: /api/v1/auth/verify-otp/
+WARNING 2026-07-15 13:55:17,908 runserver 20676 16620 [31;1mHTTP POST /api/v1/auth/verify-otp/ 400 [0.03, 127.0.0.1:57899][0m
+WARNING 2026-07-15 14:04:01,044 email_service 16012 15740 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:04:19,284 email_service 15148 9992 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:04:53,888 email_service 16644 14960 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:05:07,437 email_service 9504 12872 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:05:25,582 email_service 19860 3884 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:05:42,042 email_service 10920 9740 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:06:09,180 email_service 15876 10612 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:06:27,251 email_service 10952 11028 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+ERROR 2026-07-15 14:10:39,889 exceptions 10920 7088 Unhandled Server Error: Field name `stripe_customer_id` is not valid for model `TenantSubscription` in `billing.serializers.TenantSubscriptionSerializer`.
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\billing\views.py"[0m, line [35m167[0m, in [35mget[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Subscription details loaded successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m585[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m537[0m, in [35mto_representation[0m
+    for field in [1;31mfields[0m:
+                 [1;31m^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m398[0m, in [35m_readable_fields[0m
+    for field in [1;31mself.fields[0m.values():
+                 [1;31m^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\functional.py"[0m, line [35m47[0m, in [35m__get__[0m
+    res = instance.__dict__[self.name] = [31mself.func[0m[1;31m(instance)[0m
+                                         [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m386[0m, in [35mfields[0m
+    for key, value in [31mself.get_fields[0m[1;31m()[0m.items():
+                      [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m1132[0m, in [35mget_fields[0m
+    field_class, field_kwargs = [31mself.build_field[0m[1;31m([0m
+                                [31m~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31msource, info, model, depth[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m1278[0m, in [35mbuild_field[0m
+    return [31mself.build_unknown_field[0m[1;31m(field_name, model_class)[0m
+           [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m1396[0m, in [35mbuild_unknown_field[0m
+    raise ImproperlyConfigured(
+    ...<2 lines>...
+    )
+[1;35mdjango.core.exceptions.ImproperlyConfigured[0m: [35mField name `stripe_customer_id` is not valid for model `TenantSubscription` in `billing.serializers.TenantSubscriptionSerializer`.[0m
+ERROR 2026-07-15 14:10:39,971 log 10920 4232 Internal Server Error: /api/v1/billing/subscription/
+ERROR 2026-07-15 14:10:39,972 runserver 10920 15308 [35;1mHTTP GET /api/v1/billing/subscription/ 500 [0.25, 127.0.0.1:60456][0m
+ERROR 2026-07-15 14:10:39,994 exceptions 10920 9908 Unhandled Server Error: Field name `stripe_customer_id` is not valid for model `TenantSubscription` in `billing.serializers.TenantSubscriptionSerializer`.
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\billing\views.py"[0m, line [35m167[0m, in [35mget[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Subscription details loaded successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m585[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m537[0m, in [35mto_representation[0m
+    for field in [1;31mfields[0m:
+                 [1;31m^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m398[0m, in [35m_readable_fields[0m
+    for field in [1;31mself.fields[0m.values():
+                 [1;31m^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\utils\functional.py"[0m, line [35m47[0m, in [35m__get__[0m
+    res = instance.__dict__[self.name] = [31mself.func[0m[1;31m(instance)[0m
+                                         [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m386[0m, in [35mfields[0m
+    for key, value in [31mself.get_fields[0m[1;31m()[0m.items():
+                      [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m1132[0m, in [35mget_fields[0m
+    field_class, field_kwargs = [31mself.build_field[0m[1;31m([0m
+                                [31m~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31msource, info, model, depth[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m1278[0m, in [35mbuild_field[0m
+    return [31mself.build_unknown_field[0m[1;31m(field_name, model_class)[0m
+           [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m1396[0m, in [35mbuild_unknown_field[0m
+    raise ImproperlyConfigured(
+    ...<2 lines>...
+    )
+[1;35mdjango.core.exceptions.ImproperlyConfigured[0m: [35mField name `stripe_customer_id` is not valid for model `TenantSubscription` in `billing.serializers.TenantSubscriptionSerializer`.[0m
+ERROR 2026-07-15 14:10:40,002 log 10920 4232 Internal Server Error: /api/v1/billing/subscription/
+ERROR 2026-07-15 14:10:40,003 runserver 10920 15308 [35;1mHTTP GET /api/v1/billing/subscription/ 500 [0.03, 127.0.0.1:63949][0m
+WARNING 2026-07-15 14:28:45,088 email_service 9756 14812 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:30:01,822 email_service 18952 17308 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:38:17,513 email_service 17988 16244 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:38:39,831 email_service 19300 20492 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:38:39,832 email_service 20276 14508 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+ERROR 2026-07-15 14:39:41,390 exceptions 20276 10488 Unhandled Server Error: Stakeholder() got unexpected keyword arguments: 'role'
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\projects\views.py"[0m, line [35m127[0m, in [35mcreate_sample[0m
+    [31mStakeholder.objects.create[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mproject=project,[0m
+        [1;31m^^^^^^^^^^^^^^^^[0m
+    ...<5 lines>...
+        [1;31mdepartment="Product Management"[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py"[0m, line [35m87[0m, in [35mmanager_method[0m
+    return [31mgetattr(self.get_queryset(), name)[0m[1;31m(*args, **kwargs)[0m
+           [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m663[0m, in [35mcreate[0m
+    obj = self.model(**kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\base.py"[0m, line [35m569[0m, in [35m__init__[0m
+    raise TypeError(
+    ...<2 lines>...
+    )
+[1;35mTypeError[0m: [35mStakeholder() got unexpected keyword arguments: 'role'[0m
+ERROR 2026-07-15 14:39:41,469 log 20276 20128 Internal Server Error: /api/v1/projects/create-sample/
+ERROR 2026-07-15 14:39:41,470 runserver 20276 6748 [35;1mHTTP POST /api/v1/projects/create-sample/ 500 [0.11, 127.0.0.1:61441][0m
+WARNING 2026-07-15 14:41:31,967 email_service 16152 19264 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 14:42:16,771 log 13664 8288 Not Found: /api/v1/api/v1/srs/documents/
+WARNING 2026-07-15 14:42:16,772 runserver 13664 9156 [33mHTTP GET /api/v1/api/v1/srs/documents/ 404 [0.15, 127.0.0.1:65145][0m
+WARNING 2026-07-15 14:42:16,794 log 13664 8288 Not Found: /api/v1/api/v1/srs/documents/
+WARNING 2026-07-15 14:42:16,795 runserver 13664 9156 [33mHTTP GET /api/v1/api/v1/srs/documents/ 404 [0.02, 127.0.0.1:59970][0m
+WARNING 2026-07-15 15:09:25,126 email_service 21080 4676 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:16:26,651 email_service 1836 4720 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+
+WARNING 2026-07-15 15:26:33,840 email_service 15152 9916 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+
+WARNING 2026-07-15 15:27:09,009 email_service 10480 4536 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:27:09,484 email_service 18308 16152 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:27:09,486 email_service 8824 2824 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:28:12,241 email_service 12624 8268 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:29:00,843 email_service 15040 6448 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:33:46,017 email_service 4264 16656 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+
+WARNING 2026-07-15 15:33:46,017 email_service 2876 18368 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:34:04,475 email_service 9056 12928 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:34:04,699 email_service 14108 20536 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:34:04,731 email_service 5908 13412 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:34:12,155 email_service 2532 15012 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:34:12,385 email_service 5020 11540 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:34:12,459 email_service 14228 16728 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:36:20,413 email_service 9916 7864 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+
+WARNING 2026-07-15 15:36:20,507 email_service 19140 11668 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:37:25,922 email_service 18524 20160 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:37:26,282 email_service 13412 1472 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:37:26,385 email_service 10992 11556 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:55:56,002 email_service 21296 3840 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 15:56:23,115 log 18524 3772 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-15 15:56:23,117 runserver 18524 16132 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.37, 127.0.0.1:56129][0m
+WARNING 2026-07-15 15:56:23,137 log 18524 3772 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-15 15:56:23,138 runserver 18524 16132 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.02, 127.0.0.1:56129][0m
+ERROR 2026-07-15 16:00:24,114 exceptions 18524 5068 Unhandled Server Error: Cannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-15 16:00:24,185 log 18524 3772 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-15 16:00:24,188 runserver 18524 16132 [35;1mHTTP GET /api/v1/risks/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.17, 127.0.0.1:55177][0m
+ERROR 2026-07-15 16:00:24,254 exceptions 18524 5432 Unhandled Server Error: Cannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-15 16:00:24,279 log 18524 3772 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-15 16:00:24,283 runserver 18524 16132 [35;1mHTTP GET /api/v1/risks/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.09, 127.0.0.1:55177][0m
+ERROR 2026-07-15 16:00:30,883 exceptions 18524 16608 Unhandled Server Error: Cannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-15 16:00:30,904 log 18524 3772 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-15 16:00:30,906 runserver 18524 16132 [35;1mHTTP GET /api/v1/risks/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.08, 127.0.0.1:60757][0m
+ERROR 2026-07-15 16:00:30,982 exceptions 18524 18344 Unhandled Server Error: Cannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-15 16:00:31,361 log 18524 3772 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-15 16:00:31,362 runserver 18524 16132 [35;1mHTTP GET /api/v1/risks/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.45, 127.0.0.1:60757][0m
+ERROR 2026-07-15 16:00:33,146 exceptions 18524 14484 Unhandled Server Error: Cannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-15 16:00:33,164 log 18524 3772 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-15 16:00:33,168 runserver 18524 16132 [35;1mHTTP GET /api/v1/risks/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.10, 127.0.0.1:53577][0m
+ERROR 2026-07-15 16:00:33,230 exceptions 18524 9224 Unhandled Server Error: Cannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\risks\views.py"[0m, line [35m36[0m, in [35mlist[0m
+    return api_success(data=[1;31mserializer.data[0m, message="Risks retrieved successfully.")
+                            [1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m809[0m, in [35mdata[0m
+    ret = [1;31msuper().data[0m
+          [1;31m^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m251[0m, in [35mdata[0m
+    self._data = [31mself.to_representation[0m[1;31m(self.instance)[0m
+                 [31m~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\serializers.py"[0m, line [35m728[0m, in [35mto_representation[0m
+    self.child.to_representation(item) for item in [1;31miterable[0m
+                                                   [1;31m^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m386[0m, in [35m__iter__[0m
+    [31mself._fetch_all[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1956[0m, in [35m_fetch_all[0m
+    [31mself._prefetch_related_objects[0m[1;31m()[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m1330[0m, in [35m_prefetch_related_objects[0m
+    [31mprefetch_related_objects[0m[1;31m(self._result_cache, *self._prefetch_related_lookups)[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m2383[0m, in [35mprefetch_related_objects[0m
+    raise AttributeError(
+    ...<7 lines>...
+    )
+[1;35mAttributeError[0m: [35mCannot find 'mitigation_tasks' on Risk object, 'mitigation_tasks' is an invalid parameter to prefetch_related()[0m
+ERROR 2026-07-15 16:00:33,245 log 18524 3772 Internal Server Error: /api/v1/risks/
+ERROR 2026-07-15 16:00:33,257 runserver 18524 16132 [35;1mHTTP GET /api/v1/risks/?project=7e914a34-34e9-4049-8d17-2dc470506c38 500 [0.08, 127.0.0.1:53577][0m
+WARNING 2026-07-15 16:02:32,889 log 18524 3772 Not Found: /api/v1/srs/create_ieee_template/
+WARNING 2026-07-15 16:02:32,892 runserver 18524 16132 [33mHTTP POST /api/v1/srs/create_ieee_template/ 404 [0.06, 127.0.0.1:60527][0m
+WARNING 2026-07-15 16:03:55,881 log 18524 3772 Not Found: /api/v1/srs/create_ieee_template/
+WARNING 2026-07-15 16:03:55,882 runserver 18524 16132 [33mHTTP POST /api/v1/srs/create_ieee_template/ 404 [0.03, 127.0.0.1:58410][0m
+WARNING 2026-07-15 16:05:54,275 email_service 15208 18952 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+ERROR 2026-07-15 16:06:05,635 exceptions 18524 6328 Unhandled Server Error: SRSSection() got unexpected keyword arguments: 'section_number'
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\srs\views.py"[0m, line [35m288[0m, in [35mcreate_ieee_template[0m
+    [31mSRSSection.objects.create[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mdocument=document,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^[0m
+    ...<3 lines>...
+        [1;31morder=order[0m
+        [1;31m^^^^^^^^^^^[0m
+    [1;31m)[0m
+    [1;31m^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\manager.py"[0m, line [35m87[0m, in [35mmanager_method[0m
+    return [31mgetattr(self.get_queryset(), name)[0m[1;31m(*args, **kwargs)[0m
+           [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\query.py"[0m, line [35m663[0m, in [35mcreate[0m
+    obj = self.model(**kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\django\db\models\base.py"[0m, line [35m569[0m, in [35m__init__[0m
+    raise TypeError(
+    ...<2 lines>...
+    )
+[1;35mTypeError[0m: [35mSRSSection() got unexpected keyword arguments: 'section_number'[0m
+ERROR 2026-07-15 16:06:05,660 log 18524 3772 Internal Server Error: /api/v1/srs/documents/create_ieee_template/
+ERROR 2026-07-15 16:06:05,661 runserver 18524 16132 [35;1mHTTP POST /api/v1/srs/documents/create_ieee_template/ 500 [0.08, 127.0.0.1:60488][0m
+WARNING 2026-07-15 16:07:10,001 email_service 384 2232 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+
+WARNING 2026-07-15 16:07:10,064 email_service 13428 12864 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 16:07:10,137 email_service 2964 10420 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 16:10:52,972 email_service 6988 11192 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 16:19:36,659 email_service 392 21428 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 16:29:31,509 email_service 18708 13132 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 16:30:24,275 email_service 9752 9648 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 16:36:18,579 email_service 4676 18480 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.

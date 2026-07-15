@@ -128,7 +128,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
             project=project,
             name="Sarah Connor",
             title="Product Director",
-            role="PRODUCT_OWNER",
             power="HIGH",
             interest="HIGH",
             department="Product Management"
@@ -137,7 +136,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
             project=project,
             name="John Doe",
             title="Lead Engineer",
-            role="ARCHITECT",
             power="MEDIUM",
             interest="HIGH",
             department="Engineering"
@@ -146,7 +144,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
             project=project,
             name="Alice Vance",
             title="Finance Compliance Manager",
-            role="COMPLIANCE",
             power="HIGH",
             interest="MEDIUM",
             department="Legal & Compliance"

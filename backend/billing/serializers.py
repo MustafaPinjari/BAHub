@@ -12,8 +12,8 @@ class TenantSubscriptionSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "organization",
-            "stripe_customer_id",
-            "stripe_subscription_id",
+            "gateway_customer_id",
+            "gateway_subscription_id",
             "plan_tier",
             "seats_limit",
             "is_active",
@@ -24,7 +24,7 @@ class TenantSubscriptionSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "organization", "stripe_customer_id", "stripe_subscription_id", "created_at", "updated_at"]
+        read_only_fields = ["id", "organization", "gateway_customer_id", "gateway_subscription_id", "created_at", "updated_at"]
 
     def get_active_seats_count(self, obj):
         return User.objects.filter(organization=obj.organization, is_active=True).count()

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
 import { Card, Badge, Button, Input, Alert } from "../../components/common/UIComponents";
+import { RichDocumentEditor } from "../../components/common/RichDocumentEditor";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
 import { FeatureLock } from "../../components/common/FeatureLock";
@@ -12,7 +13,6 @@ import {
   FileCheck,
   Loader2,
   FolderGit,
-  ClipboardList,
   Save,
   Send,
   X,
@@ -20,7 +20,11 @@ import {
   FileDown,
   History,
   Check,
-  XCircle
+  XCircle,
+  Sparkles,
+  Upload,
+  ClipboardList,
+  Search
 } from "lucide-react";
 
 
@@ -28,7 +32,7 @@ interface BusinessDocument {
   id: string;
   project: string;
   project_name: string;
-  doc_type: "BRD" | "FRD";
+  doc_type: "BRD" | "FRD" | "SWOT" | "GAP" | "IEEE";
   title: string;
   version: string;
   status: "DRAFT" | "REVIEW" | "APPROVED" | "SIGNED_OFF";
@@ -40,7 +44,7 @@ interface BusinessDocument {
 }
 
 interface DocumentGeneratorPageProps {
-  docType: "BRD" | "FRD";
+  docType: "BRD" | "FRD" | "SWOT" | "GAP" | "IEEE";
 }
 
 export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ docType }) => {
@@ -60,8 +64,17 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
 
   const [saving, setSaving] = useState(false);
   const [signing, setSigning] = useState(false);
+  const [aiEnhancing, setAiEnhancing] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [versionModalOpen, setVersionModalOpen] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const [comments, setComments] = useState<any[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [syncModalOpen, setSyncModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const canManage = user ? ["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER"].includes(user.role) : false;
   const canSignOff = user ? ["ADMIN", "PRODUCT_OWNER", "PROJECT_MANAGER"].includes(user.role) : false;
@@ -323,6 +336,141 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
       setSuccessMessage("Word document exported successfully.");
     } catch (err: any) {
       setFormError("Failed to export Word document.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleExportMarkdown = async () => {
+    if (!selectedDoc) return;
+    setSaving(true);
+    setFormError(null);
+    setSuccessMessage(null);
+    try {
+      const res = await api.get(`/documents/${selectedDoc.id}/export-markdown/`, {
+        responseType: "blob"
+      } as any);
+      
+      const blob = new Blob([res as any], { type: "text/markdown" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${selectedDoc.title}.md`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      setSuccessMessage("Markdown file exported successfully.");
+    } catch (err: any) {
+      setFormError("Failed to export Markdown file.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAiEnhance = async (enhancementType: "expand" | "refine" | "format") => {
+    if (!selectedDoc) return;
+    setAiEnhancing(true);
+    setFormError(null);
+    setSuccessMessage(null);
+    try {
+      const res = await api.post<any, { data: BusinessDocument }>(
+        `/documents/${selectedDoc.id}/ai-enhance/`,
+        { enhancement_type: enhancementType }
+      );
+      setSelectedDoc(res.data);
+      setSuccessMessage(`Document ${enhancementType}d successfully using AI.`);
+      fetchDocuments();
+    } catch (err: any) {
+      setFormError(err.message || "Failed to enhance document with AI.");
+    } finally {
+      setAiEnhancing(false);
+    }
+  };
+
+  const handleImportFile = async (file: File, fileType: "markdown" | "docx") => {
+    if (!activeProject) return;
+    setImporting(true);
+    setFormError(null);
+    setSuccessMessage(null);
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("project", activeProject.id);
+    formData.append("doc_type", docType);
+    formData.append("title", file.name.replace(`.${fileType === "markdown" ? "md" : "docx"}`, ""));
+    
+    try {
+      const endpoint = fileType === "markdown" ? "/documents/import-markdown/" : "/documents/import-docx/";
+      const res = await api.post<any, { data: BusinessDocument }>(endpoint, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      setSelectedDoc(res.data);
+      setSuccessMessage(`${fileType.toUpperCase()} file imported successfully.`);
+      setImportModalOpen(false);
+      fetchDocuments();
+    } catch (err: any) {
+      setFormError(err.message || `Failed to import ${fileType} file.`);
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const handleRestoreVersion = async (versionId: string) => {
+    if (!selectedDoc) return;
+    setSaving(true);
+    setFormError(null);
+    try {
+      const version = versions.find(v => v.id === versionId);
+      if (version) {
+        const res = await api.patch<any, { data: BusinessDocument }>(
+          `/documents/${selectedDoc.id}/`,
+          { content: version.content }
+        );
+        setSelectedDoc(res.data);
+        setSuccessMessage("Document restored from version successfully.");
+        setVersionModalOpen(false);
+        fetchDocuments();
+      }
+    } catch (err: any) {
+      setFormError(err.message || "Failed to restore version.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!selectedDoc || !newComment.trim()) return;
+    setSaving(true);
+    try {
+      const comment = {
+        document: selectedDoc.id,
+        content: newComment.trim(),
+        user: user?.id
+      };
+      await api.post("/document-comments/", comment);
+      setNewComment("");
+      setSuccessMessage("Comment added successfully.");
+      // Refresh comments
+      const commentsRes = await api.get(`/document-comments/?document=${selectedDoc.id}`);
+      setComments(commentsRes.data.results || []);
+    } catch (err: any) {
+      setFormError(err.message || "Failed to add comment.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSyncWithModule = async (module: string) => {
+    if (!selectedDoc) return;
+    setSaving(true);
+    setFormError(null);
+    try {
+      await api.post(`/documents/${selectedDoc.id}/sync/`, { module });
+      setSuccessMessage(`Document synced with ${module} successfully.`);
+      setSyncModalOpen(false);
+    } catch (err: any) {
+      setFormError(err.message || `Failed to sync with ${module}.`);
     } finally {
       setSaving(false);
     }
@@ -658,16 +806,39 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
               </span>
             </div>
             {canManage && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleGenerateTemplate}
-                className="text-[10px] font-bold h-7 py-1 px-2.5 rounded"
-              >
-                <Plus className="w-3 h-3 mr-1" />
-                Compile
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setImportModalOpen(true)}
+                  className="text-[10px] font-bold h-7 py-1 px-2.5 rounded"
+                >
+                  <Upload className="w-3 h-3 mr-1" />
+                  Import
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateTemplate}
+                  className="text-[10px] font-bold h-7 py-1 px-2.5 rounded"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Compile
+                </Button>
+              </div>
             )}
+          </div>
+
+          {/* Search Input */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search documents..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-2 pl-8 outline-none text-foreground leading-relaxed focus:border-primary"
+            />
+            <Search className="absolute left-2.5 top-2 w-3.5 h-3.5 text-muted-foreground" />
           </div>
 
           {loading ? (
@@ -690,12 +861,22 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
                     <h4 className="font-bold text-xs text-foreground truncate max-w-[150px]">{draftTitle}</h4>
                     <span className="text-[9px] text-muted-foreground font-bold leading-none mt-1">v{draftVersion}</span>
                   </div>
-                  <Badge variant="secondary">Compiling</Badge>
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" onClick={() => setIsDrafting(false)} className="w-6 h-6">
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
               )}
-
-              {/* Saved document cards */}
-              {documents.map((doc) => {
+              
+              {/* Saved document cards with search filter */}
+              {documents
+                .filter(doc => 
+                  searchQuery === "" || 
+                  doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  doc.version.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map((doc) => {
                 const isSelected = selectedDoc?.id === doc.id;
                 return (
                   <div
@@ -780,11 +961,11 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
                 <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Compiled Specifications Template (Markdown Editor)
                 </label>
-                <textarea
+                <RichDocumentEditor
                   value={draftContent}
-                  onChange={(e) => setDraftContent(e.target.value)}
-                  rows={14}
-                  className="w-full text-xs font-mono border border-border bg-background rounded-lg p-3 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
+                  onChange={setDraftContent}
+                  placeholder="Start writing your IEEE document..."
+                  minHeight="300px"
                 />
               </div>
             </div>
@@ -830,6 +1011,42 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
               </div>
 
               <div className="flex items-center gap-2">
+                {/* AI Enhancement Buttons */}
+                {selectedDoc.doc_type === "IEEE" && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAiEnhance("expand")}
+                      disabled={aiEnhancing}
+                      className="text-[10px] font-bold h-7.5 py-1 px-3 border border-purple-200 text-purple-600 hover:bg-purple-50/50 rounded flex items-center gap-1.5"
+                    >
+                      {aiEnhancing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                      Expand
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAiEnhance("refine")}
+                      disabled={aiEnhancing}
+                      className="text-[10px] font-bold h-7.5 py-1 px-3 border border-indigo-200 text-indigo-600 hover:bg-indigo-50/50 rounded flex items-center gap-1.5"
+                    >
+                      {aiEnhancing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                      Refine
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAiEnhance("format")}
+                      disabled={aiEnhancing}
+                      className="text-[10px] font-bold h-7.5 py-1 px-3 border border-violet-200 text-violet-600 hover:bg-violet-50/50 rounded flex items-center gap-1.5"
+                    >
+                      {aiEnhancing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                      Format
+                    </Button>
+                  </>
+                )}
+                
                 {/* Export Buttons */}
                 <Button
                   variant="outline"
@@ -851,6 +1068,16 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
                   <FileDown className="w-3.5 h-3.5" />
                   Word
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportMarkdown}
+                  disabled={saving}
+                  className="text-[10px] font-bold h-7.5 py-1 px-3 border border-gray-200 text-gray-600 hover:bg-gray-50/50 rounded flex items-center gap-1.5"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  Markdown
+                </Button>
 
                 {/* Compare Button */}
                 <Button
@@ -861,6 +1088,39 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
                 >
                   <History className="w-3 h-3" />
                   {comparing ? "Show Reader" : "Compare Versions"}
+                </Button>
+                
+                {/* Version History Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setVersionModalOpen(true)}
+                  className="text-[10px] font-bold h-7.5 py-1 px-3 border border-emerald-200 text-emerald-600 hover:bg-emerald-50/50 rounded flex items-center gap-1.5"
+                >
+                  <History className="w-3 h-3" />
+                  Versions
+                </Button>
+                
+                {/* Comments Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCommentsOpen(!commentsOpen)}
+                  className={`text-[10px] font-bold h-7.5 py-1 px-3 rounded flex items-center gap-1.5 ${commentsOpen ? "bg-blue-500/10 border-blue-500 text-blue-400" : "border-blue-200 text-blue-600 hover:bg-blue-50/50"}`}
+                >
+                  <ClipboardList className="w-3 h-3" />
+                  Comments {comments.length > 0 && `(${comments.length})`}
+                </Button>
+                
+                {/* Sync Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSyncModalOpen(true)}
+                  className="text-[10px] font-bold h-7.5 py-1 px-3 border border-orange-200 text-orange-600 hover:bg-orange-50/50 rounded flex items-center gap-1.5"
+                >
+                  <FolderGit className="w-3 h-3" />
+                  Sync
                 </Button>
 
                 {selectedDoc.status === "DRAFT" && canManage && (
@@ -1004,51 +1264,221 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
                 </div>
               )}
             </div>
-
-            {/* Revision Request Dialog / Modal */}
-            {revisionModalOpen && (
-              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <Card className="w-full max-w-md p-5 bg-card border border-border shadow-2xl flex flex-col gap-4 text-left">
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-border pb-2">
-                    Request Document Revision
-                  </h3>
-                  <form onSubmit={handleRequestRevision} className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">
-                        Rejection Reason / Requested Changes
-                      </label>
-                      <textarea
-                        value={revisionComment}
-                        onChange={(e) => setRevisionComment(e.target.value)}
-                        rows={4}
-                        required
-                        placeholder="Detail the corrections, additions, or changes requested before approval..."
-                        className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-3 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
-                      />
-                    </div>
-                    <div className="flex justify-end gap-2 border-t border-border pt-4 mt-2">
-                      <Button type="button" variant="secondary" size="sm" onClick={() => { setRevisionModalOpen(false); setRevisionComment(""); }} className="font-bold text-xs">
-                        Cancel
-                      </Button>
-                      <Button type="submit" variant="primary" size="sm" className="font-bold text-xs bg-red-600 hover:bg-red-500 border-none px-4">
-                        Request Revision
-                      </Button>
-                    </div>
-                  </form>
-                </Card>
+            
+            {/* Comments Panel */}
+            {commentsOpen && (
+              <div className="border-t border-border/60 pt-5 mt-4 flex flex-col gap-3">
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <ClipboardList className="w-4 h-4 text-blue-400" /> Document Comments
+                </h4>
+                
+                <div className="flex flex-col gap-2">
+                  <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Add a comment..."
+                    rows={2}
+                    className="w-full text-xs font-semibold border border-border bg-background rounded-lg p-2 outline-none text-foreground leading-relaxed resize-none focus:border-primary"
+                  />
+                  <div className="flex justify-end">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleAddComment}
+                      disabled={saving || !newComment.trim()}
+                      className="text-[10px] font-bold h-6 py-1 px-3"
+                    >
+                      Add Comment
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
+                  {comments.length === 0 ? (
+                    <p className="text-[10px] text-gray-600 font-bold italic text-left">No comments yet.</p>
+                  ) : (
+                    comments.map((comment) => (
+                      <div key={comment.id} className="bg-white/[0.02] border border-white/[0.04] rounded-lg p-3">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="text-[10px] font-bold text-white">{comment.user_full_name || comment.user_username}</span>
+                          <span className="text-[9px] text-gray-600">{new Date(comment.created_at).toLocaleString()}</span>
+                        </div>
+                        <p className="text-[11px] text-gray-300 leading-relaxed">{comment.content}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             )}
           </Card>
-        ) : (
-          <Card className="flex-1 flex flex-col items-center justify-center text-center p-8 select-none text-foreground font-semibold">
-            <ClipboardList className="w-10 h-10 text-muted-foreground/30 animate-pulse mb-3" />
-            <h3 className="text-sm font-bold uppercase tracking-wider">No Document Selected</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mt-1">
-              Select a compiled version from the left panel, or click "Compile" to build a fresh {docType} specification document.
-            </p>
-          </Card>
-        )}
+        ) : null}
       </div>
+      
+      {/* Import Modal */}
+      {importModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md p-6 bg-card border border-border">
+            <div className="flex justify-between items-center border-b border-border pb-3 mb-4">
+              <h3 className="text-sm font-bold text-foreground">Import Document</h3>
+              <Button variant="ghost" size="icon" onClick={() => setImportModalOpen(false)} className="w-7 h-7">
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            {formError && <Alert variant="destructive" className="mb-4">{formError}</Alert>}
+            
+            <div className="flex flex-col gap-4">
+              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
+                <input
+                  type="file"
+                  accept=".md,.docx"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const fileType = file.name.endsWith('.md') ? 'markdown' : 'docx';
+                      handleImportFile(file, fileType as "markdown" | "docx");
+                    }
+                  }}
+                  className="hidden"
+                  id="file-import"
+                  disabled={importing}
+                />
+                <label htmlFor="file-import" className="cursor-pointer">
+                  <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-xs text-muted-foreground font-semibold">
+                    {importing ? "Importing..." : "Click to upload or drag and drop"}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Markdown (.md) or Word (.docx) files
+                  </p>
+                </label>
+              </div>
+              
+              <div className="flex justify-end">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setImportModalOpen(false)}
+                  disabled={importing}
+                  className="text-xs font-bold"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+      
+      {/* Sync Modal */}
+      {syncModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md p-6 bg-card border border-border">
+            <div className="flex justify-between items-center border-b border-border pb-3 mb-4">
+              <h3 className="text-sm font-bold text-foreground">Sync Document</h3>
+              <Button variant="ghost" size="icon" onClick={() => setSyncModalOpen(false)} className="w-7 h-7">
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            {formError && <Alert variant="destructive" className="mb-4">{formError}</Alert>}
+            
+            <div className="flex flex-col gap-3">
+              <p className="text-xs text-muted-foreground">Select a module to sync this document with:</p>
+              
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSyncWithModule("requirements")}
+                  disabled={saving}
+                  className="text-xs font-bold justify-start"
+                >
+                  <FolderGit className="w-4 h-4 mr-2" />
+                  Requirements Module
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSyncWithModule("srs")}
+                  disabled={saving}
+                  className="text-xs font-bold justify-start"
+                >
+                  <FileCheck className="w-4 h-4 mr-2" />
+                  SRS Module
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSyncWithModule("test_cases")}
+                  disabled={saving}
+                  className="text-xs font-bold justify-start"
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Test Cases Module
+                </Button>
+              </div>
+              
+              <div className="flex justify-end pt-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setSyncModalOpen(false)}
+                  disabled={saving}
+                  className="text-xs font-bold"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+      
+      {/* Version History Modal */}
+      {versionModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-2xl p-6 bg-card border border-border max-h-[80vh] flex flex-col">
+            <div className="flex justify-between items-center border-b border-border pb-3 mb-4">
+              <h3 className="text-sm font-bold text-foreground">Version History</h3>
+              <Button variant="ghost" size="icon" onClick={() => setVersionModalOpen(false)} className="w-7 h-7">
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto space-y-3">
+              {versions.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No version history available.</p>
+              ) : (
+                versions.map((version) => (
+                  <div key={version.id} className="border border-border rounded-lg p-4 bg-background/50">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <span className="text-xs font-bold text-foreground">Version {version.version}</span>
+                        <p className="text-[10px] text-muted-foreground">
+                          Created by {version.created_by_username} on {new Date(version.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRestoreVersion(version.id)}
+                        disabled={saving}
+                        className="text-[10px] font-bold h-6 py-1 px-2"
+                      >
+                        Restore
+                      </Button>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground line-clamp-3">
+                      {version.content.substring(0, 200)}...
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

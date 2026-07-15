@@ -131,6 +131,7 @@ INSTALLED_APPS = [
     "templates",
     "blog",
     "email_nurturing",
+    "srs",
 ]
 
 MIDDLEWARE = [

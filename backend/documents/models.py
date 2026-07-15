@@ -13,6 +13,7 @@ class BusinessDocument(BaseModel):
         ("FRD", "Functional Requirements Document"),
         ("SWOT", "SWOT Analysis Charter"),
         ("GAP", "GAP Analysis Framework"),
+        ("IEEE", "IEEE Standard Document"),
     ]
 
     STATUS_CHOICES = [

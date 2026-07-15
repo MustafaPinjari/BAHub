@@ -200,9 +200,11 @@ ngrok http 8000
 
 ### Card Testing
 
+**IMPORTANT:** Razorpay test mode only supports Indian test cards. International cards will fail with "International cards are not supported" error even in test mode.
+
 Use these test card numbers in Razorpay checkout:
 
-**Successful Payment:**
+**Successful Payment (Indian Test Card):**
 - Card Number: `4111 1111 1111 1111`
 - Expiry: Any future date (e.g., 12/25)
 - CVV: Any 3 digits (e.g., 123)
@@ -213,10 +215,7 @@ Use these test card numbers in Razorpay checkout:
 - Expiry: Any past date (e.g., 12/20)
 - CVV: Any 3 digits
 
-**International Card:**
-- Card Number: `4242 4242 4242 4242`
-- Expiry: Any future date
-- CVV: Any 3 digits
+**Note:** International test cards (like 4242 4242 4242 4242) will NOT work in Razorpay test mode. Razorpay test mode is restricted to Indian cards only.
 
 ### UPI Testing
 
@@ -324,3 +323,12 @@ Use these test card numbers in Razorpay checkout:
 - Razorpay Documentation: https://razorpay.com/docs/
 - Razorpay Support: support@razorpay.com
 - BAHub Documentation: See other docs in this directory
+
+
+
+
+
+tasks done
+
+Write unit and integration tests
+Create comprehensive documentation

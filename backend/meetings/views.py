@@ -60,6 +60,28 @@ class MeetingViewSet(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         return api_success(message="Meeting cancelled and deleted successfully.", status_code=status.HTTP_200_OK)
 
+    from rest_framework.decorators import action
+
+    @action(detail=True, methods=['post'])
+    def generate_ai_notes(self, request, pk=None):
+        meeting = self.get_object()
+        # Mock AI generated notes based on objective
+        ai_notes = (
+            f"**AI Generated Minutes of Meeting**\n\n"
+            f"**Objective Discussed:**\n{meeting.objective}\n\n"
+            f"**Key Discussion Points:**\n"
+            f"- Reviewed project milestones and current status.\n"
+            f"- Addressed potential bottlenecks and resource allocation.\n"
+            f"- Agreed on the next steps and timeline for the upcoming phase.\n\n"
+            f"**Decisions Made:**\n"
+            f"- Proceed with the proposed technical architecture.\n"
+            f"- Allocate additional QA resources starting next week.\n"
+        )
+        meeting.notes = ai_notes
+        meeting.save(update_fields=['notes'])
+        serializer = self.get_serializer(meeting)
+        return api_success(data=serializer.data, message="AI notes generated.")
+
     def perform_create(self, serializer):
         meeting = serializer.save()
         self._send_meeting_notifications(meeting, is_update=False, serializer=serializer)

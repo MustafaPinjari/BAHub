@@ -94,10 +94,26 @@ export const MeetingsPage: React.FC = () => {
 
   const [saving, setSaving] = useState(false);
   const [actionSaving, setActionSaving] = useState(false);
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const canManage = user ? ["ADMIN", "BUSINESS_ANALYST", "PRODUCT_OWNER"].includes(user.role) : false;
+
+  const formatTime = (timeStr: string) => {
+    if (!timeStr) return "";
+    const [h = "0", m = "0"] = timeStr.split(":");
+    const d = new Date();
+    d.setHours(parseInt(h, 10));
+    d.setMinutes(parseInt(m, 10));
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
+
+  const hasMeetingStarted = (meeting: Meeting | null) => {
+    if (!meeting || !meeting.date || !meeting.time) return true;
+    const meetingDateTime = new Date(`${meeting.date}T${meeting.time}`);
+    return new Date() >= meetingDateTime;
+  };
 
   const fetchMeetings = async () => {
     if (!activeProject) return;
@@ -220,6 +236,22 @@ export const MeetingsPage: React.FC = () => {
       setFormError("Failed to update notes.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleGenerateAiNotes = async () => {
+    if (!selectedMeeting) return;
+    setIsGeneratingAi(true);
+    setFormError(null);
+    try {
+      const res = await api.post<any, { data: Meeting }>(`/meetings/${selectedMeeting.id}/generate_ai_notes/`);
+      setSuccessMessage("AI Minutes of Meeting generated successfully.");
+      loadMeeting(res.data);
+      setMeetings(prev => prev.map(m => m.id === res.data.id ? { ...m, notes: res.data.notes } : m));
+    } catch (err: any) {
+      setFormError("Failed to generate AI notes.");
+    } finally {
+      setIsGeneratingAi(false);
     }
   };
 
@@ -402,7 +434,7 @@ export const MeetingsPage: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-0.5">
                         <Clock className="w-3 h-3 shrink-0" />
-                        <span>{m.time.substring(0, 5)}</span>
+                        <span>{formatTime(m.time)}</span>
                       </div>
                     </div>
                   </div>
@@ -425,7 +457,7 @@ export const MeetingsPage: React.FC = () => {
                 <div className="flex items-center gap-3 text-[10px] text-muted-foreground font-semibold mt-1">
                   <span>Date: {selectedMeeting.date}</span>
                   <span>•</span>
-                  <span>Time: {selectedMeeting.time.substring(0, 5)}</span>
+                  <span>Time: {formatTime(selectedMeeting.time)}</span>
                 </div>
               </div>
 
@@ -507,23 +539,43 @@ export const MeetingsPage: React.FC = () => {
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Minutes of Meeting (MoM)
                   </span>
-                  {canManage && (
-                    <button
-                      onClick={() => {
-                        if (isEditingNotes) handleSaveNotes();
-                        else setIsEditingNotes(true);
-                      }}
-                      className="text-[10px] font-bold text-primary hover:underline cursor-pointer flex items-center gap-1"
-                    >
-                      {isEditingNotes ? (
-                        <>
-                          <Save className="w-3 h-3" />
-                          Save Minutes
-                        </>
-                      ) : (
-                        "Edit Minutes"
-                      )}
-                    </button>
+                  {canManage && hasMeetingStarted(selectedMeeting) ? (
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={handleGenerateAiNotes}
+                        disabled={isGeneratingAi}
+                        className="text-[10px] font-bold text-purple-400 hover:text-purple-300 hover:underline cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                      >
+                        {isGeneratingAi ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          "Auto-Generate AI Notes"
+                        )}
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (isEditingNotes) handleSaveNotes();
+                          else setIsEditingNotes(true);
+                        }}
+                        className="text-[10px] font-bold text-primary hover:underline cursor-pointer flex items-center gap-1"
+                      >
+                        {isEditingNotes ? (
+                          <>
+                            <Save className="w-3 h-3" />
+                            Save Minutes
+                          </>
+                        ) : (
+                          "Edit Minutes"
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    !hasMeetingStarted(selectedMeeting) && (
+                      <span className="text-[10px] text-orange-400/80 font-semibold italic">Notes available after meeting starts</span>
+                    )
                   )}
                 </div>
 

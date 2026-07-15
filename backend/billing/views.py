@@ -202,10 +202,11 @@ class CreateCheckoutSessionView(APIView):
             if isinstance(frontend_origin, list):
                 frontend_origin = frontend_origin[0]
 
-        # Fallback to mock checkout redirects in test mode or if Razorpay is unconfigured
+        # Fallback to mock checkout redirects in test mode, development, or if Razorpay is unconfigured
         import sys
         is_testing = 'test' in sys.argv or any('test' in arg for arg in sys.argv)
-        if is_testing or not razorpay_client.auth:
+        is_development = settings.DEBUG
+        if is_testing or is_development or not razorpay_client.auth:
             mock_checkout_url = f"{request.build_absolute_uri('/api/v1/billing/mock-upgrade/')}?plan={plan}&org_id={request.user.organization.id}&redirect_uri={frontend_origin}"
             return api_success(
                 data={"checkout_url": mock_checkout_url, "mode": "MOCK"},
@@ -221,6 +222,7 @@ class CreateCheckoutSessionView(APIView):
                 "amount": amount,
                 "currency": "INR",
                 "receipt": f"BAH-{plan}-{str(request.user.organization.id)[:12]}",
+                "payment_capture": 1,  # Auto-capture payment
                 "notes": {
                     "organization_id": str(request.user.organization.id),
                     "plan": plan,
@@ -228,7 +230,9 @@ class CreateCheckoutSessionView(APIView):
                 }
             }
             
+            logger.info(f"Creating Razorpay order: {order_data}")
             razorpay_order = razorpay_client.order.create(data=order_data)
+            logger.info(f"Razorpay order created successfully: {razorpay_order['id']}")
             
             return api_success(
                 data={

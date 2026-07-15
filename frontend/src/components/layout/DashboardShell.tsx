@@ -63,8 +63,10 @@ const ALL_SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Analysis Models", icon: Network, path: "diagrams", category: "workspace" },
   { name: "User Stories", icon: ClipboardList, path: "stories", category: "workspace" },
   { name: "UAT & Testing", icon: Bug, path: "uat", category: "workspace" },
+  { name: "SRS Documents", icon: FileText, path: "srs", category: "documents", requiredTier: "PRO" },
   { name: "BRD Generator", icon: FileText, path: "brd", category: "documents", requiredTier: "PRO" },
   { name: "FRD Generator", icon: FileCheck, path: "frd", category: "documents", requiredTier: "PRO" },
+  { name: "IEEE Generator", icon: FileCheck, path: "ieee", category: "documents", requiredTier: "PRO" },
   { name: "Meetings", icon: Calendar, path: "meetings", category: "documents" },
   { name: "Risks", icon: ShieldAlert, path: "risks", category: "governance" },
   { name: "Change Requests", icon: RefreshCw, path: "changes", category: "governance" },
@@ -79,11 +81,11 @@ const ALL_SIDEBAR_ITEMS: SidebarItem[] = [
 
 const ROLE_BASED_SIDEBAR: Record<string, string[]> = {
   STAKEHOLDER: ["dashboard", "projects", "requirements", "stories", "meetings", "reports"],
-  BUSINESS_ANALYST: ["dashboard", "projects", "teams", "stakeholders", "requirements", "traceability", "diagrams", "stories", "uat", "brd", "frd", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "billing"],
-  PRODUCT_OWNER: ["dashboard", "projects", "teams", "stakeholders", "requirements", "traceability", "stories", "uat", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "billing"],
+  BUSINESS_ANALYST: ["dashboard", "projects", "teams", "stakeholders", "requirements", "traceability", "diagrams", "stories", "uat", "srs", "brd", "frd", "ieee", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "billing"],
+  PRODUCT_OWNER: ["dashboard", "projects", "teams", "stakeholders", "requirements", "traceability", "stories", "uat", "srs", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "billing"],
   DEVELOPER: ["dashboard", "projects", "requirements", "stories", "uat", "risks", "reports"],
   QA_TESTER: ["dashboard", "projects", "requirements", "stories", "uat", "risks", "reports"],
-  ADMIN: ["dashboard", "projects", "teams", "stakeholders", "requirements", "traceability", "diagrams", "stories", "uat", "brd", "frd", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "integrations", "billing", "audit"],
+  ADMIN: ["dashboard", "projects", "teams", "stakeholders", "requirements", "traceability", "diagrams", "stories", "uat", "srs", "brd", "frd", "ieee", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "integrations", "billing", "audit"],
 };
 
 interface DashboardShellProps {

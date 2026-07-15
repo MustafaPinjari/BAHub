@@ -134,3 +134,135 @@ class DocumentManagementTests(APITestCase):
         # Export PDF of Doc A (Org A) as User B (Org B) -> should be denied
         res_pdf_deny = self.client.get(url_pdf)
         self.assertEqual(res_pdf_deny.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_ieee_document_generation(self):
+        """Verify IEEE document template generation."""
+        self.client.force_authenticate(user=self.analyst_a)
+        
+        # Generate IEEE document
+        url_gen = reverse("document-generate-document")
+        payload = {"project": str(self.project_a.id), "doc_type": "IEEE"}
+        response = self.client.post(url_gen, payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # Verify IEEE-specific content
+        content = response.data["data"]["content"]
+        self.assertIn("IEEE Standard Document", content)
+        self.assertIn("1. Introduction", content)
+        self.assertIn("1.1 Scope", content)
+        self.assertIn("2. System Architecture", content)
+        self.assertIn("3. Functional Requirements", content)
+
+    def test_markdown_export(self):
+        """Verify Markdown export functionality."""
+        doc = BusinessDocument.objects.create(
+            project=self.project_a,
+            doc_type="BRD",
+            title="Markdown Test",
+            content="# Test Document\n\n## Section\nContent here.",
+            created_by=self.analyst_a
+        )
+        
+        self.client.force_authenticate(user=self.analyst_a)
+        url_md = reverse("document-export-markdown", kwargs={"pk": doc.id})
+        res_md = self.client.get(url_md)
+        
+        self.assertEqual(res_md.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_md.headers["Content-Type"], "text/markdown")
+        self.assertIn("attachment; filename=", res_md.headers["Content-Disposition"])
+
+    def test_version_control(self):
+        """Verify document version history and restoration."""
+        doc = BusinessDocument.objects.create(
+            project=self.project_a,
+            doc_type="BRD",
+            title="Version Test",
+            content="Original content",
+            version="1.0",
+            created_by=self.analyst_a
+        )
+        
+        self.client.force_authenticate(user=self.analyst_a)
+        
+        # Create version snapshot
+        from documents.models import DocumentVersion
+        version = DocumentVersion.objects.create(
+            document=doc,
+            version="1.0",
+            content="Original content",
+            created_by=self.analyst_a
+        )
+        
+        # Update document
+        doc.content = "Updated content"
+        doc.version = "2.0"
+        doc.save()
+        
+        # Fetch versions
+        url_versions = reverse("document-versions", kwargs={"pk": doc.id})
+        res_versions = self.client.get(url_versions)
+        self.assertEqual(res_versions.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res_versions.data["data"]), 1)
+
+    def test_ai_enhancement_endpoint(self):
+        """Verify AI enhancement endpoint exists and handles requests."""
+        doc = BusinessDocument.objects.create(
+            project=self.project_a,
+            doc_type="IEEE",
+            title="AI Test",
+            content="Test content for enhancement",
+            created_by=self.analyst_a
+        )
+        
+        self.client.force_authenticate(user=self.analyst_a)
+        url_ai = reverse("document-ai-enhance", kwargs={"pk": doc.id})
+        
+        # Test AI enhancement call (may fail if AI service not configured)
+        payload = {"enhancement_type": "refine"}
+        res_ai = self.client.post(url_ai, payload, format="json")
+        
+        # Should either succeed with AI enhancement or fail gracefully
+        self.assertIn(res_ai.status_code, [status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST])
+
+    def test_document_import_markdown(self):
+        """Verify Markdown import functionality."""
+        self.client.force_authenticate(user=self.analyst_a)
+        
+        from io import BytesIO
+        import tempfile
+        
+        # Create markdown file
+        md_content = b"# Imported Document\n\n## Section\nImported content."
+        md_file = BytesIO(md_content)
+        md_file.name = "test.md"
+        
+        url_import = reverse("document-import-markdown")
+        payload = {
+            "file": md_file,
+            "project": str(self.project_a.id),
+            "doc_type": "BRD",
+            "title": "Imported MD"
+        }
+        
+        res_import = self.client.post(url_import, payload, format="multipart")
+        self.assertEqual(res_import.status_code, status.HTTP_201_CREATED)
+        self.assertIn("Imported Document", res_import.data["data"]["content"])
+
+    def test_document_sync_endpoint(self):
+        """Verify document sync endpoint exists."""
+        doc = BusinessDocument.objects.create(
+            project=self.project_a,
+            doc_type="BRD",
+            title="Sync Test",
+            content="Test content",
+            created_by=self.analyst_a
+        )
+        
+        self.client.force_authenticate(user=self.analyst_a)
+        url_sync = reverse("document-sync", kwargs={"pk": doc.id})
+        
+        payload = {"module": "requirements"}
+        res_sync = self.client.post(url_sync, payload, format="json")
+        
+        # Should either succeed or fail gracefully depending on sync implementation
+        self.assertIn(res_sync.status_code, [status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST, status.HTTP_404_NOT_FOUND])

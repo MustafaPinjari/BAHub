@@ -23,6 +23,7 @@ const RequirementsPage = lazy(() => import("./features/requirements/Requirements
 const DiagramsPage = lazy(() => import("./features/diagrams/DiagramsPage").then(m => ({ default: m.DiagramsPage })));
 const UserStoriesPage = lazy(() => import("./features/stories/UserStoriesPage").then(m => ({ default: m.UserStoriesPage })));
 const DocumentGeneratorPage = lazy(() => import("./features/documents/DocumentGeneratorPage").then(m => ({ default: m.DocumentGeneratorPage })));
+const SRSPage = lazy(() => import("./features/srs/SRSPage").then(m => ({ default: m.SRSPage })));
 const MeetingsPage = lazy(() => import("./features/meetings/MeetingsPage").then(m => ({ default: m.MeetingsPage })));
 const RisksPage = lazy(() => import("./features/risks/RisksPage").then(m => ({ default: m.RisksPage })));
 const ChangeRequestsPage = lazy(() => import("./features/changes/ChangeRequestsPage").then(m => ({ default: m.ChangeRequestsPage })));
@@ -105,8 +106,10 @@ const AuthenticatedApp: React.FC = () => {
             <Route path="/requirements" element={<RequirementsPage />} />
             <Route path="/diagrams" element={<DiagramsPage />} />
             <Route path="/stories" element={<UserStoriesPage />} />
+            <Route path="/srs" element={<SRSPage />} />
             <Route path="/brd" element={<DocumentGeneratorPage docType="BRD" />} />
             <Route path="/frd" element={<DocumentGeneratorPage docType="FRD" />} />
+            <Route path="/ieee" element={<DocumentGeneratorPage docType="IEEE" />} />
             <Route path="/meetings" element={<MeetingsPage />} />
             <Route path="/risks" element={<RisksPage />} />
             <Route path="/changes" element={<ChangeRequestsPage />} />
@@ -389,6 +392,10 @@ const SEOMetadataHandler: React.FC = () => {
       case "/frd":
         title = "Functional Requirements Document (FRD) Compiler | BAHub";
         description = "Compile system-level functional details, data models, and architectural specs into a comprehensive FRD.";
+        break;
+      case "/ieee":
+        title = "IEEE Standard Document Generator | BAHub";
+        description = "Generate IEEE-compliant technical specification documents with standardized formatting, requirements traceability, and validation criteria.";
         break;
       case "/meetings":
         title = "Meeting Briefings & Action Items | BAHub";
