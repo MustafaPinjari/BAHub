@@ -37,7 +37,7 @@ class UserStoryManagementTests(APITestCase):
         self.req_b = Requirement.objects.create(
             project=self.project_b,
             title="Billing Integration",
-            description="Users pay via Stripe.",
+            description="Users pay via Razorpay.",
         )
 
     def test_create_story_auto_id(self):
@@ -75,7 +75,7 @@ class UserStoryManagementTests(APITestCase):
         """Verify boundary checks and the AI user story generation endpoint."""
         self.client.force_authenticate(user=self.analyst_a)
 
-        # 1. Map to requirement belonging to another organization (Stripe in Org B)
+        # 1. Map to requirement belonging to another organization (Razorpay in Org B)
         url_list = reverse("story-list")
         payload_invalid = {
             "requirement": str(self.req_b.id),

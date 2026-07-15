@@ -3,7 +3,7 @@ from django.urls import path
 from .views import (
     SubscriptionDetailView,
     CreateCheckoutSessionView,
-    StripeWebhookView,
+    RazorpayWebhookView,
     MockUpgradeView,
     VerifySubscriptionView,
     PaymentHistoryListView,
@@ -14,10 +14,10 @@ from .views import (
 urlpatterns = [
     path("subscription/", SubscriptionDetailView.as_view(), name="subscription-detail"),
     path("checkout/", CreateCheckoutSessionView.as_view(), name="create-checkout-session"),
-    # Primary webhook endpoint registered in Stripe dashboard
-    path("webhook/stripe/", StripeWebhookView.as_view(), name="stripe-webhook"),
-    # Legacy alias kept for backwards-compatibility (e.g. existing Stripe configs)
-    path("webhook/", StripeWebhookView.as_view(), name="stripe-webhook-legacy"),
+    # Primary webhook endpoint registered in Razorpay dashboard
+    path("webhook/razorpay/", RazorpayWebhookView.as_view(), name="razorpay-webhook"),
+    # Legacy alias kept for backwards-compatibility
+    path("webhook/", RazorpayWebhookView.as_view(), name="webhook-legacy"),
     path("invoices/", PaymentHistoryListView.as_view(), name="billing-invoices"),
     path("invoices/<uuid:payment_id>/download/", DownloadInvoicePDFView.as_view(), name="download-invoice"),
     path("admin-dashboard/", BillingAdminDashboardView.as_view(), name="billing-admin-dashboard"),

@@ -9,17 +9,79 @@ export const BillingBlockedScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handleCheckout = async () => {
     try {
       setLoading(true);
       setError(null);
       const plan = user?.plan_tier || "PRO";
-      const response = await api.post<any, { data: { checkout_url: string } }>("/billing/checkout/", { plan });
-      if (response?.data?.checkout_url) {
+      const response = await api.post<any, any>("/billing/checkout/", { plan });
+      
+      if (response?.data?.mode === "MOCK") {
+        // Mock billing - redirect to mock upgrade endpoint
         window.location.href = response.data.checkout_url;
-      } else {
-        setError("Failed to generate checkout session.");
+        return;
       }
+
+      // Razorpay checkout
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        setError("Failed to load payment gateway. Please try again.");
+        return;
+      }
+
+      const options = {
+        key: response.data.key_id,
+        amount: response.data.amount,
+        currency: response.data.currency,
+        name: "BAHub",
+        description: `${plan} Subscription`,
+        order_id: response.data.order_id,
+        handler: async (response: any) => {
+          try {
+            const verifyResponse = await api.post("/billing/verify-subscription/", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              org_id: user?.organization || "",
+              plan: plan
+            });
+            
+            if (verifyResponse.data) {
+              if (refreshProfile) {
+                await refreshProfile();
+              }
+            }
+          } catch (err: any) {
+            setError(err?.response?.data?.message || "Payment verification failed.");
+          }
+        },
+        prefill: {
+          name: user?.username || "",
+          email: user?.email || "",
+        },
+        theme: {
+          color: "#6366f1"
+        },
+        modal: {
+          ondismiss: () => {
+            setError("Payment flow was cancelled.");
+          },
+        },
+      };
+
+      // @ts-ignore - Razorpay global object
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err: any) {
       setError(err?.response?.data?.message || "Error initiating checkout session.");
     } finally {

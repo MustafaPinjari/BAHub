@@ -36,15 +36,15 @@ def SecurityHeadersMiddleware(get_response):
 
 def _add_security_headers(request, response):
     # Content-Security-Policy
-    # Allows scripts from self, Stripe, and the frontend
+    # Allows scripts from self, Razorpay, and the frontend
     csp_directives = [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://checkout.stripe.com",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: https: blob:",
         "font-src 'self' data:",
-        "connect-src 'self' https://api.stripe.com https://checkout.stripe.com",
-        "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com",
+        "connect-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
+        "frame-src 'self' https://checkout.razorpay.com",
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",

@@ -85,10 +85,10 @@ class StrategicManagementTests(APITestCase):
         # 1. Attempt to create Gap for Project B (Should fail)
         payload_invalid = {
             "project": str(self.project_b.id),
-            "title": "Stripe Integration Gap",
+            "title": "Razorpay Integration Gap",
             "current_state": "Manual invoices",
             "future_state": "Automated billing",
-            "gap_description": "Lacks Stripe portal",
+            "gap_description": "Lacks Razorpay portal",
             "action_plan": "Develop webhook triggers",
             "status": "IDENTIFIED"
         }
@@ -98,16 +98,16 @@ class StrategicManagementTests(APITestCase):
         # 2. Successfully create Gap
         payload_valid = {
             "project": str(self.project_a.id),
-            "title": "Stripe Integration Gap",
+            "title": "Razorpay Integration Gap",
             "current_state": "Manual invoices",
             "future_state": "Automated billing",
-            "gap_description": "Lacks Stripe portal",
+            "gap_description": "Lacks Razorpay portal",
             "action_plan": "Develop webhook triggers",
             "status": "IDENTIFIED"
         }
         res_ok = self.client.post(url_gap, payload_valid, format="json")
         self.assertEqual(res_ok.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(res_ok.data["data"]["title"], "Stripe Integration Gap")
+        self.assertEqual(res_ok.data["data"]["title"], "Razorpay Integration Gap")
 
     def test_ai_analyst_chat_simulation(self):
         """Verify AI Business Analyst chat responses and prompt parameters."""

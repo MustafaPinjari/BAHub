@@ -156,7 +156,7 @@ class SuperAdminDashboardView(APIView):
         for ev in ProcessedWebhookEvent.objects.all().order_by('-processed_at')[:100]:
             webhooks.append({
                 "id": str(ev.id),
-                "stripe_event_id": ev.stripe_event_id,
+                "gateway_event_id": ev.gateway_event_id,
                 "processed_at": ev.processed_at.strftime("%Y-%m-%d %H:%M:%S") if ev.processed_at else None
             })
 
@@ -184,13 +184,13 @@ class SuperAdminDashboardView(APIView):
             db_status = "DEGRADED"
 
         # Mock third-party checks
-        has_stripe_config = bool(getattr(settings, "STRIPE_SECRET_KEY", None))
+        has_razorpay_config = bool(getattr(settings, "RAZORPAY_KEY_ID", None))
         has_jira_config = bool(getattr(settings, "JIRA_SERVER_URL", None))
 
         system_health = {
             "database_status": db_status,
             "database_latency_ms": db_latency,
-            "stripe_api_configured": has_stripe_config,
+            "razorpay_api_configured": has_razorpay_config,
             "jira_api_configured": has_jira_config,
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
         }

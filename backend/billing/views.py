@@ -2,7 +2,9 @@ import json
 import uuid
 import datetime
 import logging
-import stripe
+import razorpay
+import hmac
+import hashlib
 from django.conf import settings
 from django.http import HttpResponse, Http404, FileResponse
 from django.shortcuts import redirect
@@ -20,7 +22,14 @@ from .pdf_utils import generate_invoice_pdf_content
 from core.emails import send_payment_receipt_email
 
 logger = logging.getLogger("bahub.core")
-stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", None)
+
+# Initialize Razorpay client
+razorpay_client = razorpay.Client(
+    auth=(
+        getattr(settings, "RAZORPAY_KEY_ID", None),
+        getattr(settings, "RAZORPAY_KEY_SECRET", None)
+    )
+)
 
 
 def _safe_redirect_uri(requested_uri: str) -> str:
@@ -77,7 +86,7 @@ def generate_receipt_number():
         return f"{prefix}{next_seq:06d}"
 
 
-def process_successful_payment(sub, plan_tier, amount, checkout_session_id=None, stripe_invoice_id=None, stripe_sub_id=None, stripe_cust_id=None, payment_intent_id=None, payment_method="Card (Stripe)", event_type="stripe.webhook"):
+def process_successful_payment(sub, plan_tier, amount, gateway_order_id=None, gateway_payment_id=None, gateway_invoice_id=None, gateway_customer_id=None, payment_method="Card (Razorpay)", event_type="razorpay.payment.captured"):
     with transaction.atomic():
         # Generate receipt number
         receipt_num = generate_receipt_number()
@@ -87,9 +96,9 @@ def process_successful_payment(sub, plan_tier, amount, checkout_session_id=None,
             receipt_number=receipt_num,
             organization=sub.organization,
             subscription=sub,
-            stripe_payment_intent=payment_intent_id,
-            stripe_invoice=stripe_invoice_id,
-            checkout_session=checkout_session_id,
+            gateway_payment_id=gateway_payment_id,
+            gateway_invoice_id=gateway_invoice_id,
+            gateway_order_id=gateway_order_id,
             amount=amount,
             plan=plan_tier,
             payment_method=payment_method,
@@ -116,7 +125,7 @@ def process_successful_payment(sub, plan_tier, amount, checkout_session_id=None,
             old_plan=sub.plan_tier,
             new_plan=plan_tier,
             gateway_response=f"Payment verified successfully. Receipt: {receipt_num}",
-            event_id=stripe_sub_id or checkout_session_id or f"MOCK-{uuid.uuid4().hex[:8].upper()}"
+            event_id=gateway_payment_id or gateway_order_id or f"MOCK-{uuid.uuid4().hex[:8].upper()}"
         )
         
         # Send Receipt Email to admins
@@ -132,7 +141,7 @@ def process_successful_payment(sub, plan_tier, amount, checkout_session_id=None,
                     plan_name=plan_tier,
                     amount=f"${amount}",
                     receipt_number=receipt_num,
-                    transaction_id=payment_intent_id or stripe_sub_id or "N/A",
+                    transaction_id=gateway_payment_id or gateway_order_id or "N/A",
                     pdf_content=pdf_content
                 )
 
@@ -173,8 +182,12 @@ class CreateCheckoutSessionView(APIView):
         if request.user.role != "ADMIN":
             return api_error(message="Only organization administrators can manage billing subscription plans.")
 
-        # Resolve price configuration based on requested plan
-        price_id = getattr(settings, f"STRIPE_PRICE_{plan}", None)
+        # Resolve price based on plan (converted from USD to INR at current rate)
+        plan_prices = {
+            "PRO": 471527,  # $49.00 USD × 96.23 = ₹4,715.27 INR (in paise)
+            "ENTERPRISE": 2877277  # $299.00 USD × 96.23 = ₹28,772.77 INR (in paise)
+        }
+        amount = plan_prices.get(plan, 471527)
         
         # Resolve frontend origin URL dynamically from client request headers to support dynamic ports
         frontend_origin = request.META.get('HTTP_ORIGIN')
@@ -189,100 +202,110 @@ class CreateCheckoutSessionView(APIView):
             if isinstance(frontend_origin, list):
                 frontend_origin = frontend_origin[0]
 
-
-        # Fallback to mock checkout redirects in test mode or if Stripe is unconfigured
+        # Fallback to mock checkout redirects in test mode or if Razorpay is unconfigured
         import sys
         is_testing = 'test' in sys.argv or any('test' in arg for arg in sys.argv)
-        if is_testing or not stripe.api_key or not price_id:
+        if is_testing or not razorpay_client.auth:
             mock_checkout_url = f"{request.build_absolute_uri('/api/v1/billing/mock-upgrade/')}?plan={plan}&org_id={request.user.organization.id}&redirect_uri={frontend_origin}"
             return api_success(
                 data={"checkout_url": mock_checkout_url, "mode": "MOCK"},
                 message="Mock checkout session initiated in development."
             )
 
-
-        if not stripe.api_key:
-            return api_error(message="Stripe API is not configured on this server environment.")
+        if not razorpay_client.auth:
+            return api_error(message="Razorpay API is not configured on this server environment.")
 
         try:
-            checkout_session = stripe.checkout.Session.create(
-                payment_method_types=['card'],
-                line_items=[{
-                    'price': price_id,
-                    'quantity': 1,
-                }],
-                mode='subscription',
-                # 14-day free trial — subscription starts after trial ends
-                subscription_data={
-                    'trial_period_days': 14,
-                    'metadata': {
-                        'organization_id': str(request.user.organization.id),
-                        'plan': plan,
-                    }
-                },
-                success_url=f"{request.build_absolute_uri('/api/v1/billing/verify-subscription/')}?session_id={{CHECKOUT_SESSION_ID}}&redirect_uri={frontend_origin}",
-                cancel_url=f"{frontend_origin.rstrip('/')}/billing?cancelled=true",
-                client_reference_id=str(request.user.organization.id),
-                customer_email=request.user.email,
-            )
+            # Create Razorpay order
+            order_data = {
+                "amount": amount,
+                "currency": "INR",
+                "receipt": f"BAH-{plan}-{str(request.user.organization.id)[:12]}",
+                "notes": {
+                    "organization_id": str(request.user.organization.id),
+                    "plan": plan,
+                    "user_email": request.user.email
+                }
+            }
+            
+            razorpay_order = razorpay_client.order.create(data=order_data)
+            
             return api_success(
-                data={"checkout_url": checkout_session.url, "mode": "stripe"},
-                message="Stripe subscription checkout session generated successfully."
+                data={
+                    "order_id": razorpay_order["id"],
+                    "amount": amount,
+                    "currency": "INR",
+                    "key_id": getattr(settings, "RAZORPAY_KEY_ID", None),
+                    "plan": plan,
+                    "frontend_origin": frontend_origin
+                },
+                message="Razorpay order created successfully."
             )
         except Exception as e:
-            return api_error(message=f"Failed to initialize Stripe checkout: {str(e)}")
+            logger.error(f"Failed to create Razorpay order: {str(e)}")
+            return api_error(message=f"Failed to initialize Razorpay checkout: {str(e)}")
 
 
-class StripeWebhookView(APIView):
+class RazorpayWebhookView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         payload = request.body
-        sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-        webhook_secret = getattr(settings, "STRIPE_WEBHOOK_SECRET", None)
+        sig_header = request.META.get('HTTP_X_RAZORPAY_SIGNATURE')
+        webhook_secret = getattr(settings, "RAZORPAY_WEBHOOK_SECRET", None)
 
         if not sig_header or not webhook_secret:
+            logger.error("Webhook signature or secret missing")
             return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
+        # Verify webhook signature
         try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, webhook_secret
-            )
-        except Exception:
+            generated_signature = hmac.new(
+                webhook_secret.encode('utf-8'),
+                payload,
+                hashlib.sha256
+            ).hexdigest()
+            
+            if not hmac.compare_digest(generated_signature, sig_header):
+                logger.error("Webhook signature verification failed")
+                return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Webhook signature verification error: {str(e)}")
+            return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+
+        # Parse webhook payload
+        try:
+            webhook_data = json.loads(payload)
+        except json.JSONDecodeError:
+            logger.error("Invalid webhook payload")
             return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
 
         # Webhook Idempotency Check
-        event_id = event.get('id')
+        event_id = webhook_data.get('id')
         if event_id:
-            if ProcessedWebhookEvent.objects.filter(stripe_event_id=event_id).exists():
+            if ProcessedWebhookEvent.objects.filter(gateway_event_id=event_id).exists():
                 return HttpResponse(status=status.HTTP_200_OK)
-            ProcessedWebhookEvent.objects.create(stripe_event_id=event_id)
+            ProcessedWebhookEvent.objects.create(gateway_event_id=event_id)
 
-        event_type = event['type']
-        data_object = event['data']['object']
+        event_type = webhook_data.get('event', '')
+        logger.info(f"Processing Razorpay webhook: {event_type}")
 
-        if event_type == 'checkout.session.completed':
-            org_id = data_object.get('client_reference_id')
-            subscription_id = data_object.get('subscription')
-            customer_id = data_object.get('customer')
-            payment_intent = data_object.get('payment_intent')
+        # Handle payment.captured event
+        if event_type == 'payment.captured':
+            payment_data = webhook_data.get('payload', {}).get('payment', {}).get('entity', {})
+            order_id = payment_data.get('order_id')
+            payment_id = payment_data.get('id')
+            amount = payment_data.get('amount', 0) / 100.0  # Convert paise to INR
             
-            plan_tier = "FREE"
-            amount_cents = data_object.get('amount_total', 0)
-            amount = amount_cents / 100.0 if amount_cents else 0.0
-            
+            # Get order details to retrieve organization and plan
             try:
-                line_items = stripe.checkout.Session.list_line_items(data_object['id'])
-                price_id = line_items['data'][0]['price']['id']
-                if price_id == getattr(settings, "STRIPE_PRICE_PRO", None):
-                    plan_tier = "PRO"
-                elif price_id == getattr(settings, "STRIPE_PRICE_ENTERPRISE", None):
-                    plan_tier = "ENTERPRISE"
-            except Exception:
-                if amount > 50.0:
-                    plan_tier = "ENTERPRISE"
-                elif amount > 0.0:
-                    plan_tier = "PRO"
+                order_data = razorpay_client.order.fetch(order_id)
+                notes = order_data.get('notes', {})
+                org_id = notes.get('organization_id')
+                plan = notes.get('plan', 'PRO')
+            except Exception as e:
+                logger.error(f"Failed to fetch order details: {str(e)}")
+                return HttpResponse(status=status.HTTP_200_OK)
 
             if org_id:
                 try:
@@ -298,56 +321,67 @@ class StripeWebhookView(APIView):
                             "ai_credits_limit": 100
                         }
                     )
-                    sub.stripe_customer_id = customer_id
-                    sub.stripe_subscription_id = subscription_id
-                    sub.plan_tier = plan_tier
-                    if plan_tier == "PRO":
+                    sub.gateway_customer_id = payment_data.get('email')
+                    sub.gateway_subscription_id = order_id
+                    sub.plan_tier = plan
+                    if plan == "PRO":
                         sub.seats_limit = 20
                         sub.ai_credits_limit = 1000
-                    elif plan_tier == "ENTERPRISE":
+                    elif plan == "ENTERPRISE":
                         sub.seats_limit = 1000
                         sub.ai_credits_limit = 10000
                     sub.save()
                     
+                    # Convert INR to USD for record keeping (approximate)
+                    amount_usd = amount / 83.0  # Approximate conversion rate
+                    
                     process_successful_payment(
                         sub=sub,
-                        plan_tier=plan_tier,
-                        amount=amount,
-                        checkout_session_id=data_object.get('id'),
-                        stripe_sub_id=subscription_id,
-                        stripe_cust_id=customer_id,
-                        payment_intent_id=payment_intent,
+                        plan_tier=plan,
+                        amount=round(amount_usd, 2),
+                        gateway_order_id=order_id,
+                        gateway_payment_id=payment_id,
+                        payment_method=payment_data.get('method', 'card'),
                         event_type=event_type
                     )
                 except Organization.DoesNotExist:
-                    pass
+                    logger.error(f"Organization not found: {org_id}")
 
-        elif event_type in ['customer.subscription.updated', 'customer.subscription.deleted']:
-            subscription_id = data_object.get('id')
-            stripe_status = data_object.get('status')
+        # Handle payment.failed event
+        elif event_type == 'payment.failed':
+            payment_data = webhook_data.get('payload', {}).get('payment', {}).get('entity', {})
+            order_id = payment_data.get('order_id')
+            error_code = payment_data.get('error_code', 'UNKNOWN')
+            error_description = payment_data.get('error_description', 'Payment failed')
             
-            if event_type == 'customer.subscription.deleted' or stripe_status in ['unpaid', 'canceled']:
+            logger.error(f"Payment failed for order {order_id}: {error_code} - {error_description}")
+            
+            # Get order details to retrieve organization
+            try:
+                order_data = razorpay_client.order.fetch(order_id)
+                notes = order_data.get('notes', {})
+                org_id = notes.get('organization_id')
+                plan = notes.get('plan', 'PRO')
+            except Exception as e:
+                logger.error(f"Failed to fetch order details: {str(e)}")
+                return HttpResponse(status=status.HTTP_200_OK)
+
+            if org_id:
                 try:
-                    sub = TenantSubscription.objects.get(stripe_subscription_id=subscription_id)
-                    sub.plan_tier = "FREE"
-                    sub.seats_limit = 5
-                    sub.ai_credits_limit = 100
-                    sub.plan_verified = True
-                    sub.is_active = True
-                    sub.payment_status = "SUCCESS"
-                    sub.verification_token = None
-                    sub.expires_at = None
-                    sub.save()
+                    from organizations.models import Organization
+                    org = Organization.objects.get(id=org_id)
+                    sub = TenantSubscription.objects.get(organization=org)
                     
+                    # Create audit log for failed payment
                     PaymentAuditLog.objects.create(
-                        organization=sub.organization,
+                        organization=org,
                         webhook_event=event_type,
                         old_plan=sub.plan_tier,
-                        new_plan="FREE",
-                        gateway_response=f"Subscription cancelled or unpaid in Stripe. Status: {stripe_status}",
-                        event_id=subscription_id
+                        new_plan=sub.plan_tier,
+                        gateway_response=f"Payment failed: {error_code} - {error_description}",
+                        event_id=order_id
                     )
-                except TenantSubscription.DoesNotExist:
+                except (Organization.DoesNotExist, TenantSubscription.DoesNotExist):
                     pass
 
         return HttpResponse(status=status.HTTP_200_OK)
@@ -440,74 +474,90 @@ class MockUpgradeView(APIView):
 class VerifySubscriptionView(APIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
-        token = request.query_params.get("token")
-        org_id = request.query_params.get("org_id")
-        session_id = request.query_params.get("session_id")
-        redirect_uri = request.query_params.get("redirect_uri")
-
-        # Validate redirect_uri against allowed origins (open-redirect safe)
-        redirect_uri = _safe_redirect_uri(redirect_uri)
-
-        if session_id:
-            try:
-                session = stripe.checkout.Session.retrieve(session_id)
-                if session.payment_status == 'paid' or session.status == 'complete':
-                    target_org_id = session.client_reference_id
-                    sub = TenantSubscription.objects.get(organization_id=target_org_id)
-                    if not sub.plan_verified:
-                        amount = session.amount_total / 100.0 if session.amount_total else 49.0
-                        process_successful_payment(
-                            sub=sub,
-                            plan_tier=sub.plan_tier,
-                            amount=amount,
-                            checkout_session_id=session.id,
-                            stripe_sub_id=session.subscription,
-                            stripe_cust_id=session.customer,
-                            payment_intent_id=session.payment_intent,
-                            event_type="stripe.sync_verification"
-                        )
-                    return redirect(f"{redirect_uri}/billing?verified=true")
-            except Exception as e:
-                logger.error(f"Sync Stripe session verification failed: {e}")
-                return redirect(f"{redirect_uri}/billing?error=verification_failed")
-
-        if not token or not org_id:
-            return api_error(message="Missing verification token or organization id.", status_code=status.HTTP_400_BAD_REQUEST)
-
-
-        try:
-            sub = TenantSubscription.objects.get(organization_id=org_id, verification_token=token)
-            sub.plan_verified = True
-            sub.is_active = True
-            sub.payment_status = "SUCCESS"
-            sub.verification_token = None
-            sub.expires_at = timezone.now() + datetime.timedelta(days=30)
-            sub.save()
-        except TenantSubscription.DoesNotExist:
-            return api_error(message="Invalid or expired verification token.", status_code=status.HTTP_400_BAD_REQUEST)
-
-        return redirect(f"{redirect_uri}/billing?verified=true")
-
     def post(self, request):
-        token = request.data.get("token")
+        # Razorpay signature verification for client-side payment verification
+        razorpay_order_id = request.data.get("razorpay_order_id")
+        razorpay_payment_id = request.data.get("razorpay_payment_id")
+        razorpay_signature = request.data.get("razorpay_signature")
         org_id = request.data.get("org_id")
+        plan = request.data.get("plan")
 
-        if not token or not org_id:
-            return api_error(message="Missing verification token or organization id.", status_code=status.HTTP_400_BAD_REQUEST)
+        if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature, org_id, plan]):
+            return api_error(message="Missing required parameters for payment verification.", status_code=status.HTTP_400_BAD_REQUEST)
+
+        # Verify signature
+        key_secret = getattr(settings, "RAZORPAY_KEY_SECRET", None)
+        if not key_secret:
+            return api_error(message="Razorpay key secret not configured.", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         try:
-            sub = TenantSubscription.objects.get(organization_id=org_id, verification_token=token)
-            sub.plan_verified = True
-            sub.is_active = True
-            sub.payment_status = "SUCCESS"
-            sub.verification_token = None
-            sub.expires_at = timezone.now() + datetime.timedelta(days=30)
-            sub.save()
-        except TenantSubscription.DoesNotExist:
-            return api_error(message="Invalid or expired verification token.", status_code=status.HTTP_400_BAD_REQUEST)
+            generated_signature = hmac.new(
+                key_secret.encode('utf-8'),
+                f"{razorpay_order_id}|{razorpay_payment_id}".encode('utf-8'),
+                hashlib.sha256
+            ).hexdigest()
+            
+            if not hmac.compare_digest(generated_signature, razorpay_signature):
+                return api_error(message="Invalid payment signature.", status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Signature verification error: {str(e)}")
+            return api_error(message="Signature verification failed.", status_code=status.HTTP_400_BAD_REQUEST)
 
-        return api_success(message="Subscription plan verified successfully.")
+        # Verify payment with Razorpay
+        try:
+            payment_data = razorpay_client.payment.fetch(razorpay_payment_id)
+            if payment_data.get('status') != 'captured':
+                return api_error(message="Payment not captured yet.", status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Failed to fetch payment details: {str(e)}")
+            return api_error(message="Failed to verify payment with Razorpay.", status_code=status.HTTP_400_BAD_REQUEST)
+
+        # Process successful payment
+        try:
+            from organizations.models import Organization
+            org = Organization.objects.get(id=org_id)
+            sub, _ = TenantSubscription.objects.get_or_create(
+                organization=org,
+                defaults={
+                    "plan_tier": "FREE",
+                    "seats_limit": 5,
+                    "is_active": True,
+                    "plan_verified": True,
+                    "ai_credits_limit": 100
+                }
+            )
+            sub.gateway_customer_id = payment_data.get('email')
+            sub.gateway_subscription_id = razorpay_order_id
+            sub.plan_tier = plan
+            if plan == "PRO":
+                sub.seats_limit = 20
+                sub.ai_credits_limit = 1000
+            elif plan == "ENTERPRISE":
+                sub.seats_limit = 1000
+                sub.ai_credits_limit = 10000
+            sub.save()
+            
+            # Convert amount from paise to USD
+            amount_paise = payment_data.get('amount', 0)
+            amount_inr = amount_paise / 100.0
+            amount_usd = amount_inr / 83.0  # Approximate conversion rate
+            
+            process_successful_payment(
+                sub=sub,
+                plan_tier=plan,
+                amount=round(amount_usd, 2),
+                gateway_order_id=razorpay_order_id,
+                gateway_payment_id=razorpay_payment_id,
+                payment_method=payment_data.get('method', 'card'),
+                event_type="razorpay.client_verification"
+            )
+            
+            return api_success(message="Payment verified successfully.")
+        except Organization.DoesNotExist:
+            return api_error(message="Organization not found.", status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Payment processing error: {str(e)}")
+            return api_error(message="Failed to process payment.", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class PaymentHistoryListView(APIView):
@@ -534,7 +584,7 @@ class PaymentHistoryListView(APIView):
                     "amount": f"${p.amount}",
                     "description": f"BAHub {p.plan.capitalize()} Subscription Monthly Payment",
                     "status": p.payment_status,
-                    "transaction_id": p.transaction_id or p.stripe_payment_intent or "N/A"
+                    "transaction_id": p.transaction_id or p.gateway_payment_id or "N/A"
                 })
         else:
             # Fallback to generated mock invoices if subscription is paid but no payments in DB
@@ -613,7 +663,7 @@ class BillingAdminDashboardView(APIView):
             webhook_logs = []
             for w in ProcessedWebhookEvent.objects.order_by('-processed_at')[:10]:
                 webhook_logs.append({
-                    "event_id": w.stripe_event_id,
+                    "event_id": w.gateway_event_id,
                     "processed_at": w.processed_at.strftime("%Y-%m-%d %H:%M:%S")
                 })
                 

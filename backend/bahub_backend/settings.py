@@ -557,12 +557,10 @@ else:
         },
     }
 
-# Stripe Configuration
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", None)
-STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", None)
-STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", None)
-STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", None)
-STRIPE_PRICE_ENTERPRISE = os.getenv("STRIPE_PRICE_ENTERPRISE", None)
+# Razorpay Configuration
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", None)
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", None)
+RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", None)
 
 
 # ─── Email Configuration ──────────────────────────────────────────────────

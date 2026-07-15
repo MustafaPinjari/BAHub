@@ -17,6 +17,23 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+// Load Razorpay checkout script dynamically
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+const loadRazorpayScript = (): Promise<void> => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve();
+    script.onerror = () => resolve(); // Resolve even on error to not block UI
+    document.body.appendChild(script);
+  });
+};
+
 interface SubscriptionDetail {
   plan_tier: "FREE" | "PRO" | "ENTERPRISE";
   seats_limit: number;
@@ -138,11 +155,72 @@ export const BillingPage: React.FC = () => {
     try {
       setActionLoading(plan);
       setError(null);
-      const response = await api.post<any, { data: { checkout_url: string; mode: string } }>("/billing/checkout/", { plan });
-      if (response.data?.checkout_url) {
+      
+      // Load Razorpay script
+      await loadRazorpayScript();
+      
+      const response = await api.post<any, { data: { order_id: string; amount: number; currency: string; key_id: string; plan: string; frontend_origin: string; checkout_url?: string; mode?: string } }>("/billing/checkout/", { plan });
+      
+      // Check if it's a mock checkout (for development)
+      if (response.data?.mode === "MOCK" && response.data?.checkout_url) {
         window.location.href = response.data.checkout_url;
+        return;
+      }
+      
+      // Razorpay checkout
+      if (response.data?.order_id && response.data?.key_id) {
+        const options = {
+          key: response.data.key_id,
+          amount: response.data.amount,
+          currency: response.data.currency,
+          name: "BAHub",
+          description: `${plan} Subscription`,
+          order_id: response.data.order_id,
+          handler: async (response: any) => {
+            try {
+              const verifyResponse = await api.post("/billing/verify-subscription/", {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                org_id: user?.organization || "",
+                plan: plan
+              });
+              
+              if (verifyResponse.data) {
+                setNotification({
+                  type: "success",
+                  message: "Payment successful! Your subscription has been upgraded."
+                });
+                if (refreshProfile) {
+                  refreshProfile();
+                }
+                fetchSubscription();
+              }
+            } catch (err: any) {
+              setError(err?.response?.data?.message || "Payment verification failed.");
+            }
+          },
+          prefill: {
+            name: user?.username || "",
+            email: user?.email || "",
+          },
+          theme: {
+            color: "#6366f1"
+          },
+          modal: {
+            ondismiss: () => {
+              setNotification({
+                type: "warning",
+                message: "Payment flow was cancelled."
+              });
+            }
+          }
+        };
+        
+        const rzp = new window.Razorpay(options);
+        rzp.open();
       } else {
-        setError("Failed to initialize checkout redirection.");
+        setError("Failed to initialize checkout.");
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || `Failed to initiate checkout for the ${plan} tier.`);
@@ -259,7 +337,7 @@ export const BillingPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
             <Card className="p-4 flex flex-col gap-2">
               <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500 border-b border-white/[0.06] pb-1.5 mb-1">
-                Recent Stripe Webhooks
+                Recent Razorpay Webhooks
               </h4>
               <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto font-mono text-[9px] text-gray-400">
                 {adminStats.webhook_logs.length === 0 ? (

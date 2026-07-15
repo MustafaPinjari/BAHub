@@ -1405,3 +1405,88 @@ ERROR 2026-07-14 19:32:29,043 email_service 12468 7064 [EmailService] Hard Failu
 WARNING 2026-07-14 19:41:41,585 exceptions 12468 11368 API Error (400): {'username': [ErrorDetail(string='A user with that username already exists.', code='invalid')], 'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
 WARNING 2026-07-14 19:41:41,611 log 12468 17720 Bad Request: /api/v1/auth/register/
 WARNING 2026-07-14 19:41:41,615 runserver 12468 13412 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.11, 127.0.0.1:50233][0m
+WARNING 2026-07-14 19:48:26,052 exceptions 6464 21424 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please choose a different name or join via invitation token.', code='invalid')]}
+WARNING 2026-07-14 19:48:26,062 log 6464 7436 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 19:48:26,065 runserver 6464 3400 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.11, 127.0.0.1:58194][0m
+WARNING 2026-07-14 19:48:31,776 email_service 6464 22444 [EmailService] Brevo API attempt 1 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:48:31,777 email_service 6464 22444 [EmailService] Failed attempt 1/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:48:32,778 email_service 6464 22444 [EmailService] Brevo API attempt 2 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:48:32,779 email_service 6464 22444 [EmailService] Failed attempt 2/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:48:34,780 email_service 6464 22444 [EmailService] Brevo API attempt 3 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 19:48:34,781 email_service 6464 22444 [EmailService] Failed attempt 3/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+ERROR 2026-07-14 19:48:34,782 email_service 6464 22444 [EmailService] Hard Failure. Type: verification | Subject: 'Verify your BAHub account' | Recipients: ['unlessuser99@gmail.com'] | Retries exhausted. Final Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:20:15,976 exceptions 20416 22168 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please choose a different name or join via invitation token.', code='invalid')]}
+WARNING 2026-07-14 20:20:15,988 log 20416 22164 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 20:20:15,990 runserver 20416 21152 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.15, 127.0.0.1:62682][0m
+WARNING 2026-07-14 20:20:22,353 email_service 20416 8424 [EmailService] Brevo API attempt 1 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:20:22,354 email_service 20416 8424 [EmailService] Failed attempt 1/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:20:23,355 email_service 20416 8424 [EmailService] Brevo API attempt 2 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:20:23,356 email_service 20416 8424 [EmailService] Failed attempt 2/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:20:25,357 email_service 20416 8424 [EmailService] Brevo API attempt 3 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:20:25,358 email_service 20416 8424 [EmailService] Failed attempt 3/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+ERROR 2026-07-14 20:20:25,358 email_service 20416 8424 [EmailService] Hard Failure. Type: verification | Subject: 'Verify your BAHub account' | Recipients: ['unlessuser99@gmail.com'] | Retries exhausted. Final Error: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:22:11,285 email_service 6196 14360 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-14 20:22:22,534 email_service 1916 5412 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-14 20:23:05,449 email_service 12324 12388 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-14 20:23:48,795 exceptions 1916 2328 API Error (400): {'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-14 20:23:48,806 log 1916 2408 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 20:23:48,808 runserver 1916 14584 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.10, 127.0.0.1:49981][0m
+WARNING 2026-07-14 20:24:41,701 exceptions 1916 13684 API Error (400): {'organization_name': [ErrorDetail(string='An organization with this name already exists. Please choose a different name or join via invitation token.', code='invalid')]}
+WARNING 2026-07-14 20:24:41,706 log 1916 2408 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-14 20:24:41,707 runserver 1916 14584 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.03, 127.0.0.1:49906][0m
+WARNING 2026-07-14 20:26:20,132 email_service 1916 18520 [EmailService] Failed attempt 1/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: [Errno 11002] getaddrinfo failed
+WARNING 2026-07-14 20:26:21,134 email_service 1916 18520 [EmailService] Brevo API attempt 2 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:26:28,415 email_service 1916 18520 [EmailService] Failed attempt 2/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: [Errno 11001] getaddrinfo failed
+WARNING 2026-07-14 20:26:30,417 email_service 1916 18520 [EmailService] Brevo API attempt 3 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:26:42,527 email_service 1916 18520 [EmailService] Failed attempt 3/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: [Errno 11001] getaddrinfo failed
+ERROR 2026-07-14 20:26:42,528 email_service 1916 18520 [EmailService] Hard Failure. Type: verification | Subject: 'Verify your BAHub account' | Recipients: ['unlessuser99@gmail.com'] | Retries exhausted. Final Error: [Errno 11001] getaddrinfo failed
+WARNING 2026-07-14 20:27:02,345 email_service 1916 1848 [EmailService] Failed attempt 1/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: [Errno 11001] getaddrinfo failed
+WARNING 2026-07-14 20:27:03,346 email_service 1916 1848 [EmailService] Brevo API attempt 2 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:27:15,450 email_service 1916 1848 [EmailService] Failed attempt 2/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: [Errno 11001] getaddrinfo failed
+WARNING 2026-07-14 20:27:17,451 email_service 1916 1848 [EmailService] Brevo API attempt 3 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:27:29,559 email_service 1916 1848 [EmailService] Failed attempt 3/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: [Errno 11001] getaddrinfo failed
+ERROR 2026-07-14 20:27:29,563 email_service 1916 1848 [EmailService] Hard Failure. Type: verification | Subject: 'Verify your BAHub account' | Recipients: ['unlessuser99@gmail.com'] | Retries exhausted. Final Error: [Errno 11001] getaddrinfo failed
+WARNING 2026-07-14 20:27:45,823 log 1916 2408 Bad Request: /api/v1/auth/verify-otp/
+WARNING 2026-07-14 20:27:45,824 runserver 1916 14584 [31;1mHTTP POST /api/v1/auth/verify-otp/ 400 [0.01, 127.0.0.1:62045][0m
+WARNING 2026-07-14 20:28:26,088 email_service 1916 22264 [EmailService] Failed attempt 1/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: [Errno 11001] getaddrinfo failed
+WARNING 2026-07-14 20:28:27,091 email_service 1916 22264 [EmailService] Brevo API attempt 2 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:28:38,220 email_service 1916 22264 [EmailService] Failed attempt 2/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: [Errno 11001] getaddrinfo failed
+WARNING 2026-07-14 20:28:40,221 email_service 1916 22264 [EmailService] Brevo API attempt 3 failed: Brevo SDK not installed. Add sib-api-v3-sdk to requirements.txt
+WARNING 2026-07-14 20:28:51,153 email_service 1916 22264 [EmailService] Failed attempt 3/3 to send 'Verify your BAHub account' to ['unlessuser99@gmail.com']. Error: [Errno 11001] getaddrinfo failed
+ERROR 2026-07-14 20:28:51,154 email_service 1916 22264 [EmailService] Hard Failure. Type: verification | Subject: 'Verify your BAHub account' | Recipients: ['unlessuser99@gmail.com'] | Retries exhausted. Final Error: [Errno 11001] getaddrinfo failed
+WARNING 2026-07-15 10:48:37,892 email_service 9716 12724 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:03:43,519 email_service 11672 21320 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:03:49,383 email_service 19212 13912 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:32:50,592 email_service 14536 1952 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:33:22,186 email_service 22844 21680 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:33:22,307 email_service 3720 20728 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:33:22,917 email_service 10368 18944 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:33:51,318 email_service 3124 9456 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:34:36,194 email_service 22304 12240 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:35:06,080 email_service 4224 11220 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:36:17,139 email_service 20264 19336 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:40:26,100 log 22844 23332 Not Found: /favicon.ico
+WARNING 2026-07-15 11:40:26,102 runserver 22844 21892 [33mHTTP GET /favicon.ico 404 [0.16, 127.0.0.1:59982][0m
+WARNING 2026-07-15 11:47:42,270 email_service 22336 19212 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:48:02,843 email_service 5296 23224 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:50:47,521 exceptions 22844 12256 API Error (400): {'organization_name': ErrorDetail(string='An organization with this name already exists. Please choose a different name.', code='invalid')}
+WARNING 2026-07-15 11:50:47,525 log 22844 23332 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-15 11:50:47,526 runserver 22844 21892 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.11, 127.0.0.1:52147][0m
+ERROR 2026-07-15 11:54:15,598 views 22844 7900 Failed to create Razorpay order: receipt: the length must be no more than 40.
+WARNING 2026-07-15 11:54:15,602 log 22844 23332 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-15 11:54:15,602 runserver 22844 21892 [31;1mHTTP POST /api/v1/billing/checkout/ 400 [0.63, 127.0.0.1:59079][0m
+ERROR 2026-07-15 11:54:18,036 views 22844 22340 Failed to create Razorpay order: receipt: the length must be no more than 40.
+WARNING 2026-07-15 11:54:18,040 log 22844 23332 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-15 11:54:18,040 runserver 22844 21892 [31;1mHTTP POST /api/v1/billing/checkout/ 400 [0.14, 127.0.0.1:59079][0m
+WARNING 2026-07-15 11:55:46,084 email_service 18292 2388 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:55:46,084 email_service 19304 23408 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:55:46,084 email_service 14892 18064 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:55:46,084 email_service 22680 2448 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:55:46,084 email_service 22900 17228 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 11:55:46,084 email_service 4996 12532 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+ERROR 2026-07-15 12:04:55,224 views 22900 16784 Failed to create Razorpay order: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+WARNING 2026-07-15 12:04:55,279 log 22900 21356 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-15 12:04:55,281 runserver 22900 7404 [31;1mHTTP POST /api/v1/billing/checkout/ 400 [0.27, 127.0.0.1:50644][0m
+WARNING 2026-07-15 12:06:53,712 email_service 6892 2524 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 12:08:20,019 email_service 4616 3216 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 12:09:37,539 email_service 22140 18136 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.

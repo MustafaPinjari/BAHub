@@ -32,13 +32,13 @@ DOMAINS = {
             {"title": "Grooming Appointment Scheduling", "desc": "The system shall display real-time slot availability for individual groomers, allowing users to book sessions and receive confirmations.", "type": "FUNCTIONAL", "priority": "HIGH"},
             {"title": "Automated Notification System", "desc": "The app shall send SMS and email appointment reminders to pet owners 24 hours prior to the scheduled service.", "type": "FUNCTIONAL", "priority": "MEDIUM"},
             {"title": "Multi-Tenant Data Scoping Isolation", "desc": "No salon tenant shall ever be able to view, query, or modify client records or financials belonging to another salon.", "type": "NON_FUNCTIONAL", "priority": "CRITICAL"},
-            {"title": "PCI-DSS Compliant Payment Gateway", "desc": "The system must process all booking deposit credit card transactions through Stripe in a secure tokenized manner.", "type": "NON_FUNCTIONAL", "priority": "CRITICAL"},
+            {"title": "PCI-DSS Compliant Payment Gateway", "desc": "The system must process all booking deposit credit card transactions through Razorpay in a secure tokenized manner.", "type": "NON_FUNCTIONAL", "priority": "CRITICAL"},
         ],
         "stakeholders": [
             {"name": "Sarah Miller", "title": "Pet Owner / End User", "role": "CUSTOMER", "influence": "HIGH", "interest": "HIGH"},
             {"name": "Gavin Chen", "title": "Lead Groomer", "role": "MANAGER", "influence": "MEDIUM", "interest": "HIGH"},
             {"name": "Elena Rostova", "title": "Salon Franchise Owner", "role": "ADMIN", "influence": "HIGH", "interest": "HIGH"},
-            {"name": "Stripe Integration API", "title": "Payment Processor Gateway", "role": "EXTERNAL_SYSTEM", "influence": "LOW", "interest": "MEDIUM"}
+            {"name": "Razorpay Integration API", "title": "Payment Processor Gateway", "role": "EXTERNAL_SYSTEM", "influence": "LOW", "interest": "MEDIUM"}
         ],
         "stories": [
             {"title": "Register Pet Details", "role": "Pet Owner", "action": "create a profile for my golden retriever", "benefit": "I can store their specific trimming styling instructions and vaccine card", "criteria": "1. Vaccine card file uploaded.\n2. Form validates fields: breed, age, weight.\n3. Profile is linked to client user account.", "points": 3},
@@ -282,7 +282,7 @@ def generate_mock_agent_step_output(step_name, domain, prompt_input, history_con
             f"**Extracted Specifications**:\n\n{reqs_str}\n\n"
             f"**Assumptions**:\n"
             f"1. Users possess internet access and modern mobile/web browsers.\n"
-            f"2. Organization owners set up Stripe accounts before launching scheduling features.\n\n"
+            f"2. Organization owners set up Razorpay accounts before launching scheduling features.\n\n"
             f"**Missing Checklist**:\n"
             f"- Define cancellation window (e.g. 24h vs. 48h limit).\n"
             f"- Clarify international phone formatting for SMS."
@@ -296,7 +296,7 @@ def generate_mock_agent_step_output(step_name, domain, prompt_input, history_con
             f"| :--- | :--- | :--- | :---: |\n"
             f"| Profile Reg | Requirement title is correct. Needs email pattern checks. | Add Regex pattern constraints. | Resolved |\n"
             f"| Isolation | Data leaks are a severe risk. | Apply Django global filters. | Enforced |\n"
-            f"| Payments | Stripe card details must not store locally. | Restrict SQLite logging of card tokens. | Certified |\n\n"
+            f"| Payments | Razorpay card details must not store locally. | Restrict SQLite logging of card tokens. | Certified |\n\n"
             f"**Hallucination Check**: Passed. Specifications map 1:1 with client brief."
         )
 
@@ -381,7 +381,7 @@ def generate_mock_agent_step_output(step_name, domain, prompt_input, history_con
             f"## 1. Executive Summary\n"
             f"Redesigning client interface to deploy custom Multi-Agent logic within the workspace, improving business agility.\n\n"
             f"## 2. Core Functional Requirements\n"
-            f"Includes booking registries, secure Stripe validation layers, and role based permissions.\n\n"
+            f"Includes booking registries, secure Razorpay validation layers, and role based permissions.\n\n"
             f"## 3. High-Level Risk & Compliance Profile\n"
             f"Governed by PCI DSS standards, ensuring row scoping constraints remain intact."
         )
@@ -391,7 +391,7 @@ def generate_mock_agent_step_output(step_name, domain, prompt_input, history_con
             f"### 🏅 QA Review Agent Quality Certificate\n"
             f"Executing automated verification scripts over the compiled BRD workspace:\n\n"
             f"- **Ambiguity Scan**: `0 Warnings`\n"
-            f"- **Actors Mapping Check**: `Complete` (verified Guest, Admin, Managers, Stripe API)\n"
+            f"- **Actors Mapping Check**: `Complete` (verified Guest, Admin, Managers, Razorpay API)\n"
             f"- **Acceptance Criteria Coverage**: `100%` (all User Stories specify DoD rules)\n\n"
             f"**Confidence Score**: `98 / 100`\n"
             f"**Quality Rating**: `EXCELLENT`\n"

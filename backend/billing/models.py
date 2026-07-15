@@ -24,8 +24,8 @@ class TenantSubscription(BaseModel):
         on_delete=models.CASCADE,
         related_name="subscription"
     )
-    stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
-    stripe_subscription_id = models.CharField(max_length=255, blank=True, null=True)
+    gateway_customer_id = models.CharField(max_length=255, blank=True, null=True)
+    gateway_subscription_id = models.CharField(max_length=255, blank=True, null=True)
     plan_tier = models.CharField(
         max_length=50,
         choices=PLAN_CHOICES,
@@ -76,9 +76,9 @@ class Payment(BaseModel):
         on_delete=models.CASCADE,
         related_name="payments"
     )
-    stripe_payment_intent = models.CharField(max_length=255, blank=True, null=True)
-    stripe_invoice = models.CharField(max_length=255, blank=True, null=True)
-    checkout_session = models.CharField(max_length=255, blank=True, null=True)
+    gateway_payment_id = models.CharField(max_length=255, blank=True, null=True)
+    gateway_invoice_id = models.CharField(max_length=255, blank=True, null=True)
+    gateway_order_id = models.CharField(max_length=255, blank=True, null=True)
     transaction_id = models.CharField(max_length=255, blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default="USD")
@@ -102,14 +102,14 @@ class Payment(BaseModel):
 
 
 class ProcessedWebhookEvent(BaseModel):
-    stripe_event_id = models.CharField(max_length=255, unique=True)
+    gateway_event_id = models.CharField(max_length=255, unique=True)
     processed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "processed_webhook_events"
 
     def __str__(self):
-        return self.stripe_event_id
+        return self.gateway_event_id
 
 
 class PaymentAuditLog(BaseModel):

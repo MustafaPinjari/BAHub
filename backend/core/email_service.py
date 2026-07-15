@@ -24,6 +24,9 @@ try:
     BREVO_AVAILABLE = True
 except ImportError:
     BREVO_AVAILABLE = False
+    import logging
+    logger = logging.getLogger("django")
+    logger.warning("[EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.")
 
 # Resolved once at import time — works on both local and Render
 BANNER_PATH = Path(__file__).resolve().parent / "static" / "core" / "email_banner.png"
@@ -151,7 +154,7 @@ class EmailService:
         retry_count = 0
         success = False
         start_time = now()
-        use_brevo_api = os.getenv("USE_BREVO_API", "False").lower() in ("true", "1", "yes")
+        use_brevo_api = BREVO_AVAILABLE and os.getenv("USE_BREVO_API", "False").lower() in ("true", "1", "yes")
 
         while retry_count < max_retries and not success:
             try:
