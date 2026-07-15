@@ -8,10 +8,8 @@ django.utils.http.is_safe_url = url_has_allowed_host_and_scheme
 
 
 from django.contrib import admin
-from rest_framework_simplejwt.views import TokenRefreshView
 from core.views import health_check, HealthCheckView, RootView, PublicSettingsView, PublicWaitlistView
-from users.views import CustomTokenObtainPairView
-
+from users.views import CustomTokenObtainPairView, CustomTokenRefreshView
 urlpatterns = [
     # Root status and lightweight health checks
     path("", RootView.as_view(), name="backend-root"),
@@ -29,7 +27,7 @@ urlpatterns = [
     
     # Auth endpoints
     path("api/v1/auth/login/", CustomTokenObtainPairView.as_view(), name="token-login"),
-    path("api/v1/auth/token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path("api/v1/auth/token/refresh/", CustomTokenRefreshView.as_view(), name="token-refresh"),
     path("api/v1/auth/", include("users.urls")),
     
     # Organization endpoints

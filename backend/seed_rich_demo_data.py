@@ -22,6 +22,7 @@ from meetings.models import Meeting, ActionItem
 from risks.models import Risk, ChangeRequest
 from strategic.models import SWOTAnalysis, GapAnalysis
 from documents.models import BusinessDocument
+from uat.models import TestCase, Defect
 
 User = get_user_model()
 
@@ -44,6 +45,8 @@ def clean_existing_data():
     SWOTAnalysis.objects.all().delete()
     GapAnalysis.objects.all_with_deleted().all().hard_delete()
     BusinessDocument.objects.all_with_deleted().all().hard_delete()
+    TestCase.objects.all().delete()
+    Defect.objects.all().delete()
     ActivityLog.objects.all_with_deleted().all().hard_delete()
     Organization.objects.all_with_deleted().all().hard_delete()
     
@@ -192,7 +195,7 @@ def create_users(org, fake):
             last_name=last_name,
             role=role,
             organization=org,
-            is_staff=(role == User.ADMIN),
+            is_staff=False,
             is_superuser=False
         )
         u.set_password("ApexSecure123!")
@@ -694,19 +697,21 @@ def create_documents(created_projects, all_users, fake):
     doc_templates = [
         ("Business Requirements Document (BRD) - Main Core", "BRD"),
         ("Functional Specifications Document (FRD) - Sub-Integrations", "FRD"),
-        ("System Reference Specs Document (SRS)", "BRD"),
+        ("System Reference Specs Document (SRS)", "IEEE"),
         ("Meetings Minutes MoM and Action matrix", "FRD"),
         ("Business Case & Revenue Forecast Model", "BRD"),
         ("Vision and Scope Boundaries Outline", "BRD"),
         ("Security Protocols and Architecture blueprint", "FRD"),
         ("Requirements Traceability Matrix spreadsheet", "BRD"),
-        ("handover manual and compliance checklist", "FRD")
+        ("handover manual and compliance checklist", "FRD"),
+        ("IEEE 830 Software Requirements Specifications", "IEEE"),
+        ("Software Design Description (SDD)", "IEEE")
     ]
     
     documents = []
     for p in created_projects:
-        # Exactly 9 documents per project -> 90 documents (exceeds 80 requirement)
-        for idx in range(9):
+        # Exactly 11 documents per project
+        for idx in range(11):
             title_tpl, default_type = doc_templates[idx]
             title = f"{title_tpl} v{idx + 1}.0"
             
@@ -789,6 +794,67 @@ def create_activity_logs(created_projects, all_users, fake):
     ActivityLog.objects.bulk_create(logs)
     print(f"Generated {len(logs)} activity audit logs.")
 
+def create_uat_data(created_projects, created_requirements, all_users, fake):
+    test_cases = []
+    defects = []
+    tc_counter = 0
+
+    qa_users = [u for u in all_users if u.role == User.QA_TESTER] or all_users
+    dev_users = [u for u in all_users if u.role == User.DEVELOPER] or all_users
+    
+    tc_templates = [
+        ("Verify successful login with valid credentials", "User enters valid email and password", "User is redirected to the dashboard"),
+        ("Data export to CSV", "User clicks Export CSV button on reporting page", "A CSV file is downloaded containing correct headers"),
+        ("Dashboard widgets loading", "User navigates to the dashboard", "All widgets load data within 2 seconds"),
+        ("Role-based access control", "Non-admin user tries to access /superadmin", "System denies access and shows 403 error page")
+    ]
+
+    for p in created_projects:
+        reqs = [r for r in created_requirements if r.project_id == p.id]
+        
+        # 10 test cases per project
+        for idx in range(10):
+            tc_counter += 1
+            if idx < len(tc_templates):
+                title, scenario, ac = tc_templates[idx]
+            else:
+                title = f"Verify {fake.word()} integration"
+                scenario = f"Trigger {fake.word()} action from UI"
+                ac = f"System responds with 200 OK and expected payload"
+
+            tc_status = random.choice(["PENDING", "PASSED", "FAILED"])
+            tc = TestCase(
+                id=uuid.uuid4(),
+                project=p,
+                requirement=random.choice(reqs) if reqs else None,
+                title=f"{title} (TC-{tc_counter})",
+                scenario=scenario,
+                acceptance_criteria=ac,
+                status=tc_status,
+                created_by=random.choice(qa_users)
+            )
+            test_cases.append(tc)
+
+            # Generate defects for failed test cases
+            if tc_status == "FAILED" or random.random() > 0.8:
+                defect_status = random.choice(["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"])
+                defect = Defect(
+                    id=uuid.uuid4(),
+                    project=p,
+                    test_case=tc,
+                    title=f"Bug in {title}",
+                    description=f"Expected {ac} but encountered a runtime exception during testing.",
+                    severity=random.choice(["LOW", "MEDIUM", "HIGH", "CRITICAL"]),
+                    status=defect_status,
+                    created_by=random.choice(qa_users)
+                )
+                defects.append(defect)
+
+    TestCase.objects.bulk_create(test_cases)
+    Defect.objects.bulk_create(defects)
+    print(f"Generated {len(test_cases)} UAT Test Cases and {len(defects)} Defects.")
+
+
 def seed_rich_data():
     start_time = timezone.now()
     print("===================================================")
@@ -815,6 +881,7 @@ def seed_rich_data():
     create_change_requests(created_projects, all_users, fake)
     create_strategic_data(created_projects, fake)
     create_documents(created_projects, all_users, fake)
+    create_uat_data(created_projects, created_requirements, all_users, fake)
     create_activity_logs(created_projects, all_users, fake)
 
     end_time = timezone.now()

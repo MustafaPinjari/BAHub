@@ -395,3 +395,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data["user"] = user_serializer.data
         return data
 
+
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken
+
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        try:
+            return super().validate(attrs)
+        except User.DoesNotExist:
+            raise InvalidToken("User matching token does not exist.")
+

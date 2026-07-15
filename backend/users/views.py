@@ -4,7 +4,7 @@ from rest_framework import status, viewsets, mixins
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
@@ -16,9 +16,13 @@ from users.serializers import (
     ProfileUpdateSerializer,
     UserSessionSerializer,
     CustomTokenObtainPairSerializer,
+    CustomTokenRefreshSerializer,
 )
 
 User = get_user_model()
+
+class CustomTokenRefreshView(TokenRefreshView):
+    serializer_class = CustomTokenRefreshSerializer
 
 def parse_user_agent(ua_string):
     """
