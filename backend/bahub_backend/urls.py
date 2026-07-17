@@ -78,6 +78,8 @@ urlpatterns = [
     # UAT endpoints
     path("api/v1/uat/", include("uat.urls")),
     
+    # PMO Command Center
+    path("api/v1/pmo/", include("pmo.urls")),
     # Referral program endpoints
     path("api/v1/referrals/", include("referrals.urls")),
     
@@ -92,6 +94,9 @@ urlpatterns = [
     
     # SRS endpoints
     path("api/v1/srs/", include("srs.urls")),
+    
+    # AI Orchestrator endpoints
+    path("api/v1/ai/", include("ai_orchestrator.urls")),
     
     # SAML2 SSO login endpoints
     path("saml2_auth/", include("django_saml2_auth.urls")),

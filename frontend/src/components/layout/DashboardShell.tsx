@@ -56,6 +56,7 @@ interface SidebarItem {
 const ALL_SIDEBAR_ITEMS: SidebarItem[] = [
   { name: "Dashboard", icon: LayoutDashboard, path: "dashboard", category: "overview" },
   { name: "Projects", icon: FolderGit, path: "projects", category: "overview" },
+  { name: "PMO Command Center", icon: Grid, path: "pmo", category: "overview", requiredTier: "ENTERPRISE" },
   { name: "Teams", icon: Users, path: "teams", category: "overview" },
   { name: "Stakeholders", icon: UserIcon, path: "stakeholders", category: "workspace" },
   { name: "Requirements", icon: FileSpreadsheet, path: "requirements", category: "workspace" },
@@ -81,11 +82,11 @@ const ALL_SIDEBAR_ITEMS: SidebarItem[] = [
 
 const ROLE_BASED_SIDEBAR: Record<string, string[]> = {
   STAKEHOLDER: ["dashboard", "projects", "requirements", "stories", "meetings", "reports"],
-  BUSINESS_ANALYST: ["dashboard", "projects", "teams", "stakeholders", "requirements", "traceability", "diagrams", "stories", "uat", "srs", "brd", "frd", "ieee", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "billing"],
-  PRODUCT_OWNER: ["dashboard", "projects", "teams", "stakeholders", "requirements", "traceability", "stories", "uat", "srs", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "billing"],
+  BUSINESS_ANALYST: ["dashboard", "projects", "pmo", "teams", "stakeholders", "requirements", "traceability", "diagrams", "stories", "uat", "srs", "brd", "frd", "ieee", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "billing"],
+  PRODUCT_OWNER: ["dashboard", "projects", "pmo", "teams", "stakeholders", "requirements", "traceability", "stories", "uat", "srs", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "billing"],
   DEVELOPER: ["dashboard", "projects", "requirements", "stories", "uat", "risks", "reports"],
   QA_TESTER: ["dashboard", "projects", "requirements", "stories", "uat", "risks", "reports"],
-  ADMIN: ["dashboard", "projects", "teams", "stakeholders", "requirements", "traceability", "diagrams", "stories", "uat", "srs", "brd", "frd", "ieee", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "integrations", "billing", "audit"],
+  ADMIN: ["dashboard", "projects", "pmo", "teams", "stakeholders", "requirements", "traceability", "diagrams", "stories", "uat", "srs", "brd", "frd", "ieee", "meetings", "risks", "changes", "gap", "swot", "reports", "ai", "integrations", "billing", "audit"],
 };
 
 interface DashboardShellProps {

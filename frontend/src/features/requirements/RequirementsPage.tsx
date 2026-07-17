@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { api, API_BASE_URL } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert, Textarea } from "../../components/common/UIComponents";
+import { AIIngestionModal } from "./AIIngestionModal";
+import { FigmaEmbed } from "../integrations/FigmaEmbed";
+import { CodeCommitPanel } from "../integrations/CodeCommitPanel";
 import { useAuth } from "../auth/AuthContext";
 import { useProject } from "../projects/ProjectContext";
 import { logger } from "../../utils/logger";
@@ -782,6 +785,15 @@ export const RequirementsPage: React.FC = () => {
                   disabled={!canManage}
                   className="resize-none font-semibold leading-relaxed mt-1 border-white/[0.06] focus:border-primary/40 bg-black/40"
                 />
+
+                {selectedReq.id !== "new" && (
+                  <div className="mt-4 border-t border-border/50 pt-4">
+                    <FigmaEmbed requirementId={selectedReq.id} />
+                  </div>
+                )}
+                {selectedReq.id !== "new" && (
+                  <CodeCommitPanel requirementId={selectedReq.id} requirementTitle={selectedReq.title} reqIdStr={selectedReq.req_id} />
+                )}
               </div>
 
               {/* Persistent/Sticky Action Bar */}

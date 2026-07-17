@@ -55,25 +55,26 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
+        <motion.div
+          key="backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
+          onClick={handleClose}
+        />
+      )}
+      
+      {isOpen && (
+        <div key="modal-container" className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
-            onClick={handleClose}
-          />
-          
-          {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-full max-w-lg bg-gradient-to-br from-gray-950 to-black border border-white/[0.12] rounded-2xl shadow-2xl overflow-hidden"
+            key="modal"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="relative w-full max-w-lg bg-gradient-to-br from-gray-950 to-black border border-white/[0.12] rounded-2xl shadow-2xl overflow-hidden pointer-events-auto"
               role="dialog"
               aria-modal="true"
               aria-labelledby="exit-intent-title"
@@ -139,7 +140,6 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
               </div>
             </motion.div>
           </div>
-        </>
       )}
     </AnimatePresence>
   );

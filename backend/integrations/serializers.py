@@ -44,3 +44,45 @@ class SyncLogSerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = ["id", "triggered_by", "triggered_by_username", "created_at"]
+
+from .models import FigmaDesign
+
+class FigmaDesignSerializer(serializers.ModelSerializer):
+    requirement_title = serializers.CharField(source="requirement.title", read_only=True)
+
+    class Meta:
+        model = FigmaDesign
+        fields = [
+            "id",
+            "requirement",
+            "requirement_title",
+            "figma_file_id",
+            "figma_node_id",
+            "name",
+            "image_url",
+            "last_synced",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at", "last_synced", "requirement_title"]
+
+from .models import CodeCommit
+
+class CodeCommitSerializer(serializers.ModelSerializer):
+    requirement_title = serializers.CharField(source="requirement.title", read_only=True)
+
+    class Meta:
+        model = CodeCommit
+        fields = [
+            "id",
+            "requirement",
+            "requirement_title",
+            "repository_url",
+            "commit_hash",
+            "commit_message",
+            "author_name",
+            "pr_url",
+            "branch_name",
+            "created_at",
+        ]
+        read_only_fields = ["id", "created_at", "requirement_title"]

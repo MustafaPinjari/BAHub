@@ -1,0 +1,39 @@
+WARNING 2026-07-15 18:59:23,653 email_service 20392 18244 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 18:59:51,500 email_service 10596 21140 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 19:00:08,638 email_service 11760 7052 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 19:02:34,915 email_service 13660 14540 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 19:03:22,390 email_service 10984 13868 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 19:04:16,671 email_service 6544 3692 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 19:04:46,520 email_service 18976 2960 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 19:08:12,031 email_service 14580 13240 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-15 19:56:41,590 email_service 1344 14340 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 11:59:01,392 email_service 19344 17968 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 11:59:06,080 log 19344 14812 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-16 11:59:06,081 runserver 19344 18072 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.04, 127.0.0.1:63223][0m
+WARNING 2026-07-16 11:59:06,107 log 19344 14812 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-16 11:59:06,108 runserver 19344 18072 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:63223][0m
+WARNING 2026-07-16 12:00:03,509 email_service 5632 1448 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:01:13,774 email_service 18420 18836 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:02:07,040 email_service 9900 14600 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:02:36,344 email_service 15492 15892 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:02:50,286 email_service 11312 19132 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:11:49,204 email_service 6748 3568 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:12:04,360 log 6748 14804 Not Found: /api/v1/diagram/generate/
+WARNING 2026-07-16 12:12:04,361 runserver 6748 18952 [33mHTTP POST /api/v1/diagram/generate/ 404 [0.07, 127.0.0.1:62250][0m
+WARNING 2026-07-16 12:12:29,463 email_service 8240 13120 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:12:43,304 email_service 18380 11104 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:12:57,127 email_service 2248 15896 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:15:46,174 email_service 9280 8768 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:16:22,173 email_service 12400 10524 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:20:27,425 email_service 17088 18876 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:22:31,457 email_service 9080 6508 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:22:31,509 email_service 7456 7956 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:25:59,046 email_service 364 11296 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:36:08,578 email_service 6200 9772 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:36:08,578 email_service 17968 15568 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-16 12:36:08,578 email_service 12360 7988 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-17 12:02:13,369 email_service 11064 18496 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-17 12:02:15,778 log 11064 9936 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-17 12:02:15,780 runserver 11064 8940 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.04, 127.0.0.1:52171][0m
+WARNING 2026-07-17 12:02:15,790 log 11064 9936 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-17 12:02:15,791 runserver 11064 8940 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:52171][0m

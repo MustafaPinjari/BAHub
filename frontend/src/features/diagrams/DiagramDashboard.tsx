@@ -31,7 +31,7 @@ interface Diagram {
 interface DiagramDashboardProps {
   projectId: string;
   projectName: string;
-  onSelectDiagram: (id: string) => void;
+  onSelectDiagram: (id: string, type?: string) => void;
   onCreateDiagram: () => void;
 }
 
@@ -42,7 +42,8 @@ const DIAGRAM_TYPES = [
   { value: "BPMN 2.0", label: "BPMN 2.0 Workflow" },
   { value: "ERD", label: "Entity Relationship Diagram (ERD)" },
   { value: "System Context", label: "System Context Diagram" },
-  { value: "Customer Journey", label: "Customer Journey Map" }
+  { value: "Customer Journey", label: "Customer Journey Map" },
+  { value: "MERMAID", label: "AI Mermaid Diagram (Text-to-Diagram)" }
 ];
 
 const SECTOR_TEMPLATES = [
@@ -201,9 +202,13 @@ export const DiagramDashboard: React.FC<DiagramDashboardProps> = ({
           </p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => onSelectDiagram("new-mermaid")} className="border-indigo-500/30 hover:border-indigo-500 text-indigo-400">
+            <Zap className="w-3.5 h-3.5 mr-1.5" />
+            New Mermaid (AI)
+          </Button>
           <Button variant="outline" size="sm" onClick={() => onSelectDiagram("new-ai")} className="border-primary/20 hover:border-primary/40 text-primary">
             <Zap className="w-3.5 h-3.5 mr-1.5 text-primary" />
-            AI Auto-Generate
+            AI Auto-Generate (Canvas)
           </Button>
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <Plus className="w-4 h-4 mr-1.5" />
@@ -286,7 +291,7 @@ export const DiagramDashboard: React.FC<DiagramDashboardProps> = ({
                   {diagrams.map((d) => (
                     <div
                       key={d.id}
-                      onClick={() => onSelectDiagram(d.id)}
+                      onClick={() => onSelectDiagram(d.id, d.diagram_type)}
                       className="bg-card border border-border hover:border-primary/30 rounded-xl p-4 flex flex-col justify-between min-h-[140px] shadow-sm hover:shadow-md cursor-pointer transition-all hover:scale-[1.005]"
                     >
                       <div>
@@ -310,7 +315,7 @@ export const DiagramDashboard: React.FC<DiagramDashboardProps> = ({
                           <span className="capitalize">{d.diagram_type}</span>
                         </div>
                         <button
-                          onClick={(e) => handleDelete(d.id, e)}
+                          onClick={(e) => { e.stopPropagation(); handleDelete(d.id, e); }}
                           className="text-muted-foreground hover:text-destructive p-1 rounded transition-colors"
                           title="Delete Diagram"
                         >

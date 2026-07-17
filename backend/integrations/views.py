@@ -446,3 +446,102 @@ class ConfluenceSyncView(APIView):
                 triggered_by=request.user
             )
             return api_error(message=err_msg)
+
+from .models import FigmaDesign
+from .serializers import FigmaDesignSerializer
+from requirements.models import Requirement
+
+class FigmaIntegrationViewSet(viewsets.ModelViewSet):
+    serializer_class = FigmaDesignSerializer
+    permission_classes = [IsAuthenticated, IsEnterprise]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated or not user.organization_id:
+            return FigmaDesign.objects.none()
+        
+        queryset = FigmaDesign.objects.filter(requirement__project__organization_id=user.organization_id)
+        req_id = self.request.query_params.get("requirement")
+        if req_id:
+            queryset = queryset.filter(requirement_id=req_id)
+        return queryset
+
+    @action(detail=False, methods=['POST'])
+    def attach(self, request):
+        req_id = request.data.get("requirement_id")
+        figma_file_id = request.data.get("figma_file_id")
+        figma_node_id = request.data.get("figma_node_id")
+        name = request.data.get("name", "Attached Design")
+        image_url = request.data.get("image_url", "")
+
+        if not req_id or not figma_file_id or not figma_node_id:
+            return api_error(message="Requirement ID, Figma File ID, and Figma Node ID are required.")
+
+        try:
+            req = Requirement.objects.get(id=req_id, project__organization_id=request.user.organization_id)
+        except Requirement.DoesNotExist:
+            return api_error(message="Requirement not found.")
+
+        design, created = FigmaDesign.objects.update_or_create(
+            requirement=req,
+            figma_file_id=figma_file_id,
+            figma_node_id=figma_node_id,
+            defaults={
+                "name": name,
+                "image_url": image_url
+            }
+        )
+        
+        serializer = self.get_serializer(design)
+        return api_success(data=serializer.data, message="Figma design attached successfully.")
+
+from .models import CodeCommit
+from .serializers import CodeCommitSerializer
+
+class CodeIntegrationViewSet(viewsets.ModelViewSet):
+    serializer_class = CodeCommitSerializer
+    permission_classes = [IsAuthenticated, IsEnterprise]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated or not user.organization_id:
+            return CodeCommit.objects.none()
+        
+        queryset = CodeCommit.objects.filter(requirement__project__organization_id=user.organization_id)
+        req_id = self.request.query_params.get("requirement")
+        if req_id:
+            queryset = queryset.filter(requirement_id=req_id)
+        return queryset
+
+    @action(detail=False, methods=['POST'])
+    def attach(self, request):
+        req_id = request.data.get("requirement_id")
+        repository_url = request.data.get("repository_url")
+        commit_hash = request.data.get("commit_hash")
+        commit_message = request.data.get("commit_message", "")
+        author_name = request.data.get("author_name", "")
+        pr_url = request.data.get("pr_url", "")
+        branch_name = request.data.get("branch_name", "")
+
+        if not req_id or not repository_url or not commit_hash:
+            return api_error(message="Requirement ID, Repository URL, and Commit Hash are required.")
+
+        try:
+            req = Requirement.objects.get(id=req_id, project__organization_id=request.user.organization_id)
+        except Requirement.DoesNotExist:
+            return api_error(message="Requirement not found.")
+
+        commit, created = CodeCommit.objects.update_or_create(
+            requirement=req,
+            repository_url=repository_url,
+            commit_hash=commit_hash,
+            defaults={
+                "commit_message": commit_message,
+                "author_name": author_name,
+                "pr_url": pr_url,
+                "branch_name": branch_name
+            }
+        )
+        
+        serializer = self.get_serializer(commit)
+        return api_success(data=serializer.data, message="Code commit attached successfully.")

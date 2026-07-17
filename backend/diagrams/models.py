@@ -35,6 +35,7 @@ class Diagram(BaseModel):
     )
     version = models.CharField(max_length=50, default="1.0")
     canvas_json = models.JSONField(default=dict, blank=True)
+    source_code = models.TextField(blank=True, default="", help_text="Mermaid or PlantUML code")
     documentation = models.TextField(blank=True, default="")
     
     created_by = models.ForeignKey(

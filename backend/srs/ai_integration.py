@@ -5,7 +5,11 @@ Handles AI-powered generation of SRS content from various sources.
 
 from typing import Dict, List, Optional
 from django.conf import settings
+from asgiref.sync import sync_to_async
 import logging
+
+from ai_orchestrator.router import AIRouter
+from ai_orchestrator.credit_manager import CreditManager
 
 logger = logging.getLogger(__name__)
 
@@ -190,13 +194,41 @@ Content:
         
         return prompt
     
-    async def _call_ai_api(self, prompt: str) -> Dict:
-        """Call AI API for content generation."""
-        # This is a placeholder - implement actual AI API call
-        # For now, return a mock response
+    async def _call_ai_api(self, prompt: str, feature_name: str = "IEEE_SRS", organization=None, user=None) -> Dict:
+        """Call AI API via AIRouter."""
+        # 1. Fetch config synchronously via sync_to_async
+        feature_config = await sync_to_async(CreditManager.validate_request)(
+            organization=organization, 
+            feature_name=feature_name
+        ) if organization else None
+        
+        router = AIRouter()
+        # 2. Generate response via AIRouter
+        # We need to wrap it in sync_to_async because router accesses DB models (API configs)
+        result = await sync_to_async(router.generate)(
+            feature_config=feature_config,
+            prompt=prompt
+        )
+        content, in_tokens, out_tokens, est_cost, latency, provider, model, status = result
+        
+        # 3. Deduct credits
+        if organization:
+            await sync_to_async(CreditManager.deduct_credits)(
+                organization=organization,
+                user=user,
+                feature_name=feature_name,
+                provider=provider,
+                model=model,
+                input_tokens=in_tokens,
+                output_tokens=out_tokens,
+                estimated_cost=est_cost,
+                latency=latency,
+                status=status
+            )
+            
         return {
-            'content': 'AI-generated content placeholder',
-            'tokens_used': 100,
+            'content': content,
+            'tokens_used': in_tokens + out_tokens,
         }
     
     def _parse_srs_response(self, response: Dict) -> Dict:

@@ -7,10 +7,15 @@ from concurrent.futures import ThreadPoolExecutor
 from django.db import close_old_connections
 from strategic.models import AIJob
 
+# New Infrastructure Imports
+from ai_orchestrator.router import AIRouter
+from ai_orchestrator.credit_manager import CreditManager
+
 logger = logging.getLogger(__name__)
 
 # ThreadPoolExecutor to handle background LLM calls
 ai_executor = ThreadPoolExecutor(max_workers=4)
+router_instance = AIRouter()
 
 
 def call_llm(prompt, system_instruction=""):
@@ -88,21 +93,10 @@ def run_ai_job_task(job_id):
             logger.error(f"AIJob {job_id} not found in background task.")
             return
 
-        # Verify subscription is active and verified
-        from billing.models import TenantSubscription
-        sub, _ = TenantSubscription.objects.get_or_create(
-            organization=job.project.organization,
-            defaults={
-                "plan_tier": "FREE",
-                "seats_limit": 5,
-                "is_active": True,
-                "ai_credits_limit": 100
-            }
-        )
-        if sub.plan_tier != "FREE" and not sub.plan_verified:
-            raise Exception("Your subscription is pending verification. Please verify it via the email sent to your administrator.")
-        if not sub.is_active:
-            raise Exception("Your workspace subscription is inactive. Please update billing.")
+        try:
+            feature_config = CreditManager.validate_request(job.project.organization, "COMPLEX_LOGIC")
+        except Exception as e:
+            raise Exception(str(e))
 
         # Update status to PROCESSING
         job.status = "PROCESSING"
@@ -165,10 +159,31 @@ def run_ai_job_task(job_id):
             "Answer the user's requests based on this context. Keep the focus professional, technical, and accurate."
         )
 
-        # Execute call
-        reply = call_llm(job.prompt, system_instruction=system_instruction)
-
-        # Fallback to templates if no API key is specified or returns None
+        # Execute call via AIRouter
+        try:
+            content, in_tokens, out_tokens, est_cost, latency, provider, model, status = router_instance.generate(
+                feature_config=feature_config,
+                prompt=job.prompt,
+                system_prompt=system_instruction
+            )
+            reply = content
+            
+            # Deduct Credits
+            CreditManager.deduct_credits(
+                organization=job.project.organization,
+                user=job.created_by,
+                feature_name="COMPLEX_LOGIC",
+                provider=provider,
+                model=model,
+                input_tokens=in_tokens,
+                output_tokens=out_tokens,
+                estimated_cost=est_cost,
+                latency=latency,
+                status=status
+            )
+        except Exception as api_err:
+            logger.error(f"AIRouter failure: {api_err}")
+            reply = None        # Fallback to templates if no API key is specified or returns None
         if reply is None:
             prompt_lower = job.prompt.lower()
             req_count = reqs.count()
@@ -231,17 +246,6 @@ def run_ai_job_task(job_id):
         job.status = "SUCCESS"
         job.result = reply
         job.save()
-
-        try:
-            # Atomic increment prevents race conditions when multiple AI jobs
-            # finish concurrently and both read/write ai_credits_used.
-            # Uses F() expression so the DB does the increment, not Python.
-            from django.db.models import F
-            TenantSubscription.objects.filter(pk=sub.pk).update(
-                ai_credits_used=F("ai_credits_used") + 1
-            )
-        except Exception as sub_err:
-            logger.error(f"Failed to update subscription AI credit count: {sub_err}")
 
 
     except Exception as e:

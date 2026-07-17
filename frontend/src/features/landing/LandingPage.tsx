@@ -368,7 +368,7 @@ const FEATURES: Feature[] = [
 export const FeatureShowcase: React.FC = () => {
   const [activeFeature, setActiveFeature] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
@@ -377,191 +377,123 @@ export const FeatureShowcase: React.FC = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Scroll-based feature activation
+  // Intersection Observer for scroll-spy effect
   useEffect(() => {
     if (isMobile) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = featureRefs.current.findIndex((ref) => ref === entry.target);
+            if (index !== -1) setActiveFeature(index);
+          }
+        });
+      },
+      { rootMargin: "-40% 0px -40% 0px", threshold: 0 }
+    );
 
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const scrollProgress = -rect.top / (rect.height - window.innerHeight);
-      const featureIndex = Math.min(
-        Math.floor(scrollProgress * FEATURES.length),
-        FEATURES.length - 1
-      );
-      if (featureIndex >= 0 && featureIndex < FEATURES.length) {
-        setActiveFeature(featureIndex);
-      }
-    };
+    featureRefs.current.forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => observer.disconnect();
   }, [isMobile]);
 
   return (
-    <div ref={sectionRef} className="relative">
-      {/* Desktop: 3-column sticky layout */}
+    <div className="relative w-full max-w-[1200px] mx-auto z-20">
+      
+      {/* Desktop: Stripe-style vertical scroll */}
       {!isMobile && (
-        <div className="grid grid-cols-12 gap-8">
-          {/* Left Panel - Feature Navigation */}
-          <div className="col-span-3 sticky top-32 h-fit">
-            <div className="flex flex-col gap-2">
-              {FEATURES.map((f, i) => (
-                <button
-                  key={f.id}
-                  onClick={() => setActiveFeature(i)}
-                  className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-left ${
-                    activeFeature === i
-                      ? "bg-emerald-500/10 border border-emerald-500/30 shadow-[0_0_20px_rgba(34,197,94,0.15)]"
-                      : "bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.04]"
-                  }`}
-                >
-                  {activeFeature === i && (
-                    <motion.div
-                      layoutId="activeIndicator"
-                      className="absolute left-0 top-0 bottom-0 w-0.5 bg-emerald-500 rounded-full"
-                      initial={false}
-                    />
-                  )}
-                  <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                      activeFeature === i ? "bg-emerald-500/20 text-emerald-400" : "bg-white/[0.04] text-gray-500 group-hover:text-gray-400"
-                    }`}
-                  >
-                    {f.icon}
-                  </div>
-                  <span className={`text-[11px] font-semibold ${activeFeature === i ? "text-white" : "text-gray-500 group-hover:text-gray-400"}`}>
-                    {f.title}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Center Panel - Dynamic Content */}
-          <div className="col-span-4">
-            <AnimatePresence mode="wait">
-              {FEATURES[activeFeature] && (
-                <motion.div
-                  key={FEATURES[activeFeature].id}
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-8 h-fit"
-                >
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                      {FEATURES[activeFeature].icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-white">{FEATURES[activeFeature].title}</h3>
-                  </div>
-                  <p className="text-gray-400 text-sm leading-relaxed mb-6">{FEATURES[activeFeature].description}</p>
-                <ul className="space-y-3 mb-8">
-                  {FEATURES[activeFeature].bullets.map((bullet: string, i: number) => (
-                    <li key={i} className="flex items-center gap-3 text-[11px] text-gray-500">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                      {bullet}
+        <div className="flex gap-16 relative items-start">
+          
+          {/* Left Column - Scrolling Text Blocks */}
+          <div className="w-5/12 flex flex-col pt-10 pb-[30vh]">
+            {FEATURES.map((f, i) => (
+              <div 
+                key={f.id} 
+                ref={(el) => (featureRefs.current[i] = el)}
+                className={`flex flex-col justify-center min-h-[60vh] transition-opacity duration-500 ${
+                  activeFeature === i ? "opacity-100" : "opacity-30"
+                }`}
+              >
+                <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-white mb-6">
+                  {f.icon}
+                </div>
+                <h3 className="text-3xl font-bold text-white mb-4 leading-tight">{f.title}</h3>
+                <p className="text-gray-400 text-base leading-relaxed mb-8">{f.description}</p>
+                <ul className="space-y-4 mb-8">
+                  {f.bullets.map((bullet: string, j: number) => (
+                    <li key={j} className="flex items-start gap-3">
+                      <div className="mt-1 w-4 h-4 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <Check className="w-2.5 h-2.5 text-emerald-400" />
+                      </div>
+                      <span className="text-sm text-gray-300 font-medium">{bullet}</span>
                     </li>
                   ))}
                 </ul>
-                <button className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-bold uppercase tracking-wider transition-colors">
-                  {FEATURES[activeFeature].cta}
-                </button>
-              </motion.div>
-              )}
-            </AnimatePresence>
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm tracking-wide uppercase hover:text-emerald-300 transition-colors cursor-pointer w-fit group">
+                  {f.cta}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Right Panel - Animated Preview */}
-          <div className="col-span-5">
-            <AnimatePresence mode="wait">
-              {FEATURES[activeFeature] && (
-                <motion.div
-                  key={`preview-${FEATURES[activeFeature].id}`}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.4 }}
-                  className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 h-[400px] overflow-hidden"
-                >
-                  <FeaturePreview featureId={FEATURES[activeFeature].id} />
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* Right Column - Sticky Preview */}
+          <div className="w-7/12 sticky top-32 h-[600px] rounded-3xl overflow-hidden shadow-2xl border border-white/[0.08] bg-[#0c0c0c]">
+             {/* Window Header */}
+             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.05] bg-black/40">
+                <div className="w-3 h-3 rounded-full bg-white/10"></div>
+                <div className="w-3 h-3 rounded-full bg-white/10"></div>
+                <div className="w-3 h-3 rounded-full bg-white/10"></div>
+             </div>
+             
+             {/* Visual Container */}
+             <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#0a0a0a] to-[#050505]">
+                {/* Subtle Glow */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/5 to-purple-500/5 blur-3xl opacity-50" />
+                
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`preview-${activeFeature}`}
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="w-full h-full p-8 z-10"
+                  >
+                    <FeaturePreview featureId={FEATURES[activeFeature].id} />
+                  </motion.div>
+                </AnimatePresence>
+             </div>
           </div>
         </div>
       )}
 
-      {/* Mobile: Tabbed layout */}
+      {/* Mobile: Standard Stack */}
       {isMobile && (
-        <div className="flex flex-col gap-6">
-          {/* Feature Tabs */}
-          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
-            {FEATURES.map((f, i) => (
-              <button
-                key={f.id}
-                onClick={() => setActiveFeature(i)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
-                  activeFeature === i
-                    ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
-                    : "bg-white/[0.02] border border-white/[0.06] text-gray-500"
-                }`}
-              >
+        <div className="flex flex-col gap-16">
+          {FEATURES.map((f, i) => (
+            <div key={f.id} className="flex flex-col">
+              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-white mb-4">
                 {f.icon}
-                <span className="text-[10px] font-semibold">{f.title}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Content */}
-          <AnimatePresence mode="wait">
-            {FEATURES[activeFeature] && (
-              <motion.div
-                key={FEATURES[activeFeature].id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                    {FEATURES[activeFeature].icon}
-                  </div>
-                  <h3 className="text-lg font-bold text-white">{FEATURES[activeFeature].title}</h3>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">{f.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed mb-6">{f.description}</p>
+              
+              <div className="w-full aspect-[4/3] rounded-2xl border border-white/[0.08] bg-[#0c0c0c] mb-6 overflow-hidden relative">
+                <div className="absolute inset-0 p-4">
+                  <FeaturePreview featureId={f.id} />
                 </div>
-                <p className="text-gray-400 text-sm leading-relaxed mb-4">{FEATURES[activeFeature].description}</p>
-                <ul className="space-y-2 mb-6">
-                  {FEATURES[activeFeature].bullets.map((bullet: string, i: number) => (
-                    <li key={i} className="flex items-center gap-2 text-[11px] text-gray-500">
-                      <Check className="w-3 h-3 text-emerald-400 shrink-0" />
-                      {bullet}
-                    </li>
-                  ))}
-                </ul>
-                <button className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-bold uppercase tracking-wider transition-colors">
-                  {FEATURES[activeFeature].cta}
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
 
-          {/* Preview */}
-          <AnimatePresence mode="wait">
-            {FEATURES[activeFeature] && (
-              <motion.div
-                key={`preview-${FEATURES[activeFeature].id}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="bg-[#0a0a0a]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 h-[300px] overflow-hidden"
-              >
-                <FeaturePreview featureId={FEATURES[activeFeature].id} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs tracking-wide uppercase">
+                {f.cta}
+                <ArrowRight className="w-3.5 h-3.5" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

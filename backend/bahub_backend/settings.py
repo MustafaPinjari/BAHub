@@ -132,6 +132,8 @@ INSTALLED_APPS = [
     "blog",
     "email_nurturing",
     "srs",
+    "ai_orchestrator",
+    "pmo",
 ]
 
 MIDDLEWARE = [
@@ -145,6 +147,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "audit.middleware.AuditThreadLocalMiddleware",
     "core.middleware.SubscriptionMiddleware",
+    "ai_orchestrator.middleware.AIRateLimiterMiddleware",
     "security_headers.SecurityHeadersMiddleware",  # Custom security headers (CSP, X-Content-Type-Options, etc.)
 ]
 

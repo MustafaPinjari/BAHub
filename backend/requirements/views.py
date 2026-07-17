@@ -140,3 +140,67 @@ class RequirementViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return api_success(message="Requirement deleted successfully.", status_code=status.HTTP_200_OK)
+
+    from rest_framework.decorators import action
+    @action(detail=False, methods=['post'])
+    def bulk_create(self, request):
+        user = self.request.user
+        if not user.organization:
+            raise ValidationError("You must belong to an organization to create requirements.")
+        
+        project_id = request.data.get("project_id")
+        requirements_data = request.data.get("requirements", [])
+        
+        if not project_id:
+            raise ValidationError("project_id is required.")
+        if not requirements_data or not isinstance(requirements_data, list):
+            raise ValidationError("A list of requirements is required.")
+            
+        # Check plan limits
+        from billing.models import TenantSubscription
+        sub, _ = TenantSubscription.objects.get_or_create(
+            organization=user.organization,
+            defaults={
+                "plan_tier": "FREE",
+                "seats_limit": 5,
+                "is_active": True,
+                "ai_credits_limit": 100
+            }
+        )
+        if sub.plan_tier == "FREE":
+            existing_count = Requirement.objects.filter(project__organization_id=user.organization_id).count()
+            if existing_count + len(requirements_data) > 3:
+                raise ValidationError(f"Under the Free plan, you are limited to 3 requirements across your workspace. You currently have {existing_count} and are trying to add {len(requirements_data)}. Please upgrade to Pro or Enterprise.")
+                
+        # Validate project belongs to user's org
+        from projects.models import Project
+        try:
+            project = Project.objects.get(id=project_id, organization_id=user.organization_id)
+        except Project.DoesNotExist:
+            raise ValidationError("Project not found or access denied.")
+
+        created_requirements = []
+        for req_data in requirements_data:
+            req_data['project'] = project_id
+            serializer = self.get_serializer(data=req_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(created_by=user)
+            created_requirements.append(serializer.instance)
+            
+            # Broadcast each creation
+            self._broadcast_change(serializer.instance, "create")
+            
+        from projects.models import log_activity
+        log_activity(
+            project,
+            user,
+            f"bulk created {len(created_requirements)} requirements"
+        )
+        
+        # Serialize the created objects to return them
+        response_serializer = self.get_serializer(created_requirements, many=True)
+        return api_success(
+            data=response_serializer.data,
+            message=f"Successfully imported {len(created_requirements)} requirements.",
+            status_code=status.HTTP_201_CREATED
+        )

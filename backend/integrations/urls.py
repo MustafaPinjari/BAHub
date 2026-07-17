@@ -5,16 +5,20 @@ from .views import (
     SyncLogViewSet,
     TestConnectionView,
     JiraSyncView,
-    ConfluenceSyncView
+    ConfluenceSyncView,
+    FigmaIntegrationViewSet,
+    CodeIntegrationViewSet
 )
 
 router = DefaultRouter()
-router.register("config", IntegrationConfigViewSet, basename="integrationconfig")
+router.register("config", IntegrationConfigViewSet, basename="integration-config")
 router.register("sync-logs", SyncLogViewSet, basename="synclog")
+router.register("figma", FigmaIntegrationViewSet, basename="figma-integration")
+router.register("code", CodeIntegrationViewSet, basename="code-integration")
 
 urlpatterns = [
     path("", include(router.urls)),
     path("test-connection/", TestConnectionView.as_view(), name="test-connection"),
-    path("jira/sync-stories/", JiraSyncView.as_view(), name="jira-sync-stories"),
-    path("confluence/sync-document/", ConfluenceSyncView.as_view(), name="confluence-sync-document"),
+    path("sync/jira/", JiraSyncView.as_view(), name="sync-jira"),
+    path("sync/confluence/", ConfluenceSyncView.as_view(), name="sync-confluence"),
 ]

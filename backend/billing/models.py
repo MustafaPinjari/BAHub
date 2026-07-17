@@ -37,6 +37,9 @@ class TenantSubscription(BaseModel):
     verification_token = models.UUIDField(null=True, blank=True)
     ai_credits_used = models.IntegerField(default=0)
     ai_credits_limit = models.IntegerField(default=100)
+    daily_ai_credits_used = models.IntegerField(default=0)
+    daily_ai_credits_limit = models.IntegerField(default=30)
+    last_ai_request_date = models.DateField(null=True, blank=True)
     
     # Expiry & billing states
     expires_at = models.DateTimeField(null=True, blank=True)

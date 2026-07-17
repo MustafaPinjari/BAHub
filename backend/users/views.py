@@ -24,6 +24,15 @@ User = get_user_model()
 class CustomTokenRefreshView(TokenRefreshView):
     serializer_class = CustomTokenRefreshSerializer
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            return api_success(
+                data=response.data,
+                message="Token refreshed successfully."
+            )
+        return response
+
 def parse_user_agent(ua_string):
     """
     A lightweight, no-dependency helper to parse Browser and Device type from user agent.

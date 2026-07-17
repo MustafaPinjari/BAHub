@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="theme-color" content="#0a0a0a" />
     <meta name="description" content="BAHub — The AI-Powered Business Analyst Workspace. Synthesize requirements, generate compliant BRDs, manage stakeholders, and run AI-assisted analyses." />
     <meta name="keywords" content="business analyst, AI business analyst, BRD generator, FRD compiler, requirements management, user stories sync, Jira integration, SWOT analysis, GAP analysis, BPMN export, PlantUML export, Mermaid.js export, workspace" />
     <meta name="robots" content="index, follow" />
@@ -42,6 +43,24 @@
         padding: 0;
       }
     </style>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "BAHub",
+        "operatingSystem": "Web",
+        "applicationCategory": "BusinessApplication",
+        "description": "The AI-Powered Business Analyst Workspace. Synthesize requirements, generate compliant BRDs, manage stakeholders, and run AI-assisted analyses.",
+        "url": "https://ba-assistant.netlify.app/",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
   </head>
   <body style="background-color: #000000;">
     <div id="root"></div>

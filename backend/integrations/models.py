@@ -106,3 +106,42 @@ class SyncLog(BaseModel):
 
     def __str__(self):
         return f"{self.sync_type} - {self.status} ({self.created_at})"
+
+class FigmaDesign(BaseModel):
+    requirement = models.ForeignKey(
+        "requirements.Requirement",
+        on_delete=models.CASCADE,
+        related_name="figma_designs"
+    )
+    figma_file_id = models.CharField(max_length=255)
+    figma_node_id = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True)
+    image_url = models.URLField(max_length=2000, blank=True)
+    last_synced = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "integration_figma_designs"
+        unique_together = ("figma_file_id", "figma_node_id", "requirement")
+
+    def __str__(self):
+        return f"Figma {self.figma_file_id}/{self.figma_node_id} -> {self.requirement.title}"
+
+class CodeCommit(BaseModel):
+    requirement = models.ForeignKey(
+        "requirements.Requirement",
+        on_delete=models.CASCADE,
+        related_name="code_commits"
+    )
+    repository_url = models.URLField(max_length=2000)
+    commit_hash = models.CharField(max_length=40)
+    commit_message = models.TextField(blank=True)
+    author_name = models.CharField(max_length=255, blank=True)
+    pr_url = models.URLField(max_length=2000, blank=True, null=True)
+    branch_name = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        db_table = "integration_code_commits"
+        unique_together = ("repository_url", "commit_hash", "requirement")
+
+    def __str__(self):
+        return f"Commit {self.commit_hash[:7]} -> {self.requirement.title}"

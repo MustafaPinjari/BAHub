@@ -38,6 +38,7 @@ const TraceabilityPage = lazy(() => import("./features/traceability/Traceability
 const UatPage = lazy(() => import("./features/uat/UatPage").then(m => ({ default: m.UatPage })));
 const SuperAdminPage = lazy(() => import("./features/superadmin/SuperAdminPage").then(m => ({ default: m.SuperAdminPage })));
 const PasswordResetPage = lazy(() => import("./features/auth/components/PasswordResetPage").then(m => ({ default: m.PasswordResetPage })));
+const PMODashboard = lazy(() => import("./features/pmo/PMODashboard").then(m => ({ default: m.PMODashboard })));
 
 // ─── Global Error Boundary ───────────────────────────────────────────────────
 interface ErrorBoundaryState { hasError: boolean; error?: Error; }
@@ -122,6 +123,7 @@ const AuthenticatedApp: React.FC = () => {
             <Route path="/audit" element={<AuditLogPage />} />
             <Route path="/traceability" element={<TraceabilityPage />} />
             <Route path="/uat" element={<UatPage />} />
+            <Route path="/pmo" element={<PMODashboard />} />
             {isPlatformAdmin && <Route path="/superadmin" element={<SuperAdminPage />} />}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>

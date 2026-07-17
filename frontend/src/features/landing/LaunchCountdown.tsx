@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Mail, CheckCircle, Loader2, X } from "lucide-react";
 
-// Launch date: July 18, 2026 at 00:00:00 UTC
-const LAUNCH_DATE = new Date("2026-07-18T00:00:00Z");
+// Launch date: July 18, 2026 at 12:01 AM IST
+const LAUNCH_DATE = new Date("2026-07-18T00:01:00+05:30");
 
 interface TimeLeft {
   days: number;

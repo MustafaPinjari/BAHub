@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DiagramDashboard } from "./DiagramDashboard.tsx";
 import { DiagramCanvas } from "./DiagramCanvas.tsx";
+import { MermaidEditor } from "./MermaidEditor.tsx";
 import { useProject } from "../projects/ProjectContext";
 
 // Route view switcher for dashboard and canvas workspace
@@ -10,6 +11,7 @@ export const DiagramsPage: React.FC = () => {
 
   const [view, setView] = useState<"dashboard" | "editor">("dashboard");
   const [selectedDiagramId, setSelectedDiagramId] = useState<string | null>(null);
+  const [selectedDiagramType, setSelectedDiagramType] = useState<string | null>(null);
 
   // Reset editor when active project changes.
   useEffect(() => {
@@ -40,14 +42,22 @@ export const DiagramsPage: React.FC = () => {
         <DiagramDashboard
           projectId={activeProject.id}
           projectName={activeProject.name}
-          onSelectDiagram={(id) => {
+          onSelectDiagram={(id, type) => {
             setSelectedDiagramId(id);
+            setSelectedDiagramType(type || null);
             setView("editor");
           }}
           onCreateDiagram={() => {
-            setSelectedDiagramId(null); // Indicates a new diagram
+            setSelectedDiagramId(null);
+            setSelectedDiagramType(null);
             setView("editor");
           }}
+        />
+      ) : selectedDiagramId === "new-mermaid" || selectedDiagramType === "MERMAID" ? (
+        <MermaidEditor
+          projectId={activeProject.id}
+          diagramId={selectedDiagramId}
+          onBackToDashboard={() => setView("dashboard")}
         />
       ) : (
         <DiagramCanvas
