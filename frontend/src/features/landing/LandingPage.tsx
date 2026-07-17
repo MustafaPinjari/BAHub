@@ -412,7 +412,7 @@ export const FeatureShowcase: React.FC = () => {
             {FEATURES.map((f, i) => (
               <div 
                 key={f.id} 
-                ref={(el) => (featureRefs.current[i] = el)}
+                ref={(el) => { featureRefs.current[i] = el; }}
                 className={`flex flex-col justify-center min-h-[60vh] transition-opacity duration-500 ${
                   activeFeature === i ? "opacity-100" : "opacity-30"
                 }`}
@@ -463,7 +463,7 @@ export const FeatureShowcase: React.FC = () => {
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     className="w-full h-full p-8 z-10"
                   >
-                    <FeaturePreview featureId={FEATURES[activeFeature].id} />
+                    <FeaturePreview featureId={(FEATURES[activeFeature] || FEATURES[0])!.id} />
                   </motion.div>
                 </AnimatePresence>
              </div>
@@ -474,7 +474,7 @@ export const FeatureShowcase: React.FC = () => {
       {/* Mobile: Standard Stack */}
       {isMobile && (
         <div className="flex flex-col gap-16">
-          {FEATURES.map((f, i) => (
+          {FEATURES.map((f) => (
             <div key={f.id} className="flex flex-col">
               <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-white mb-4">
                 {f.icon}
@@ -964,7 +964,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
             className="text-3xl sm:text-5xl lg:text-7xl xl:text-[84px] font-black tracking-tight leading-[1.05] sm:leading-[1.05] mb-6 sm:mb-10 flex flex-col items-center text-center w-full"
           >
-            <span className="bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
+            <span className="text-white drop-shadow-sm">
               Ship traceable
             </span>
             <span className="h-[40px] sm:h-[58px] lg:h-[80px] xl:h-[94px] relative overflow-hidden block w-full text-center py-1">
@@ -981,7 +981,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 </motion.span>
               </AnimatePresence>
             </span>
-            <span className="bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
+            <span className="text-white drop-shadow-sm">
               in under 10 minutes.
             </span>
           </motion.h1>

@@ -24,8 +24,13 @@ def SecurityHeadersMiddleware(get_response):
 
     if asyncio.iscoroutinefunction(get_response):
         async def async_middleware(request):
-            response = await get_response(request)
-            return _add_security_headers(request, response)
+            try:
+                response = await get_response(request)
+                return _add_security_headers(request, response)
+            except asyncio.CancelledError:
+                from django.http import HttpResponse
+                # Return 499 Client Closed Request to safely terminate without blowing up logs
+                return HttpResponse(status=499)
         return async_middleware
     else:
         def sync_middleware(request):

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { api, API_BASE_URL } from "../../services/api";
 import { Card, Badge, Button, Input, Select, Alert, Textarea } from "../../components/common/UIComponents";
-import { AIIngestionModal } from "./AIIngestionModal";
+
 import { FigmaEmbed } from "../integrations/FigmaEmbed";
 import { CodeCommitPanel } from "../integrations/CodeCommitPanel";
 import { useAuth } from "../auth/AuthContext";

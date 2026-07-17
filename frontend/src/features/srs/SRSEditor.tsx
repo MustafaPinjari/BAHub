@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Eye, Download, History, MessageSquare, Settings, ChevronDown, ChevronRight, ChevronLeft, Edit3, Check, X } from "lucide-react";
+import { Eye, Download, History, MessageSquare, Settings, ChevronLeft, Edit3, Check, X } from "lucide-react";
 import { api } from "../../services/api";
 
 interface SRSSection {
@@ -123,11 +123,11 @@ export const SRSEditor: React.FC<SRSEditorProps> = ({ documentId, onClose }) => 
     }
   };
 
-  const toggleSection = (sectionId: string) => {
-    setSections(sections.map(s => 
-      s.id === sectionId ? { ...s, is_collapsed: !s.is_collapsed } : s
-    ));
-  };
+  // const toggleSection = (sectionId: string) => {
+  //   setSections(sections.map(s => 
+  //     s.id === sectionId ? { ...s, is_collapsed: !s.is_collapsed } : s
+  //   ));
+  // };
 
   const handleExport = async (format: string) => {
     try {

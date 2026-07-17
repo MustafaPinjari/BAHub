@@ -177,7 +177,7 @@ export const AIIngestionModal: React.FC<AIIngestionModalProps> = ({
           
           {step === "input" && (
             <Button 
-              variant="default" 
+              variant="primary" 
               size="sm" 
               onClick={handleExtract}
               disabled={!rawText.trim()}
@@ -190,7 +190,7 @@ export const AIIngestionModal: React.FC<AIIngestionModalProps> = ({
 
           {step === "review" && (
             <Button 
-              variant="default" 
+              variant="primary" 
               size="sm" 
               onClick={handleSave}
               disabled={requirements.length === 0 || saving}

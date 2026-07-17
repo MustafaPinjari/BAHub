@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
-import { Card, Button } from "../../components/common/UIComponents";
+import { Card } from "../../components/common/UIComponents";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Activity, ShieldAlert, GitCommit, FileText, Loader2 } from "lucide-react";
 

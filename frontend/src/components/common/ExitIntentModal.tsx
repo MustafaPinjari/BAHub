@@ -17,6 +17,8 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
 }) => {
   const [hasShown, setHasShown] = useState(false);
 
+  const [mountTime] = useState(() => Date.now());
+
   useEffect(() => {
     // Check if already shown this session
     const sessionShown = sessionStorage.getItem("exit_intent_shown");
@@ -29,8 +31,8 @@ export const ExitIntentModal: React.FC<ExitIntentModalProps> = ({
     if (hasShown || isOpen) return;
 
     // Detect when mouse leaves viewport from top
-    if (e.clientY <= 0) {
-      const timeOnPage = Date.now() - performance.timing.navigationStart;
+    if (e.clientY <= 5) {
+      const timeOnPage = Date.now() - mountTime;
       const minTimeOnPage = 10000; // 10 seconds minimum
 
       if (timeOnPage > minTimeOnPage) {
