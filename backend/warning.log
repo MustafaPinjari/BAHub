@@ -61,3 +61,7 @@ ERROR 2026-07-18 12:09:37,443 views 9168 12220 Failed to create Razorpay order: 
 WARNING 2026-07-18 12:09:37,447 log 9168 14892 Bad Request: /api/v1/billing/checkout/
 WARNING 2026-07-18 12:09:37,448 runserver 9168 17968 [31;1mHTTP POST /api/v1/billing/checkout/ 400 [0.87, 127.0.0.1:52148][0m
 WARNING 2026-07-18 12:18:23,801 email_service 9928 16636 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+ERROR 2026-07-18 12:18:36,608 views 9168 1352 Failed to create Razorpay order: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+WARNING 2026-07-18 12:18:36,611 log 9168 14892 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-18 12:18:36,612 runserver 9168 17968 [31;1mHTTP POST /api/v1/billing/checkout/ 400 [0.15, 127.0.0.1:50404][0m
+WARNING 2026-07-18 13:48:24,856 email_service 16180 10652 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.

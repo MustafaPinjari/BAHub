@@ -167,10 +167,10 @@ const NotionIcon = () => (
 // ─── Testimonial card ─────────────────────────────────────────────────────────
 const TestimonialCard: React.FC<{ t: typeof TESTIMONIALS[0] }> = ({ t }) => (
   <figure className="w-[272px] shrink-0 my-2 rounded-2xl border border-white/[0.07] bg-[#0a0a0a] p-5 flex flex-col gap-3 hover:border-white/[0.14] transition-colors cursor-default">
-    <div className="flex gap-0.5">{Array.from({ length: t.stars }).map((_, i) => <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />)}</div>
+    <div className="flex gap-0.5">{Array.from({ length: t.stars }).map((_, i) => <Star key={i} className="w-3 h-3 fill-amber-400 text-[#8B3DFF]" />)}</div>
     <blockquote className="text-[11px] text-gray-400 leading-relaxed flex-1">"{t.text}"</blockquote>
     <figcaption className="flex items-center gap-2.5">
-      <div className="w-7 h-7 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-[10px] font-bold text-purple-400 shrink-0">{t.name[0]}</div>
+      <div className="w-7 h-7 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-[10px] font-bold text-[#8B3DFF] shrink-0">{t.name[0]}</div>
       <div>
         <p className="text-[11px] font-semibold text-white leading-tight">{t.name}</p>
         <p className="text-[9px] text-gray-600">{t.role} · Early access user</p>
@@ -288,497 +288,164 @@ export const PremiumGlassCard: React.FC<PremiumGlassCardProps> = ({
   );
 };
 
-// ─── Feature Showcase Component ───────────────────────────────────────────────
-interface Feature {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  description: string;
-  bullets: string[];
-  cta: string;
-}
-
-const FEATURES: Feature[] = [
-  {
-    id: "ai-requirements",
-    title: "AI Requirements",
-    icon: <Sparkles className="w-4 h-4" />,
-    description: "Transform meeting transcripts into structured requirements with AI-powered extraction and categorization.",
-    bullets: ["Auto-extract from transcripts", "Smart categorization", "Version tracking", "Stakeholder linking"],
-    cta: "Try AI Extraction",
-  },
-  {
-    id: "bpmn-designer",
-    title: "BPMN Designer",
-    icon: <Workflow className="w-4 h-4" />,
-    description: "Build interactive BPMN 2.0 process diagrams with drag-and-drop nodes and real-time collaboration.",
-    bullets: ["Drag-and-drop canvas", "12+ BPMN templates", "Export to XML/PlantUML", "Real-time sync"],
-    cta: "Explore Canvas",
-  },
-  {
-    id: "brd-generator",
-    title: "BRD Generator",
-    icon: <FileText className="w-4 h-4" />,
-    description: "Compile IEEE-structured Business Requirements Documents with one-click PDF and Word export.",
-    bullets: ["IEEE-structured format", "Auto-populate sections", "Sign-off workflow", "Version history"],
-    cta: "Generate BRD",
-  },
-  {
-    id: "user-stories",
-    title: "AI User Stories",
-    icon: <GitBranch className="w-4 h-4" />,
-    description: "Generate Jira-ready user stories with acceptance criteria from requirements automatically.",
-    bullets: ["As-a/I-want/So-that format", "Acceptance criteria", "Story points", "Jira bidirectional sync"],
-    cta: "Create Stories",
-  },
-  {
-    id: "collaboration",
-    title: "Collaboration",
-    icon: <Users className="w-4 h-4" />,
-    description: "Real-time team collaboration with role-based permissions and activity feeds.",
-    bullets: ["Real-time editing", "Role-based access", "Activity feeds", "Comments & mentions"],
-    cta: "Invite Team",
-  },
-  {
-    id: "jira-integration",
-    title: "Jira Integration",
-    icon: <BarChart2 className="w-4 h-4" />,
-    description: "Bidirectional sync with Jira for seamless workflow between BA and engineering teams.",
-    bullets: ["Push stories to Jira", "Sync status updates", "Map custom fields", "Bulk operations"],
-    cta: "Connect Jira",
-  },
-  {
-    id: "compliance",
-    title: "Compliance Inspector",
-    icon: <Shield className="w-4 h-4" />,
-    description: "Automated compliance checks with SOC 2 audit trails and risk assessment workflows.",
-    bullets: ["Automated checks", "SOC 2 audit logs", "Risk scoring", "Mitigation tracking"],
-    cta: "View Compliance",
-  },
-  {
-    id: "analytics",
-    title: "Analytics",
-    icon: <Activity className="w-4 h-4" />,
-    description: "Track project health, requirement coverage, and team productivity with advanced dashboards.",
-    bullets: ["Coverage metrics", "Velocity tracking", "Health scores", "Custom reports"],
-    cta: "View Analytics",
-  },
-];
-
+// ─── Feature Showcase Component (Slanted Cards) ──────────────────────────────
 export const FeatureShowcase: React.FC = () => {
-  const [activeFeature, setActiveFeature] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const featureRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Intersection Observer for scroll-spy effect
-  useEffect(() => {
-    if (isMobile) return;
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = featureRefs.current.findIndex((ref) => ref === entry.target);
-            if (index !== -1) setActiveFeature(index);
-          }
-        });
-      },
-      { rootMargin: "-40% 0px -40% 0px", threshold: 0 }
-    );
-
-    featureRefs.current.forEach((ref) => {
-      if (ref) observer.observe(ref);
-    });
-
-    return () => observer.disconnect();
-  }, [isMobile]);
-
   return (
-    <div className="relative w-full max-w-[1200px] mx-auto z-20">
+    <div className="relative w-full overflow-hidden py-32 sm:py-48 z-20 flex items-center justify-center min-h-[1100px] bg-transparent">
       
-      {/* Desktop: Stripe-style vertical scroll */}
-      {!isMobile && (
-        <div className="flex gap-16 relative items-start">
-          
-          {/* Left Column - Scrolling Text Blocks */}
-          <div className="w-5/12 flex flex-col pt-10 pb-[30vh]">
-            {FEATURES.map((f, i) => (
-              <div 
-                key={f.id} 
-                ref={(el) => { featureRefs.current[i] = el; }}
-                className={`flex flex-col justify-center min-h-[60vh] transition-opacity duration-500 ${
-                  activeFeature === i ? "opacity-100" : "opacity-30"
-                }`}
-              >
-                <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-white mb-6">
-                  {f.icon}
-                </div>
-                <h3 className="text-3xl font-bold text-white mb-4 leading-tight">{f.title}</h3>
-                <p className="text-gray-400 text-base leading-relaxed mb-8">{f.description}</p>
-                <ul className="space-y-4 mb-8">
-                  {f.bullets.map((bullet: string, j: number) => (
-                    <li key={j} className="flex items-start gap-3">
-                      <div className="mt-1 w-4 h-4 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <Check className="w-2.5 h-2.5 text-emerald-400" />
-                      </div>
-                      <span className="text-sm text-gray-300 font-medium">{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm tracking-wide uppercase hover:text-emerald-300 transition-colors cursor-pointer w-fit group">
-                  {f.cta}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Background ambient light */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(109,40,217,0.05)_0%,transparent_70%)]" />
 
-          {/* Right Column - Sticky Preview */}
-          <div className="w-7/12 sticky top-32 h-[600px] rounded-3xl overflow-hidden shadow-2xl border border-white/[0.08] bg-[#0c0c0c]">
-             {/* Window Header */}
-             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/[0.05] bg-black/40">
-                <div className="w-3 h-3 rounded-full bg-white/10"></div>
-                <div className="w-3 h-3 rounded-full bg-white/10"></div>
-                <div className="w-3 h-3 rounded-full bg-white/10"></div>
-             </div>
-             
-             {/* Visual Container */}
-             <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#0a0a0a] to-[#050505]">
-                {/* Subtle Glow */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/5 to-purple-500/5 blur-3xl opacity-50" />
-                
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`preview-${activeFeature}`}
-                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full h-full p-8 z-10"
-                  >
-                    <FeaturePreview featureId={(FEATURES[activeFeature] || FEATURES[0])!.id} />
-                  </motion.div>
-                </AnimatePresence>
-             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile: Standard Stack */}
-      {isMobile && (
-        <div className="flex flex-col gap-16">
-          {FEATURES.map((f) => (
-            <div key={f.id} className="flex flex-col">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-white mb-4">
-                {f.icon}
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-3">{f.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">{f.description}</p>
-              
-              <div className="w-full aspect-[4/3] rounded-2xl border border-white/[0.08] bg-[#0c0c0c] mb-6 overflow-hidden relative">
-                <div className="absolute inset-0 p-4">
-                  <FeaturePreview featureId={f.id} />
-                </div>
+      {/* Infinite Overflow Container */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-90 md:hover:opacity-100 transition-opacity duration-700 pointer-events-none w-full h-full">
+        
+        {/* Rotated Canvas Wrapper */}
+        <div 
+          className="flex gap-6 sm:gap-8 justify-center origin-center transform transition-transform duration-1000 ease-out rotate-[-12deg] scale-110 md:hover:scale-115 pointer-events-auto"
+          style={{ width: "250vw" }}
+        >
+          {/* We repeat the columns to ensure it fills ultra-wide monitors */}
+          {[...Array(3)].map((_, i) => (
+            <React.Fragment key={i}>
+              {/* Column 1 (Staggered up) */}
+              <div className="flex flex-col gap-6 sm:gap-8 -mt-24 sm:-mt-32">
+                <FeatureCard 
+                  icon={<Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="AI Requirements"
+                  desc="Transform meeting transcripts into structured requirements with AI-powered extraction and categorization."
+                  cta="Try AI Extraction"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<RequirementsHeader />}
+                />
+                <FeatureCard 
+                  icon={<Shield className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="Compliance Inspector"
+                  desc="Automated compliance checks with SOC 2 audit trails and risk assessment workflows."
+                  cta="View Compliance"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<AuditHeader />}
+                />
+                <FeatureCard 
+                  icon={<Folder className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="Artifact Repository"
+                  desc="Centralized, version-controlled storage for all project artifacts and specifications."
+                  cta="View Repo"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<div className="w-full h-full bg-gradient-to-br from-[#1A1028] to-[#08080C] flex items-center justify-center"><Folder className="w-16 h-16 text-[#8B3DFF]/20" /></div>}
+                />
               </div>
 
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs tracking-wide uppercase">
-                {f.cta}
-                <ArrowRight className="w-3.5 h-3.5" />
+              {/* Column 2 (Center) */}
+              <div className="flex flex-col gap-6 sm:gap-8 mt-12 sm:mt-16">
+                <FeatureCard 
+                  icon={<Workflow className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="BPMN Designer"
+                  desc="Build interactive BPMN 2.0 process diagrams with drag-and-drop nodes and real-time collaboration."
+                  cta="Explore Canvas"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<DiagramHeader />}
+                />
+                <FeatureCard 
+                  icon={<Users className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="Stakeholder Portal"
+                  desc="A dedicated zero-login portal for stakeholders to review, approve, and sign-off on requirements."
+                  cta="View Portal"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<AIHeader />}
+                />
+                <FeatureCard 
+                  icon={<Activity className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="Traceability Matrix"
+                  desc="Auto-generated, end-to-end trace matrix linking requirements to epics, stories, and tests."
+                  cta="View Matrix"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<RiskHeader />}
+                />
+                <FeatureCard 
+                  icon={<ListChecks className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="Test Case Generator"
+                  desc="AI automatically generates comprehensive test cases from your approved user stories."
+                  cta="Generate Tests"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<div className="w-full h-full bg-gradient-to-br from-[#1A1028] to-[#08080C] flex items-center justify-center"><ListChecks className="w-16 h-16 text-[#8B3DFF]/20" /></div>}
+                />
               </div>
-            </div>
+
+              {/* Column 3 (Staggered up) */}
+              <div className="flex flex-col gap-6 sm:gap-8 -mt-12 sm:-mt-16">
+                <FeatureCard 
+                  icon={<FileText className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="BRD Generator"
+                  desc="Compile IEEE-structured Business Requirements Documents with one-click PDF and Word export."
+                  cta="Generate BRD"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<BRDHeader />}
+                />
+                <FeatureCard 
+                  icon={<GitBranch className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="AI User Stories"
+                  desc="Generate Jira-ready user stories with acceptance criteria from requirements automatically."
+                  cta="Create Stories"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<StoriesHeader />}
+                />
+                <FeatureCard 
+                  icon={<Clock className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="Version History"
+                  desc="Time-travel through requirement changes with exact diffs and author attribution."
+                  cta="View History"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<div className="w-full h-full bg-gradient-to-br from-[#1A1028] to-[#08080C] flex items-center justify-center"><Clock className="w-16 h-16 text-[#6D28D9]/40" /></div>}
+                />
+              </div>
+
+              {/* Column 4 (Staggered far down) */}
+              <div className="flex flex-col gap-6 sm:gap-8 mt-32 sm:mt-48">
+                <FeatureCard 
+                  icon={<BarChart2 className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="Jira Integration"
+                  desc="Bidirectional sync with Jira for seamless workflow between BA and engineering teams."
+                  cta="Connect Jira"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<SwotHeader />}
+                />
+                <FeatureCard 
+                  icon={<Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="Mindmap Visualizer"
+                  desc="Instantly convert complex requirement hierarchies into interactive, zoomable mindmaps."
+                  cta="Visualize"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<div className="w-full h-full bg-gradient-to-br from-[#1A1028] to-[#08080C] flex items-center justify-center"><Sparkles className="w-16 h-16 text-[#6D28D9]/40" /></div>}
+                />
+                <FeatureCard 
+                  icon={<Lock className="w-5 h-5 sm:w-6 sm:h-6 text-[#8B3DFF]" />}
+                  title="RBAC Security"
+                  desc="Enterprise-grade role-based access control for granular permission management."
+                  cta="Manage Access"
+                  ctaColor="text-[#8B3DFF]"
+                  header={<div className="w-full h-full bg-gradient-to-br from-[#1A1028] to-[#08080C] flex items-center justify-center"><Lock className="w-16 h-16 text-[#6D28D9]/40" /></div>}
+                />
+              </div>
+            </React.Fragment>
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-// ─── Feature Preview Animations ───────────────────────────────────────────────
-const FeaturePreview: React.FC<{ featureId: string }> = ({ featureId }) => {
-  const [step, setStep] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStep((prev) => (prev + 1) % 4);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const renderPreview = () => {
-    switch (featureId) {
-      case "ai-requirements":
-        return (
-          <div className="h-full flex flex-col gap-3 font-mono text-[10px]">
-            <div className="flex items-center gap-2 text-gray-500 mb-2">
-              <Terminal className="w-3 h-3" />
-              <span>AI Processing Pipeline</span>
-            </div>
-            {[
-              { label: "Meeting Transcript", status: step >= 0 ? "complete" : "pending" },
-              { label: "AI Extraction", status: step >= 1 ? "complete" : step === 0 ? "active" : "pending" },
-              { label: "Requirement Draft", status: step >= 2 ? "complete" : step === 1 ? "active" : "pending" },
-              { label: "BRD Generated", status: step >= 3 ? "complete" : step === 2 ? "active" : "pending" },
-            ].map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className={`flex items-center gap-3 p-3 rounded-lg border ${
-                  item.status === "complete"
-                    ? "bg-emerald-500/10 border-emerald-500/30"
-                    : item.status === "active"
-                    ? "bg-purple-500/10 border-purple-500/30"
-                    : "bg-white/[0.02] border-white/[0.06]"
-                }`}
-              >
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    item.status === "complete" ? "bg-emerald-400" : item.status === "active" ? "bg-purple-400 animate-pulse" : "bg-gray-600"
-                  }`}
-                />
-                <span className={item.status === "complete" ? "text-emerald-300" : item.status === "active" ? "text-purple-300" : "text-gray-500"}>
-                  {item.label}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        );
-
-      case "bpmn-designer":
-        return (
-          <div className="h-full flex items-center justify-center">
-            <svg className="w-full h-full" viewBox="0 0 400 300">
-              <defs>
-                <pattern id="preview-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#preview-grid)" />
-              {[
-                { x: 50, y: 130, label: "Start" },
-                { x: 150, y: 130, label: "Process", active: step === 0 },
-                { x: 250, y: 80, label: "Decision", active: step === 1 },
-                { x: 250, y: 180, label: "Task", active: step === 2 },
-                { x: 350, y: 130, label: "End", active: step === 3 },
-              ].map((node, i) => (
-                <g key={i}>
-                  <motion.rect
-                    x={node.x}
-                    y={node.y}
-                    width="80"
-                    height="40"
-                    rx="8"
-                    fill={node.active ? "#1b122b" : "#111"}
-                    stroke={node.active ? "rgba(168,85,247,0.6)" : "rgba(255,255,255,0.08)"}
-                    strokeWidth="1.5"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: i * 0.1 }}
-                  />
-                  <text x={node.x + 40} y={node.y + 24} textAnchor="middle" fill={node.active ? "#c084fc" : "#fff"} fontSize="9" fontWeight="bold" fontFamily="monospace">
-                    {node.label}
-                  </text>
-                </g>
-              ))}
-              {/* Animated connectors */}
-              <motion.path
-                d="M 130 150 L 150 150"
-                stroke="rgba(168,85,247,0.4)"
-                strokeWidth="1.5"
-                strokeDasharray="5,5"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1, delay: 0.2 }}
-              />
-              <motion.path
-                d="M 230 150 L 250 150 L 250 120"
-                stroke="rgba(168,85,247,0.4)"
-                strokeWidth="1.5"
-                strokeDasharray="5,5"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1, delay: 0.4 }}
-              />
-            </svg>
-          </div>
-        );
-
-      case "brd-generator":
-        return (
-          <div className="h-full bg-white text-gray-900 p-4 font-serif text-[9px] overflow-hidden">
-            <div className="text-center border-b-2 border-gray-900 pb-2 mb-3">
-              <h1 className="text-[11px] font-bold uppercase tracking-wider">Business Requirements Document</h1>
-              <p className="text-[8px] text-gray-500 uppercase tracking-widest mt-1">Project: Checkout Engine</p>
-            </div>
-            <div className="space-y-2">
-              {[
-                { title: "1. Introduction", active: step === 0 },
-                { title: "2. Functional Requirements", active: step === 1 },
-                { title: "3. Non-Functional Requirements", active: step === 2 },
-                { title: "4. Appendices", active: step === 3 },
-              ].map((section, i) => (
-                <motion.div
-                  key={section.title}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`p-2 rounded border ${section.active ? "bg-purple-50 border-purple-300" : "bg-gray-50 border-gray-200"}`}
-                >
-                  <span className={`font-bold ${section.active ? "text-purple-700" : "text-gray-700"}`}>{section.title}</span>
-                  {section.active && (
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: "auto" }}
-                      className="mt-1 text-gray-600"
-                    >
-                      <p>REQ-001: Authentication flow...</p>
-                      <p>REQ-002: Payment processing...</p>
-                    </motion.div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        );
-
-      case "user-stories":
-        return (
-          <div className="h-full flex flex-col gap-2">
-            <div className="flex items-center gap-2 text-gray-500 mb-2">
-              <GitBranch className="w-3 h-3" />
-              <span className="text-[10px] font-semibold">Story Hierarchy</span>
-            </div>
-            {[
-              { label: "Epic: Checkout Flow", level: 0, active: step === 0 },
-              { label: "Story: User Login", level: 1, active: step === 1 },
-              { label: "Task: OAuth Setup", level: 2, active: step === 2 },
-              { label: "Criteria: Valid Token", level: 2, active: step === 3 },
-            ].map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className={`p-2 rounded-lg border ml-${item.level * 4} ${
-                  item.active
-                    ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                    : "bg-white/[0.02] border-white/[0.06] text-gray-500"
-                }`}
-              >
-                <span className="text-[10px]">{item.label}</span>
-              </motion.div>
-            ))}
-          </div>
-        );
-
-      case "jira-integration":
-        return (
-          <div className="h-full flex flex-col gap-2">
-            <div className="flex items-center gap-2 text-gray-500 mb-2">
-              <BarChart2 className="w-3 h-3" />
-              <span className="text-[10px] font-semibold">Sync Pipeline</span>
-            </div>
-            {[
-              { label: "BAHub Requirement", status: step >= 0 ? "synced" : "pending" },
-              { label: "Map to Jira Field", status: step >= 1 ? "synced" : step === 0 ? "syncing" : "pending" },
-              { label: "Create Jira Issue", status: step >= 2 ? "synced" : step === 1 ? "syncing" : "pending" },
-              { label: "Status Update", status: step >= 3 ? "synced" : step === 2 ? "syncing" : "pending" },
-            ].map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className={`flex items-center justify-between p-3 rounded-lg border ${
-                  item.status === "synced"
-                    ? "bg-emerald-500/10 border-emerald-500/30"
-                    : item.status === "syncing"
-                    ? "bg-blue-500/10 border-blue-500/30"
-                    : "bg-white/[0.02] border-white/[0.06]"
-                }`}
-              >
-                <span className={`text-[10px] ${item.status === "synced" ? "text-emerald-300" : item.status === "syncing" ? "text-blue-300" : "text-gray-500"}`}>
-                  {item.label}
-                </span>
-                {item.status === "syncing" && (
-                  <motion.div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                )}
-                {item.status === "synced" && <Check className="w-3 h-3 text-emerald-400" />}
-              </motion.div>
-            ))}
-          </div>
-        );
-
-      case "analytics":
-        return (
-          <div className="h-full flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-gray-500 mb-1">
-              <Activity className="w-3 h-3" />
-              <span className="text-[10px] font-semibold">Project Health</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: "Coverage", value: "87%", color: "emerald" },
-                { label: "Velocity", value: "42 pts", color: "blue" },
-                { label: "Health", value: "A+", color: "purple" },
-                { label: "Risks", value: "3 Low", color: "amber" },
-              ].map((metric, i) => (
-                <motion.div
-                  key={metric.label}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`p-3 rounded-lg border bg-${metric.color}-500/10 border-${metric.color}-500/30`}
-                >
-                  <div className="text-[9px] text-gray-500">{metric.label}</div>
-                  <div className={`text-lg font-bold text-${metric.color}-400`}>{metric.value}</div>
-                </motion.div>
-              ))}
-            </div>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex-1 bg-white/[0.02] border border-white/[0.06] rounded-lg p-3"
-            >
-              <div className="text-[9px] text-gray-500 mb-2">Trend (Last 30 days)</div>
-              <div className="flex items-end gap-1 h-16">
-                {[40, 55, 45, 60, 70, 65, 80, 75, 85, 90].map((h, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    transition={{ delay: 0.5 + i * 0.05 }}
-                    className="flex-1 bg-emerald-500/30 rounded-t"
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        );
-
-      default:
-        return (
-          <div className="h-full flex items-center justify-center text-gray-500 text-[11px]">
-            <div className="text-center">
-              <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p>Preview coming soon</p>
-            </div>
-          </div>
-        );
-    }
-  };
-
-  return <div className="h-full">{renderPreview()}</div>;
-};
+const FeatureCard = ({ icon, title, desc, cta, ctaColor, header }: any) => (
+  <div className="w-[300px] sm:w-[350px] lg:w-[420px] group relative h-[320px] sm:h-[380px] rounded-[2rem] overflow-hidden bg-[#12111A] border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500 md:hover:-translate-y-4 hover:shadow-[0_30px_60px_rgba(139,61,255,0.15)] flex-shrink-0">
+    <div className="absolute inset-x-0 -top-10 h-[65%] opacity-60 group-hover:opacity-100 pointer-events-none group-hover:scale-105 transition-all duration-700 ease-out origin-top flex items-center justify-center">
+      {header}
+    </div>
+    <div className="absolute bottom-0 inset-x-0 p-6 sm:p-8 bg-gradient-to-t from-[#08080C] via-[#08080C]/95 to-transparent flex flex-col justify-end h-[60%] z-10">
+       <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3">{icon} {title}</h3>
+       <p className="text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6 leading-relaxed line-clamp-2">{desc}</p>
+       <button className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider ${ctaColor} flex items-center gap-2 group-hover:gap-4 transition-all w-fit bg-white/[0.03] hover:bg-white/[0.08] py-2 px-4 rounded-full border border-white/[0.05]`}>{cta} <ArrowRight className="w-3 h-3" /></button>
+    </div>
+  </div>
+);
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onNavigateToRegister, onTryDemo }) => {
@@ -790,11 +457,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
   // Tagline rotating state
   const [taglineIndex, setTaglineIndex] = useState(0);
   const taglines = [
-    "Business Requirements (BRD)",
-    "Functional Specifications (FRD)",
-    "BPMN Process Diagrams",
+    "Software Requirements (SRS)",
+    "System Architecture Docs",
+    "API Contracts & Specs",
     "Jira-Ready User Stories",
-    "Compliance Audit Trails",
+    "BPMN Process Flows",
   ];
 
   useEffect(() => {
@@ -857,7 +524,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500/25 selection:text-white overflow-x-hidden antialiased">
+    <div className="min-h-screen bg-[#08080C] text-white font-sans selection:bg-purple-500/25 selection:text-white overflow-x-hidden antialiased">
       {/* Atmospheric orbs */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-180px] left-[28%] w-[700px] h-[700px] rounded-full bg-purple-600/[0.07] blur-[140px]" />
@@ -868,14 +535,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
 
       {/* ── NAVBAR ───────────────────────────────────────────────────────────── */}
       <div className="sticky top-0 z-50 px-3 sm:px-4 pt-4">
-        <nav className="max-w-[1380px] w-full mx-auto bg-black/50 backdrop-blur-2xl border border-white/[0.08] rounded-2xl px-4 sm:px-6 md:px-10 lg:px-16 py-3 sm:py-4 flex items-center justify-between shadow-2xl shadow-black/60">
+        <nav className="max-w-[1380px] w-full mx-auto bg-[#08080C]/50 backdrop-blur-2xl border border-white/[0.08] rounded-2xl px-4 sm:px-6 md:px-10 lg:px-16 py-3 sm:py-4 flex items-center justify-between shadow-2xl shadow-black/60">
           <div className="flex items-center gap-2 sm:gap-2.5">
             <div className="w-6 h-6 sm:w-7 sm:h-7 bg-white/[0.06] rounded-lg flex items-center justify-center border border-white/[0.10]">
               <img src={logo} alt="BAHub" className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
             </div>
             <div className="flex flex-col leading-none">
               <span className="font-extrabold text-[10px] sm:text-[11px] tracking-widest uppercase text-white/90">BAHub</span>
-              <span className="text-[6px] sm:text-[7px] font-bold text-purple-400 uppercase tracking-widest">Workspace Platform</span>
+              <span className="text-[6px] sm:text-[7px] font-bold text-[#8B3DFF] uppercase tracking-widest">Workspace Platform</span>
             </div>
           </div>
           <div className="hidden md:flex items-center gap-4 sm:gap-6 text-[10px] sm:text-[11px] font-semibold tracking-wide text-gray-500">
@@ -897,7 +564,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
       <section
         onMouseMove={handleMouseMove}
-        className="relative min-h-[90vh] sm:min-h-[95vh] flex items-center justify-center mt-4 lg:mt-6 pt-24 sm:pt-32 pb-[120px] sm:pb-[160px] px-4 sm:px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 group overflow-visible rounded-3xl"
+        className="relative flex items-center justify-center mt-4 lg:mt-6 py-10 sm:py-16 px-4 sm:px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 group overflow-visible rounded-3xl"
         style={{
           background: 'radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.10) 0%, transparent 60%), #050505',
           boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.05)'
@@ -920,37 +587,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           }}
         />
 
-        {/* Elegant Flowing Purple Glass Ribbons behind the text */}
-        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden flex items-center justify-center">
-          <svg className="w-[1200px] h-[700px] opacity-60" viewBox="0 0 1200 700" fill="none">
+        {/* Mesh Gradient Wave Background */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden flex items-end justify-center">
+          {/* Noise texture overlay for that premium grainy feel */}
+          <div className="absolute inset-0 z-10 opacity-[0.12] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E")' }}></div>
+          
+          <svg className="w-[150%] h-[120%] min-w-[1200px] max-w-[2000px] opacity-60 translate-y-[10%]" viewBox="0 0 1200 800" preserveAspectRatio="none" fill="none">
             <defs>
-              <linearGradient id="ribbonGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#d946ef" stopOpacity="0.12" />
-                <stop offset="40%" stopColor="#a855f7" stopOpacity="0.06" />
-                <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+              <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3b82f6" />      {/* Blue */}
+                <stop offset="40%" stopColor="#8b5cf6" />     {/* Purple */}
+                <stop offset="100%" stopColor="#d946ef" />    {/* Pink/Magenta */}
               </linearGradient>
-              <linearGradient id="ribbonGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.08" />
-                <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.04" />
-                <stop offset="100%" stopColor="#ec4899" stopOpacity="0" />
-              </linearGradient>
-              <filter id="ribbonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="25" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
+              <filter id="hugeBlur" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="70" result="blur" />
               </filter>
             </defs>
-            <path d="M 100 250 C 400 50, 800 650, 1100 350" stroke="url(#ribbonGrad1)" strokeWidth="80" strokeLinecap="round" filter="url(#ribbonGlow)" />
-            <path d="M 200 500 C 500 550, 700 150, 1000 400" stroke="url(#ribbonGrad2)" strokeWidth="60" strokeLinecap="round" filter="url(#ribbonGlow)" />
+            {/* Swooping wave path */}
+            <path d="M -200 900 C 200 900, 350 150, 700 350 C 1050 550, 1100 -50, 1500 150 L 1500 1200 L -200 1200 Z" fill="url(#waveGrad)" filter="url(#hugeBlur)" />
           </svg>
         </div>
 
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto relative z-10 w-full my-[20px] sm:my-[40px] px-2">
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto relative z-10 w-full my-0 sm:my-4 px-2">
           {/* Announcement Badge */}
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mb-8 sm:mb-12 select-none">
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mb-4 sm:mb-6 select-none">
             <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
             <span className="text-white/40">BAHub Platform</span>
             <span className="text-white/20">·</span>
@@ -962,7 +623,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="text-3xl sm:text-5xl lg:text-7xl xl:text-[84px] font-black tracking-tight leading-[1.05] sm:leading-[1.05] mb-6 sm:mb-10 flex flex-col items-center text-center w-full"
+            className="text-3xl sm:text-5xl lg:text-7xl xl:text-[84px] font-black tracking-tight leading-[1.05] sm:leading-[1.05] mb-3 sm:mb-4 flex flex-col items-center text-center w-full"
           >
             <span className="text-white drop-shadow-sm">
               Ship traceable
@@ -991,9 +652,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="text-gray-400/80 text-sm sm:text-base lg:text-[19px] leading-relaxed mb-12 sm:mb-16 max-w-[640px] mx-auto text-center font-normal tracking-wide px-4"
+            className="text-gray-400/80 text-sm sm:text-base lg:text-[19px] leading-relaxed mb-6 sm:mb-8 max-w-[640px] mx-auto text-center font-normal tracking-wide px-4"
           >
-            Paste meeting notes. Get requirements, diagrams, BRDs, risk registers, and a Jira-ready backlog — <span className="text-white/80 font-medium">all linked, all traceable.</span>
+            Paste meeting notes. Get SRS documents, system architecture diagrams, user stories, API contracts, and a Jira-ready backlog — <span className="text-white/80 font-medium">all linked, all traceable.</span>
           </motion.p>
 
           {/* CTAs */}
@@ -1001,7 +662,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-            className="flex flex-col sm:flex-wrap items-center justify-center gap-3 sm:gap-6 mb-16 sm:mb-24 w-full px-4"
+            className="flex flex-col sm:flex-wrap items-center justify-center gap-3 sm:gap-6 mb-8 sm:mb-10 w-full px-4"
           >
             {/* Primary CTA */}
             <button
@@ -1010,17 +671,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             >
               {/* Shine reflection effect */}
               <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full transition-transform duration-1000 ease-out group-hover:translate-x-[300%]" />
-              <span className="hidden sm:inline">Generate Your First BRD in 60 Seconds →</span>
-              <span className="sm:hidden">Generate BRD →</span>
+              <span className="hidden sm:inline">Generate Your First SRS in 60 Seconds →</span>
+              <span className="sm:hidden">Generate SRS →</span>
               <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1" />
             </button>
 
             {/* Try Demo CTA */}
             <button
               onClick={onTryDemo}
-              className="group w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-[12px] sm:text-[13px] font-semibold tracking-wide border border-white/[0.08] text-white/80 hover:text-white hover:bg-white/[0.04] hover:border-white/[0.18] active:scale-95 transition-all cursor-pointer bg-[#0c0c0c]/40 backdrop-blur-md flex items-center justify-center gap-2 min-h-[48px]"
+              className="group w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl text-[12px] sm:text-[13px] font-semibold tracking-wide border border-white/[0.08] text-white/80 hover:text-white hover:bg-white/[0.04] hover:border-white/[0.18] active:scale-95 transition-all cursor-pointer bg-[#12111A]/40 backdrop-blur-md flex items-center justify-center gap-2 min-h-[48px]"
             >
-              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-400 group-hover:text-purple-300 transition-colors" />
+              <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B3DFF] group-hover:text-purple-300 transition-colors" />
               Try Demo
             </button>
           </motion.div>
@@ -1053,7 +714,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-16 w-full max-w-5xl mx-auto"
+            className="mt-6 sm:mt-8 w-full max-w-5xl mx-auto"
           >
             <p className="text-center text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-8">
               Trusted by business analysts at
@@ -1086,10 +747,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
           <p className="text-[9px] font-bold text-gray-700 uppercase tracking-[0.2em]">Built for Business Analysts</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center w-full">
             {[
-              { value: "17", label: "Integrated Modules", color: "text-purple-400" },
-              { value: "4× faster", label: "BRD vs. Manual", color: "text-blue-400" },
+              { value: "17", label: "Integrated Modules", color: "text-[#8B3DFF]" },
+              { value: "4× faster", label: "BRD vs. Manual", color: "text-[#8B3DFF]" },
               { value: "AI-Native", label: "Gemini-Powered", color: "text-green-400" },
-              { value: "Free Trial", label: "No Credit Card", color: "text-amber-400" },
+              { value: "Free Trial", label: "No Credit Card", color: "text-[#8B3DFF]" },
             ].map(s => (
               <div key={s.label} className="flex flex-col gap-2">
                 <span className={`text-3xl md:text-4xl font-extrabold tracking-tight ${s.color}`}>{s.value}</span>
@@ -1103,7 +764,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────────── */}
       <section id="workflow" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative">
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-blue-400 mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-[#8B3DFF] mb-6">
             Workflow
           </div>
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-6">
@@ -1132,9 +793,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── SEE BAHUB IN ACTION ───────────────────────────────────────────────── */}
-      <section id="in-action" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-[#030209]/40 border-t border-b border-white/[0.02]">
-        <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-6">
+      <section id="in-action" className="pt-[160px] w-full z-10 relative bg-[#08080C] border-t border-b border-white/[0.02] overflow-hidden">
+        <div className="text-center mb-20 max-w-[1380px] mx-auto px-6 md:px-10 lg:px-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-[#8B3DFF] mb-6">
             See BAHub in Action
           </div>
           <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-6">
@@ -1147,9 +808,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── SANDBOX ──────────────────────────────────────────────────────────── */}
-      <section id="sandbox" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-[#030209]/40 border-t border-b border-white/[0.02]">
+      <section id="sandbox" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-[#08080C] border-t border-b border-white/[0.02]">
         <div className="text-center mb-20 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-[#8B3DFF] mb-6">
             Interactive Workspace Preview
           </div>
           <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight mb-6">
@@ -1181,7 +842,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
         </div>
 
         <div className="w-full rounded-3xl overflow-hidden shadow-2xl border relative my-[80px]" style={{ background: '#0a0a0a', borderColor: 'rgba(255,255,255,0.07)' }}>
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-black/70 relative z-10">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-[#08080C]/70 relative z-10">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
               <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
@@ -1223,13 +884,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                       animate={{ opacity: 1, y: 0 }}
                       className="flex items-start gap-3"
                     >
-                      <div className="w-8 h-8 rounded-full bg-purple-600/15 border border-purple-500/30 flex items-center justify-center text-[10px] text-purple-400 font-bold shrink-0">AI</div>
+                      <div className="w-8 h-8 rounded-full bg-purple-600/15 border border-purple-500/30 flex items-center justify-center text-[10px] text-[#8B3DFF] font-bold shrink-0">AI</div>
                       <div className="bg-purple-950/20 border border-purple-500/15 rounded-2xl rounded-tl-none px-4 py-3 text-xs text-gray-300 max-w-[85%] flex flex-col gap-2">
                         <p className="font-semibold text-[11px] text-purple-300">✨ Generated Specification Summary</p>
-                        <div className="bg-black/40 border border-white/[0.04] p-3 rounded-lg flex flex-col gap-1.5 font-mono text-[10px] text-left">
-                          <p><span className="text-purple-400">1. Requirement</span> REQ-001: Stripe Subscription Management</p>
-                          <p><span className="text-purple-400">2. User Story</span> US-010: As an admin I want to purchase...</p>
-                          <p><span className="text-purple-400">3. Process Flow</span> BPMN checkout generated and traced.</p>
+                        <div className="bg-[#08080C]/40 border border-white/[0.04] p-3 rounded-lg flex flex-col gap-1.5 font-mono text-[10px] text-left">
+                          <p><span className="text-[#8B3DFF]">1. Requirement</span> REQ-001: Stripe Subscription Management</p>
+                          <p><span className="text-[#8B3DFF]">2. User Story</span> US-010: As an admin I want to purchase...</p>
+                          <p><span className="text-[#8B3DFF]">3. Process Flow</span> BPMN checkout generated and traced.</p>
                         </div>
                         <p className="text-[10px] text-gray-500">I have also populated the traceability matrix and linked the corresponding risk profile (RSK-04).</p>
                       </div>
@@ -1298,7 +959,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 >
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Hover a Requirement to view linked objects</span>
-                    <span className="text-[9px] bg-purple-600/10 border border-purple-500/20 text-purple-400 font-bold px-2 py-0.5 rounded">Trace Map</span>
+                    <span className="text-[9px] bg-purple-600/10 border border-purple-500/20 text-[#8B3DFF] font-bold px-2 py-0.5 rounded">Trace Map</span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 flex-1">
@@ -1315,11 +976,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                           onMouseEnter={() => setHoveredReq(r.id)}
                           onMouseLeave={() => setHoveredReq(null)}
                           className={`p-3 rounded-xl border text-[11px] transition-all duration-300 cursor-pointer ${hoveredReq === r.id
-                            ? "bg-purple-950/20 border-purple-500 text-white shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+                            ? "bg-purple-950/20 border-purple-500 text-white shadow-[0_0_15px_rgba(139,61,255,0.15)]"
                             : "bg-white/[0.02] border-white/[0.06] text-gray-400 hover:border-white/10"
                             }`}
                         >
-                          <span className="font-mono font-bold text-[10px] text-purple-400 mr-2">{r.code}</span>
+                          <span className="font-mono font-bold text-[10px] text-[#8B3DFF] mr-2">{r.code}</span>
                           {r.title}
                         </div>
                       ))}
@@ -1343,8 +1004,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                               }`}
                           >
                             <div className="flex items-center gap-1.5 mb-1">
-                              <span className={`font-mono font-bold text-[9px] ${isLinked ? "text-blue-400" : "text-gray-500"}`}>{item.code}</span>
-                              <span className={`text-[8px] font-black tracking-widest ${item.type === "RISK" ? "text-red-400/80" : "text-green-400/80"}`}>{item.type}</span>
+                              <span className={`font-mono font-bold text-[9px] ${isLinked ? "text-[#8B3DFF]" : "text-gray-500"}`}>{item.code}</span>
+                              <span className={`text-[8px] font-black tracking-widest ${item.type === "RISK" ? "text-[#8B3DFF]/80" : "text-green-400/80"}`}>{item.type}</span>
                             </div>
                             <p className="line-clamp-1">{item.title}</p>
                           </div>
@@ -1425,37 +1086,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
         </div>
       </section>
 
-      {/* ── FEATURES BENTO ───────────────────────────────────────────────────── */}
-      <section id="features" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-black">
-        <div className="text-center mb-20 max-w-3xl mx-auto flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-6">
-            17 Integrated Modules
-          </div>
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-6">
-            Designed for <span className="text-gradient-blue-purple">Analysts & PMs</span>
-          </h2>
-          <p className="text-gray-500 text-sm max-w-[650px] leading-relaxed">
-            Every module is interconnected — change a requirement and its diagrams, stories, and documents update automatically.
-          </p>
-        </div>
-        <BentoGrid>
-          <BentoGridItem className="md:col-span-2" icon={<FileCheck className="w-4 h-4 text-white/40" />} title="Requirements Manager" description="Capture Functional, Non-Functional, Technical, and UI requirements with priority, versioning, and stakeholder source links. AI-generates drafts from raw transcripts." header={<RequirementsHeader />} />
-          <BentoGridItem icon={<Sparkles className="w-4 h-4 text-white/40" />} title="AI Assistant" description="Context-aware BA chat. Drafts user stories, audits risks, writes QA scripts, and answers questions about your active project data." header={<AIHeader />} />
-          <BentoGridItem icon={<FileText className="w-4 h-4 text-white/40" />} title="BRD / FRD Generator" description="Compiles IEEE-structured Business and Functional Requirements Documents. Draft → review → approved → signed-off with PDF & Word export." header={<BRDHeader />} />
-          <BentoGridItem className="md:col-span-2" icon={<Workflow className="w-4 h-4 text-white/40" />} title="Interactive Flow Canvas" description="Build BPMN 2.0, UML Use Case, Sequence, ERD, and Customer Journey diagrams. 12+ templates. Export to draw.io, PlantUML, Mermaid.js, BPMN XML." header={<DiagramHeader />} />
-          <BentoGridItem icon={<Shield className="w-4 h-4 text-white/40" />} title="Risk Register" description="Log risks with probability, impact scoring, mitigation plans, and lifecycle — Identified → Mitigated → Occurred → Closed." header={<RiskHeader />} />
-          <BentoGridItem icon={<Zap className="w-4 h-4 text-white/40" />} title="SWOT Analysis" description="Structured Strengths, Weaknesses, Opportunities, and Threats workspace per project. Compare models across iterations." header={<SwotHeader />} />
-          <BentoGridItem icon={<GitBranch className="w-4 h-4 text-white/40" />} title="User Stories & Kanban" description="AI-generates As a / I want / So that stories. Kanban with TODO → In Progress → QA → Done, story points, and acceptance criteria. Syncs to Jira." header={<StoriesHeader />} />
-          <BentoGridItem icon={<Terminal className="w-4 h-4 text-white/40" />} title="Full Audit Log" description="Every CREATE, UPDATE, DELETE, and LOGIN recorded with IP, user agent, and field-level diffs. SOC 2 evidence packages on demand." header={<AuditHeader />} />
-          <BentoGridItem className="md:col-span-2" icon={<Clock className="w-4 h-4 text-white/40" />} title="Meetings · Change Requests · Gap Analysis" description="Log meeting minutes and action items. Manage formal change requests with approval gates. Map current vs. future state gaps with resolution tracking." />
-        </BentoGrid>
-      </section>
 
       {/* ── INTEGRATIONS ─────────────────────────────────────────────────────── */}
-      <section id="integrations" className="py-[160px] border-t border-b border-white/[0.04] bg-[#020205]">
+      <section id="integrations" className="py-[160px] border-t border-b border-white/[0.04] bg-[#08080C]">
         <div className="max-w-[1380px] w-full mx-auto px-6 md:px-10 lg:px-16 flex flex-col lg:flex-row items-center gap-24 text-left">
           <div className="flex-1 flex flex-col gap-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-blue-400 self-start mb-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-[#8B3DFF] self-start mb-2">
               Engineering Sync
             </div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
@@ -1477,7 +1113,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── MORE PLATFORM CAPABILITIES ───────────────────────────────────────── */}
-      <section className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-black">
+      <section className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto z-10 relative bg-[#08080C]">
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-violet-400 mb-6">
             Also in the platform
@@ -1638,9 +1274,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── TESTIMONIALS ─────────────────────────────────────────────────────── */}
-      <section id="testimonials" className="py-[160px] relative overflow-hidden bg-black">
+      <section id="testimonials" className="py-[160px] relative overflow-hidden bg-[#08080C]">
         <div className="max-w-[1380px] w-full mx-auto px-6 md:px-10 lg:px-16 text-center mb-20 relative z-10 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-amber-400 mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-[#8B3DFF] mb-6">
             <Star className="w-3 h-3 fill-amber-400" /> Customer Reviews
           </div>
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-6">
@@ -1673,7 +1309,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── PRICING ──────────────────────────────────────────────────────────── */}
-      <section id="pricing" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto text-center z-10 relative bg-[#020205]">
+      <section id="pricing" className="py-[160px] px-6 md:px-10 lg:px-16 max-w-[1380px] w-full mx-auto text-center z-10 relative bg-[#08080C]">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.08] bg-gray-950/50 text-[10px] font-bold uppercase tracking-wider text-green-400 mb-6">
           Pricing
         </div>
@@ -1744,7 +1380,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────────────────── */}
-      <section id="faq" className="py-[140px] px-6 md:px-10 lg:px-16 border-t border-white/[0.05] bg-black">
+      <section id="faq" className="py-[140px] px-6 md:px-10 lg:px-16 border-t border-white/[0.05] bg-[#08080C]">
         <div className="max-w-[1380px] w-full mx-auto grid lg:grid-cols-[1fr_1.6fr] gap-24 items-start">
           {/* Left panel */}
           <div className="flex flex-col gap-8 lg:sticky lg:top-28">
@@ -1828,7 +1464,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/[0.06] py-[120px] px-6 md:px-10 lg:px-16 bg-black relative z-10">
+      <footer className="border-t border-white/[0.06] py-[120px] px-6 md:px-10 lg:px-16 bg-[#08080C] relative z-10">
         <div className="max-w-[1380px] w-full mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-6 gap-16 mb-16">
             <div className="col-span-2 flex flex-col gap-4">
@@ -1838,7 +1474,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToLogin, onN
                 </div>
                 <div>
                   <span className="font-extrabold text-[11px] tracking-widest uppercase text-white/90">BAHub</span>
-                  <p className="text-[8px] font-bold text-purple-400 uppercase tracking-widest">Workspace Platform</p>
+                  <p className="text-[8px] font-bold text-[#8B3DFF] uppercase tracking-widest">Workspace Platform</p>
                 </div>
               </div>
               <p className="text-[11px] text-gray-600 leading-relaxed max-w-[180px]">The AI-powered BA workspace for traceable specifications and process engineering.</p>
