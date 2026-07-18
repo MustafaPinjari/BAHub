@@ -37,3 +37,27 @@ WARNING 2026-07-17 12:02:15,778 log 11064 9936 Unauthorized: /api/v1/auth/profil
 WARNING 2026-07-17 12:02:15,780 runserver 11064 8940 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.04, 127.0.0.1:52171][0m
 WARNING 2026-07-17 12:02:15,790 log 11064 9936 Unauthorized: /api/v1/auth/profile/
 WARNING 2026-07-17 12:02:15,791 runserver 11064 8940 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:52171][0m
+WARNING 2026-07-18 11:57:58,639 email_service 8904 8316 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-18 12:00:29,619 log 8904 15872 Unknown Status Code: /api/v1/auth/login/
+WARNING 2026-07-18 12:01:07,758 log 8904 15872 Unauthorized: /api/v1/auth/login/
+WARNING 2026-07-18 12:01:07,759 runserver 8904 4308 [31;1mHTTP POST /api/v1/auth/login/ 401 [0.43, 127.0.0.1:58282][0m
+WARNING 2026-07-18 12:01:19,850 exceptions 8904 2096 API Error (400): {'email': [ErrorDetail(string='A user with that email already exists.', code='invalid')]}
+WARNING 2026-07-18 12:01:19,852 log 8904 15872 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-18 12:01:19,852 runserver 8904 4308 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.01, 127.0.0.1:58282][0m
+WARNING 2026-07-18 12:02:35,070 exceptions 8904 17644 API Error (400): {'organization_name': ErrorDetail(string='An organization with this name already exists. Please choose a different name.', code='invalid')}
+WARNING 2026-07-18 12:02:35,072 log 8904 15872 Bad Request: /api/v1/auth/register/
+WARNING 2026-07-18 12:02:35,072 runserver 8904 4308 [31;1mHTTP POST /api/v1/auth/register/ 400 [0.02, 127.0.0.1:60221][0m
+WARNING 2026-07-18 12:02:56,364 exceptions 8904 9716 API Error (405): Method "GET" not allowed.
+WARNING 2026-07-18 12:02:57,124 log 8904 15872 Method Not Allowed: /api/v1/billing/verify-subscription/
+WARNING 2026-07-18 12:02:57,125 runserver 8904 4308 [31;1mHTTP GET /api/v1/billing/verify-subscription/?token=3584efdd-911b-4542-b560-03624ccc3f96&org_id=173f7db9-420a-47f3-8829-5699028df4af&redirect_uri=http://127.0.0.1:5173 405 [0.77, 127.0.0.1:51518][0m
+WARNING 2026-07-18 12:02:57,643 log 8904 10060 Not Found: /favicon.ico
+WARNING 2026-07-18 12:02:57,644 runserver 8904 4308 [33mHTTP GET /favicon.ico 404 [0.04, 127.0.0.1:52055][0m
+WARNING 2026-07-18 12:08:01,491 exceptions 8904 10208 API Error (405): Method "GET" not allowed.
+WARNING 2026-07-18 12:08:01,523 log 8904 8960 Method Not Allowed: /api/v1/billing/verify-subscription/
+WARNING 2026-07-18 12:08:01,525 runserver 8904 4308 [31;1mHTTP GET /api/v1/billing/verify-subscription/?token=235f8860-dbcf-47af-96a0-2bb493284b03&org_id=8650c0a9-a9e7-4074-bf22-866f6e9f517d&redirect_uri=http://127.0.0.1:5173 405 [0.05, 127.0.0.1:51616][0m
+WARNING 2026-07-18 12:08:53,122 email_service 9168 14116 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-18 12:09:32,172 email_service 20420 19296 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+ERROR 2026-07-18 12:09:37,443 views 9168 12220 Failed to create Razorpay order: Authentication failed
+WARNING 2026-07-18 12:09:37,447 log 9168 14892 Bad Request: /api/v1/billing/checkout/
+WARNING 2026-07-18 12:09:37,448 runserver 9168 17968 [31;1mHTTP POST /api/v1/billing/checkout/ 400 [0.87, 127.0.0.1:52148][0m
+WARNING 2026-07-18 12:18:23,801 email_service 9928 16636 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.

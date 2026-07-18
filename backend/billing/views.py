@@ -205,12 +205,13 @@ class CreateCheckoutSessionView(APIView):
         # Fallback to mock checkout redirects in test mode, development, or if Razorpay is unconfigured
         import sys
         is_testing = 'test' in sys.argv or any('test' in arg for arg in sys.argv)
-        is_development = settings.DEBUG
-        if is_testing or is_development or not razorpay_client.auth:
+        
+        # If Razorpay keys are missing, or we're running tests, fallback to mock checkout.
+        if is_testing or not getattr(settings, "RAZORPAY_KEY_ID", None) or not getattr(settings, "RAZORPAY_KEY_SECRET", None):
             mock_checkout_url = f"{request.build_absolute_uri('/api/v1/billing/mock-upgrade/')}?plan={plan}&org_id={request.user.organization.id}&redirect_uri={frontend_origin}"
             return api_success(
                 data={"checkout_url": mock_checkout_url, "mode": "MOCK"},
-                message="Mock checkout session initiated in development."
+                message="Mock checkout session initiated."
             )
 
         if not razorpay_client.auth:
@@ -477,6 +478,32 @@ class MockUpgradeView(APIView):
 
 class VerifySubscriptionView(APIView):
     permission_classes = [AllowAny]
+
+    def get(self, request):
+        token = request.query_params.get("token")
+        org_id = request.query_params.get("org_id")
+        redirect_uri = request.query_params.get("redirect_uri")
+        
+        if not token or not org_id:
+            return api_error(message="Missing token or org_id", status_code=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            from organizations.models import Organization
+            org = Organization.objects.get(id=org_id)
+            sub = TenantSubscription.objects.get(organization=org, verification_token=token)
+            
+            sub.plan_verified = True
+            sub.is_active = True
+            sub.payment_status = "SUCCESS"
+            sub.verification_token = None
+            sub.expires_at = timezone.now() + datetime.timedelta(days=30)
+            sub.save()
+            
+            safe_uri = _safe_redirect_uri(redirect_uri)
+            return redirect(f"{safe_uri}/dashboard")
+            
+        except (Organization.DoesNotExist, TenantSubscription.DoesNotExist):
+            return api_error(message="Invalid token or organization.", status_code=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         # Razorpay signature verification for client-side payment verification
