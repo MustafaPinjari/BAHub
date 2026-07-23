@@ -358,6 +358,74 @@ class BusinessDocumentViewSet(viewsets.ModelViewSet):
 
         return api_success(data=data, message="Document synthesized successfully.")
 
+    @action(detail=False, methods=["post"], url_path="generate-with-ai")
+    def generate_with_ai(self, request):
+        """
+        Uses AI to generate a document drafted based on the user's prompt and project context.
+        """
+        project_id = request.data.get("project")
+        doc_type = request.data.get("doc_type", "BRD")
+        user_prompt = request.data.get("prompt", "Generate standard document.")
+        
+        if not project_id:
+            return api_error(message="Project ID is required.")
+
+        try:
+            project = Project.objects.get(
+                id=project_id,
+                organization_id=request.user.organization_id
+            )
+        except Project.DoesNotExist:
+            return api_error(message="Project not found in your organization.")
+
+        stakeholders = project.stakeholders.all()
+        requirements = project.requirements.all()
+        
+        from stories.models import UserStory
+        user_stories = UserStory.objects.filter(requirement__project=project)
+        
+        # Build context dictionary
+        context = {
+            "project_name": project.name,
+            "project_description": project.description,
+            "stakeholders": {s.name: f"{s.title} ({s.department})" for s in stakeholders} if stakeholders.exists() else {},
+            "requirements": [{"title": r.title, "description": r.description} for r in requirements] if requirements.exists() else [],
+            "user_stories": [{"title": s.title, "description": f"As a {s.role}, I want to {s.action} so that {s.benefit}"} for s in user_stories] if user_stories.exists() else []
+        }
+        
+        try:
+            import asyncio
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            from srs.ai_integration import ai_service
+            
+            enhanced_content = loop.run_until_complete(
+                ai_service.generate_full_document(
+                    doc_type=doc_type,
+                    user_prompt=user_prompt,
+                    context=context,
+                    organization=request.user.organization,
+                    user=request.user
+                )
+            )
+            loop.close()
+        except Exception as e:
+            return api_error(message=f"AI document generation failed: {str(e)}")
+            
+        title = f"{doc_type} - {project.name} (AI Generated) - Version 1.0"
+        
+        data = {
+            "project": str(project.id),
+            "doc_type": doc_type,
+            "title": title,
+            "version": "1.0",
+            "status": "DRAFT",
+            "content": enhanced_content,
+        }
+        
+        return api_success(data=data, message="AI Document drafted successfully.")
+
     @action(detail=True, methods=["post"], url_path="submit-for-review")
     def submit_for_review(self, request, pk=None):
         """

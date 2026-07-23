@@ -96,6 +96,57 @@ class AIService:
             logger.error(f"AI section enhancement failed: {e}")
             raise
     
+    async def generate_full_document(
+        self,
+        doc_type: str,
+        user_prompt: str,
+        context: Dict,
+        organization=None,
+        user=None
+    ) -> str:
+        """
+        Generate a full document (e.g. BRD, FRD) based on a prompt and project context.
+        """
+        try:
+            prompt = self._build_full_document_prompt(doc_type, user_prompt, context)
+            response = await self._call_ai_api(prompt, feature_name="generate_full_document", organization=organization, user=user)
+            return response.get('content', '')
+        except Exception as e:
+            logger.error(f"AI full document generation failed: {e}")
+            raise
+
+    def _build_full_document_prompt(
+        self,
+        doc_type: str,
+        user_prompt: str,
+        context: Dict
+    ) -> str:
+        """Build prompt for full document generation."""
+        prompt = f"""
+You are an expert Business Analyst crafting a {doc_type} (Business Requirements Document / Functional Requirements Document).
+The user has provided the following prompt / notes to guide the generation:
+"{user_prompt}"
+
+Here is the context of the project from the workspace:
+Project Name: {context.get('project_name', 'N/A')}
+Project Description: {context.get('project_description', 'N/A')}
+
+"""
+        if context.get('stakeholders'):
+            prompt += f"Stakeholders:\n{self._format_context(context.get('stakeholders', {}))}\n\n"
+        if context.get('requirements'):
+            prompt += f"Existing Requirements:\n{self._format_requirements(context.get('requirements', []))}\n\n"
+        if context.get('user_stories'):
+            prompt += f"User Stories:\n{self._format_user_stories(context.get('user_stories', []))}\n\n"
+            
+        prompt += f"""
+Please generate a comprehensive, professional {doc_type} formatted entirely in Markdown. 
+Do not output JSON. Output raw markdown.
+Include standard sections appropriate for a {doc_type} (e.g., Executive Summary, Scope, Business Requirements, Functional Requirements, Non-Functional Requirements, etc.).
+Make it detailed and realistic based on the provided notes and project context.
+"""
+        return prompt
+
     def _build_srs_prompt(
         self,
         requirements: List[Dict],

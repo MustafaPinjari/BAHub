@@ -66,6 +66,8 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
   const [aiEnhancing, setAiEnhancing] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
+  const [aiGenerateModalOpen, setAiGenerateModalOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [versionModalOpen, setVersionModalOpen] = useState(false);
@@ -174,6 +176,32 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
       setSelectedDoc(null);
     } catch (err: any) {
       setFormError(err.message || "Failed to generate document template.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAIGenerate = async () => {
+    if (!activeProject || !aiPrompt.trim()) return;
+    setLoading(true);
+    setFormError(null);
+    setSuccessMessage(null);
+    try {
+      const res = await api.post<any, { data: any }>("/documents/generate-with-ai/", {
+        project: activeProject.id,
+        doc_type: docType,
+        prompt: aiPrompt
+      });
+      setDraftTitle(res.data.title);
+      setDraftVersion(res.data.version);
+      setDraftContent(res.data.content);
+      setIsDrafting(true);
+      setSelectedDoc(null);
+      setAiGenerateModalOpen(false);
+      setAiPrompt("");
+      setSuccessMessage("Document drafted successfully using AI.");
+    } catch (err: any) {
+      setFormError(err.message || "Failed to generate document with AI.");
     } finally {
       setLoading(false);
     }
@@ -804,6 +832,15 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
                 >
                   <Plus className="w-3 h-3 mr-1" />
                   Compile
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setAiGenerateModalOpen(true)}
+                  className="text-[10px] font-bold h-7 py-1 px-2.5 rounded bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white border-0 shadow-sm"
+                >
+                  <Sparkles className="w-3 h-3 mr-1 text-yellow-200" />
+                  AI Generate
                 </Button>
               </div>
             )}
@@ -1451,6 +1488,65 @@ export const DocumentGeneratorPage: React.FC<DocumentGeneratorPageProps> = ({ do
           </Card>
         </div>
       )}
+      {/* AI Generate Modal */}
+      {aiGenerateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="bg-card border border-border shadow-lg rounded-xl p-5 w-[90%] max-w-lg select-none text-foreground flex flex-col gap-4">
+            <div className="flex justify-between items-center border-b border-border pb-3">
+              <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-purple-500" />
+                Generate {docType} with AI
+              </h3>
+              <button 
+                onClick={() => setAiGenerateModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground p-1 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="flex flex-col gap-3">
+              <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                Describe the main goal of this document, or paste any rough notes. The AI will generate a complete, structured {docType} incorporating the existing project context (requirements, stories, and stakeholders).
+              </p>
+              
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Prompt / Notes
+                </label>
+                <textarea
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  className="w-full min-h-[120px] bg-background border border-border rounded-lg p-3 text-xs font-medium text-foreground outline-none focus:border-primary resize-none"
+                  placeholder={`e.g. "Draft a ${docType} for the new E-Commerce Checkout flow integrating with Stripe and PayPal."`}
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-2 mt-2 pt-3 border-t border-border">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setAiGenerateModalOpen(false)}
+                className="text-[10px] font-bold uppercase tracking-wider h-8"
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="default"
+                size="sm"
+                onClick={handleAIGenerate}
+                disabled={loading || !aiPrompt.trim()}
+                className="text-[10px] font-bold uppercase tracking-wider h-8 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white border-0"
+              >
+                {loading ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1.5" />}
+                Generate Document
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

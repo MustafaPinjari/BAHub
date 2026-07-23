@@ -65,3 +65,37 @@ ERROR 2026-07-18 12:18:36,608 views 9168 1352 Failed to create Razorpay order: (
 WARNING 2026-07-18 12:18:36,611 log 9168 14892 Bad Request: /api/v1/billing/checkout/
 WARNING 2026-07-18 12:18:36,612 runserver 9168 17968 [31;1mHTTP POST /api/v1/billing/checkout/ 400 [0.15, 127.0.0.1:50404][0m
 WARNING 2026-07-18 13:48:24,856 email_service 16180 10652 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-18 13:48:27,592 log 16180 6016 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-18 13:48:27,593 runserver 16180 7712 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.04, 127.0.0.1:62733][0m
+WARNING 2026-07-18 13:48:27,603 log 16180 6016 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-18 13:48:27,605 runserver 16180 7712 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:62733][0m
+WARNING 2026-07-23 20:08:00,080 email_service 18708 2384 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-23 20:13:15,094 email_service 18468 18936 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-23 20:13:36,055 email_service 2380 17492 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-23 20:15:54,384 log 2380 14324 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-23 20:15:54,385 runserver 2380 14708 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.04, 127.0.0.1:65416][0m
+WARNING 2026-07-23 20:15:54,395 log 2380 14324 Unauthorized: /api/v1/auth/profile/
+WARNING 2026-07-23 20:15:54,396 runserver 2380 14708 [31;1mHTTP GET /api/v1/auth/profile/ 401 [0.01, 127.0.0.1:65416][0m
+ERROR 2026-07-23 20:17:37,548 exceptions 2380 6536 Unhandled Server Error: 'UserStory' object has no attribute 'description'
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\documents\views.py"[0m, line [35m393[0m, in [35mgenerate_with_ai[0m
+    "user_stories": [{"title": s.title, "description": [1;31ms.description[0m} for s in user_stories] if user_stories.exists() else []
+                                                       [1;31m^^^^^^^^^^^^^[0m
+[1;35mAttributeError[0m: [35m'UserStory' object has no attribute 'description'[0m
+ERROR 2026-07-23 20:17:37,585 log 2380 14324 Internal Server Error: /api/v1/documents/generate-with-ai/
+ERROR 2026-07-23 20:17:37,586 runserver 2380 14708 [35;1mHTTP POST /api/v1/documents/generate-with-ai/ 500 [0.06, 127.0.0.1:59690][0m
+ERROR 2026-07-23 20:17:39,331 exceptions 2380 15708 Unhandled Server Error: 'UserStory' object has no attribute 'description'
+Traceback (most recent call last):
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\venv\Lib\site-packages\rest_framework\views.py"[0m, line [35m512[0m, in [35mdispatch[0m
+    response = handler(request, *args, **kwargs)
+  File [35m"C:\Users\pinja\OneDrive\Desktop\BAHub\backend\documents\views.py"[0m, line [35m393[0m, in [35mgenerate_with_ai[0m
+    "user_stories": [{"title": s.title, "description": [1;31ms.description[0m} for s in user_stories] if user_stories.exists() else []
+                                                       [1;31m^^^^^^^^^^^^^[0m
+[1;35mAttributeError[0m: [35m'UserStory' object has no attribute 'description'[0m
+ERROR 2026-07-23 20:17:39,334 log 2380 14324 Internal Server Error: /api/v1/documents/generate-with-ai/
+ERROR 2026-07-23 20:17:39,335 runserver 2380 14708 [35;1mHTTP POST /api/v1/documents/generate-with-ai/ 500 [0.02, 127.0.0.1:59690][0m
+WARNING 2026-07-23 20:19:14,347 email_service 7980 11624 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-23 20:19:23,064 email_service 18588 17392 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
+WARNING 2026-07-23 20:27:24,231 email_service 16996 19092 [EmailService] Brevo SDK not available. Email sending will use SMTP or console backend.
